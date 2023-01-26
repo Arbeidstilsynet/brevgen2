@@ -1,20 +1,32 @@
-# Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+# Brevgenerator tjeneste
 
-# Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
+Denne tjenesten lager brev med flettedata og sender det tilbake
 
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
+## Sikkerhet
 
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
+Man trenger ikke noe autorisasjon for å bruke denne tjenesten. Brevgeneratoren må ha lesetilgang til bøtte hvor brevmaler ligger. Navnet til bøtta liggger i SSM-parameter `/buckets/brevmaler/name`
 
-If you want to learn more about creating good readme files then refer the following [guidelines](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+## Hvordan bruke brevgeneratoren
+
+1. Hent base-url fra SSM-parameter `/vpc/shared-vpc/endpoint/execute-api/url`
+2. Hent api id-en fra SSM-parameter `/felles/brevgenerator/api/id`
+3. Kall endepunktet `{base-url}/{env}/genererbrev` med inputen:
+
+```javascript
+{
+    method: "POST",
+    headers: {
+        "x-apigw-api-id": "<verdien fra: /felles/brevgenerator/api/id>"
+    },
+    body: {
+        brevmal: "<key til brevmal i s3-bøtta /buckets/brevmaler/name>",
+        flettedata: [
+            {
+                "navn": "<flettefeltnavn>",
+                "verdi": "<flettefeltverdi>"
+            },
+            ...
+        ]
+    }
+}
+```

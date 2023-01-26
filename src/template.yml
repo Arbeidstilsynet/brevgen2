@@ -1,0 +1,110 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Testing aspose
+
+Parameters:
+  BrevmalBucket:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /buckets/brevmaler/name
+
+  env:
+    Type: String
+    Description: Environment for the deploy
+
+# Sjekker om environment er en av "sandbox", "dev", "test" eller "prod"
+Conditions:
+  IsTrueEnvironment: !Or [!Equals [!Ref env, "sandbox"], !Equals [!Ref env, "dev"], !Equals [!Ref env, "test"], !Equals [!Ref env, "prod"]]
+
+Resources:
+  BrevgeneratorApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Sub ${env}-brevgenerator-api-gateway
+      StageName: !Ref env
+      Cors: 
+        AllowOrigin: "'*'"
+        AllowMethods: "'POST'"
+        AllowHeaders: "'Content-type,Accept'"
+        MaxAge: 600
+      EndpointConfiguration:
+        Type: PRIVATE
+        VpcEndpointIds:
+          - '{{resolve:ssm:/vpc/shared-vpc/endpoint/execute-api/endpoint-id}}'
+      Auth:
+        InvokeRole: NONE
+        ResourcePolicy:
+          CustomStatements:
+            [
+              {
+                "Effect": "Deny",
+                "Principal": "*",
+                "Action": "*",
+                "Resource": "*",
+                "Condition":
+                {
+                    "StringNotEquals": {
+                        "aws:sourceVpce": '{{resolve:ssm:/vpc/shared-vpc/endpoint/execute-api/endpoint-id}}'
+                    }
+                },
+              },
+              {
+                  "Principal": "*",
+                  "Action": [
+                      "execute-api:Invoke"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*"
+              }
+            ]
+  
+  BrevgeneratorApiIdParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !If [IsTrueEnvironment, /felles/brevgenerator/api/id, !Sub "/felles/${env}/brevgenerator/api/id"]
+      Type: String
+      Description: Api-id til internt privat brevgenerator-api
+      Value: !GetAtt BrevgeneratorApi.RootResourceId
+
+  BrevgeneratorFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName:
+        !Join ["", ["/aws/lambda/", !Ref BrevgeneratorFunction]]
+      RetentionInDays: 60
+
+  BrevgeneratorFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${env}-felles-brevgenerator-lambda
+      Handler: Brevgenerator::Brevgenerator.Brevgenerator::FunctionHandler
+      Runtime: dotnet6
+      CodeUri: ./Brevgenerator
+      Timeout: 120
+      MemorySize: 1024
+      Policies:
+        - S3ReadPolicy:
+            BucketName: !Ref BrevmalBucket
+        - AWSLambdaBasicExecutionRole
+      Environment:
+        Variables:
+          Brevmalbucket: !Ref BrevmalBucket
+      VpcConfig:
+        SecurityGroupIds:
+          - '{{resolve:ssm:/vpc/shared-vpc/securitygroup/SGTilgangTilAWSEndpoints/security-group-id}}'
+          - '{{resolve:ssm:/vpc/shared-vpc/securitygroup/SGTilgangTilHTTPS/security-group-id}}'
+        SubnetIds:
+          - '{{resolve:ssm:/vpc/shared-vpc/subnet/a/subnet-id}}'
+          - '{{resolve:ssm:/vpc/shared-vpc/subnet/b/subnet-id}}'
+      # ProvisionedConcurrencyConfig: 
+      #   ProvisionedConcurrentExecutions: 1
+      # AutoPublishAlias: BrevgeneratorVersion
+      Events:
+        GenererBrev:
+          Type: Api
+          Properties:
+            Path: /genererbrev
+            Method: POST
+            RestApiId: !Ref BrevgeneratorApi
+
+    
+    

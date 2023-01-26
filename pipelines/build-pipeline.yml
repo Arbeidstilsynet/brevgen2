@@ -1,0 +1,41 @@
+resources:
+  repositories:
+    - repository: Templates
+      type: git
+      name: felles-pipeline-templates
+      ref: develop
+
+trigger:
+  - develop
+  - feature/*
+  - feat/*
+  - refactor/*
+  - bug/*
+  - devops/*
+  - fix/*
+  - test/*
+
+pool:
+  vmImage: "ubuntu-latest"
+
+variables:
+  NUGET_PLUGIN_HANDSHAKE_TIMEOUT_IN_SECONDS: 120
+  NUGET_PLUGIN_REQUEST_TIMEOUT_IN_SECONDS: 120
+  NUGET_PACKAGES: $(Pipeline.Workspace)/.nuget/packages
+
+jobs:
+  - job: Build
+    variables:
+      - group: brevgenerator-sandbox
+    steps:
+      - template: dotnet/build-dotnetcore-pipeline-template.yml@Templates
+        parameters:
+          awsCredentials: SandboxDeploy
+          region: eu-west-1
+          restoreSolution: "src/Brevgenerator.sln"
+          workingDir: "src/"
+          nugetConfigPath: "src/nuget.config"
+          key: "nuget | $(Agent.OS) | **/packages.lock.json"
+          restoreKey: "nuget | $(Agent.OS)"
+          stackParameters: >-
+            env=sandbox
