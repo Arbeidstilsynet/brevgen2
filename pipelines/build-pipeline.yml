@@ -25,8 +25,6 @@ variables:
 
 jobs:
   - job: Build
-    variables:
-      - group: brevgenerator-sandbox
     steps:
       - template: dotnet/build-dotnetcore-pipeline-template.yml@Templates
         parameters:
