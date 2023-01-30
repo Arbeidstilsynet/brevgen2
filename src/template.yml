@@ -95,9 +95,9 @@ Resources:
         SubnetIds:
           - '{{resolve:ssm:/vpc/shared-vpc/subnet/a/subnet-id}}'
           - '{{resolve:ssm:/vpc/shared-vpc/subnet/b/subnet-id}}'
-      # ProvisionedConcurrencyConfig: 
-      #   ProvisionedConcurrentExecutions: 1
-      # AutoPublishAlias: BrevgeneratorVersion
+      ProvisionedConcurrencyConfig: 
+        ProvisionedConcurrentExecutions: 1
+      AutoPublishAlias: BrevgeneratorVersion
       Events:
         GenererBrev:
           Type: Api
