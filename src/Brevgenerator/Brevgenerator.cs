@@ -72,12 +72,25 @@ public class Brevgenerator
         }
         try
         {
-
             var file = await _s3Client.GetObjectAsync(_brevmalBucket, workerRequest!.Brevmal);
 
             _dokumentfletter = new Dokumentfletter(_s3Client, _brevmalBucket, file.ResponseStream);
 
             var flettedata = Flettedata.FlettedataToDictString(workerRequest.Flettedata);
+
+            if (workerRequest.Qrkode != null)
+            {
+                _dokumentfletter.QrKodeStyling = workerRequest.Qrkode.Styling ?? new();
+                var base64stringMedQr = await _dokumentfletter.LagPdfDokument(flettedata, workerRequest.Qrkode);
+
+                return new APIGatewayProxyResponse()
+                {
+                    StatusCode = (int)HttpStatusCode.OK,
+                    Body = base64stringMedQr,
+                    Headers = _headers
+                };
+            }
+
             var base64string = await _dokumentfletter.LagPdfDokument(flettedata);
 
             return new APIGatewayProxyResponse()
@@ -115,9 +128,18 @@ public class Brevgenerator
             return (null, "Fikk ikke 'brevmal' i body");
         }
 
+        if (deserRequest.Qrkode != null && (deserRequest.Qrkode.Lenke == null || deserRequest.Qrkode.Lenke == string.Empty))
+        {
+            return (null, "Trenger enten en lenke for å kunne lage qr kode");
+        }
+
         return (deserRequest, null);
     }
 
 }
 
-public record WorkerRequest(string Brevmal, List<FlettedataFelt>? Flettedata);
+public record WorkerRequest(string Brevmal, List<FlettedataFelt>? Flettedata, QrCodeDTO? Qrkode);
+
+public record QrCodeDTO(string? Lenke, QrCodeStyling Styling);
+
+public record QrCodeStyling(int Bredde = 0, int Lengde = 0, int XPos = 0, int YPos = 0);

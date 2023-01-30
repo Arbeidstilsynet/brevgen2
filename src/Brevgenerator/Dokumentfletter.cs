@@ -5,6 +5,7 @@ using Amazon.S3.Model;
 using Aspose.Words;
 using Aspose.Words.Drawing;
 using Aspose.Words.Fonts;
+using QRCoder;
 
 namespace Brevgenerator;
 
@@ -16,6 +17,7 @@ public class Dokumentfletter
     private readonly MemoryStream _dokumentmal;
     private readonly IAmazonS3 _s3Client;
     private readonly string _dokumentmalBucket;
+    public QrCodeStyling? QrKodeStyling { get; set; }
 
     public Dokumentfletter(IAmazonS3 s3Client, string dokumentmalBucket, Stream dokumentmal)
     {
@@ -25,6 +27,12 @@ public class Dokumentfletter
         dokumentmal.CopyTo(_dokumentmal);
         LambdaLogger.Log($"Setter Aspose word lisens");
         AsposeWordsLisensAdmin.SettAsposeWordLisens();
+    }
+
+    public async Task<string> LagPdfDokument(string flettedata, QrCodeDTO qrCodeDTO)
+    {
+        var qrKode = LagQrKodeBitmap(qrCodeDTO.Lenke!);
+        return await LagPdfDokument(flettedata, qrKode);
     }
 
     public async Task<string> LagPdfDokument(string flettedata, byte[]? qrKode = null)
@@ -70,11 +78,11 @@ public class Dokumentfletter
         var builder = new DocumentBuilder(_fletteDokument);
         var p = builder.InsertImage(qrKode,
                RelativeHorizontalPosition.Margin,
-               337,
+               QrKodeStyling.XPos,
                RelativeVerticalPosition.Margin,
-               21,
-               134,
-               134,
+               QrKodeStyling.YPos,
+               QrKodeStyling.Bredde,
+               QrKodeStyling.Lengde,
                WrapType.Square);
         p.ZOrder = 4;
     }
@@ -94,7 +102,7 @@ public class Dokumentfletter
     {
         var ser = JsonSerializer.Serialize(_fletteData);
         var dict = JsonSerializer.Deserialize<Dictionary<string, string>>(ser);
-        LambdaLogger.Log($"Feltene som trenger data: {JsonSerializer.Serialize(flettefelt)}, skal populeres med {JsonSerializer.Serialize(dict.Keys)}");        return flettefelt.Select(f => _fletteData.RootElement.GetProperty(f).ToString()).ToArray<object>();
+        LambdaLogger.Log($"Feltene som trenger data: {JsonSerializer.Serialize(flettefelt)}, skal populeres med {JsonSerializer.Serialize(dict.Keys)}"); return flettefelt.Select(f => _fletteData.RootElement.GetProperty(f).ToString()).ToArray<object>();
     }
 
     private async Task<MemoryStream> FlettDokument(string[] flettefelt, object[] dataelementer)
@@ -156,5 +164,13 @@ public class Dokumentfletter
         } while (response.IsTruncated);
 
         return fontList.ToArray();
+    }
+
+    public static byte[] LagQrKodeBitmap(string url)
+    {
+        using QRCodeGenerator qrGenerator = new();
+        using var qrCodeData = qrGenerator.CreateQrCode(url, QRCodeGenerator.ECCLevel.Q);
+        using BitmapByteQRCode qrCode = new(qrCodeData);
+        return qrCode.GetGraphic(20);
     }
 }

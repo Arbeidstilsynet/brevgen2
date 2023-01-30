@@ -4,7 +4,7 @@ using Brevgenerator;
 
 namespace BrevgeneratorTests
 {
-    public class UnitTest1
+    public class TestBrevgeneratorUtils
     {
         private static readonly JsonSerializerOptions _serializerOptions = new()
         {
@@ -56,6 +56,14 @@ namespace BrevgeneratorTests
             var file = Assembly.GetExecutingAssembly().GetManifestResourceStream(filsti);
 
             Assert.NotNull(file);
+        }
+
+        [Fact]
+        public void LagQrKode()
+        {
+            var result = Utils.LagQrKodeBitmap("https://www.vg.no/");
+
+            Assert.NotNull(result);
         }
     }
 }

@@ -23,6 +23,7 @@
     <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.3.0" />
 	<PackageReference Include="Aspose.Words" Version="21.1.0" />
     <PackageReference Include="AWSSDK.S3" Version="3.7.101.52" />
+    <PackageReference Include="QRCoder" Version="1.4.3" />
 	<PackageReference Include="SkiaSharp" Version="2.80.2" />
 	<PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.80.2" />
   </ItemGroup>

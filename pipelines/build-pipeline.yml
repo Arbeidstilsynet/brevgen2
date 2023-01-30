@@ -30,10 +30,8 @@ jobs:
         parameters:
           awsCredentials: SandboxDeploy
           region: eu-west-1
-          restoreSolution: "src/Brevgenerator.sln"
+          solution: "src/Brevgenerator.sln"
           workingDir: "src/"
           nugetConfigPath: "src/nuget.config"
-          key: "nuget | $(Agent.OS) | **/packages.lock.json"
-          restoreKey: "nuget | $(Agent.OS)"
           stackParameters: >-
             env=sandbox
