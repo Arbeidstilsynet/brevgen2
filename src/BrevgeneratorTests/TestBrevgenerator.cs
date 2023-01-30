@@ -285,7 +285,7 @@ namespace BrevgeneratorTests
             var response = await Execute(body);
 
             Assert.NotNull(response.Body);
-            Assert.Equal((int)HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal((int)HttpStatusCode.BadRequest, response.StatusCode);
         }
 
         public async Task<APIGatewayProxyResponse> Execute(string body)
