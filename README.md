@@ -26,7 +26,20 @@ Man trenger ikke noe autorisasjon for å bruke denne tjenesten. Brevgeneratoren 
                 "verdi": "<flettefeltverdi>"
             },
             ...
-        ]
+        ],
+        qrkode: {
+            lenke: "<url lenke>",
+            styling: {
+                xPos: <int>
+                yPos: <int>
+                bredde: <int>
+                lengde: <int>
+            }
+        } 
     }
 }
 ```
+
+Qrkoden blir laget basert på url lenken man sender sender inn, og er påkrevd. 
+
+Stylingen har default verdi: 0
