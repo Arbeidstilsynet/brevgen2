@@ -25,9 +25,10 @@ public class Brevgenerator
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
     };
 
-    public Dictionary<string, string> _headers = new() {
+    public Dictionary<string, string> _headers = new()
+    {
         { "Content-type", "application/pdf" },
-        { "Access-Control-Allow-Origin", "*"},
+        { "Access-Control-Allow-Origin", "*" },
         { "Access-Control-Allow-Methods", "OPTIONS,POST,GET" }
     };
 
