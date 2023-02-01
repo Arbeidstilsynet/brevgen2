@@ -288,6 +288,34 @@ namespace BrevgeneratorTests
             Assert.Equal((int)HttpStatusCode.BadRequest, response.StatusCode);
         }
 
+        [Fact]
+        public async void FeilerMedTomVerdi()
+        {
+            var body = @"{ 
+                ""brevmal"": ""dat/dokumentmaler/asbest/4-nb-bekreftelse-mottat-asbest-melding.docx"",
+                ""flettedata"": [
+                    { ""navn"": ""Organisasjonsnummer""},
+                    { ""navn"": ""Dato"", ""verdi"": ""123456789"" },
+                    { ""navn"": ""Saksnummer"", ""verdi"": ""123456789"" },
+                    { ""navn"": ""Virksomhetsnavn"", ""verdi"": ""123456789"" },
+                    { ""navn"": ""Gateadresse"", ""verdi"": ""123456789"" },
+                    { ""navn"": ""Postnr"", ""verdi"": ""123456789"" },
+                    { ""navn"": ""Poststed"", ""verdi"": ""123456789"" },
+                    { ""navn"": ""Jobbadresse"", ""verdi"": ""123456789"" },
+                    { ""navn"": ""StartDato"", ""verdi"": ""123456789"" },
+                    { ""navn"": ""SluttDato"", ""verdi"": ""123456789"" },
+                    { ""navn"": ""TypeArbeid"", ""verdi"": ""123456789"" },
+                    { ""navn"": ""Mottatt"", ""verdi"": ""123456789"" },
+                    { ""navn"": ""Saksbehandler"", ""verdi"": ""123456789"" }
+                ]
+            }";
+
+            var response = await Execute(body);
+
+            Assert.NotNull(response.Body);
+            Assert.Equal((int)HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
         public async Task<APIGatewayProxyResponse> Execute(string body)
         {
             return await _brevgenerator.FunctionHandler(new APIGatewayProxyRequest()
