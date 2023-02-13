@@ -63,7 +63,7 @@ Resources:
       Name: !If [IsTrueEnvironment, /felles/brevgenerator/api/id, !Sub "/felles/${env}/brevgenerator/api/id"]
       Type: String
       Description: Api-id til internt privat brevgenerator-api
-      Value: !GetAtt BrevgeneratorApi.RootResourceId
+      Value: !Ref BrevgeneratorApi
 
   BrevgeneratorFunctionLogGroup:
     Type: AWS::Logs::LogGroup
