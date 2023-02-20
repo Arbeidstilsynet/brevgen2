@@ -134,11 +134,6 @@ public class Brevgenerator
             return (null, "Trenger enten en lenke for å kunne lage qr kode");
         }
 
-        if (deserRequest.Flettedata != null && deserRequest.Flettedata.Any(f => f.Verdi == null || f.Verdi == string.Empty))
-        {
-            return (null, "Kan ikke ha tomme eller null verdier");
-        }
-
         return (deserRequest, null);
     }
 
