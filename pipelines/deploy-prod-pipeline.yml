@@ -32,9 +32,9 @@ stages:
                     stackName: felles-brevgenerator-test-all-cf
                     awsCredentials: TestDeploy
                     region: eu-west-1
-                     restoreSolution: "src/Brevgenerator.sln"
-                     workingDir: "src/"
-                     nugetConfigPath: "src/nuget.config"
+                    restoreSolution: "src/Brevgenerator.sln"
+                    workingDir: "src/"
+                    nugetConfigPath: "src/nuget.config"
                     capabilities: >-
                       CAPABILITY_IAM
                       CAPABILITY_AUTO_EXPAND
@@ -68,9 +68,9 @@ stages:
                     stackName: felles-brevgenerator-prod-all-cf
                     awsCredentials: ProdDeploy
                     region: eu-west-1
-                     restoreSolution: "src/Brevgenerator.sln"
-                     workingDir: "src/"
-                     nugetConfigPath: "src/nuget.config"
+                    restoreSolution: "src/Brevgenerator.sln"
+                    workingDir: "src/"
+                    nugetConfigPath: "src/nuget.config"
                     capabilities: >-
                       CAPABILITY_IAM
                       CAPABILITY_AUTO_EXPAND
