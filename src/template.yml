@@ -21,6 +21,7 @@ Resources:
     Properties:
       Name: !Sub ${env}-brevgenerator-api-gateway
       StageName: !Ref env
+      OpenApiVersion: 3.0.1
       Cors: 
         AllowOrigin: "'*'"
         AllowMethods: "'POST'"
