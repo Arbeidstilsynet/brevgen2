@@ -40,6 +40,6 @@ Man trenger ikke noe autorisasjon for å bruke denne tjenesten. Brevgeneratoren 
 }
 ```
 
-Qrkoden blir laget basert på url lenken man sender sender inn, og er påkrevd. 
+Qrkoden er valgfritt og blir laget basert på url lenken man sender sender inn,  `lenke` er påkrevd når man velger å ha med. 
 
 Stylingen har default verdi: 0
