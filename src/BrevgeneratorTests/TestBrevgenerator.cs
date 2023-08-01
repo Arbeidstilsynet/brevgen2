@@ -1,11 +1,9 @@
 using System.Net;
 using System.Reflection;
-using System.Text.Json;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Amazon.S3;
 using Amazon.S3.Model;
-using Brevgenerator;
 using Moq;
 
 namespace BrevgeneratorTests
@@ -65,7 +63,7 @@ namespace BrevgeneratorTests
         }
 
         [Fact]
-        public async void OKUtenQrKode()
+        public async Task OKUtenQrKode()
         {
             var body = @"{ 
                 ""brevmal"": ""dat/dokumentmaler/asbest/4-nb-bekreftelse-mottat-asbest-melding.docx"",
@@ -93,7 +91,7 @@ namespace BrevgeneratorTests
         }
 
         [Fact]
-        public async void OKUtenFlettedata()
+        public async Task OKUtenFlettedata()
         {
             var body = @"{ 
                 ""brevmal"": ""dat/dokumentmaler/asbest/4-nb-bekreftelse-mottat-asbest-melding.docx""
@@ -117,7 +115,23 @@ namespace BrevgeneratorTests
         }
 
         [Fact]
-        public async void OKMedTomFlettedata()
+        public async Task FeilerMedManglendeMalIVarmOpp()
+        {
+            var body = @"";
+
+            var response = await _brevgenerator.FunctionHandler(new APIGatewayProxyRequest()
+            {
+                Body = body,
+                Path = "varmopp",
+
+            }, _context.Object);
+
+            Assert.NotNull(response.Body);
+            Assert.Equal((int)HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task OKMedTomFlettedata()
         {
             var body = @"{ 
                 ""brevmal"": ""dat/dokumentmaler/asbest/4-nb-bekreftelse-mottat-asbest-melding.docx"",
@@ -131,7 +145,7 @@ namespace BrevgeneratorTests
         }
 
         [Fact]
-        public async void FeilerMedTomQRKode()
+        public async Task FeilerMedTomQRKode()
         {
             var body = @"{ 
                 ""brevmal"": ""dat/dokumentmaler/asbest/4-nb-bekreftelse-mottat-asbest-melding.docx"",
@@ -160,7 +174,7 @@ namespace BrevgeneratorTests
         }
 
         [Fact]
-        public async void OKMedQRKodeLenke()
+        public async Task OKMedQRKodeLenke()
         {
             var body = @"{ 
                 ""brevmal"": ""dat/dokumentmaler/asbest/4-nb-bekreftelse-mottat-asbest-melding.docx"",
@@ -191,7 +205,7 @@ namespace BrevgeneratorTests
         }
 
         [Fact]
-        public async void OKMedQRKodeLenkeOgTomStyling()
+        public async Task OKMedQRKodeLenkeOgTomStyling()
         {
             var body = @"{ 
                 ""brevmal"": ""dat/dokumentmaler/asbest/4-nb-bekreftelse-mottat-asbest-melding.docx"",
@@ -223,7 +237,7 @@ namespace BrevgeneratorTests
         }
 
         [Fact]
-        public async void OKMedQRKodeLenkeOgHalvStyling()
+        public async Task OKMedQRKodeLenkeOgHalvStyling()
         {
             var body = @"{ 
                 ""brevmal"": ""dat/dokumentmaler/asbest/4-nb-bekreftelse-mottat-asbest-melding.docx"",
@@ -258,7 +272,7 @@ namespace BrevgeneratorTests
         }
 
         [Fact]
-        public async void FeilerMedTomQRKodeLenke()
+        public async Task FeilerMedTomQRKodeLenke()
         {
             var body = @"{ 
                 ""brevmal"": ""dat/dokumentmaler/asbest/4-nb-bekreftelse-mottat-asbest-melding.docx"",
@@ -288,70 +302,13 @@ namespace BrevgeneratorTests
             Assert.Equal((int)HttpStatusCode.BadRequest, response.StatusCode);
         }
 
-        //[Fact]
-        //public async void FeilerMedVerdiNull()
-        //{
-        //    var body = @"{ 
-        //        ""brevmal"": ""dat/dokumentmaler/asbest/4-nb-bekreftelse-mottat-asbest-melding.docx"",
-        //        ""flettedata"": [
-        //            { ""navn"": ""Organisasjonsnummer""},
-        //            { ""navn"": ""Dato"", ""verdi"": ""123456789"" },
-        //            { ""navn"": ""Saksnummer"", ""verdi"": ""123456789"" },
-        //            { ""navn"": ""Virksomhetsnavn"", ""verdi"": ""123456789"" },
-        //            { ""navn"": ""Gateadresse"", ""verdi"": ""123456789"" },
-        //            { ""navn"": ""Postnr"", ""verdi"": ""123456789"" },
-        //            { ""navn"": ""Poststed"", ""verdi"": ""123456789"" },
-        //            { ""navn"": ""Jobbadresse"", ""verdi"": ""123456789"" },
-        //            { ""navn"": ""StartDato"", ""verdi"": ""123456789"" },
-        //            { ""navn"": ""SluttDato"", ""verdi"": ""123456789"" },
-        //            { ""navn"": ""TypeArbeid"", ""verdi"": ""123456789"" },
-        //            { ""navn"": ""Mottatt"", ""verdi"": ""123456789"" },
-        //            { ""navn"": ""Saksbehandler"", ""verdi"": ""123456789"" }
-        //        ]
-        //    }";
-
-        //    var response = await Execute(body);
-
-        //    Assert.NotNull(response.Body);
-        //    Assert.Equal((int)HttpStatusCode.BadRequest, response.StatusCode);
-        //}
-
-        //[Fact]
-        //public async void FeilerMedVerdiTom()
-        //{
-        //    var body = @"{ 
-        //        ""brevmal"": ""dat/dokumentmaler/asbest/4-nb-bekreftelse-mottat-asbest-melding.docx"",
-        //        ""flettedata"": [
-        //            { ""navn"": ""Organisasjonsnummer"", ""verdi"": """"},
-        //            { ""navn"": ""Dato"", ""verdi"": ""123456789"" },
-        //            { ""navn"": ""Saksnummer"", ""verdi"": ""123456789"" },
-        //            { ""navn"": ""Virksomhetsnavn"", ""verdi"": ""123456789"" },
-        //            { ""navn"": ""Gateadresse"", ""verdi"": ""123456789"" },
-        //            { ""navn"": ""Postnr"", ""verdi"": ""123456789"" },
-        //            { ""navn"": ""Poststed"", ""verdi"": ""123456789"" },
-        //            { ""navn"": ""Jobbadresse"", ""verdi"": ""123456789"" },
-        //            { ""navn"": ""StartDato"", ""verdi"": ""123456789"" },
-        //            { ""navn"": ""SluttDato"", ""verdi"": ""123456789"" },
-        //            { ""navn"": ""TypeArbeid"", ""verdi"": ""123456789"" },
-        //            { ""navn"": ""Mottatt"", ""verdi"": ""123456789"" },
-        //            { ""navn"": ""Saksbehandler"", ""verdi"": ""123456789"" }
-        //        ]
-        //    }";
-
-        //    var response = await Execute(body);
-
-        //    Assert.NotNull(response.Body);
-        //    Assert.Equal((int)HttpStatusCode.BadRequest, response.StatusCode);
-        //}
-
         public async Task<APIGatewayProxyResponse> Execute(string body)
         {
             return await _brevgenerator.FunctionHandler(new APIGatewayProxyRequest()
             {
+                Path = "",
                 Body = body
             }, _context.Object);
         }
-
-
     }
 }

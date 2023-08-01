@@ -17,7 +17,7 @@ namespace BrevgeneratorTests
             var testdata = "[{\"navn\": \"Orgnummer\", \"verdi\": \"123456789\"}, { \"navn\": \"Orgnavn\", \"verdi\": \"Test Org\"}]";
 
             var flettedatafelt = JsonSerializer.Deserialize<List<FlettedataFelt>>(testdata, _serializerOptions);
-            var result = Flettedata.FlettedataToDictString(flettedatafelt);
+            var result = Brevgenerator.Brevgenerator.LagFlettedataDictionary(flettedatafelt);
 
             Assert.NotNull(result);
         }
@@ -44,9 +44,9 @@ namespace BrevgeneratorTests
 
             var deser = JsonSerializer.Deserialize<WorkerRequest>(testdata, _serializerOptions);
 
-            var flettedata = Flettedata.FlettedataToDictString(deser!.Flettedata);
+            var flettedata = Brevgenerator.Brevgenerator.LagFlettedataDictionary(deser!.Flettedata);
 
-            Assert.False(string.IsNullOrEmpty(flettedata));
+            Assert.False(flettedata.Any());
         }
 
         [Fact]
