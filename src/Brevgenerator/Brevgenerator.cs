@@ -116,7 +116,7 @@ public class Brevgenerator
     private void LagDokumentfletter(string brevmal, GetObjectResponse file)
     {
         var dokfletter = new Dokumentfletter(_fontSettings, file.ResponseStream);
-        _dokumentflettere.Add(brevmal, (dokfletter, DateTime.UtcNow));
+        _dokumentflettere[brevmal] = (dokfletter, DateTime.UtcNow);
 
         LambdaLogger.Log($"Dokumentfletter for {brevmal} ferdig");
     }
