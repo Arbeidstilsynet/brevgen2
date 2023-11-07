@@ -3,10 +3,8 @@ using Aspose.Words;
 
 namespace Brevgenerator
 {
-    internal class AsposeWordsLisensAdmin
+    internal static class AsposeWordsLisensAdmin
     {
-
-
         public static void SettAsposeWordLisens()
         {
             const string FILSTI = "Brevgenerator.Aspose.Aspose.Words.lic";
@@ -14,7 +12,7 @@ namespace Brevgenerator
 
             if (lisensFilStream == null)
             {
-                throw new Exception("Lisensen til Aspose Words ble ikke funnet");
+                throw new ArgumentException("Lisensen til Aspose Words ble ikke funnet");
             }
 
             var lisens = new License();
@@ -23,14 +21,15 @@ namespace Brevgenerator
 
         public static bool PdfDocumentErLisensiert(Document doc)
         {
-            return doc.Range.Text.Contains("Evaluation Only") == false;
+            return !doc.Range.Text.Contains("Evaluation Only");
         }
+
         public static bool DocxDocumentErLisensiert(Document doc)
         {
-            return doc.FirstSection.Body.FirstParagraph.Range.Text.Contains("Evaluation Only") == false;
+            return !doc.FirstSection.Body.FirstParagraph.Range.Text.Contains("Evaluation Only");
         }
-        public static bool ErLisensSatt()
 
+        public static bool ErLisensSatt()
         {
             //https://forum.aspose.com/t/check-to-see-if-aspose-words-is-licensed/49211
 
@@ -51,11 +50,7 @@ namespace Brevgenerator
                 doc = new Document(docStream);
             }
             // Check text of the first paragraph.
-            //var a = doc.FirstSection.Body.FirstParagraph.ToString().Trim();
-            return (doc.FirstSection.Body.FirstParagraph.Range.Text.Trim() == TEXT);
-
-
+            return doc.FirstSection.Body.FirstParagraph.Range.Text.Trim() == TEXT;
         }
     }
 }
-

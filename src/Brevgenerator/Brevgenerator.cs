@@ -17,25 +17,27 @@ public class Brevgenerator
     private const string FONTSFOLDER = "fonts";
     private const string DUMMY_FIL = "Brevgenerator.nb-testdokument.docx";
 
-    private static readonly Dictionary<string, Dokumentfletter> _dokumentflettere = new();
+    private static readonly Dictionary<
+        string,
+        (Dokumentfletter Dokumentfletter, DateTime LastModified)
+    > _dokumentflettere = new();
     private readonly string _brevmalBucket;
     private readonly IAmazonS3 _s3Client;
     private readonly FontSettings _fontSettings;
 
-    private static readonly JsonSerializerOptions _serializerOptions = new()
-    {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-    };
+    private static readonly JsonSerializerOptions _serializerOptions =
+        new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase, };
 
-    private readonly Dictionary<string, string> _headers = new()
-    {
-        { "Content-type", "application/pdf" },
-        { "Access-Control-Allow-Origin", "*" },
-        { "Access-Control-Allow-Methods", "OPTIONS,POST,GET" }
-    };
+    private readonly Dictionary<string, string> _headers =
+        new()
+        {
+            { "Content-type", "application/pdf" },
+            { "Access-Control-Allow-Origin", "*" },
+            { "Access-Control-Allow-Methods", "OPTIONS,POST,GET" }
+        };
 
-
-    public Brevgenerator() : this(Environment.GetEnvironmentVariable("Brevmalbucket")!, new AmazonS3Client()) { }
+    public Brevgenerator()
+        : this(Environment.GetEnvironmentVariable("Brevmalbucket")!, new AmazonS3Client()) { }
 
     public Brevgenerator(string brevmalBucket, IAmazonS3 s3client)
     {
@@ -46,7 +48,9 @@ public class Brevgenerator
         _fontSettings = Task.Run(() => GetFontSettings()).Result;
 
         LambdaLogger.Log($"Lager dummy dokumentfletter");
-        var file = Assembly.GetExecutingAssembly().GetManifestResourceStream(DUMMY_FIL) ?? throw new ArgumentException($"Kunne ikke hente dummy-fil {DUMMY_FIL}");
+        var file =
+            Assembly.GetExecutingAssembly().GetManifestResourceStream(DUMMY_FIL)
+            ?? throw new ArgumentException($"Kunne ikke hente dummy-fil {DUMMY_FIL}");
         var dokumentfletter = new Dokumentfletter(_fontSettings, file);
         dokumentfletter.LagPdfDokument(new(), null);
 
@@ -74,7 +78,9 @@ public class Brevgenerator
             var workerRequest = JsonSerializer.Deserialize<WorkerRequest>(request.Body, _serializerOptions)!;
             var dokumentfletter = await HentBrevmal(workerRequest.Brevmal);
 
-            LambdaLogger.Log($"Genererer dokument '{workerRequest.Brevmal}'. Flettedata: '{string.Join("; ", workerRequest.Flettedata?.Select(f => $"Navn: {f.Navn}, Verdi: '{f.Verdi}'") ?? new List<string>())}' ");
+            LambdaLogger.Log(
+                $"Genererer dokument '{workerRequest.Brevmal}'. Flettedata: '{string.Join("; ", workerRequest.Flettedata?.Select(f => $"Navn: {f.Navn}, Verdi: '{f.Verdi}'") ?? new List<string>())}' "
+            );
             var flettedataDict = LagFlettedataDictionary(workerRequest.Flettedata);
             var base64stringMedQr = dokumentfletter.LagPdfDokument(flettedataDict, workerRequest.Qrkode);
 
@@ -84,17 +90,35 @@ public class Brevgenerator
 
     private async Task<Dokumentfletter> HentBrevmal(string brevmal)
     {
+        var file = await _s3Client.GetObjectAsync(_brevmalBucket, brevmal);
+
         if (!_dokumentflettere.ContainsKey(brevmal))
         {
-            LambdaLogger.Log($"Lager dokumentfletter for {brevmal}");
-
-            var file = await _s3Client.GetObjectAsync(_brevmalBucket, brevmal);
-            var dokfletter = new Dokumentfletter(_fontSettings, file.ResponseStream);
-            _dokumentflettere.Add(brevmal, dokfletter);
-
-            LambdaLogger.Log($"Dokumentfletter for {brevmal} ferdig");
+            LambdaLogger.Log($"Brevmal var ikke cached, lager dokumentfletter for {brevmal}");
+            LagDokumentfletter(brevmal, file);
         }
-        return _dokumentflettere[brevmal];
+        else
+        {
+            if (_dokumentflettere[brevmal].LastModified < file.LastModified)
+            {
+                LambdaLogger.Log($"Cache var utdatert, lager dokumentfletter for {brevmal}");
+                LagDokumentfletter(brevmal, file);
+            }
+            else
+            {
+                LambdaLogger.Log($"Cache hit dokumentfletter for {brevmal}");
+            }
+        }
+
+        return _dokumentflettere[brevmal].Dokumentfletter;
+    }
+
+    private void LagDokumentfletter(string brevmal, GetObjectResponse file)
+    {
+        var dokfletter = new Dokumentfletter(_fontSettings, file.ResponseStream);
+        _dokumentflettere.Add(brevmal, (dokfletter, DateTime.UtcNow));
+
+        LambdaLogger.Log($"Dokumentfletter for {brevmal} ferdig");
     }
 
     private APIGatewayProxyResponse ReturnerOK(string base64string)
@@ -111,11 +135,7 @@ public class Brevgenerator
     private static APIGatewayProxyResponse ReturnerFeil(string? errorMessage)
     {
         LambdaLogger.Log($"Returnerer feil: {errorMessage}");
-        return new APIGatewayProxyResponse()
-        {
-            Body = errorMessage,
-            StatusCode = (int)HttpStatusCode.BadRequest
-        };
+        return new APIGatewayProxyResponse() { Body = errorMessage, StatusCode = (int)HttpStatusCode.BadRequest };
     }
 
     private static (bool, string?) BadRequest(APIGatewayProxyRequest request)
@@ -171,13 +191,13 @@ public class Brevgenerator
         return fontSettings;
     }
 
-    public static async Task<S3FontSource[]> GetS3FontSources(IAmazonS3 client, string dokumentmalBucket, string fontsFolder)
+    public static async Task<S3FontSource[]> GetS3FontSources(
+        IAmazonS3 client,
+        string dokumentmalBucket,
+        string fontsFolder
+    )
     {
-        var request = new ListObjectsV2Request()
-        {
-            BucketName = dokumentmalBucket,
-            Prefix = fontsFolder
-        };
+        var request = new ListObjectsV2Request() { BucketName = dokumentmalBucket, Prefix = fontsFolder };
 
         var fontList = new List<S3FontSource>();
         ListObjectsV2Response response;
@@ -185,14 +205,14 @@ public class Brevgenerator
         {
             response = await client.ListObjectsV2Async(request);
 
-            foreach (var entry in response.S3Objects)
+            foreach (var key in response.S3Objects.Select(entry => entry.Key))
             {
-                if (entry.Key.EndsWith("/"))
+                if (key.EndsWith('/'))
                 {
                     continue;
                 }
 
-                fontList.Add(new S3FontSource(client, dokumentmalBucket, entry.Key));
+                fontList.Add(new S3FontSource(client, dokumentmalBucket, key));
             }
 
             request.ContinuationToken = response.NextContinuationToken;
@@ -207,9 +227,10 @@ public class Brevgenerator
     }
 }
 
-public record WorkerRequest(string Brevmal, List<FlettedataFelt>? Flettedata, QrCodeDTO? Qrkode);
+public record WorkerRequest(string Brevmal, List<FlettedataFelt>? Flettedata, QrCodeDto? Qrkode);
+
 public record VarmOppRequest(string Brevmal);
 
-public record QrCodeDTO(string? Lenke, QrCodeStyling Styling);
+public record QrCodeDto(string? Lenke, QrCodeStyling Styling);
 
 public record QrCodeStyling(int Bredde = 0, int Lengde = 0, int XPos = 0, int YPos = 0);

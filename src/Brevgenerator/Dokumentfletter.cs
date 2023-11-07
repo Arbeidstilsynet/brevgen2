@@ -24,7 +24,7 @@ public class Dokumentfletter
         _flettefeltIDokument = FinnFlettefeltIDokument().ToList();
     }
 
-    public string LagPdfDokument(Dictionary<string, string> flettedata, QrCodeDTO? qrCodeDTO)
+    public string LagPdfDokument(Dictionary<string, string> flettedata, QrCodeDto? qrCodeDTO)
     {
         var fletteDokument = new Document(_dokumentmal);
 
@@ -49,7 +49,7 @@ public class Dokumentfletter
         return LagBase64EncodetString(flettDokumentStream);
     }
 
-    private MemoryStream FlettDokumentTilStream(Dictionary<string, string> flettedata, QrCodeDTO? qrCodeDTO)
+    private MemoryStream FlettDokumentTilStream(Dictionary<string, string> flettedata, QrCodeDto? qrCodeDTO)
     {
         var fletteDokument = new Document(_dokumentmal);
 
