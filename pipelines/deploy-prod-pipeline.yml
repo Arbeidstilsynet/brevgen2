@@ -8,7 +8,7 @@ resources:
 trigger:
   tags:
     include:
-      - 'v*'
+      - "v*"
 
 pool:
   vmImage: "ubuntu-20.04"
@@ -28,7 +28,7 @@ stages:
                 - checkout: self
                 - template: dotnet/deploy-dotnetcore-capabilities-template-dotnet6.yml@Templates
                   parameters:
-                    awsBucket: at-digisam-test-deploy-bucket
+                    awsBucket: infra-test-deploy-bucket
                     stackName: felles-brevgenerator-test-all-cf
                     awsCredentials: TestDeploy
                     region: eu-west-1
@@ -64,7 +64,7 @@ stages:
                 - checkout: self
                 - template: dotnet/deploy-dotnetcore-capabilities-template-dotnet6.yml@Templates
                   parameters:
-                    awsBucket: at-digisam-prod-deploy-bucket
+                    awsBucket: infra-prod-deploy-bucket
                     stackName: felles-brevgenerator-prod-all-cf
                     awsCredentials: ProdDeploy
                     region: eu-west-1
