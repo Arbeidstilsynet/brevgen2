@@ -16,13 +16,95 @@ Conditions:
   IsTrueEnvironment: !Or [!Equals [!Ref env, "sandbox"], !Equals [!Ref env, "dev"], !Equals [!Ref env, "test"], !Equals [!Ref env, "prod"]]
 
 Resources:
+
+  ###################
+  ## Security Groups
+  ###################
+  SGTilgangTilVPCEndpoints:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: SG for tilgang til VPC Endpoints
+      GroupName: !Sub ${env}-felles-brevgenerator-tilgang-vpc-endpoints-sg
+      VpcId: '{{resolve:ssm:/vpc/shared-vpc/id}}'
+      Tags:
+        - Key: Name
+          Value: !Sub ${env}-felles-brevgenerator-tilgang-vpc-endpoints-sg
+
+  SGTilgangTilVPCEndpointsEgress01:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      GroupId: !Ref SGTilgangTilVPCEndpoints
+      CidrIp: 10.18.200.0/23
+      IpProtocol: tcp
+      FromPort: 443
+      ToPort: 443
+
+  SGTilgangTilVPCEndpointsEgress02:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      GroupId: !Ref SGTilgangTilVPCEndpoints
+      DestinationPrefixListId: pl-6da54004
+      IpProtocol: tcp
+      FromPort: 443
+      ToPort: 443
+
+  SGTilgangTilVPCEndpointsEgress03:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      GroupId: !Ref SGTilgangTilVPCEndpoints
+      DestinationPrefixListId: pl-6fa54006
+      IpProtocol: tcp
+      FromPort: 443
+      ToPort: 443
+
+  SGTilgangTilHTTPS:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: SG for tilgang til HTTPS, port 443 og DNS, port 53.
+      GroupName: !Sub ${env}-felles-brevgenerator-https-tilgang-sg
+      VpcId: '{{resolve:ssm:/vpc/shared-vpc/id}}'
+      Tags:
+        - Key: Name
+          Value: !Sub ${env}-felles-brevgenerator-https-tilgang-sg
+
+  SGTilgangTilHTTPSEgress01:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      GroupId: !Ref SGTilgangTilHTTPS
+      CidrIp: 0.0.0.0/0
+      IpProtocol: tcp
+      FromPort: 443
+      ToPort: 443
+
+  SGTilgangTilHTTPSEgress02:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      GroupId: !Ref SGTilgangTilHTTPS
+      CidrIp: 0.0.0.0/0
+      IpProtocol: tcp
+      FromPort: 53
+      ToPort: 53
+
+  SGTilgangTilHTTPSEgress03:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      GroupId: !Ref SGTilgangTilHTTPS
+      CidrIp: 0.0.0.0/0
+      IpProtocol: udp
+      FromPort: 53
+      ToPort: 53
+
+  ###################
+  ## API
+  ###################
+
   BrevgeneratorApi:
     Type: AWS::Serverless::Api
     Properties:
       Name: !Sub ${env}-brevgenerator-api-gateway
       StageName: !Ref env
       OpenApiVersion: 3.0.1
-      Cors: 
+      Cors:
         AllowOrigin: "'*'"
         AllowMethods: "'POST'"
         AllowHeaders: "'Content-type,Accept'"
@@ -57,7 +139,7 @@ Resources:
                   "Resource": "*"
               }
             ]
-  
+
   BrevgeneratorApiIdParameter:
     Type: AWS::SSM::Parameter
     Properties:
@@ -70,7 +152,7 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName:
-        !Join ["", ["/aws/lambda/", !Ref BrevgeneratorFunction]]
+        !Sub /aws/lambda/${BrevgeneratorFunction}
       RetentionInDays: 60
 
   BrevgeneratorFunction:
@@ -91,12 +173,12 @@ Resources:
           Brevmalbucket: !Ref BrevmalBucket
       VpcConfig:
         SecurityGroupIds:
-          - '{{resolve:ssm:/vpc/shared-vpc/securitygroup/SGTilgangTilAWSEndpoints/security-group-id}}'
-          - '{{resolve:ssm:/vpc/shared-vpc/securitygroup/SGTilgangTilHTTPS/security-group-id}}'
+          - !Ref SGTilgangTilVPCEndpoints
+          - !Ref SGTilgangTilHTTPS
         SubnetIds:
           - '{{resolve:ssm:/vpc/shared-vpc/subnet/a/subnet-id}}'
           - '{{resolve:ssm:/vpc/shared-vpc/subnet/b/subnet-id}}'
-      ProvisionedConcurrencyConfig: 
+      ProvisionedConcurrencyConfig:
         ProvisionedConcurrentExecutions: 1
       AutoPublishAlias: BrevgeneratorVersion
       Events:
@@ -112,5 +194,3 @@ Resources:
             Path: /varmopp
             Method: POST
             RestApiId: !Ref BrevgeneratorApi
-    
-    
