@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
-Description: Testing aspose
+Description: Felles brevgenerator
 
 Parameters:
   BrevmalBucket:
@@ -13,10 +13,15 @@ Parameters:
 
 # Sjekker om environment er en av "sandbox", "dev", "test" eller "prod"
 Conditions:
-  IsTrueEnvironment: !Or [!Equals [!Ref env, "sandbox"], !Equals [!Ref env, "dev"], !Equals [!Ref env, "test"], !Equals [!Ref env, "prod"]]
+  IsTrueEnvironment:
+    !Or [
+      !Equals [!Ref env, "sandbox"],
+      !Equals [!Ref env, "dev"],
+      !Equals [!Ref env, "test"],
+      !Equals [!Ref env, "prod"],
+    ]
 
 Resources:
-
   ###################
   ## Security Groups
   ###################
@@ -25,7 +30,7 @@ Resources:
     Properties:
       GroupDescription: SG for tilgang til VPC Endpoints
       GroupName: !Sub ${env}-felles-brevgenerator-tilgang-vpc-endpoints-sg
-      VpcId: '{{resolve:ssm:/vpc/shared-vpc/id}}'
+      VpcId: "{{resolve:ssm:/vpc/shared-vpc/id}}"
       Tags:
         - Key: Name
           Value: !Sub ${env}-felles-brevgenerator-tilgang-vpc-endpoints-sg
@@ -62,7 +67,7 @@ Resources:
     Properties:
       GroupDescription: SG for tilgang til HTTPS, port 443 og DNS, port 53.
       GroupName: !Sub ${env}-felles-brevgenerator-https-tilgang-sg
-      VpcId: '{{resolve:ssm:/vpc/shared-vpc/id}}'
+      VpcId: "{{resolve:ssm:/vpc/shared-vpc/id}}"
       Tags:
         - Key: Name
           Value: !Sub ${env}-felles-brevgenerator-https-tilgang-sg
@@ -97,13 +102,22 @@ Resources:
   ###################
   ## API
   ###################
-
   BrevgeneratorApi:
     Type: AWS::Serverless::Api
     Properties:
       Name: !Sub ${env}-brevgenerator-api-gateway
+      Description: Internt API for å lage brev
       StageName: !Ref env
       OpenApiVersion: 3.0.1
+      AccessLogSetting:
+        DestinationArn: !GetAtt ApiAccessLog.Arn
+        Format: $context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] "$context.httpMethod $context.resourcePath $context.protocol" $context.status $context.responseLength $context.requestId $context.extendedRequestId
+      TracingEnabled: true
+      MethodSettings:
+        - ResourcePath: "/*"
+          HttpMethod: "*"
+          LoggingLevel: INFO
+          MetricsEnabled: true
       Cors:
         AllowOrigin: "'*'"
         AllowMethods: "'POST'"
@@ -112,7 +126,7 @@ Resources:
       EndpointConfiguration:
         Type: PRIVATE
         VpcEndpointIds:
-          - '{{resolve:ssm:/vpc/shared-vpc/endpoint/execute-api/endpoint-id}}'
+          - "{{resolve:ssm:/vpc/shared-vpc/endpoint/execute-api/endpoint-id}}"
       Auth:
         InvokeRole: NONE
         ResourcePolicy:
@@ -124,35 +138,49 @@ Resources:
                 "Action": "*",
                 "Resource": "*",
                 "Condition":
-                {
-                    "StringNotEquals": {
-                        "aws:sourceVpce": '{{resolve:ssm:/vpc/shared-vpc/endpoint/execute-api/endpoint-id}}'
-                    }
-                },
+                  {
+                    "StringNotEquals":
+                      {
+                        "aws:sourceVpce": "{{resolve:ssm:/vpc/shared-vpc/endpoint/execute-api/endpoint-id}}",
+                      },
+                  },
               },
               {
-                  "Principal": "*",
-                  "Action": [
-                      "execute-api:Invoke"
-                  ],
-                  "Effect": "Allow",
-                  "Resource": "*"
-              }
+                "Principal": "*",
+                "Action": ["execute-api:Invoke"],
+                "Effect": "Allow",
+                "Resource": "*",
+              },
             ]
+
+  ApiAccessLog:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      RetentionInDays: 90
+      LogGroupName: !Sub ${env}-brevgenerator-api-access-logs
 
   BrevgeneratorApiIdParameter:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: !If [IsTrueEnvironment, /felles/brevgenerator/api/id, !Sub "/felles/${env}/brevgenerator/api/id"]
+      Name:
+        !If [
+          IsTrueEnvironment,
+          /felles/brevgenerator/api/id,
+          !Sub "/felles/${env}/brevgenerator/api/id",
+        ]
       Type: String
       Description: Api-id til internt privat brevgenerator-api
       Value: !Ref BrevgeneratorApi
 
+  ###################
+  # Endepunkter
+  ###################
   BrevgeneratorFunctionLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName:
-        !Sub /aws/lambda/${BrevgeneratorFunction}
+      LogGroupName: !Sub /aws/lambda/${BrevgeneratorFunction}
       RetentionInDays: 60
 
   BrevgeneratorFunction:
@@ -176,8 +204,8 @@ Resources:
           - !Ref SGTilgangTilVPCEndpoints
           - !Ref SGTilgangTilHTTPS
         SubnetIds:
-          - '{{resolve:ssm:/vpc/shared-vpc/subnet/a/subnet-id}}'
-          - '{{resolve:ssm:/vpc/shared-vpc/subnet/b/subnet-id}}'
+          - "{{resolve:ssm:/vpc/shared-vpc/subnet/a/subnet-id}}"
+          - "{{resolve:ssm:/vpc/shared-vpc/subnet/b/subnet-id}}"
       ProvisionedConcurrencyConfig:
         ProvisionedConcurrentExecutions: 1
       AutoPublishAlias: BrevgeneratorVersion
