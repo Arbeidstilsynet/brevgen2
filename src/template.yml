@@ -159,7 +159,7 @@ Resources:
     UpdateReplacePolicy: Retain
     Properties:
       RetentionInDays: 90
-      LogGroupName: !Sub ${env}-brevgenerator-api-access-logs
+      LogGroupName: !Sub /aws/api/${env}-brevgenerator-api-access-logs
 
   BrevgeneratorApiIdParameter:
     Type: AWS::SSM::Parameter
