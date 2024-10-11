@@ -26,6 +26,7 @@ export interface AzureDevOpsRepo {
 
 interface AzureDevOpsReposResponse {
   value: AzureDevOpsRepo[];
+  count: number;
 }
 
 export async function fetchReposFromAzure(): Promise<AzureDevOpsRepo[]> {
@@ -34,10 +35,17 @@ export async function fetchReposFromAzure(): Promise<AzureDevOpsRepo[]> {
 
   if (!response.ok) {
     console.error(await response.text());
-    throw new Error(`Failed to fetch repositories from ${url}`);
+    throw new Error(
+      `Failed to fetch repositories from ${url}, status: ${response.status} ${response.statusText}`,
+    );
   }
 
   const data: AzureDevOpsReposResponse = await response.json();
+  if (!data.count) {
+    throw new TypeError(
+      `Response ok, but no repos found. Check if PAT user has sufficient license to read repos. Organization:${organization} project:${project}.`,
+    );
+  }
   return data.value.filter((r) => !r.isDisabled);
 }
 
@@ -61,7 +69,9 @@ export async function fetchBranchesFromAzure(repoId: string): Promise<string[]> 
 
   if (!response.ok) {
     console.error(await response.text());
-    throw new Error(`Failed to fetch branches from ${url}`);
+    throw new Error(
+      `Failed to fetch branches from ${url}, status: ${response.status} ${response.statusText}`,
+    );
   }
 
   const data: AzureDevOpsBranchesResponse = await response.json();
@@ -83,7 +93,9 @@ export async function fetchFilesFromAzure(
 
   if (!response.ok) {
     console.error(await response.text());
-    throw new Error(`Failed to fetch files from ${url}`);
+    throw new Error(
+      `Failed to fetch files from ${url}, status: ${response.status} ${response.statusText}`,
+    );
   }
 
   const data: AzureDevOpsFilesResponse = await response.json();
@@ -103,7 +115,9 @@ export async function fetchFileContentFromAzure(
 
   if (!response.ok) {
     console.error(await response.text());
-    throw new Error(`Failed to fetch file contents from ${url}`);
+    throw new Error(
+      `Failed to fetch file contents from ${url}, status: ${response.status} ${response.statusText}`,
+    );
   }
 
   return await response.text();
