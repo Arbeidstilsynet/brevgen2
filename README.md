@@ -11,7 +11,7 @@ Den nye brevgeneratoren er konfigurert som et integrert monorepo med sentraliser
     - [README](apps/preview-web/README.md)
 - packages
   - [dynamic-markdown](packages/dynamic-markdown) - bibliotek
-    - [README](apps/dynamic-markdown/README.md)
+    - [README](packages/dynamic-markdown/README.md)
   - [document-templates](packages/document-templates/) - letterhead/footer/styling for genererte dokumenter
   - [config-typescript](packages/config-typescript/) - felles tsconfig
   - [nuget-client](packages/nuget-client) - C#-klient for å bruke API - publisert som `AT.Brevgenerator.Klient`
