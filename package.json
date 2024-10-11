@@ -1,0 +1,35 @@
+{
+  "name": "felles-brevgenerator-monorepo",
+  "private": true,
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "test": "turbo test",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md,css,scss}\"",
+    "check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md,css,scss}\"",
+    "circular": "npx --yes madge --circular --extensions \"js,jsx,ts,tsx\" --exclude \".next|dist\" ."
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "prettier": "^3.3.3",
+    "turbo": "^2.1.2",
+    "typescript": "^5.6.2"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@9.11.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "pnpm": {
+    "overrides": {
+      "path-to-regexp": "^3.3.0",
+      "rollup@>=4.0.0 <4.22.4": ">=4.22.4",
+      "cookie@<0.7.0": ">=0.7.0"
+    }
+  }
+}

@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+
+		<PackageId>AT.Brevgenerator.Klient</PackageId>
+		<Authors>Arbeidstilsynet</Authors>
+		<Company>Arbeidstilsynet</Company>
+		<Product>Brevgenerator</Product>
+		<Description>Klient med datatyper for Brevgenerator-API. Henter automatisk ut tilhørende API Key for miljøet.</Description>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageReleaseNotes>Skrive release notes (changelog) i filen CHANGELOG.md</PackageReleaseNotes>
+		<PackageProjectUrl>https://dev.azure.com/Atil-utvikling/Produkter%20og%20tjenester/_git/felles-brevgenerator</PackageProjectUrl>
+
+		<NoWarn>1591</NoWarn> <!-- Suppresses warnings for missing XML comments -->
+	</PropertyGroup>
+
+	<ItemGroup>
+    	<None Include="README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="AWSSDK.APIGateway" Version="3.7.400.31" />
+	  <PackageReference Include="AWSSDK.SimpleSystemsManagement" Version="3.7.402.9" />
+	  <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1" />
+	</ItemGroup>
+
+	<!-- https://dev.to/j_sakamoto/writing-a-nuget-package-release-notes-in-an-outside-of-a-csproj-file-3f94 -->
+	<Target Name="PreparePackageReleaseNotesFromFile" BeforeTargets="GenerateNuspec">
+  		<PropertyGroup>
+    		<PackageReleaseNotes>$([System.IO.File]::ReadAllText("$(MSBuildProjectDirectory)/CHANGELOG.md"))</PackageReleaseNotes>
+  		</PropertyGroup>
+	</Target>
+
+</Project>

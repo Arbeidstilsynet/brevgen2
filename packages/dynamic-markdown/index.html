@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dynamic Markdown Example</title>
+
+    <style>
+      body > div {
+        margin: 20px;
+        padding: 20px;
+        background-color: lightblue;
+      }
+
+      h2 {
+        margin-top: 0;
+      }
+
+      p {
+        margin-bottom: 0.5rem;
+      }
+
+      pre {
+        font-size: 1.4rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Demo</h1>
+    <div>
+      <h1>Input</h1>
+      <pre id="input"></pre>
+    </div>
+    <div>
+      <h2>Output</h2>
+      <pre id="output"></pre>
+    </div>
+  </div>
+
+    <script type="module">
+      import { parseDynamicMd } from "./lib/index.ts";
+
+      const testdata = {
+        md: `# Vedtak om at dere blir tilbakekalt
+
+{{ if kanKlage == true ::
+## Dere kan klage innen {{ klageFrist }}
+}}
+`,
+        variables: {
+          kanKlage: true,
+          klageFrist: "10.10.2024",
+        },
+      };
+
+      const parsedMd = parseDynamicMd(testdata.md, {
+        variables: testdata.variables,
+      });
+
+      console.log(parsedMd);
+
+      document.getElementById("input").innerText = JSON.stringify(
+        testdata,
+        null,
+        2
+      );
+      document.getElementById("output").innerText = parsedMd;
+    </script>
+  </body>
+</html>

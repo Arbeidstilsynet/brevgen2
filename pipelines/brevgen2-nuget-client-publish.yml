@@ -1,0 +1,31 @@
+resources:
+  repositories:
+    - repository: Templates
+      type: git
+      name: felles-pipeline-templates
+      ref: develop
+
+trigger:
+  tags:
+    include:
+      - "nuget-client-v*"
+
+pool:
+  vmImage: "ubuntu-latest"
+
+variables:
+  NUGET_PACKAGES: $(Pipeline.Workspace)/.nuget/packages
+  vstsFeed: "Atil-utvikling"
+
+jobs:
+  - job: PublishBrevgen2NugetClientPackage
+    condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/nuget-client-')
+    steps:
+      - checkout: self
+      - checkout: Templates
+      - template: dotnet/publish-nuget-template.yml@Templates
+        parameters:
+          project: $(Build.Repository.Name)/packages/nuget-client/nuget-client.csproj
+          vstsFeed: $(vstsFeed)
+          nugetConfigPath: $(Build.Repository.Name)/nuget.config
+          scriptPath: felles-pipeline-templates/scripts/versioning.sh

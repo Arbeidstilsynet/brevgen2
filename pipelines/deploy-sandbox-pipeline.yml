@@ -6,9 +6,13 @@ resources:
       ref: develop
 
 trigger:
+  batch: true
   branches:
     include:
       - develop
+  paths:
+    include:
+      - src
 
 pool:
   vmImage: "ubuntu-20.04"

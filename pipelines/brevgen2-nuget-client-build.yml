@@ -1,0 +1,32 @@
+resources:
+  repositories:
+    - repository: Templates
+      type: git
+      name: felles-pipeline-templates
+      ref: develop
+
+trigger:
+  batch: true
+  branches:
+    include:
+      - develop
+  paths:
+    include:
+      - packages/nuget-client
+      - adhoc/BrevgeneratorKlientLocalTest
+
+pool:
+  vmImage: ubuntu-latest
+
+jobs:
+  - job: Build
+    steps:
+      - template: dotnet/build-dotnetcore-pipeline-template-dotnet8.yml@Templates
+        parameters:
+          workingDir: "."
+          solutionPath: "."
+          solution: "nuget-client.sln"
+          nugetConfigPath: "nuget.config"
+          enableSamBuild: false
+          stackParameters: ""
+          sonarCloudProjectKey: ""

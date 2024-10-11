@@ -1,0 +1,34 @@
+###
+# Template for å sette opp pnpm i monorepo og installere pakker
+###
+
+parameters:
+  - name: pnpmVersion
+    type: string
+    default: "9.11.0"
+
+  - name: path
+    type: string
+    default: "."
+
+steps:
+  - task: npmAuthenticate@0
+    inputs:
+      workingFile: ${{ parameters.path }}/.npmrc
+    displayName: "Authenticate to Azure feed"
+
+  - script: "npm install -g pnpm@${{ parameters.pnpmVersion }}"
+    displayName: "Install pnpm"
+    workingDirectory: ${{ parameters.path }}
+
+  - script: pnpm audit --audit-level moderate
+    displayName: "Security check"
+    workingDirectory: ${{ parameters.path }}
+
+  - script: pnpm install --frozen-lockfile
+    displayName: "Install dependencies"
+    workingDirectory: ${{ parameters.path }}
+
+  - script: pnpm ls -r --depth 0
+    displayName: "List packages"
+    workingDirectory: ${{ parameters.path }}

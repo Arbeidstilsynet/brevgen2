@@ -1,0 +1,55 @@
+pool:
+  vmImage: "ubuntu-latest"
+
+resources:
+  repositories:
+    - repository: Templates
+      type: git
+      name: felles-pipeline-templates
+      ref: develop
+
+trigger:
+  batch: true
+  branches:
+    include:
+      - develop
+  paths:
+    exclude:
+      - src # legacy
+      - "**/*.md" # markdown
+      - "**/*.mdat" # dynamisk markdown
+
+variables:
+  - group: brevgenerator2
+
+stages:
+  - stage: Brevgen2DeployVerifikasjon
+    displayName: Verifi
+    jobs:
+      - template: templates/brevgen2-deploy.yml
+        parameters:
+          env: dev
+          awsCredentials: DevDeploy
+          region: eu-west-1
+          infraBucket: "infra-dev-deploy-bucket"
+          chromiumLayerBucket: dev-brevgenerator2-lambda-layers
+          chromiumVersion: "127.0.0"
+          imageName: dev-brevgenerator2-web
+          stackParametersApi: >-
+            Env=dev
+            DomainName=brevgenerator2-api-verifi.arbeidstilsynet.no
+            CrossAccountRoute53RoleArn=arn:aws:iam::250640723606:role/felles-cfn-extensions-prod-crossaccount-r53-role
+            DomainHostedZoneId=Z073533223SF44MXB039V
+          stackParametersFargate: >-
+            Env=dev
+            DomainName=brevgenerator-verifi.arbeidstilsynet.no
+            CrossAccountRoute53RoleArn=arn:aws:iam::250640723606:role/felles-cfn-extensions-prod-crossaccount-r53-role
+            DomainHostedZoneId=Z073533223SF44MXB039V
+            PdfApiUrl=https://brevgenerator2-api-verifi.arbeidstilsynet.no
+            AzureDevopsPat=$(AZURE_DEVOPS_PAT)
+          tags: >-
+            Environment=dev
+            RepoName=$(Build.Repository.Name)
+            Version=$(Build.SourceBranchName)-$(Build.SourceVersion)
+            CostCenter=3103
+            Application=brevgenerator2

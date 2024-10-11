@@ -1,0 +1,195 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Infrastructure stack for ECS Fargate with ALB and Domain
+
+Parameters:
+  Env:
+    Type: String
+    Description: Environment name, e.g. dev/prod/myname
+
+  ImageURI:
+    Type: String
+    Description: URI to image in private ECR repository
+
+  DomainName:
+    Type: String
+
+  CrossAccountRoute53RoleArn:
+    Type: String
+    Description: >
+      Rolle som gir tillatelse til å bruke AT::CertificateManager::Certificate
+      og AT::Route53::RecordSet til å opprette Route53 records i en annen konto
+
+  DomainHostedZoneId:
+    Type: String
+    Description: Hosted zone ID for Route 53 hvor domenet er registrert
+
+  TaskDefinitionCpu:
+    Type: String
+    Default: 512
+
+  TaskDefinitionMemory:
+    Type: String
+    Default: 1024
+
+  PdfApiUrl:
+    Type: String
+
+  PdfApiKey:
+    Type: String
+    NoEcho: true
+
+  AzureDevopsPat:
+    Type: String
+    NoEcho: true
+
+Resources:
+  # **************************************
+  # VPC
+  # **************************************
+  VPC:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: ./vpc.yml
+      Parameters:
+        VPCName: !Sub "${Env}-brevgen2-web-vpc"
+        CertificateArn: !Ref Certificate
+
+  # **************************************
+  # DNS
+  # **************************************
+  Certificate:
+    Type: AT::CertificateManager::Certificate
+    Properties:
+      DomainName: !Ref DomainName
+      DnsValidation: true
+      RoleArn: !Ref CrossAccountRoute53RoleArn
+      HostedZoneId: !Ref DomainHostedZoneId
+
+  CustomDomainNameRecord:
+    Type: AT::Route53::RecordSet
+    Properties:
+      RoleArn: !Ref CrossAccountRoute53RoleArn
+      HostedZoneId: !Ref DomainHostedZoneId
+      Record:
+        Name: !Ref DomainName
+        RType: A
+        Alias: true
+        AliasTarget:
+          HostedZoneId: !GetAtt VPC.Outputs.LoadBalancerCanonicalHostedZoneID
+          DNSName: !GetAtt VPC.Outputs.LoadBalancerDNSName
+
+  # **************************************
+  # Fargate
+  # **************************************
+  ECSCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Sub "${AWS::StackName}-cluster"
+      CapacityProviders:
+        - FARGATE
+
+  FargateService:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref ECSCluster
+      LaunchType: FARGATE
+      DesiredCount: 1
+      EnableExecuteCommand: true
+      HealthCheckGracePeriodSeconds: 5
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          SecurityGroups:
+            - !GetAtt VPC.Outputs.ECSTaskSecurityGroupId
+          Subnets:
+            - !GetAtt VPC.Outputs.PublicSubnet1
+            - !GetAtt VPC.Outputs.PublicSubnet2
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 50
+      TaskDefinition: !Ref FargateTaskDefinition
+      LoadBalancers:
+        - ContainerName: web
+          ContainerPort: 3000
+          TargetGroupArn: !GetAtt VPC.Outputs.PublicLBTargetGroup
+
+  FargateTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub "${AWS::StackName}-task"
+      Cpu: !Ref TaskDefinitionCpu
+      Memory: !Ref TaskDefinitionMemory
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      ExecutionRoleArn: !GetAtt FargateTaskExecutionRole.Arn
+      TaskRoleArn: !Ref ECSTaskRole
+      RuntimePlatform:
+        CpuArchitecture: X86_64
+      ContainerDefinitions:
+        - Name: web
+          Image: !Ref ImageURI
+          Essential: true
+          PortMappings:
+            - ContainerPort: 3000
+          Environment:
+            - Name: PDF_API_URL
+              Value: !Ref PdfApiUrl
+            - Name: PDF_API_KEY
+              Value: !Ref PdfApiKey
+            - Name: AZURE_DEVOPS_PAT
+              Value: !Ref AzureDevopsPat
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              mode: non-blocking
+              max-buffer-size: 25m
+              awslogs-group: !Ref LogGroup
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: containerlog
+
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /ecs/${AWS::StackName}
+      RetentionInDays: 7
+
+  FargateTaskExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: "sts:AssumeRole"
+            Condition:
+              ArnLike:
+                aws:SourceArn: !Sub arn:aws:ecs:${AWS::Region}:${AWS::AccountId}:*
+              StringEquals:
+                aws:SourceAccount: !Ref AWS::AccountId
+      Path: /
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+
+  ECSTaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: "sts:AssumeRole"
+            Condition:
+              ArnLike:
+                aws:SourceArn: !Sub arn:aws:ecs:${AWS::Region}:${AWS::AccountId}:*
+              StringEquals:
+                aws:SourceAccount: !Ref AWS::AccountId
+      Path: /
+
+Outputs:
+  LoadBalancerURL:
+    Value: !GetAtt VPC.Outputs.LoadBalancerDNSName

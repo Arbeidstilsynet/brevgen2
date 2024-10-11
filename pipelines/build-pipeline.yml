@@ -6,14 +6,20 @@ resources:
       ref: develop
 
 trigger:
-  - develop
-  - feature/*
-  - feat/*
-  - refactor/*
-  - bug/*
-  - devops/*
-  - fix/*
-  - test/*
+  batch: true
+  branches:
+    include:
+      - develop
+      - feature/*
+      - feat/*
+      - refactor/*
+      - bug/*
+      - devops/*
+      - fix/*
+      - test/*
+  paths:
+    include:
+      - src
 
 pool:
   vmImage: "ubuntu-latest"

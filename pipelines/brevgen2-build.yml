@@ -1,0 +1,39 @@
+resources:
+  repositories:
+    - repository: Templates
+      type: git
+      name: felles-pipeline-templates
+      ref: develop
+
+trigger:
+  branches:
+    include:
+      - develop
+  paths:
+    exclude:
+      - src # legacy
+      - "**/*.md" # markdown
+      - "**/*.mdat" # dynamisk markdown
+
+jobs:
+  - job: Build
+    steps:
+      - template: templates/setup-pnpm.yml
+
+      - script: pnpm lint
+        displayName: "Lint"
+
+      - script: pnpm typecheck
+        displayName: "Type check"
+
+      - script: pnpm check
+        displayName: "Formatting check"
+
+      - script: pnpm circular
+        displayName: "Circular dependencies check"
+
+      - script: pnpm test
+        displayName: "Test"
+
+      - script: pnpm build
+        displayName: "Build"

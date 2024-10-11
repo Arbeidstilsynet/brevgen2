@@ -1,0 +1,174 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: "AWS::Serverless-2016-10-31"
+Description: An AWS Lambda application that calls the Lambda API.
+
+Parameters:
+  Env:
+    Type: String
+
+  DomainName:
+    Type: String
+
+  CrossAccountRoute53RoleArn:
+    Type: String
+    Description: >
+      Rolle som gir tillatelse til å bruke AT::CertificateManager::Certificate
+      og AT::Route53::RecordSet til å opprette Route53 records i en annen konto
+
+  DomainHostedZoneId:
+    Type: String
+    Description: Hosted zone ID for Route 53 hvor domenet er registrert
+
+  ChromiumLayerBucket:
+    Type: String
+    Description: The name of the S3 bucket that has the Chromium layer
+
+  ChromiumVersion:
+    Type: String
+    Description: The version of the Chromium layer to use
+
+  DEBUG:
+    Type: String
+    Default: ""
+
+Resources:
+  ###################
+  ### Certificate
+  ###################
+  Certificate:
+    Type: AT::CertificateManager::Certificate
+    Properties:
+      DomainName: !Ref DomainName
+      DnsValidation: true
+      RoleArn: !Ref CrossAccountRoute53RoleArn
+      HostedZoneId: !Ref DomainHostedZoneId
+
+  ###################
+  ### API Gateway
+  ###################
+  BrevgeneratorApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Sub ${Env}-brevgenerator2-api-gateway
+      Description: Internt API for å lage brev
+      StageName: !Ref Env
+      OpenApiVersion: 3.0.1
+      AccessLogSetting:
+        DestinationArn: !GetAtt ApiAccessLog.Arn
+        Format: $context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] "$context.httpMethod $context.resourcePath $context.protocol" $context.status $context.responseLength $context.requestId $context.extendedRequestId
+      TracingEnabled: true
+      MethodSettings:
+        - ResourcePath: "/*"
+          HttpMethod: "*"
+          LoggingLevel: INFO
+          MetricsEnabled: true
+      DisableExecuteApiEndpoint: true
+      Domain:
+        DomainName: !Ref DomainName
+        CertificateArn: !Ref Certificate
+      Auth:
+        ApiKeyRequired: true
+        AddDefaultAuthorizerToCorsPreflight: false
+        UsagePlan:
+          CreateUsagePlan: PER_API
+
+  ApiAccessLog:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Delete # for å gjøre det enklere å slette og gjenopprette stacken
+    UpdateReplacePolicy: Retain
+    Properties:
+      RetentionInDays: 90
+      LogGroupName: !Sub /aws/api/${Env}-brevgenerator2-api-access-logs
+
+  CustomDomainNameRecord:
+    Type: AT::Route53::RecordSet
+    Properties:
+      RoleArn: !Ref CrossAccountRoute53RoleArn
+      HostedZoneId: !Ref DomainHostedZoneId
+      Record:
+        Name: !Ref DomainName
+        RType: A
+        Alias: true
+        AliasTarget:
+          HostedZoneId: !GetAtt BrevgeneratorApi.DomainName.RegionalHostedZoneId
+          DNSName: !GetAtt BrevgeneratorApi.DomainName.RegionalDomainName
+
+  ###################
+  ### Parameter Store
+  ###################
+  ParameterStoreApiKeyId:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub "/brevgenerator2/${Env}/api_key_id"
+      Description: !Sub "API Key ID for ${DomainName}"
+      Type: String
+      Value: !Ref BrevgeneratorApi.ApiKey
+
+  ###################
+  ### Lambda
+  ###################
+  GenererBrevLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${GenererBrev}
+      RetentionInDays: 60
+
+  GenererBrev:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${Env}-brevgenerator2-genererbrev
+      Description: Generer PDF fra dynamisk markdown
+      Handler: index.handler
+      Runtime: nodejs20.x
+      CodeUri: dist
+      Environment:
+        Variables:
+          NODE_OPTIONS: "--enable-source-maps"
+          DEBUG: !Ref DEBUG
+      Timeout: 60
+      MemorySize: 2048
+      ProvisionedConcurrencyConfig:
+        ProvisionedConcurrentExecutions: 1
+      AutoPublishAlias: GenererBrevVersion
+      Layers:
+        - !Ref ChromiumLayer
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - AWSLambda_ReadOnlyAccess
+        - AWSXrayWriteOnlyAccess
+      Tracing: Active
+      Events:
+        GenererBrev:
+          Type: Api
+          Properties:
+            RestApiId: !Ref BrevgeneratorApi
+            Method: post
+            Path: /genererbrev
+        Options:
+          Type: Api
+          Properties:
+            RestApiId: !Ref BrevgeneratorApi
+            Method: options
+            Path: /genererbrev
+            Auth:
+              ApiKeyRequired: false
+
+  ###################
+  ### Lambda Layer
+  ###################
+  ChromiumLayer:
+    Type: AWS::Lambda::LayerVersion
+    Properties:
+      LayerName: !Sub ${Env}-brevgenerator2-chromium
+      Description: !Sub "@sparticuz/chromium v${ChromiumVersion}, Chromium for AWS Serverless"
+      Content:
+        S3Bucket: !Ref ChromiumLayerBucket
+        S3Key: !Sub "chromiumLayers/chromium-v${ChromiumVersion}-layer.zip"
+      CompatibleRuntimes:
+        - nodejs20.x
+      CompatibleArchitectures:
+        - x86_64
+
+Outputs:
+  ParameterStoreApiKeyId:
+    Value: !Ref ParameterStoreApiKeyId
