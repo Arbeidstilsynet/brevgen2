@@ -12,7 +12,7 @@ public class BrevgeneratorKlient : IBrevgeneratorKlient
     private readonly JsonSerializerOptions _jsonOptions =
         new()
         {
-            Converters = { new JsonStringEnumConverter() },
+            Converters = { new EnumMemberJsonConverter() },
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         };
 
