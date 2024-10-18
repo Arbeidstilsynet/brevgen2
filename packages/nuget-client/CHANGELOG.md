@@ -1,5 +1,9 @@
 # Versjonslogg
 
+## 1.0.2 - 2024-10-18
+
+Fiks få med signatureVariant i ArgsBuilder
+
 ## 1.0.1 - 2024-10-17
 
 Fiks serialisering av enums

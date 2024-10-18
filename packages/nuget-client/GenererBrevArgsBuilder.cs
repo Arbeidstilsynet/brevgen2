@@ -95,6 +95,7 @@ internal class BuilderSteps : IAddMarkdownStep, IChooseTemplateStep, IDefaultTem
     {
         args.Options!.Dynamic!.Template = TemplateType.Default;
         args.Options.Dynamic.DefaultTemplateArgs!.Language = language;
+        args.Options.Dynamic.DefaultTemplateArgs!.SignatureVariant = signatureVariant;
         return this;
     }
 
