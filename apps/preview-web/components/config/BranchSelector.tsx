@@ -12,7 +12,7 @@ export function BranchSelector({ branches, selectedBranch, onBranchSelect }: Pro
       onChange={(e) => onBranchSelect(e.target.value)}
     >
       <option value="" disabled>
-        Select branch
+        Velg kodegren
       </option>
       {branches.map((branch) => (
         <option key={branch} value={branch}>

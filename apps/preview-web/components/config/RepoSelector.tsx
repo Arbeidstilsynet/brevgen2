@@ -1,4 +1,5 @@
 import { AzureDevOpsRepo } from "@/actions/azdo";
+import { selectableRepos } from "./selectableRepos";
 
 type Props = {
   repos: AzureDevOpsRepo[];
@@ -6,6 +7,13 @@ type Props = {
 };
 
 export function RepoSelector({ repos, onRepoSelect }: Props) {
+  const filteredRepos = repos
+    .filter((repo) => repo.name in selectableRepos)
+    .map((r) => ({
+      id: r.id,
+      name: selectableRepos[r.name as keyof typeof selectableRepos].prettyName,
+    }));
+
   return (
     <select
       defaultValue=""
@@ -13,9 +21,9 @@ export function RepoSelector({ repos, onRepoSelect }: Props) {
       onChange={(e) => onRepoSelect(repos.find((r) => r.id === e.target.value)!)}
     >
       <option value="" disabled>
-        Select repository
+        Velg fagsystem
       </option>
-      {repos.map((repo) => (
+      {filteredRepos.map((repo) => (
         <option key={repo.id} value={repo.id}>
           {repo.name}
         </option>

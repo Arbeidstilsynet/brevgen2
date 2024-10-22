@@ -1,6 +1,4 @@
-import { defaultTemplate } from "@at/document-templates";
-
-export const initialMd = `# Examples
+export const advancedMd = `# Examples
 
 ## Normal markdown
 
@@ -28,26 +26,10 @@ Hey, {{ userName }}
 <script>alert("I am sanitized")</script>
 `;
 
-export const initialVars = {
+export const advancedVars = {
   userName: "Saks B. Handler",
   event: "Good",
   meaning: "7",
   isParsingFun: true,
   variableWithDynamicMarkdown: "*I was nested*\n" + "Hello again, {{ userName }}\n\n",
 } as const;
-
-export const initialDefaultTemplateArgs: defaultTemplate.DefaultTemplateArgs = {
-  language: "bm",
-  fields: {
-    dato: "13.09.2024",
-    saksnummer: "2024/1234",
-    saksbehandlerNavn: "Ola Nordmann",
-    virksomhet: {
-      navn: "Nissene på jordet AS",
-      adresse: "Akersgata 123",
-      postnr: "0152",
-      poststed: "Oslo",
-    },
-  },
-  signatureVariant: "elektroniskGodkjent",
-};

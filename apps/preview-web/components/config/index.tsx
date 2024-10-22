@@ -8,13 +8,16 @@ import { RepoSelector } from "./RepoSelector";
 
 type Props = Readonly<{
   onFileSelected: (repoId: string, branch: string, filePath: string) => void;
+  onExampleSelected: (example: "initial" | "advanced") => void;
 }>;
 
-export function Config({ onFileSelected }: Props) {
+export function Config({ onFileSelected, onExampleSelected }: Props) {
   const [repos, setRepos] = useState<AzureDevOpsRepo[]>([]);
   const [selectedRepo, setSelectedRepo] = useState<AzureDevOpsRepo | null>(null);
   const [branches, setBranches] = useState<string[]>([]);
   const [selectedBranch, setSelectedBranch] = useState<string | null>(null);
+
+  const [activeTab, setActiveTab] = useState<"fileSelect" | "loadExamples">("fileSelect");
 
   useEffect(() => {
     const fetchRepos = async () => {
@@ -33,28 +36,69 @@ export function Config({ onFileSelected }: Props) {
   };
 
   return (
-    <div className="flex flex-col p-4 space-y-4">
-      <h2 className="text-xl font-semibold">Download a file from version control</h2>
-      <span>Warning: this will replace the editor contents</span>
+    <article className="flex flex-col p-4 space-y-4">
+      <h1 className="text-3xl font-bold">Konfigurasjon</h1>
+      <h2 className="text-xl font-semibold">Last inn dokument</h2>
+      <span>Advarsel: dette vil erstatte innholdet i editoren</span>
 
-      <RepoSelector repos={repos} onRepoSelect={handleRepoSelect} />
+      <div className="flex space-x-4 mb-4">
+        <button
+          className={`py-2 px-4 ${activeTab === "fileSelect" ? "bg-blue-500 text-white shadow-lg" : "bg-gray-200 hover:bg-gray-300"}`}
+          onClick={() => setActiveTab("fileSelect")}
+        >
+          Versjonskontroll (Git)
+        </button>
+        <button
+          className={`py-2 px-4 ${activeTab === "loadExamples" ? "bg-blue-500 text-white shadow-lg" : "bg-gray-200 hover:bg-gray-300"}`}
+          onClick={() => setActiveTab("loadExamples")}
+        >
+          Eksempler
+        </button>
+      </div>
 
-      {selectedRepo && selectedBranch && (
+      {activeTab === "fileSelect" && (
         <>
-          <BranchSelector
-            branches={branches}
-            selectedBranch={selectedBranch}
-            onBranchSelect={(b) => setSelectedBranch(b)}
-          />
+          <RepoSelector repos={repos} onRepoSelect={handleRepoSelect} />
 
-          <h2 className="text-xl font-semibold">Select a Markdown file</h2>
-          <FileSelector
-            repoId={selectedRepo.id}
-            branch={selectedBranch}
-            onFileSelect={onFileSelected}
-          />
+          {selectedRepo && selectedBranch && (
+            <>
+              <BranchSelector
+                branches={branches}
+                selectedBranch={selectedBranch}
+                onBranchSelect={(b) => setSelectedBranch(b)}
+              />
+
+              <h2 className="text-xl font-semibold">Velg en Markdown-fil</h2>
+              <FileSelector
+                repoId={selectedRepo.id}
+                repoName={selectedRepo.name}
+                branch={selectedBranch}
+                onFileSelect={onFileSelected}
+              />
+            </>
+          )}
         </>
       )}
-    </div>
+
+      {activeTab === "loadExamples" && (
+        <div className="flex flex-col space-y-4">
+          <p>Velg et eksempel</p>
+          <div className="flex space-x-4">
+            <button
+              className="py-2 px-4 text-white bg-green-500 hover:bg-green-700 hover:shadow-lg transition duration-200"
+              onClick={() => onExampleSelected("initial")}
+            >
+              Vanlig
+            </button>
+            <button
+              className="py-2 px-4 text-white bg-green-500 hover:bg-green-700 hover:shadow-lg transition duration-200"
+              onClick={() => onExampleSelected("advanced")}
+            >
+              Avansert
+            </button>
+          </div>
+        </div>
+      )}
+    </article>
   );
 }

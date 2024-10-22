@@ -1,13 +1,26 @@
 import { AzureDevOpsFile, fetchFilesFromAzure } from "@/actions/azdo";
 import { useEffect, useState } from "react";
+import { selectableRepos } from "./selectableRepos";
+
+function isRepoChooseable(repoName: string): repoName is keyof typeof selectableRepos {
+  return repoName in selectableRepos;
+}
+
+function isFilepathAllowed(repoName: keyof typeof selectableRepos, path: string) {
+  if (!selectableRepos[repoName].onlyPaths) {
+    return true;
+  }
+  return selectableRepos[repoName].onlyPaths.some((p) => path.includes(p));
+}
 
 type Props = {
   repoId: string;
+  repoName: string;
   branch: string;
   onFileSelect: (repoId: string, branch: string, filePath: string) => void;
 };
 
-export function FileSelector({ repoId, branch, onFileSelect }: Props) {
+export function FileSelector({ repoId, repoName, branch, onFileSelect }: Props) {
   const [files, setFiles] = useState<AzureDevOpsFile[]>([]);
 
   useEffect(() => {
@@ -17,10 +30,21 @@ export function FileSelector({ repoId, branch, onFileSelect }: Props) {
       const response = await fetchFilesFromAzure(repoId, branch);
 
       // Filter to only include (dynamic) markdown files
-      setFiles(response.filter((file) => file.path.endsWith(".md") || file.path.endsWith(".mdat")));
+      setFiles(
+        response.filter(
+          (file) =>
+            isRepoChooseable(repoName) &&
+            (file.path.endsWith(".md") || file.path.endsWith(".mdat")) &&
+            isFilepathAllowed(repoName, file.path),
+        ),
+      );
     };
     fetchFiles();
-  }, [branch, repoId]);
+  }, [branch, repoId, repoName]);
+
+  if (files.length === 0) {
+    return <div>Ingen filer funnet</div>;
+  }
 
   return (
     <div>

@@ -16,9 +16,8 @@ import requests
 from botocore.exceptions import ClientError
 
 
-def create_bucket(bucket_name: str) -> None:
+def create_bucket(bucket_name: str, region: str) -> None:
     s3_client = boto3.client("s3")
-    region = boto3.session.Session().region_name
 
     s3_client.create_bucket(
         Bucket=bucket_name,
@@ -59,7 +58,7 @@ def check_file_exists_in_bucket(bucket_name: str, s3_key: str) -> bool:
             raise
 
 
-def create_bucket_if_not_exists(bucket_name: str, s3_key: str) -> bool:
+def create_bucket_if_not_exists(bucket_name: str, s3_key: str, region: str) -> bool:
     """Create the S3 bucket if it doesn't exist."""
     s3_client = boto3.client("s3")
     try:
@@ -70,7 +69,7 @@ def create_bucket_if_not_exists(bucket_name: str, s3_key: str) -> bool:
         if "Not Found" not in str(err):
             raise err
         print(f"Bucket not found, creating bucket {bucket_name}...")
-        create_bucket(bucket_name)
+        create_bucket(bucket_name, region)
         print(f"Bucket {bucket_name} created")
         return False
 
@@ -144,6 +143,12 @@ def main() -> None:
         help="AWS CLI profile name. Uses environment credentials if not provided.",
     )
     parser.add_argument(
+        "--region",
+        type=str,
+        default="eu-west-1",
+        help="AWS region",
+    )
+    parser.add_argument(
         "--skip-confirmation", action="store_true", help="Skip the confirmation step"
     )
     args = parser.parse_args()
@@ -169,7 +174,9 @@ def main() -> None:
         ):
             return
 
-    file_already_in_bucket = create_bucket_if_not_exists(bucket_name, s3_key)
+    file_already_in_bucket = create_bucket_if_not_exists(
+        bucket_name, s3_key, args.region
+    )
     if file_already_in_bucket:
         return
     download_chromium_layer(chromium_url=chromium_url, layer_file=layer_file)

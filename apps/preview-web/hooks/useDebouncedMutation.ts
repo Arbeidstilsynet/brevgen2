@@ -42,7 +42,7 @@ export function useDebouncedMutation<
   options: UseMutationOptions<TData, TError, TVariables, TContext>,
 ): UseDebouncedMutationReturn<TData, TError, TVariables, TContext> {
   const { mutate, ...mutation } = useMutation<TData, TError, TVariables, TContext>(options);
-  const timer = useRef<NodeJS.Timeout>();
+  const timer = useRef<NodeJS.Timeout>(undefined);
 
   const debouncedMutate: DebouncedMutate<TData, TError, TVariables, TContext> = useCallback(
     (variables, { debounceMs, ...options }) => {

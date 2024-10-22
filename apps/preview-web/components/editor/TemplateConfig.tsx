@@ -19,10 +19,29 @@ export function TemplateConfig({
 }: Props) {
   return (
     <>
-      <TemplatePicker
-        selectedTemplate={selectedTemplate}
-        setSelectedTemplate={setSelectedTemplate}
-      />
+      <div className="flex items-center space-x-2">
+        <TemplatePicker
+          selectedTemplate={selectedTemplate}
+          setSelectedTemplate={setSelectedTemplate}
+        />
+        <div className="relative group">
+          <span className="flex items-center justify-center w-8 h-8 bg-yellow-100 rounded-full cursor-pointer font-bold text-lg">
+            ?
+          </span>
+          <div className="absolute left-0 w-48 p-2 mt-2 text-sm text-white bg-gray-800 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none group-hover:pointer-events-auto">
+            Velg en dokumentmal for forhåndsvisning.
+            <br />
+            <br />
+            Dokumentmalen er alt bortsett fra innholdet i brevet: logo, adressefelt, signatur,
+            bunntekst.
+            <br />
+            <br />
+            Alternativer for standardmalen vises nedenfor når den er valgt. Disse valgene vil settes
+            av fagsystemet når den benytter brevgeneratoren, men du kan endre på eksempelverdiene
+            her for å se ulike varianter av det genererte brevet.
+          </div>
+        </div>
+      </div>
       {selectedTemplate === "default" && (
         <TemplateConfigDefaultForm
           state={defaultTemplateState}

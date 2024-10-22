@@ -3,26 +3,13 @@ type Props = Readonly<{
   varTypes: { [key: string]: "string" | "boolean" };
   mdVars: Record<string, string | boolean | undefined>;
   handleVarInputChange: (variable: string, value: string | boolean) => void;
-  handleVarTypeToggle: (variable: string) => void;
 }>;
 
-export function VariableInput({
-  variable,
-  varTypes,
-  mdVars,
-  handleVarInputChange,
-  handleVarTypeToggle,
-}: Props) {
+export function VariableInput({ variable, varTypes, mdVars, handleVarInputChange }: Props) {
   return (
     <div className="mb-4">
       <div className="flex items-center mb-2">
         <label className="flex-grow">{variable}</label>
-        <button
-          onClick={() => handleVarTypeToggle(variable)}
-          className="ml-2 p-1 bg-gray-300 rounded"
-        >
-          Switch type
-        </button>
       </div>
       {varTypes[variable] === "boolean" ? (
         <div>

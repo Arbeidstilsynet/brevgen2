@@ -4,7 +4,7 @@ import { genererPdf } from "@/actions/pdf";
 import { useDebouncedMutation } from "@/hooks/useDebouncedMutation";
 import { defaultTemplate } from "@at/document-templates";
 import { marked } from "marked";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import sanitizeHtml from "sanitize-html";
 import { HandlerGeneratePdfArgs } from "../../../api/function/handler";
 import { TemplateOption } from "./TemplatePicker";
@@ -50,6 +50,13 @@ export function Preview({
   defaultTemplateArgs,
 }: Props) {
   const [renderedHtml, setRenderedHtml] = useState<string | null>(null);
+  const previousValues = useRef({
+    md,
+    mdVariables,
+    selectedTemplate,
+    defaultTemplateArgs,
+  });
+  const pdfUrlRef = useRef<string | null>(null);
 
   const {
     debouncedMutate,
@@ -64,12 +71,39 @@ export function Preview({
       const blobUrl = URL.createObjectURL(blob);
       return blobUrl;
     },
+    onSuccess: (url) => {
+      pdfUrlRef.current = url;
+    },
   });
 
   useEffect(() => {
     if (activePreviewTab !== "pdf") {
       return;
     }
+
+    // Check if any of the values have changed since the last render
+    const {
+      md: prevMd,
+      mdVariables: prevMdVariables,
+      selectedTemplate: prevTemplate,
+      defaultTemplateArgs: prevTemplateArgs,
+    } = previousValues.current;
+    if (
+      prevMd === md &&
+      prevMdVariables === mdVariables &&
+      prevTemplate === selectedTemplate &&
+      prevTemplateArgs === defaultTemplateArgs &&
+      pdfUrlRef.current // don't skip if this is first render
+    ) {
+      return;
+    }
+
+    previousValues.current = {
+      md,
+      mdVariables,
+      selectedTemplate,
+      defaultTemplateArgs,
+    };
 
     const payload = {
       md,
@@ -125,11 +159,11 @@ export function Preview({
   }
 
   if (activePreviewTab === "html") {
-    if (renderedHtml === null) {
-      return <p>Rendering...</p>;
-    }
     return (
-      <iframe srcDoc={renderedHtml} style={{ width: "100%", height: "100%", border: "none" }} />
+      <iframe
+        srcDoc={renderedHtml ?? ""}
+        style={{ width: "100%", height: "100%", border: "none" }}
+      />
     );
   }
 
@@ -138,7 +172,7 @@ export function Preview({
       return (
         <>
           {pdfError && <ErrorOverlay error={pdfError} />}
-          <pre className="whitespace-pre-wrap break-all">Rendering...</pre>
+          <pre className="whitespace-pre-wrap break-all">Generating...</pre>
         </>
       );
     }

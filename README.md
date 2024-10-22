@@ -16,6 +16,8 @@ Den nye brevgeneratoren er konfigurert som et integrert monorepo med sentraliser
   - [config-typescript](packages/config-typescript/) - felles tsconfig
   - [nuget-client](packages/nuget-client) - C#-klient for å bruke API - publisert som `AT.Brevgenerator.Klient`
     - [tenkt å bygges sammen med resten](https://turbo.build/repo/docs/guides/multi-language), men det fungerer ikke akkurat nå
+- adhoc
+  - [BrevgeneratorKlientLocalTest](adhoc/BrevgeneratorKlientLocalTest) - CLI for å teste nuget-client
 
 ## Lokal kjøring
 
@@ -30,11 +32,11 @@ Docs: [Turborepo](https://turbo.build/repo/docs)
 For å få håndteringen av workspaces til å fungere best mulig bruker dette repoet `pnpm` til å installere pakker. Installer pnpm globalt på din maskin med `npm i -g pnpm`. Du kan fortsatt kjøre `npm run dev` o.l. i dette repoet, men installering av avhengighetene må gå via pnpm.
 
 ```sh
+# installer pnpm globalt på din maskin
+$ npm i -g pnpm
+
 # installer avhengigheter
 $ pnpm i
-
-# legg til avhengighet for en pakke
-apps/api$ pnpm add -D prettier
 
 # bygg alle prosjekter
 $ pnpm build
