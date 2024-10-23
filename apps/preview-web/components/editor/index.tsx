@@ -1,12 +1,12 @@
 "use client";
 
 import { fetchFileContentFromAzure } from "@/actions/azdo";
-import { findMdVariables, parseDynamicMd } from "@at/dynamic-markdown";
+import { findMdVariables } from "@at/dynamic-markdown";
 import { Editor, useMonaco } from "@monaco-editor/react";
-import { useEffect, useReducer, useState } from "react";
+import { useReducer, useState } from "react";
 import { Overlay } from "../Overlay";
 import { Config } from "../config";
-import { Explanation } from "../explanation";
+import { Explanation, IndictableElement } from "../explanation";
 import { Preview } from "./Preview";
 import { TemplateConfig } from "./TemplateConfig";
 import { TemplateOption } from "./TemplatePicker";
@@ -14,22 +14,52 @@ import { VariableInput } from "./VariableInput";
 import { advancedMd, advancedVars } from "./examples/advanced";
 import { initialDefaultTemplateArgs, initialMd, initialVars } from "./examples/initial";
 import { defaultTemplateReducer } from "./templateConfigReducer";
-import { generateMdVarTypes } from "./utils";
+import { useDynamicMarkdown } from "./useDynamicMarkdown";
+
+const getIndicatedElementClass = (
+  element: IndictableElement,
+  indicatedElement: IndictableElement,
+) =>
+  `outline-dashed outline-4 ${indicatedElement === element ? "outline-blue-500" : "outline-transparent"}`;
+
+const saveLocal = async (md: string) => {
+  // use native save window in chromium
+  if (window.showSaveFilePicker) {
+    try {
+      const newHandle = await window.showSaveFilePicker({
+        types: [
+          {
+            description: "Markdown Files",
+            accept: { "text/markdown": [".md"] },
+          },
+        ],
+      });
+      const writableStream = await newHandle.createWritable();
+      await writableStream.write(md);
+      await writableStream.close();
+    } catch (err) {
+      const isError = err instanceof Error;
+      // silently skip AbortError that occurs if user closes the save window
+      if (!isError || (isError && err.name !== "AbortError")) {
+        throw err;
+      }
+    }
+  }
+  // handle firefox etc.
+  else {
+    const blob = new Blob([md], { type: "text/markdown" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "document.md";
+    link.click();
+    URL.revokeObjectURL(link.href);
+  }
+};
 
 export function DynamicMarkdownEditor() {
   const monaco = useMonaco();
-
-  const [md, setMd] = useState(initialMd);
-  const [parsedMd, setParsedMd] = useState(() =>
-    parseDynamicMd(initialMd, { variables: initialVars }),
-  );
-  const [parseError, setParseError] = useState<Error | null>(null);
-
-  const [mdVars, setMdVars] = useState<Record<string, string | boolean>>(initialVars);
-  const [mdVarsValue, setMdVarsValue] = useState<Set<string>>(() => findMdVariables(initialMd));
-  const [mdVarTypes, setMdVarTypes] = useState<{
-    [key: string]: "string" | "boolean";
-  }>(() => generateMdVarTypes(initialVars));
+  const { md, setMd, parsedMd, parseError, mdVars, setMdVar, mdVarsValues, mdVarsTypes, parse } =
+    useDynamicMarkdown(initialMd, initialVars);
 
   const [activePreviewTab, setActivePreviewTab] = useState<"markdown" | "html" | "pdf">("markdown");
   const [activeVarTab, setActiveVarTab] = useState<"variables" | "template">("variables");
@@ -42,47 +72,13 @@ export function DynamicMarkdownEditor() {
 
   const [isExplanationOpen, setIsExplanationOpen] = useState(false);
   const [isConfigOpen, setIsConfigOpen] = useState(false);
+  const [indicatedElement, setIndicatedElement] = useState<IndictableElement>(null);
 
-  useEffect(() => {
-    const tryParse = (value: string) => {
-      try {
-        const foundVariables = findMdVariables(value);
-        setMdVarsValue(foundVariables);
-        setMdVarTypes((prevTypes) => {
-          const newTypes = { ...prevTypes };
-          foundVariables.forEach((variable) => {
-            if (!newTypes[variable]) {
-              newTypes[variable] = "string";
-            }
-          });
-          return newTypes;
-        });
-
-        const parsedOutput = parseDynamicMd(value, { variables: mdVars });
-        setParsedMd(parsedOutput);
-        setParseError(null);
-      } catch (error) {
-        if (error instanceof Error) {
-          setParseError(error);
-        } else {
-          throw error;
-        }
-      }
-    };
-
-    tryParse(md);
-  }, [md, mdVars]);
-
-  function loadDynamicMarkdown(data: string) {
+  function updateEditor(value: string) {
     if (monaco) {
       const editor = monaco.editor.getEditors()[0];
       if (editor) {
-        editor.setValue(data);
-        // set empty string defaults for all variables to avoid parsing error
-        const foundVariables = findMdVariables(data);
-        const newVars: Record<string, string> = {};
-        foundVariables.forEach((v) => (newVars[v] = ""));
-        setMdVars(newVars);
+        editor.setValue(value);
       }
     } else {
       throw new TypeError("Expected Monaco to be instansiated");
@@ -91,7 +87,13 @@ export function DynamicMarkdownEditor() {
 
   const handleFileSelected = async (repoId: string, branch: string, file: string) => {
     const data = await fetchFileContentFromAzure(repoId, branch, file);
-    loadDynamicMarkdown(data);
+    // set empty string defaults for all variables to avoid parsing error
+    const foundVariables = findMdVariables(data);
+    const vars: Record<string, string> = {};
+    foundVariables.forEach((v) => (vars[v] = ""));
+
+    updateEditor(data);
+    parse(data, vars);
     setIsConfigOpen(false);
   };
 
@@ -108,49 +110,20 @@ export function DynamicMarkdownEditor() {
         vars = advancedVars;
         break;
     }
-    loadDynamicMarkdown(data);
-    setMdVars(vars);
-  };
-
-  const handleSaveLocal = async () => {
-    // use native save window in chromium
-    if (window.showSaveFilePicker) {
-      try {
-        const newHandle = await window.showSaveFilePicker({
-          types: [
-            {
-              description: "Markdown Files",
-              accept: { "text/markdown": [".md"] },
-            },
-          ],
-        });
-        const writableStream = await newHandle.createWritable();
-        await writableStream.write(md);
-        await writableStream.close();
-      } catch (err) {
-        const isError = err instanceof Error;
-        // silently skip AbortError that occurs if user closes the save window
-        if (!isError || (isError && err.name !== "AbortError")) {
-          throw err;
-        }
-      }
-    }
-    // handle firefox etc.
-    else {
-      const blob = new Blob([md], { type: "text/markdown" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = "document.md";
-      link.click();
-      URL.revokeObjectURL(link.href);
-    }
+    updateEditor(data);
+    parse(data, vars);
   };
 
   return (
     <main className="flex flex-col h-screen">
       {isExplanationOpen && (
-        <Overlay onClose={() => setIsExplanationOpen(false)}>
-          <Explanation />
+        <Overlay
+          onClose={() => {
+            setIsExplanationOpen(false);
+            setIndicatedElement(null);
+          }}
+        >
+          <Explanation setHoveredElement={setIndicatedElement} />
         </Overlay>
       )}
       {isConfigOpen && (
@@ -206,7 +179,7 @@ export function DynamicMarkdownEditor() {
             </button>
             <button
               className="p-1 flex items-center justify-center h-8 w-8 bg-green-100 text-gray-900 rounded-lg hover:bg-green-300 hover:shadow-lg transition duration-200"
-              onClick={handleSaveLocal}
+              onClick={() => saveLocal(md)}
               aria-label="Save"
               title="Save"
             >
@@ -215,7 +188,7 @@ export function DynamicMarkdownEditor() {
           </div>
         </div>
 
-        <div className="w-2/5 flex">
+        <div className={`w-2/5 flex ${getIndicatedElementClass("previewTabs", indicatedElement)}`}>
           <button
             className={`mr-2 p-2 transition duration-200
       ${activePreviewTab === "markdown" ? "bg-blue-500 text-white shadow-lg" : "bg-gray-300 text-gray-800 hover:bg-gray-400"}`}
@@ -241,7 +214,9 @@ export function DynamicMarkdownEditor() {
       </div>
 
       <div className="flex flex-grow">
-        <div className="w-1/5 p-4 bg-gray-100">
+        <div
+          className={`w-1/5 p-4 bg-gray-100 ${getIndicatedElementClass("vars", indicatedElement)}`}
+        >
           {activeVarTab === "template" && (
             <TemplateConfig
               selectedTemplate={selectedTemplate}
@@ -252,23 +227,22 @@ export function DynamicMarkdownEditor() {
           )}
 
           {activeVarTab === "variables" &&
-            Array.from(mdVarsValue).map((variable) => (
+            Array.from(mdVarsValues).map((variable) => (
               <VariableInput
                 key={variable}
                 variable={variable}
-                varTypes={mdVarTypes}
-                mdVars={mdVars}
+                varType={mdVarsTypes[variable]}
+                value={mdVars[variable]}
                 handleVarInputChange={(variable, value) => {
-                  setMdVars((prevVars) => ({
-                    ...prevVars,
-                    [variable]: value,
-                  }));
+                  setMdVar(variable, value);
                 }}
               />
             ))}
         </div>
 
-        <div className="w-2/5 p-4 relative">
+        <div
+          className={`w-2/5 p-4 relative ${getIndicatedElementClass("editor", indicatedElement)}`}
+        >
           {parseError && (
             <div className="absolute top-2 right-8 max-w-[calc(40%-20px)] bg-red-800 text-white p-2 rounded z-50 break-words">
               {parseError.message}
@@ -279,7 +253,7 @@ export function DynamicMarkdownEditor() {
             defaultLanguage="markdown"
             defaultValue={initialMd}
             onChange={(value) => {
-              if (value) {
+              if (typeof value === "string") {
                 setMd(value);
               }
             }}
@@ -289,7 +263,9 @@ export function DynamicMarkdownEditor() {
           />
         </div>
 
-        <div className="w-2/5 p-4 bg-gray-50">
+        <div
+          className={`w-2/5 p-4 bg-gray-50 ${getIndicatedElementClass("preview", indicatedElement)}`}
+        >
           <div className="output-container h-full">
             <Preview
               activePreviewTab={activePreviewTab}

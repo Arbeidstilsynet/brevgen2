@@ -1,7 +1,8 @@
 "use client";
 
 import { AzureDevOpsRepo, fetchBranchesFromAzure, fetchReposFromAzure } from "@/actions/azdo";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { BranchSelector } from "./BranchSelector";
 import { FileSelector } from "./FileSelector";
 import { RepoSelector } from "./RepoSelector";
@@ -12,27 +13,33 @@ type Props = Readonly<{
 }>;
 
 export function Config({ onFileSelected, onExampleSelected }: Props) {
-  const [repos, setRepos] = useState<AzureDevOpsRepo[]>([]);
   const [selectedRepo, setSelectedRepo] = useState<AzureDevOpsRepo | null>(null);
-  const [branches, setBranches] = useState<string[]>([]);
   const [selectedBranch, setSelectedBranch] = useState<string | null>(null);
 
   const [activeTab, setActiveTab] = useState<"fileSelect" | "loadExamples">("fileSelect");
 
-  useEffect(() => {
-    const fetchRepos = async () => {
-      const data = await fetchReposFromAzure();
-      setRepos(data);
-    };
-    fetchRepos();
-  }, []);
+  const { data: repos } = useQuery<AzureDevOpsRepo[]>({
+    queryKey: ["repos"],
+    queryFn: fetchReposFromAzure,
+    initialData: [],
+  });
 
-  const handleRepoSelect = async (repo: AzureDevOpsRepo) => {
+  const { data: branches = [] } = useQuery<string[]>({
+    queryKey: ["branches", selectedRepo?.id],
+    queryFn: async () => {
+      const data = await fetchBranchesFromAzure(selectedRepo!.id);
+      if (!selectedBranch) {
+        setSelectedBranch(selectedRepo!.defaultBranch.replace("refs/heads/", ""));
+      }
+      return data;
+    },
+    enabled: Boolean(selectedRepo),
+    select: (data) => data.map((b) => b.replace("refs/heads/", "")),
+  });
+
+  const handleRepoSelect = (repo: AzureDevOpsRepo) => {
     setSelectedRepo(repo);
     setSelectedBranch(null);
-    const repoBranches = await fetchBranchesFromAzure(repo.id);
-    setSelectedBranch(repo.defaultBranch.replace("refs/heads/", ""));
-    setBranches(repoBranches.map((b) => b.replace("refs/heads/", "")));
   };
 
   return (
@@ -68,7 +75,7 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
                 onBranchSelect={(b) => setSelectedBranch(b)}
               />
 
-              <h2 className="text-xl font-semibold">Velg en Markdown-fil</h2>
+              <h3 className="text-l font-semibold">Velg en Markdown-fil</h3>
               <FileSelector
                 repoId={selectedRepo.id}
                 repoName={selectedRepo.name}
@@ -82,7 +89,7 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
 
       {activeTab === "loadExamples" && (
         <div className="flex flex-col space-y-4">
-          <p>Velg et eksempel</p>
+          <h3 className="text-l font-semibold">Velg et eksempel</h3>
           <div className="flex space-x-4">
             <button
               className="py-2 px-4 text-white bg-green-500 hover:bg-green-700 hover:shadow-lg transition duration-200"

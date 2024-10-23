@@ -1,4 +1,17 @@
-export function Explanation() {
+import { HoverableText } from "../editor/HoverableText";
+
+export type IndictableElement = "editor" | "preview" | "vars" | "previewTabs" | null;
+
+type Props = Readonly<{
+  setHoveredElement: (element: IndictableElement) => void;
+}>;
+
+export function Explanation({ setHoveredElement }: Props) {
+  const getHoverHandler =
+    (element: IndictableElement) =>
+    (hover: boolean): void =>
+      setHoveredElement(hover ? element : null);
+
   return (
     <article className="p-6 bg-white rounded-lg shadow-lg">
       <h2 className="text-2xl font-extrabold mb-4">Brevgenerator2</h2>
@@ -30,10 +43,14 @@ export function Explanation() {
       <h2 className="text-2xl font-bold mb-4 mt-6">Om denne nettsiden</h2>
       <section>
         <p className="mb-4">
-          Denne nettsiden er et verktøy for redigering og forhåndsvisning av «Dynamisk Markdown». I
-          midten er en editor hvor du kan skrive innhold («brevmal»). På høyre side er
-          forhåndsvisning av tre forskjellige format, som kan veksles mellom med tab-knappene
-          ovenfor. På venstre side kan du sette variabelverdier og konfigurere dokumentmalen.
+          Denne nettsiden er et verktøy for redigering og forhåndsvisning av «Dynamisk Markdown».{" "}
+          <HoverableText onHover={getHoverHandler("editor")}>I midten</HoverableText> er en editor
+          hvor du kan skrive innhold («brevmal»).{" "}
+          <HoverableText onHover={getHoverHandler("preview")}>På høyre side</HoverableText> er
+          forhåndsvisning av tre forskjellige format, som kan veksles mellom med tab-knappene{" "}
+          <HoverableText onHover={getHoverHandler("previewTabs")}>tab-knappene</HoverableText>{" "}
+          ovenfor. <HoverableText onHover={getHoverHandler("vars")}>På venstre side</HoverableText>{" "}
+          kan du sette variabelverdier og konfigurere dokumentmalen.
         </p>
         <p className="mb-4">
           For å bruke variabler, skriv dem inn i markdown-innholdet ditt. Programmet vil automatisk
