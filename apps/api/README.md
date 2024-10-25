@@ -65,6 +65,12 @@ Tilpasninger:
 
 NB: puppeteer-core sin versjon må passe med versjonen av chromium, se tabell: <https://pptr.dev/supported-browsers#supported-browser-version-list>
 
+## Policy
+
+Det er laget en policy for å gi aksess apikey-ssm-parameter og til api-gateway. Legg inn følgende i lambdaene som skal bruke brevgeneratoren:
+
+`- !Sub arn:aws:iam::${AWS::AccountId}:policy/at/felles/brevgenerator/${Env}-brevgenerator-consumer-policy`
+
 ## Generering av brev
 
 Dynamic Markdown -> Markdown -> HTML (Marked) -> PDF (Puppeteer)

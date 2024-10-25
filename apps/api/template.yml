@@ -105,6 +105,30 @@ Resources:
       Value: !Ref BrevgeneratorApi.ApiKey
 
   ###################
+  ### Policy
+  ###################
+  Brevgenerator2ConsumerPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub ${Env}-brevgenerator-consumer-policy
+      Path: /at/felles/brevgenerator/
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Action:
+              - apigateway:GET
+            Resource:
+              - !Sub "arn:aws:apigateway:${AWS::Region}::/apikeys/{{resolve:ssm:/brevgenerator2/${Env}/api_key_id}}"
+          - Effect: "Allow"
+            Action:
+              - ssm:GetParameters
+              - ssm:GetParameter
+              - ssm:GetParametersByPath
+            Resource:
+              - !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/brevgenerator2/${Env}/api_key_id"
+
+  ###################
   ### Lambda
   ###################
   GenererBrevLogGroup:
