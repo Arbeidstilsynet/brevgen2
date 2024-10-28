@@ -16,6 +16,10 @@ const SpecificText = {
     bm: "Dette er automatisk behandlet, og brevet er derfor ikke signert.",
     nn: "Dette er automatisk behandla, og brevet er derfor ikkje signert.",
   },
+  hilsen: {
+    bm: "Med vennlig hilsen",
+    nn: "Med vennleg hilsen",
+  },
 } satisfies Record<string, Record<Language, string>>;
 
 export type DefaultTemplateArgs = {
@@ -85,7 +89,7 @@ export function getLetterhead(fields: DefaultTemplateFields, language: Language)
 
 export function getSignature(variant: SignatureVariant, language: Language) {
   return `<br /><br />
-  Med vennlig hilsen<br />
+  ${SpecificText.hilsen[language]}<br />
   **Arbeidstilsynet**<br />
   *${SpecificText[variant][language]}*<br /><br />
   Postadresse: Postboks 4720 Torgarden, 7468 Trondheim, Norge<br />
