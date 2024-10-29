@@ -63,6 +63,7 @@ export function TemplateConfigDefaultForm({ state, dispatch }: Props) {
         >
           <option value="elektroniskGodkjent">elektroniskGodkjent</option>
           <option value="automatiskBehandlet">automatiskBehandlet</option>
+          <option value="usignert">usignert</option>
         </select>
       </div>
 

@@ -48,7 +48,10 @@ public enum SignatureVariant
     ElektroniskGodkjent,
 
     [EnumMember(Value = "automatiskBehandlet")]
-    AutomatiskBehandlet
+    AutomatiskBehandlet,
+
+    [EnumMember(Value = "usignert")]
+    Usignert
 }
 
 /// <summary>

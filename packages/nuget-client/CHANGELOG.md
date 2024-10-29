@@ -1,5 +1,9 @@
 # Versjonslogg
 
+## 1.1.0 - 2024-10-29
+
+La til signatureVariant Usignert
+
 ## 1.0.2 - 2024-10-18
 
 Fiks få med signatureVariant i ArgsBuilder

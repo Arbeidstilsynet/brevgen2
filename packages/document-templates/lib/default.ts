@@ -1,7 +1,7 @@
 import { logoBase64 } from "./default-logo";
 
 export type Language = "bm" | "nn";
-export type SignatureVariant = "elektroniskGodkjent" | "automatiskBehandlet";
+export type SignatureVariant = "elektroniskGodkjent" | "automatiskBehandlet" | "usignert";
 
 const SpecificText = {
   saksbehandler: {
@@ -88,6 +88,10 @@ export function getLetterhead(fields: DefaultTemplateFields, language: Language)
 }
 
 export function getSignature(variant: SignatureVariant, language: Language) {
+  if (variant === "usignert") {
+    return "";
+  }
+
   return `<br /><br />
   ${SpecificText.hilsen[language]}<br />
   **Arbeidstilsynet**<br />
