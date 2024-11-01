@@ -23,10 +23,7 @@ jobs:
     steps:
       - template: dotnet/build-dotnetcore-pipeline-template-dotnet8.yml@Templates
         parameters:
-          workingDir: "."
-          solutionPath: "."
-          solution: "nuget-client.sln"
+          solutionPath: "nuget-client.sln"
           nugetConfigPath: "nuget.config"
           enableSamBuild: false
-          stackParameters: ""
           sonarCloudProjectKey: ""
