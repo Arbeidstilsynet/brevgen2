@@ -119,7 +119,7 @@ Resources:
             Action:
               - apigateway:GET
             Resource:
-              - !Sub "arn:aws:apigateway:${AWS::Region}::/apikeys/{{resolve:ssm:/brevgenerator2/${Env}/api_key_id}}"
+              - !Sub "arn:aws:apigateway:${AWS::Region}::/apikeys/${BrevgeneratorApi.ApiKey}"
           - Effect: "Allow"
             Action:
               - ssm:GetParameters
