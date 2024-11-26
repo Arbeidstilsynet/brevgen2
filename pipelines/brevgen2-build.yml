@@ -32,8 +32,9 @@ jobs:
       - script: pnpm circular
         displayName: "Circular dependencies check"
 
-      - script: pnpm test
+      # filtrer ut nuget-client så denne pipeline ikke trenger håndtere dotnet
+      - script: pnpm test --filter=!nuget-client
         displayName: "Test"
 
-      - script: pnpm build
+      - script: pnpm build --filter=!nuget-client
         displayName: "Build"

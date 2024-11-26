@@ -7,16 +7,14 @@
     ".": "./lib/index.ts"
   },
   "scripts": {
-    "build": "vite build",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@eslint/js": "^9.10.0",
-    "eslint": "^9.10.0",
+    "@eslint/js": "^9.15.0",
+    "eslint": "^9.15.0",
     "prettier": "^3.3.3",
-    "typescript": "^5.6.2",
-    "typescript-eslint": "^8.6.0",
-    "vite": "^5.4.6"
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.15.0"
   }
 }

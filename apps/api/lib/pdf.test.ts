@@ -16,7 +16,7 @@ describe("validation", () => {
     };
 
     const parsedMd = parseDynamicMd(testdata.md);
-    expect(() => generatePdf(parsedMd, options)).rejects.toThrow(
+    await expect(() => generatePdf(parsedMd, options)).rejects.toThrow(
       "defaultTemplateArgs are required when using the default template",
     );
   });
