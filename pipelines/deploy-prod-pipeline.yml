@@ -26,7 +26,7 @@ stages:
             deploy:
               steps:
                 - checkout: self
-                - template: dotnet/deploy-dotnetcore-capabilities-template-dotnet6.yml@Templates
+                - template: dotnet/deploy-dotnetcore-capabilities-template-dotnet8.yml@Templates
                   parameters:
                     awsBucket: infra-test-deploy-bucket
                     stackName: felles-brevgenerator-test-all-cf
@@ -62,7 +62,7 @@ stages:
             deploy:
               steps:
                 - checkout: self
-                - template: dotnet/deploy-dotnetcore-capabilities-template-dotnet6.yml@Templates
+                - template: dotnet/deploy-dotnetcore-capabilities-template-dotnet8.yml@Templates
                   parameters:
                     awsBucket: infra-prod-deploy-bucket
                     stackName: felles-brevgenerator-prod-all-cf

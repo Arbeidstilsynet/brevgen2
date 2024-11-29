@@ -27,7 +27,7 @@ jobs:
         deploy:
           steps:
             - checkout: self
-            - template: dotnet/deploy-dotnetcore-capabilities-template-dotnet6.yml@Templates
+            - template: dotnet/deploy-dotnetcore-capabilities-template-dotnet8.yml@Templates
               parameters:
                 awsBucket: infra-dev-deploy-bucket
                 stackName: felles-brevgenerator-dev-all-cf

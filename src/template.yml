@@ -188,7 +188,7 @@ Resources:
     Properties:
       FunctionName: !Sub ${env}-felles-brevgenerator-lambda
       Handler: Brevgenerator::Brevgenerator.Brevgenerator::FunctionHandler
-      Runtime: dotnet6
+      Runtime: dotnet8
       CodeUri: ./Brevgenerator
       Timeout: 120
       MemorySize: 1024

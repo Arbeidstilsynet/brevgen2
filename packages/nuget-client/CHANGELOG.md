@@ -1,5 +1,9 @@
 # Versjonslogg
 
+## 2.0.0 - 2024-11-29
+
+Endret TargetFramework til net8.0
+
 ## 1.1.0 - 2024-10-29
 
 La til signatureVariant Usignert

@@ -32,13 +32,10 @@ variables:
 jobs:
   - job: Build
     steps:
-      - template: dotnet/build-dotnetcore-pipeline-template-dotnet6.yml@Templates
+      - template: dotnet/build-dotnetcore-pipeline-template-dotnet8.yml@Templates
         parameters:
-          awsCredentials: SandboxDeploy
-          region: eu-west-1
-          solution: "src/Brevgenerator.sln"
-          solutionPath: "src"
-          workingDir: "src"
+          solutionPath: "src/Brevgenerator.sln"
+          cloudformationTemplatePath: "src"
           nugetConfigPath: "src/nuget.config"
           stackParameters: >-
             env=sandbox
