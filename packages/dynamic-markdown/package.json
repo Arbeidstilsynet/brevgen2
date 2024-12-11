@@ -13,21 +13,18 @@
     ".": "./lib/index.ts"
   },
   "scripts": {
-    "demo": "vite",
-    "build": "vite build",
     "test": "vitest run",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {},
   "devDependencies": {
-    "@eslint/js": "^9.15.0",
-    "@types/node": "^22.9.3",
-    "eslint": "^9.15.0",
-    "prettier": "^3.3.3",
+    "@eslint/js": "^9.16.0",
+    "@types/node": "^22.10.1",
+    "eslint": "^9.16.0",
+    "prettier": "^3.4.2",
     "typescript": "^5.7.2",
-    "typescript-eslint": "^8.15.0",
-    "vite": "^5.4.11",
-    "vitest": "^2.1.5"
+    "typescript-eslint": "^8.17.0",
+    "vitest": "^2.1.8"
   }
 }
