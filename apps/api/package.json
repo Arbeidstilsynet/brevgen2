@@ -18,7 +18,7 @@
     "@sparticuz/chromium": "127.0.0",
     "get-port": "7.1.0",
     "gray-matter": "4.0.3",
-    "marked": "15.0.5",
+    "marked": "15.0.6",
     "pdf-lib": "1.17.1",
     "puppeteer-core": "23.1.1",
     "sanitize-html": "2.14.0",
