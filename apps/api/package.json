@@ -16,13 +16,13 @@
     "@at/dynamic-markdown": "workspace:*",
     "@aws-sdk/client-lambda": "3.721.0",
     "@sparticuz/chromium": "127.0.0",
-    "get-port": "^7.1.0",
-    "gray-matter": "^4.0.3",
-    "marked": "^15.0.3",
-    "pdf-lib": "^1.17.1",
+    "get-port": "7.1.0",
+    "gray-matter": "4.0.3",
+    "marked": "15.0.5",
+    "pdf-lib": "1.17.1",
     "puppeteer-core": "23.1.1",
-    "sanitize-html": "^2.13.1",
-    "serve-handler": "^6.1.6"
+    "sanitize-html": "2.13.1",
+    "serve-handler": "6.1.6"
   },
   "devDependencies": {
     "@eslint/js": "9.16.0",
