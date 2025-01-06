@@ -1,4 +1,10 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "reviewers": ["Produkt Plattform - Utviklere"]
+  "reviewers": ["Produkt Plattform - Utviklere"],
+  "packageRules": [
+    {
+      "matchFileNames": ["apps/preview-web/package.json", "apps/api/package.json"],
+      "extends": ["config:js-app"]
+    }
+  ]
 }
