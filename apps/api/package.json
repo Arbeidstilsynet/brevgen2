@@ -21,7 +21,7 @@
     "marked": "15.0.5",
     "pdf-lib": "1.17.1",
     "puppeteer-core": "23.1.1",
-    "sanitize-html": "2.13.1",
+    "sanitize-html": "2.14.0",
     "serve-handler": "6.1.6"
   },
   "devDependencies": {
