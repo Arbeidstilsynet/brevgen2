@@ -4,7 +4,7 @@ Run before deploying infrastructure that expects the layer content to be in S3.
 
 Usage:
 py upload-layer.py --bucket-name {bucket-name} --chromium-version {chromium-version} [--profile {profile-name}] [--skip-confirmation]
-py upload-layer.py --bucket-name {env}-felles-brevgenerator2-lambda-layers --chromium-version 127.0.0
+py upload-layer.py --bucket-name {env}-felles-brevgenerator2-lambda-layers --chromium-version 131.0.1
 """
 
 import argparse

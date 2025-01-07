@@ -37,6 +37,7 @@ export async function genererPdf(payload: HandlerGeneratePdfArgs) {
   });
 
   if (!response.ok) {
+    console.error(response);
     throw new Error(`Error: ${response.statusText}`);
   }
 

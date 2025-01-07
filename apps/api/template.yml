@@ -143,7 +143,7 @@ Resources:
       FunctionName: !Sub ${Env}-brevgenerator2-genererbrev
       Description: Generer PDF fra dynamisk markdown
       Handler: index.handler
-      Runtime: nodejs20.x
+      Runtime: nodejs22.x
       CodeUri: dist
       Environment:
         Variables:
@@ -189,7 +189,7 @@ Resources:
         S3Bucket: !Ref ChromiumLayerBucket
         S3Key: !Sub "chromiumLayers/chromium-v${ChromiumVersion}-layer.zip"
       CompatibleRuntimes:
-        - nodejs20.x
+        - nodejs22.x
       CompatibleArchitectures:
         - x86_64
 

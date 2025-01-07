@@ -4,7 +4,7 @@ export default defineConfig({
   entry: ["function/index.ts"],
   outDir: "dist",
   outExtension: ({ format }) => ({ js: format === "esm" ? ".mjs" : ".cjs" }),
-  target: "node20",
+  target: "node22",
   format: ["cjs"],
   sourcemap: true,
   minify: true,

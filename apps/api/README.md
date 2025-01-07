@@ -22,16 +22,16 @@ Bytt ut {env} med ditt navn. Ikke bruk dev/test o.l. for din egen stack.
 ```toml
 version = 0.1
 [default.deploy.parameters]
-stack_name = "felles-brevgenerator2-api-{env}"
-s3_prefix = "felles-brevgenerator2-api-{env}"
+stack_name = "brevgenerator2-api-{env}"
+s3_prefix = "brevgenerator2-api-{env}"
 region = "eu-west-1"
 resolve_s3 = true
 capabilities = ["CAPABILITY_IAM", "CAPABILITY_NAMED_IAM"]
 parameter_overrides = [
     "Env=\"{env}\"",
     "DomainName=\"brevgenerator2-api-{env}.arbeidstilsynet.no\"",
-    "ChromiumLayerBucket=\"{env}-felles-brevgenerator2-lambda-layers\"",
-    "ChromiumVersion=\"127.0.0\"",
+    "ChromiumLayerBucket=\"{env}-brevgenerator2-lambda-layers\"",
+    "ChromiumVersion=\"131.0.1\"",
 
     # rolle fra felles-cfn-extensions for å opprette Route53 records i SharedServices
     "CrossAccountRoute53RoleArn=\"arn:aws:iam::250640723606:role/felles-cfn-extensions-prod-crossaccount-r53-role\"",
@@ -46,7 +46,7 @@ image_repositories = []
 Før deploy må du kjøre script som forbereder S3-bøtte med lambda layer
 
 ```sh
-$/apps/api: py upload-layer.py --bucket-name {dittnavn}-felles-brevgenerator2-lambda-layers --chromium-version "127.0.0" --profile {CLI-profil, gjerne for ATDEV01}
+$/apps/api: py upload-layer.py --bucket-name {dittnavn}-felles-brevgenerator2-lambda-layers --chromium-version "131.0.1" --profile {CLI-profil, gjerne for ATDEV01}
 $/apps/api: pnpm build && sam build && sam deploy
 ```
 
