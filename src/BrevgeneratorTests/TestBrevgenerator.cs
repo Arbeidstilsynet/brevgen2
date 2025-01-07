@@ -8,14 +8,14 @@ using Moq;
 
 namespace BrevgeneratorTests
 {
-    public class TestBrevgenerator : AsyncTest
+    public class TestBrevgenerator : IAsyncLifetime
     {
         private const string DUMMY_FIL = "BrevgeneratorTests.nb-testdokument.docx";
 
         private Brevgenerator.Brevgenerator _brevgenerator;
         private Mock<ILambdaContext> _context;
 
-        public override Task Init()
+        public Task InitializeAsync()
         {
             var s3Mock = new Mock<IAmazonS3>();
 
@@ -39,6 +39,8 @@ namespace BrevgeneratorTests
 
             return Task.CompletedTask;
         }
+
+        public Task DisposeAsync() => Task.CompletedTask;
 
         [Fact]
         public async Task OKUtenQrKode()
