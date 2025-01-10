@@ -77,7 +77,7 @@ function validateOptions(options?: GeneratePdfOptions) {
 export async function generatePdf(md: string, options?: GeneratePdfOptions) {
   validateOptions(options);
 
-  const pdfConfig = getPdfConfigWithDefaults(options || {});
+  const pdfConfig = getPdfConfigWithDefaults(options ?? {});
 
   if (isDefaultTemplate(options)) {
     const { language, signatureVariant } = options!.dynamic!.defaultTemplateArgs!;

@@ -42,7 +42,10 @@ export const initialDefaultTemplateArgs: defaultTemplate.DefaultTemplateArgs = {
   fields: {
     dato: "13.09.2024",
     saksnummer: "2024/1234",
+    deresDato: "",
+    deresReferanse: "",
     saksbehandlerNavn: "Ola Nordmann",
+    erUnntattOffentlighet: false,
     virksomhet: {
       navn: "Nissene på jordet AS",
       adresse: "Akersgata 123",

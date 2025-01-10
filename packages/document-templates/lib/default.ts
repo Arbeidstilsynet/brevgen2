@@ -3,10 +3,22 @@ import { logoBase64 } from "./default-logo";
 export type Language = "bm" | "nn";
 export type SignatureVariant = "elektroniskGodkjent" | "automatiskBehandlet" | "usignert";
 
-const SpecificText = {
+const text = {
   saksbehandler: {
     bm: "saksbehandler",
     nn: "saksbehandlar",
+  },
+  deresDato: {
+    bm: "Deres dato",
+    nn: "Dykkar dato",
+  },
+  deresReferanse: {
+    bm: "Deres referanse",
+    nn: "Dykkar referanse",
+  },
+  unntattOffentlighet: {
+    bm: "Unntatt offentlighet, jf. offl. § 14",
+    nn: "Unntatt offentlegheit, jf. offl. § 14",
   },
   elektroniskGodkjent: {
     bm: "Dette brevet er elektronisk godkjent.",
@@ -31,7 +43,10 @@ export type DefaultTemplateArgs = {
 export type DefaultTemplateFields = {
   dato: string;
   saksnummer: string | number;
+  deresDato?: string;
+  deresReferanse?: string;
   saksbehandlerNavn: string;
+  erUnntattOffentlighet?: boolean;
   virksomhet: {
     navn: string;
     adresse: string;
@@ -70,21 +85,33 @@ a {
 `;
 
 export function getLetterhead(fields: DefaultTemplateFields, language: Language) {
-  return `
-  <div style="margin-bottom: 36px;">
-    <img src="${logoBase64}" alt="Logo" style="max-width: 114px; height: auto; text-align: left;" />
-  </div>
-  <div style="text-align: right; font-size: 10pt;">
-    <p style="margin: 0;">Vår dato: ${fields.dato}</p>
-    <p style="margin: 0;">Vår referanse: ${fields.saksnummer}</p>
-    <p style="margin: 0;">Vår ${SpecificText.saksbehandler[language]}: ${fields.saksbehandlerNavn}</p>
-  </div>
-  <p style="margin-bottom: 66px; font-style: normal;">
-    <span style="display: block;">${fields.virksomhet.navn}</span>
-    <span style="display: block;">${fields.virksomhet.adresse}</span>
-    <span style="display: block;">${fields.virksomhet.postnr} ${fields.virksomhet.poststed}</span>
-  </p>
-`;
+  // Use joined array to avoid extra whitespace from nested template string.
+  // Certain whitespace can cause Marked's HTML conversion to insert elements as string literals in <code> tags.
+  const lines = [
+    `<div style="margin-bottom: 36px;">`,
+    `<img src="${logoBase64}" alt="Logo" style="max-width: 114px; height: auto; text-align: left;" />`,
+    `</div>`,
+    `<div style="text-align: right; font-size: 10pt;">`,
+    `<p style="margin: 0;">Vår dato: ${fields.dato}</p>`,
+    `<p style="margin: 0;">Vår referanse: ${fields.saksnummer}</p>`,
+    fields.deresDato
+      ? `<p style="margin: 0;">${text.deresDato[language]}: ${fields.deresDato}</p>`
+      : "",
+    fields.deresReferanse
+      ? `<p style="margin: 0;">${text.deresReferanse[language]}: ${fields.deresReferanse}</p>`
+      : "",
+    `<p style="margin: 0;">Vår ${text.saksbehandler[language]}: ${fields.saksbehandlerNavn}</p>`,
+    fields.erUnntattOffentlighet
+      ? `<p style='margin: 0;font-weight: bold;'>${text.unntattOffentlighet[language]}</p>`
+      : "",
+    `</div>`,
+    `<p style="margin-bottom: 66px; font-style: normal;">`,
+    `<span style="display: block;">${fields.virksomhet.navn}</span>`,
+    `<span style="display: block;">${fields.virksomhet.adresse}</span>`,
+    `<span style="display: block;">${fields.virksomhet.postnr} ${fields.virksomhet.poststed}</span>`,
+    `</p>`,
+  ];
+  return lines.join("\n");
 }
 
 export function getSignature(variant: SignatureVariant, language: Language) {
@@ -93,9 +120,9 @@ export function getSignature(variant: SignatureVariant, language: Language) {
   }
 
   return `<br /><br />
-  ${SpecificText.hilsen[language]}<br />
+  ${text.hilsen[language]}<br />
   **Arbeidstilsynet**<br />
-  *${SpecificText[variant][language]}*<br /><br />
+  *${text[variant][language]}*<br /><br />
   Postadresse: Postboks 4720 Torgarden, 7468 Trondheim, Norge<br />
   Telefon: +47 73 19 97 00<br />
   Organisasjonsnummer: 974 761 211<br />

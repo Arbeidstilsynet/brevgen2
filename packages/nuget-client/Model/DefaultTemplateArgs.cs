@@ -59,15 +59,45 @@ public enum SignatureVariant
 /// </summary>
 public class DefaultTemplateFields
 {
+    /// <summary>
+    /// "Obligatorisk" felt. Med manglende verdi vises fortsatt feltnavn i letterhead.
+    /// </summary>
     [JsonPropertyName("dato")]
     public string Dato { get; set; } = string.Empty;
 
+    /// <summary>
+    /// "Obligatorisk" felt. Med manglende verdi vises fortsatt feltnavn i letterhead.
+    /// </summary>
     [JsonPropertyName("saksnummer")]
     public string Saksnummer { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Valgfritt felt. Manglende verdi gjør at feltet ikke vises i letterhead.
+    /// </summary>
+    [JsonPropertyName("deresDato")]
+    public string? DeresDato { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Valgfritt felt. Manglende verdi gjør at feltet ikke vises i letterhead.
+    /// </summary>
+    [JsonPropertyName("deresReferanse")]
+    public string? DeresReferanse { get; set; } = string.Empty;
+
+    /// <summary>
+    /// "Obligatorisk" felt. Med manglende verdi vises fortsatt feltnavn i letterhead.
+    /// </summary>
     [JsonPropertyName("saksbehandlerNavn")]
     public string SaksbehandlerNavn { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Valgfritt felt. False eller null gjør at tekst om unntatt offentlighet ikke vises i letterhead.
+    /// </summary>
+    [JsonPropertyName("erUnntattOffentlighet")]
+    public bool? ErUnntattOffentlighet { get; set; } = false;
+
+    /// <summary>
+    /// Adresse for virksomhet. Vises nedenfor og til venstre for de andre feltene.
+    /// </summary>
     [JsonPropertyName("virksomhet")]
     public Virksomhet Virksomhet { get; set; } = new();
 }

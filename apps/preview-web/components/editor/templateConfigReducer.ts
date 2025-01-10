@@ -7,8 +7,14 @@ type SignatureVariant = defaultTemplate.DefaultTemplateArgs["signatureVariant"];
 
 type FieldsAction = {
   type: "UPDATE_FIELD";
-  field: keyof DefaultTemplateFields;
+  field: Exclude<keyof DefaultTemplateFields, "erUnntattOffentlighet">;
   value: string | number;
+};
+
+type BooleanFieldsAction = {
+  type: "TOGGLE_FIELD";
+  field: Extract<keyof DefaultTemplateFields, "erUnntattOffentlighet">;
+  value: boolean;
 };
 
 type VirksomhetAction = {
@@ -29,6 +35,7 @@ type SignatureVariantAction = {
 
 export type DefaultTemplateArgsAction =
   | FieldsAction
+  | BooleanFieldsAction
   | VirksomhetAction
   | LanguageAction
   | SignatureVariantAction;
@@ -39,6 +46,7 @@ export function defaultTemplateReducer(
 ): DefaultTemplateArgs {
   switch (action.type) {
     case "UPDATE_FIELD":
+    case "TOGGLE_FIELD":
       return {
         ...state,
         fields: {
@@ -67,7 +75,5 @@ export function defaultTemplateReducer(
         ...state,
         signatureVariant: action.value,
       };
-    default:
-      return state;
   }
 }
