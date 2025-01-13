@@ -24,8 +24,8 @@
 	<PackageReference Include="Aspose.Words" Version="21.1.0" />
     <PackageReference Include="AWSSDK.S3" Version="3.7.101.52" />
     <PackageReference Include="QRCoder" Version="1.4.3" />
-	<PackageReference Include="SkiaSharp" Version="2.88.9" />
-	<PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.9" />
+	<PackageReference Include="SkiaSharp" Version="3.116.1" />
+	<PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.116.1" />
   </ItemGroup>
 
 </Project>
