@@ -90,10 +90,16 @@ public class DefaultTemplateFields
     public string SaksbehandlerNavn { get; set; } = string.Empty;
 
     /// <summary>
-    /// Valgfritt felt. False eller null gjør at tekst om unntatt offentlighet ikke vises i letterhead.
+    /// Valgfritt felt. Må også sette UnntattOffentlighetHjemmel. False eller null gjør at tekst om unntatt offentlighet ikke vises i letterhead.
     /// </summary>
     [JsonPropertyName("erUnntattOffentlighet")]
     public bool? ErUnntattOffentlighet { get; set; } = false;
+
+    /// <summary>
+    /// Må settes når "erUnntattOffentlighet" er true. Settes etter "Unntatt offentlighet, " i letterhead. Eksempelvis "jf. offl. § 14".
+    /// </summary>
+    [JsonPropertyName("unntattOffentlighetHjemmel")]
+    public string? UnntattOffentlighetHjemmel { get; set; } = string.Empty;
 
     /// <summary>
     /// Adresse for virksomhet. Vises nedenfor og til venstre for de andre feltene.

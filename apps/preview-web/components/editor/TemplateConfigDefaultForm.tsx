@@ -167,7 +167,7 @@ export function TemplateConfigDefaultForm({ state, dispatch }: Props) {
       <div className="mb-4 flex items-center">
         <label
           htmlFor="default-form-unntatt-offentlighet"
-          className="block text-sm font-medium text-gray-700 mr-2"
+          className="mr-2 block text-sm font-medium text-gray-700"
         >
           Unntatt offentlighet
         </label>
@@ -176,7 +176,20 @@ export function TemplateConfigDefaultForm({ state, dispatch }: Props) {
           type="checkbox"
           checked={state.fields.erUnntattOffentlighet}
           onChange={(e) => handleBooleanFieldChange(e, "erUnntattOffentlighet")}
-          className="w-4 h-4 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+          className="mr-2 w-4 h-4 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+        />
+        <label
+          htmlFor="default-form-unntatt-offentlighet-hjemmel"
+          className="mr-2 block text-sm font-medium text-gray-700"
+        >
+          Hjemmel
+        </label>
+        <input
+          id="default-form-unntatt-offentlighet-hjemmel"
+          type="text"
+          value={state.fields.unntattOffentlighetHjemmel}
+          onChange={(e) => handleFieldChange(e, "unntattOffentlighetHjemmel")}
+          className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
         />
       </div>
 

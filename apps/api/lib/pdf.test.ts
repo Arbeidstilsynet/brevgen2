@@ -20,6 +20,39 @@ describe("validation", () => {
       "defaultTemplateArgs are required when using the default template",
     );
   });
+
+  test("missing defaultTemplateArgs.fields.unntattOffentlighetHjemmel throws", async () => {
+    const testdata = {
+      md: `# Vedtak om at dere blir tilbakekalt`,
+    };
+
+    const parsedMd = parseDynamicMd(testdata.md);
+    await expect(() =>
+      generatePdf(parsedMd, {
+        dynamic: {
+          defaultTemplateArgs: {
+            language: "bm",
+            signatureVariant: "automatiskBehandlet",
+            fields: {
+              dato: "13.09.2024",
+              saksnummer: "2024/1234",
+              saksbehandlerNavn: "Ola Nordmann",
+              virksomhet: {
+                navn: "Nissene på jordet AS",
+                adresse: "Akersgata 123",
+                postnr: "0152",
+                poststed: "Oslo",
+              },
+              erUnntattOffentlighet: true,
+              unntattOffentlighetHjemmel: undefined,
+            },
+          },
+        },
+      }),
+    ).rejects.toThrow(
+      "defaultTemplateArgs.fields.unntattOffentlighetHjemmel is required when defaultTemplateArgs.fields.erUnntattOffentlighet is true",
+    );
+  });
 });
 
 const defaultTemplateArgs: defaultTemplate.DefaultTemplateArgs = {

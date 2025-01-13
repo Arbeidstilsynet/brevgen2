@@ -68,7 +68,15 @@ function validateOptions(options?: GeneratePdfOptions) {
     }
     if (!options?.dynamic.defaultTemplateArgs.signatureVariant) {
       throw new TypeError(
-        "defaultTemplateArgs.signatureVariant are required when using the default template",
+        "defaultTemplateArgs.signatureVariant is required when using the default template",
+      );
+    }
+    if (
+      options?.dynamic.defaultTemplateArgs.fields.erUnntattOffentlighet &&
+      !options?.dynamic.defaultTemplateArgs.fields.unntattOffentlighetHjemmel
+    ) {
+      throw new TypeError(
+        "defaultTemplateArgs.fields.unntattOffentlighetHjemmel is required when defaultTemplateArgs.fields.erUnntattOffentlighet is true",
       );
     }
   }

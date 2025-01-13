@@ -17,8 +17,8 @@ const text = {
     nn: "Dykkar referanse",
   },
   unntattOffentlighet: {
-    bm: "Unntatt offentlighet, jf. offl. § 14",
-    nn: "Unntatt offentlegheit, jf. offl. § 14",
+    bm: "Unntatt offentlighet, ",
+    nn: "Unntatt offentlegheit, ",
   },
   elektroniskGodkjent: {
     bm: "Dette brevet er elektronisk godkjent.",
@@ -47,6 +47,7 @@ export type DefaultTemplateFields = {
   deresReferanse?: string;
   saksbehandlerNavn: string;
   erUnntattOffentlighet?: boolean;
+  unntattOffentlighetHjemmel?: string;
   virksomhet: {
     navn: string;
     adresse: string;
@@ -102,7 +103,7 @@ export function getLetterhead(fields: DefaultTemplateFields, language: Language)
       : "",
     `<p style="margin: 0;">Vår ${text.saksbehandler[language]}: ${fields.saksbehandlerNavn}</p>`,
     fields.erUnntattOffentlighet
-      ? `<p style='margin: 0;font-weight: bold;'>${text.unntattOffentlighet[language]}</p>`
+      ? `<p style='margin: 0;font-weight: bold;'>${text.unntattOffentlighet[language]}${fields.unntattOffentlighetHjemmel?.trim()}</p>`
       : "",
     `</div>`,
     `<p style="margin-bottom: 66px; font-style: normal;">`,

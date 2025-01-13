@@ -46,6 +46,7 @@ export const initialDefaultTemplateArgs: defaultTemplate.DefaultTemplateArgs = {
     deresReferanse: "",
     saksbehandlerNavn: "Ola Nordmann",
     erUnntattOffentlighet: false,
+    unntattOffentlighetHjemmel: "jf. offl. § 14",
     virksomhet: {
       navn: "Nissene på jordet AS",
       adresse: "Akersgata 123",
