@@ -1,5 +1,9 @@
 # Versjonslogg
 
+## 2.1.0 - 2025-01-14
+
+Lagt til nye valgfrie felter i default template: DeresDato, DeresReferanse, ErUnntattOffentlighet
+
 ## 2.0.0 - 2024-11-29
 
 Endret TargetFramework til net8.0
