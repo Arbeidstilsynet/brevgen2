@@ -91,20 +91,6 @@ jobs:
         displayName: "Build code"
         workingDirectory: "apps/api"
 
-      # workaround until ubuntu image is updated
-      # currently Node.js 22 is not supported by the base image
-      # despite docs claiming it has SAM 1.132 installed
-      # https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2204-Readme.md
-      # Node 22 support was added in SAM 1.30
-      # https://github.com/aws/aws-sam-cli/releases/tag/v1.130.0
-      - script: |
-          sam --version
-          curl -L -O https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip
-          unzip -q aws-sam-cli-linux-x86_64.zip -d sam-installation
-          sudo ./sam-installation/install --update
-          sam --version
-        displayName: "Update SAM"
-
       - script: sam build
         displayName: "Build infrastructure"
         workingDirectory: "apps/api"
