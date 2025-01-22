@@ -1,11 +1,12 @@
-﻿using Amazon;
+﻿using System.Text.Json;
+using Amazon;
 using AT.Brevgenerator.Klient;
 using AT.Brevgenerator.Klient.Model;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BrevgeneratorClientCli;
 
-class Program
+static class Program
 {
     static async Task Main(string[] args)
     {
@@ -45,7 +46,7 @@ class Program
             .Create()
             .AddMarkdown(
                 "# Sample Markdown content\n## {{ exampleVariable }}",
-                new() { { "exampleVariable", "value" } }
+                new() { { "exampleVariable", "value" }, { "nully", null } }
             )
             .WithDefaultTemplate(Language.Nynorsk, SignatureVariant.ElektroniskGodkjent)
             .WithDefaultTemplateFields(
@@ -74,6 +75,7 @@ class Program
             .Build();
 
         Console.WriteLine("Sending request with client1");
+        Console.WriteLine($"Payload:\n{JsonSerializer.Serialize(payload)}");
         var result = await client1.GenererBrev(payload);
         Console.WriteLine($"Response:\n{result}");
         Console.WriteLine("Sending request with client2");

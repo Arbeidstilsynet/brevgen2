@@ -18,14 +18,14 @@ public class GenererBrevArgs
     public string Md { get; set; } = string.Empty;
 
     [JsonPropertyName("mdVariables")]
-    public Dictionary<string, object>? MdVariables { get; set; }
+    public Dictionary<string, object?>? MdVariables { get; set; }
 
     [JsonPropertyName("options")]
     public GeneratePdfOptions Options { get; set; } = new();
 
     public GenererBrevArgs() { }
 
-    public GenererBrevArgs(string md, Dictionary<string, object>? mdVariables, GeneratePdfOptions options)
+    public GenererBrevArgs(string md, Dictionary<string, object?>? mdVariables, GeneratePdfOptions options)
     {
         Md = md;
         MdVariables = mdVariables;

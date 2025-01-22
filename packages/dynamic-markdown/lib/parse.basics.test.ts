@@ -389,3 +389,171 @@ test.skip("md with logic - can use 2x colons in return value", () => {
   const expectedOutput = `Hello :: world!`;
   expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
 });
+
+test("md with logic - falsy variable - null", () => {
+  const input = `# Test {{ if maybeTruthy :: Show stuff }}`;
+  const options: ParseDynamicMdOptions = {
+    variables: {
+      maybeTruthy: null,
+    },
+  };
+
+  const expectedOutput = `# Test `;
+  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+});
+
+test("md with logic - truthy variable - boolean", () => {
+  const input = `# Test {{ if maybeTruthy :: Show stuff }}`;
+  const options: ParseDynamicMdOptions = {
+    variables: {
+      maybeTruthy: true,
+    },
+  };
+
+  const expectedOutput = `# Test Show stuff`;
+  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+});
+
+test("md with logic - falsy variable - boolean", () => {
+  const input = `# Test {{ if maybeTruthy :: Show stuff }}`;
+  const options: ParseDynamicMdOptions = {
+    variables: {
+      maybeTruthy: false,
+    },
+  };
+
+  const expectedOutput = `# Test `;
+  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+});
+
+test("md with logic - truthy variable - string", () => {
+  const input = `# Test {{ if maybeTruthy :: Show stuff }}`;
+  const options: ParseDynamicMdOptions = {
+    variables: {
+      maybeTruthy: "some string",
+    },
+  };
+
+  const expectedOutput = `# Test Show stuff`;
+  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+});
+
+test("md with logic - falsy variable - empty string", () => {
+  const input = `# Test {{ if maybeTruthy :: Show stuff }}`;
+  const options: ParseDynamicMdOptions = {
+    variables: {
+      maybeTruthy: "",
+    },
+  };
+
+  const expectedOutput = `# Test `;
+  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+});
+
+test("md with logic - truthy variable - number", () => {
+  const input = `# Test {{ if maybeTruthy :: Show stuff }}`;
+  const options: ParseDynamicMdOptions = {
+    variables: {
+      maybeTruthy: 1,
+    },
+  };
+
+  const expectedOutput = `# Test Show stuff`;
+  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+});
+
+test("md with logic - falsy variable - zero", () => {
+  const input = `# Test {{ if maybeTruthy :: Show stuff }}`;
+  const options: ParseDynamicMdOptions = {
+    variables: {
+      maybeTruthy: 0,
+    },
+  };
+
+  const expectedOutput = `# Test `;
+  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+});
+
+test("md with reversed logic - falsy variable - null", () => {
+  const input = `# Test {{ if !maybeTruthy :: Show stuff }}`;
+  const options: ParseDynamicMdOptions = {
+    variables: {
+      maybeTruthy: null,
+    },
+  };
+
+  const expectedOutput = `# Test Show stuff`;
+  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+});
+
+test("md with reversed logic - truthy variable - boolean", () => {
+  const input = `# Test {{ if !maybeTruthy :: Show stuff }}`;
+  const options: ParseDynamicMdOptions = {
+    variables: {
+      maybeTruthy: true,
+    },
+  };
+
+  const expectedOutput = `# Test `;
+  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+});
+
+test("md with reversed logic - falsy variable - boolean", () => {
+  const input = `# Test {{ if !maybeTruthy :: Show stuff }}`;
+  const options: ParseDynamicMdOptions = {
+    variables: {
+      maybeTruthy: false,
+    },
+  };
+
+  const expectedOutput = `# Test Show stuff`;
+  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+});
+
+test("md with reversed logic - truthy variable - string", () => {
+  const input = `# Test {{ if !maybeTruthy :: Show stuff }}`;
+  const options: ParseDynamicMdOptions = {
+    variables: {
+      maybeTruthy: "some string",
+    },
+  };
+
+  const expectedOutput = `# Test `;
+  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+});
+
+test("md with reversed logic - falsy variable - empty string", () => {
+  const input = `# Test {{ if !maybeTruthy :: Show stuff }}`;
+  const options: ParseDynamicMdOptions = {
+    variables: {
+      maybeTruthy: "",
+    },
+  };
+
+  const expectedOutput = `# Test Show stuff`;
+  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+});
+
+test("md with reversed logic - truthy variable - number", () => {
+  const input = `# Test {{ if !maybeTruthy :: Show stuff }}`;
+  const options: ParseDynamicMdOptions = {
+    variables: {
+      maybeTruthy: 1,
+    },
+  };
+
+  const expectedOutput = `# Test `;
+  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+});
+
+test("md with reversed logic - falsy variable - zero", () => {
+  const input = `# Test {{ if !maybeTruthy :: Show stuff }}`;
+  const options: ParseDynamicMdOptions = {
+    variables: {
+      maybeTruthy: 0,
+    },
+  };
+
+  const expectedOutput = `# Test Show stuff`;
+  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+});

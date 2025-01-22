@@ -104,6 +104,7 @@ export function useDynamicMarkdown(initialMd: string, initialVars: MdVars) {
   };
 
   const setMdVar = (mdVar: string, value: string | boolean) => {
+    if (mdVar.startsWith("!")) mdVar = mdVar.slice(1); // handle negation
     dispatch({ type: "SET_MD_VAR", payload: { mdVar, value } });
   };
 

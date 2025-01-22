@@ -1,4 +1,5 @@
 import { ASTNode, parseLogicToken } from "./build";
+import { isNegatedVariable } from "./evaluate";
 import { Token, tokenize } from "./tokenize";
 
 export function findMdVariables(input: string): Set<string> {
@@ -40,6 +41,9 @@ function extractVariablesFromCondition(variables: Set<string>, condition: string
   const conditionParts = condition.split(/\s+/);
   for (const part of conditionParts) {
     if (!["if", "==", "!=", "true", "false"].includes(part.toLowerCase()) && isNaN(Number(part))) {
+      if (isNegatedVariable(part)) {
+        return variables.add(part.slice(1));
+      }
       variables.add(part);
     }
   }

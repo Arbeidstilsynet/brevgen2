@@ -1,23 +1,26 @@
 import { ASTNode, buildAST } from "./build";
 import { tokenize } from "./tokenize";
 
+export type VariableValue = string | number | boolean | null;
+
 const VALID_OPERATORS = ["==", "!="];
 
-export function evaluateAST(
-  ast: ASTNode[],
-  variables: Record<string, string | number | boolean>,
-): string {
+export function isNegatedVariable(variableName: string) {
+  return variableName.startsWith("!");
+}
+
+export function evaluateAST(ast: ASTNode[], variables: Record<string, VariableValue>): string {
   let result = "";
 
   for (const node of ast) {
     if (node.type === "md") {
       result += node.value;
     } else if (node.type === "if") {
-      if (evaluateCondition(node.value!, variables, node.line)) {
+      if (evaluateCondition(node.value, variables, node.line)) {
         result += evaluateAST(node.children!, variables);
       }
     } else if (node.type === "var") {
-      result += processVariable(node.value!, variables, node.line);
+      result += processVariable(node.value, variables, node.line);
     } else {
       throw new TypeError(`Unsupported node type: ${node.type} at line ${node.line}`);
     }
@@ -28,7 +31,7 @@ export function evaluateAST(
 
 function processVariable(
   variableName: string,
-  variables: Record<string, string | number | boolean>,
+  variables: Record<string, VariableValue>,
   line: number,
 ): string {
   if (variableName in variables) {
@@ -47,10 +50,21 @@ function processVariable(
 
 function evaluateCondition(
   condition: string,
-  variables: Record<string, string | number | boolean>,
+  variables: Record<string, VariableValue>,
   line: number,
 ): boolean {
-  const { leftOperand, operator, rightOperand } = parseCondition(condition);
+  const { leftOperand, operator, rightOperand, isTruthyCheck } = parseCondition(condition);
+
+  if (isTruthyCheck) {
+    if (leftOperand in variables) {
+      return Boolean(variables[leftOperand]);
+    } else if (isNegatedVariable(leftOperand) && leftOperand.slice(1) in variables) {
+      return !variables[leftOperand.slice(1)];
+    } else {
+      const variablename = isNegatedVariable(leftOperand) ? leftOperand.slice(1) : leftOperand;
+      throw new Error(`Undefined variable: ${variablename} at line ${line}`);
+    }
+  }
 
   if (!VALID_OPERATORS.includes(operator)) {
     throw new Error(`Unsupported operator: ${operator} at line ${line}`);
@@ -73,7 +87,14 @@ function evaluateCondition(
   }
 }
 
-function parseCondition(condition: string) {
+type ParsedCondition = {
+  leftOperand: string;
+  operator: string;
+  rightOperand: string;
+  isTruthyCheck: boolean;
+};
+
+function parseCondition(condition: string): ParsedCondition {
   let i = 0;
   const length = condition.length;
 
@@ -95,6 +116,11 @@ function parseCondition(condition: string) {
     i++;
   }
 
+  // Handle missing operator, i.e. truthyness check
+  if (operator === "") {
+    return { leftOperand, operator: "", rightOperand: "", isTruthyCheck: true };
+  }
+
   i = skipWhitespace(i, length, condition);
 
   // Extract right operand
@@ -104,13 +130,13 @@ function parseCondition(condition: string) {
     i++;
   }
 
-  return { leftOperand, operator, rightOperand };
+  return { leftOperand, operator, rightOperand, isTruthyCheck: false };
 }
 
 function processOperand(
   operand: string,
-  variables: Record<string, string | number | boolean>,
-): [isCertainlyValue: boolean, value: string | number | boolean] {
+  variables: Record<string, VariableValue>,
+): [isCertainlyValue: boolean, value: VariableValue] {
   if (operand in variables) {
     return [true, variables[operand]];
   }
@@ -133,6 +159,6 @@ function skipWhitespace(i: number, length: number, condition: string) {
   return i;
 }
 
-function compareValues(left: string | number | boolean, right: string | number | boolean): boolean {
-  return left.toString() === right.toString();
+function compareValues(left: VariableValue, right: VariableValue): boolean {
+  return left?.toString() === right?.toString();
 }

@@ -27,6 +27,7 @@ Here are some key points about the Empire:
 - It is ruled by Emperor {{ Emperor }}.
 - The capital city is {{ Capital }}.
 
+{{ if jediTemple :: **Important Note**: The Jedi Temple is located on {{ jediTemple }}.}}
 **Important Note**: The Rebellion is {{ if isRebellionActive == true :: currently active }}{{ if isRebellionActive == false :: not active }}.
 `;
 
@@ -38,6 +39,7 @@ Here are some key points about the Empire:
       Emperor: "Sheev",
       isRebellionActive: true,
       population: 1000,
+      jediTemple: null,
     },
   };
 
@@ -59,6 +61,7 @@ Here are some key points about the Empire:
 - The Empire spans across the galaxy.
 - It is ruled by Emperor Sheev.
 - The capital city is Coruscant.
+
 
 **Important Note**: The Rebellion is currently active.
 `;
@@ -284,6 +287,69 @@ We anticipate the following challenges:
 
 ## Conclusion
 This document provides a comprehensive overview of the company's performance and future outlook.
+`;
+
+  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+});
+
+test("Nested truthiness checks", () => {
+  const input = `
+# Middle-earth Report
+
+{{ if RingBearer ::
+## The Ring-bearer
+The current Ring-bearer is {{ RingBearer }}.
+  {{ if isQuestActive ::
+  ### The Quest
+  The quest to destroy the One Ring is currently active.{{ if isSauronDefeated :: Victory! }}
+  }}
+}}
+
+## Fellowship Members
+The members of the Fellowship are:
+- Aragorn
+- Legolas
+- Gimli
+- Gandalf
+- Boromir
+- Merry
+- Pippin
+- Sam
+
+{{ if isGondorUnderAttack :: **Alert**: Gondor is under attack! }}
+**Status**: The quest is {{ if isQuestActive :: currently active }}{{ if isQuestActive == false :: not active }}.
+`;
+
+  const options: ParseDynamicMdOptions = {
+    variables: {
+      RingBearer: "Frodo",
+      isQuestActive: 1,
+      isSauronDefeated: 0,
+      isGondorUnderAttack: null,
+    },
+  };
+
+  const expectedOutput = `
+# Middle-earth Report
+
+## The Ring-bearer
+The current Ring-bearer is Frodo.
+  ### The Quest
+  The quest to destroy the One Ring is currently active.
+
+## Fellowship Members
+The members of the Fellowship are:
+- Aragorn
+- Legolas
+- Gimli
+- Gandalf
+- Boromir
+- Merry
+- Pippin
+- Sam
+
+
+**Status**: The quest is currently active.
 `;
 
   expect(parseDynamicMd(input, options)).toEqual(expectedOutput);

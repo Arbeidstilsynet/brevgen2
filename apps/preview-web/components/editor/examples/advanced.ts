@@ -8,17 +8,21 @@ Some [link out of here](https://www.arbeidstilsynet.no).
 - *item 2 (italic)*
 
 ## Variable
-
 Hey, {{ userName }}
-
-## Nested variables: {{ variableWithDynamicMarkdown }}
+## Nested variables
+*see initial value containing dynamic fields*
+{{ variableWithDynamicMarkdown }}
 
 ## Logic
+*shorthand truthyness, coerces values*
+{{ if isParsingFun :: *Hello, world!* }}
+{{ if !isParsingFun :: *Goodbye, world!* }}
 
-{{ if isParsingFun == true :: *Hello, world!* }}
+*both left and right operands can be variables, and whitespace is flexible*
+{{if event == event2::NotMuchWhiteSpaceHere}}
 
-{{if event == Bad::NotMuchWhiteSpaceHere}}
-{{ if meaning != 42 :: Wrong universe, {{ userName }} }}
+*logic can also be nested*
+{{ if meaning != 42 :: Wrong universe, {{ if userName :: userName }} }}
 
 ## Misc
 
@@ -31,5 +35,5 @@ export const advancedVars = {
   event: "Good",
   meaning: "7",
   isParsingFun: true,
-  variableWithDynamicMarkdown: "*I was nested*\n" + "Hello again, {{ userName }}\n\n",
+  variableWithDynamicMarkdown: "*I was nested*\n" + "Hello again, {{ userName }}\n",
 } as const;

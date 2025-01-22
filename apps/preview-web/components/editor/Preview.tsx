@@ -161,6 +161,7 @@ export function Preview({
   if (activePreviewTab === "html") {
     return (
       <iframe
+        title="HTML preview"
         srcDoc={renderedHtml ?? ""}
         style={{ width: "100%", height: "100%", border: "none" }}
       />
@@ -179,13 +180,18 @@ export function Preview({
     return (
       <>
         {pdfError && <ErrorOverlay error={pdfError} />}
-        <iframe src={pdfUrl} style={{ width: "100%", height: "100%", border: "none" }} />;
+        <iframe
+          title="PDF preview"
+          src={pdfUrl}
+          style={{ width: "100%", height: "100%", border: "none" }}
+        />
+        ;
       </>
     );
   }
 }
 
-function ErrorOverlay({ error }: { error: Error | null }) {
+function ErrorOverlay({ error }: Readonly<{ error: Error | null }>) {
   if (!error) return null;
   console.error(error);
   return (

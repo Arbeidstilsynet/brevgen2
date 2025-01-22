@@ -13,7 +13,7 @@ public interface IAddMarkdownStep
     /// Variabler (flettefelt) som er referert i dynamisk markdown.
     /// Kan være string/number/boolean etter serialisering til JSON.
     /// </param>
-    IChooseTemplateStep AddMarkdown(string md, Dictionary<string, object>? mdVariables);
+    IChooseTemplateStep AddMarkdown(string md, Dictionary<string, object?>? mdVariables);
 }
 
 public interface IChooseTemplateStep
@@ -80,10 +80,11 @@ public class GenererBrevArgsBuilder
 
 internal class BuilderSteps : IAddMarkdownStep, IChooseTemplateStep, IDefaultTemplateFieldsStep, IBuildStep
 {
+    private const string MissingInitializerErrorMessage = "Should be set by default initializer";
     private readonly GenererBrevArgs args = new();
 
     /// <inheritdoc/>
-    public IChooseTemplateStep AddMarkdown(string md, Dictionary<string, object>? mdVariables)
+    public IChooseTemplateStep AddMarkdown(string md, Dictionary<string, object?>? mdVariables)
     {
         args.Md = md;
         args.MdVariables = mdVariables;
@@ -102,7 +103,7 @@ internal class BuilderSteps : IAddMarkdownStep, IChooseTemplateStep, IDefaultTem
     /// <inheritdoc/>
     public IBuildStep WithCustomTemplate()
     {
-        args.Options.Dynamic.ThrowIfNull("Should be set by default initializer");
+        args.Options.Dynamic.ThrowIfNull(MissingInitializerErrorMessage);
         args.Options!.Dynamic!.Template = TemplateType.Custom;
         return this;
     }
@@ -110,8 +111,8 @@ internal class BuilderSteps : IAddMarkdownStep, IChooseTemplateStep, IDefaultTem
     /// <inheritdoc/>
     public IBuildStep WithDefaultTemplateFields(DefaultTemplateFields fields)
     {
-        args.Options.Dynamic.ThrowIfNull("Should be set by default initializer");
-        args.Options.Dynamic!.DefaultTemplateArgs.ThrowIfNull("Should be set by default initializer");
+        args.Options.Dynamic.ThrowIfNull(MissingInitializerErrorMessage);
+        args.Options.Dynamic!.DefaultTemplateArgs.ThrowIfNull(MissingInitializerErrorMessage);
         args.Options.Dynamic!.DefaultTemplateArgs!.Fields = fields;
         return this;
     }
@@ -140,8 +141,8 @@ internal class BuilderSteps : IAddMarkdownStep, IChooseTemplateStep, IDefaultTem
     /// <inheritdoc/>
     public GenererBrevArgs Build()
     {
-        args.Options.Dynamic.ThrowIfNull("Should be set by default initializer");
-        args.Options.Dynamic!.DefaultTemplateArgs.ThrowIfNull("Should be set by default initializer");
+        args.Options.Dynamic.ThrowIfNull(MissingInitializerErrorMessage);
+        args.Options.Dynamic!.DefaultTemplateArgs.ThrowIfNull(MissingInitializerErrorMessage);
 
         return args;
     }

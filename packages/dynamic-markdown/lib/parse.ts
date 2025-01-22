@@ -1,5 +1,5 @@
 import { buildAST } from "./ast/build";
-import { evaluateAST } from "./ast/evaluate";
+import { evaluateAST, VariableValue } from "./ast/evaluate";
 import { tokenize } from "./ast/tokenize";
 
 export const RESERVED_NAMES = ["if", "and", "or", "else", "for"] as const;
@@ -13,7 +13,7 @@ function validateVariables(variables: Record<string, unknown>): void {
 }
 
 export type ParseDynamicMdOptions = {
-  variables: Record<string, string | number | boolean>;
+  variables: Record<string, VariableValue>;
 };
 
 export function parseDynamicMd(input: string, options?: ParseDynamicMdOptions): string {
@@ -24,6 +24,5 @@ export function parseDynamicMd(input: string, options?: ParseDynamicMdOptions): 
   const tokens = tokenize(input);
   const ast = buildAST(tokens);
   const output = evaluateAST(ast, variables);
-
   return output;
 }

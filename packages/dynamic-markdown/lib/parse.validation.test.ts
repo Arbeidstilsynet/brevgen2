@@ -46,6 +46,11 @@ test("undefined variable throws (logic condition, both operands)", () => {
   expect(() => parseDynamicMd(input)).toThrow("Undefined variables: myVar, myVar2");
 });
 
+test("undefined variable throws (logic condition, truthyness)", () => {
+  const input = `{{ if myVar :: Hello, world! }}`;
+  expect(() => parseDynamicMd(input)).toThrow("Undefined variable: myVar");
+});
+
 test("missing end brackets throws (simple)", () => {
   const input = `{{`;
   expect(() => parseDynamicMd(input)).toThrow("Unclosed dynamic section at line 1");

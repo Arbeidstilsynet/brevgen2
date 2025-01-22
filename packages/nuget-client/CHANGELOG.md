@@ -1,5 +1,9 @@
 # Versjonslogg
 
+## 2.2.0 - 2025-01-22
+
+Lagt til støtte for `null` som variabelverdi i forbindelse med truthy logikk
+
 ## 2.1.0 - 2025-01-14
 
 Lagt til nye valgfrie felter i default template: DeresDato, DeresReferanse, ErUnntattOffentlighet
