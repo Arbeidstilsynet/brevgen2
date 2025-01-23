@@ -8,8 +8,8 @@ type State = {
   parsedMd: string;
   parseError: Error | null;
   mdVars: MdVars;
-  // workaround to preserve values while removing and readding variables
-  mdVarsValues: Set<string>;
+  // workaround to preserve values while removing and adding back variables
+  foundMdVars: Set<string>;
   mdVarsTypes: { [key: string]: "string" | "boolean" };
 };
 
@@ -32,7 +32,7 @@ const getInitialState = ({
   parsedMd: parseDynamicMd(initialMd, { variables: initialVars }),
   parseError: null,
   mdVars: initialVars,
-  mdVarsValues: findMdVariables(initialMd),
+  foundMdVars: findMdVariables(initialMd),
   mdVarsTypes: generateMdVarTypes(initialVars),
 });
 
@@ -74,8 +74,8 @@ function reducer(state: State, action: Action): State {
       const newState = { ...state, md, mdVars };
 
       try {
-        newState.mdVarsValues = findMdVariables(md);
-        newState.mdVarsTypes = getMdVarTypes(newState, newState.mdVarsValues);
+        newState.foundMdVars = findMdVariables(md);
+        newState.mdVarsTypes = getMdVarTypes(newState, newState.foundMdVars);
         const parsedMd = parseDynamicMd(md, { variables: mdVars });
 
         return {

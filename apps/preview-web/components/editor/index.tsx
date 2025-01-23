@@ -15,6 +15,7 @@ import { advancedMd, advancedVars } from "./examples/advanced";
 import { initialDefaultTemplateArgs, initialMd, initialVars } from "./examples/initial";
 import { defaultTemplateReducer } from "./templateConfigReducer";
 import { useDynamicMarkdown } from "./useDynamicMarkdown";
+import { getRandomValue } from "./utils";
 
 const getIndicatedElementClass = (
   element: IndictableElement,
@@ -58,7 +59,7 @@ const saveLocal = async (md: string) => {
 
 export function DynamicMarkdownEditor() {
   const monaco = useMonaco();
-  const { md, setMd, parsedMd, parseError, mdVars, setMdVar, mdVarsValues, mdVarsTypes, parse } =
+  const { md, setMd, parsedMd, parseError, mdVars, setMdVar, foundMdVars, mdVarsTypes, parse } =
     useDynamicMarkdown(initialMd, initialVars);
 
   const [activePreviewTab, setActivePreviewTab] = useState<"markdown" | "html" | "pdf">("markdown");
@@ -112,6 +113,12 @@ export function DynamicMarkdownEditor() {
     }
     updateEditor(data);
     parse(data, vars);
+  };
+
+  const handleFillRandomValues = () => {
+    for (const varName of foundMdVars) {
+      setMdVar(varName, getRandomValue(varName));
+    }
   };
 
   return (
@@ -226,18 +233,30 @@ export function DynamicMarkdownEditor() {
             />
           )}
 
-          {activeVarTab === "variables" &&
-            Array.from(mdVarsValues).map((variable) => (
-              <VariableInput
-                key={variable}
-                variable={variable}
-                varType={mdVarsTypes[variable]}
-                value={mdVars[variable]}
-                handleVarInputChange={(variable, value) => {
-                  setMdVar(variable, value);
-                }}
-              />
-            ))}
+          {activeVarTab === "variables" && (
+            <>
+              {Array.from(foundMdVars).length > 0 && (
+                <button
+                  onClick={handleFillRandomValues}
+                  className="mb-4 p-2 bg-blue-500 text-white rounded"
+                >
+                  Fill random values
+                </button>
+              )}
+
+              {Array.from(foundMdVars).map((variable) => (
+                <VariableInput
+                  key={variable}
+                  variable={variable}
+                  varType={mdVarsTypes[variable]}
+                  value={mdVars[variable]}
+                  handleVarInputChange={(variable, value) => {
+                    setMdVar(variable, value);
+                  }}
+                />
+              ))}
+            </>
+          )}
         </div>
 
         <div
