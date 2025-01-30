@@ -2,7 +2,7 @@ import { expect, test } from "vitest";
 import { parseDynamicMd, ParseDynamicMdOptions, RESERVED_NAMES } from "./parse";
 
 test.each([...RESERVED_NAMES, ...RESERVED_NAMES.map((r) => r.toUpperCase())])(
-  "reserved name %s throws",
+  "reserved variable name %s throws",
   (name) => {
     const options: ParseDynamicMdOptions = {
       variables: {

@@ -63,6 +63,7 @@ node_modules
 
 # Testing
 coverage
+junit.xml
 
 # Turbo
 .turbo

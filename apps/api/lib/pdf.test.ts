@@ -1,9 +1,10 @@
 import { defaultTemplate } from "@at/document-templates";
-import { generateLoremIpsum, parseDynamicMd } from "@at/dynamic-markdown";
+import { parseDynamicMd } from "@at/dynamic-markdown";
 import fs from "fs";
 import path from "path";
 import { describe, expect, test, vi } from "vitest";
 import { generatePdf } from "./pdf";
+import { generateLoremIpsum } from "./testUtils";
 
 describe("validation", () => {
   test.each([

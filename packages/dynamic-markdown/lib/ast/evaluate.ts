@@ -3,7 +3,12 @@ import { tokenize } from "./tokenize";
 
 export type VariableValue = string | number | boolean | null;
 
-const VALID_OPERATORS = ["==", "!="];
+const VALID_OPERATORS = ["==", "!="] as const;
+type ValidOperator = (typeof VALID_OPERATORS)[number];
+
+function isValidOperator(operator: string): operator is ValidOperator {
+  return VALID_OPERATORS.includes(operator as ValidOperator);
+}
 
 export function isNegatedVariable(variableName: string) {
   return variableName.startsWith("!");
@@ -66,7 +71,7 @@ function evaluateCondition(
     }
   }
 
-  if (!VALID_OPERATORS.includes(operator)) {
+  if (!isValidOperator(operator)) {
     throw new Error(`Unsupported operator: ${operator} at line ${line}`);
   }
 
@@ -82,8 +87,6 @@ function evaluateCondition(
       return compareValues(leftValue, rightValue);
     case "!=":
       return !compareValues(leftValue, rightValue);
-    default:
-      throw new Error(`Unsupported operator: ${operator} at line ${line}`);
   }
 }
 

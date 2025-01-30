@@ -19,7 +19,7 @@ trigger:
 jobs:
   - job: Build
     steps:
-      - template: templates/setup-pnpm.yml
+      - template: pnpm/setup-pnpm.yaml@Templates
 
       - script: pnpm lint
         displayName: "Lint"
@@ -36,6 +36,16 @@ jobs:
       # filtrer ut nuget-client så denne pipeline ikke trenger håndtere dotnet
       - script: pnpm test --filter=!nuget-client
         displayName: "Test"
+
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFiles: "**/junit.xml"
+        condition: succeededOrFailed()
+
+      - task: PublishCodeCoverageResults@2
+        inputs:
+          summaryFileLocation: "**/coverage/clover.xml"
+        condition: succeededOrFailed()
 
       - script: pnpm build --filter=!nuget-client
         displayName: "Build"

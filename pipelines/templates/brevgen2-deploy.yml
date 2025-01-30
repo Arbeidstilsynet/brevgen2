@@ -71,7 +71,7 @@ jobs:
   - job: DeployApi
     dependsOn: UploadLayer
     steps:
-      - template: setup-pnpm.yml
+      - template: pnpm/setup-pnpm.yaml@Templates
 
       - script: pnpm lint
         displayName: "Lint"

@@ -20,6 +20,18 @@ describe("findVariables", () => {
     expect(variables).toEqual(new Set(["isParsingFun", "userName"]));
   });
 
+  test("should find truthy variable in a logic condition", () => {
+    const input = "{{ if isParsingFun :: Hello, {{ userName }}! }}";
+    const variables = findMdVariables(input);
+    expect(variables).toEqual(new Set(["isParsingFun", "userName"]));
+  });
+
+  test("should find negated truthy variable in a logic condition", () => {
+    const input = "{{ if !isParsingFun :: Hello, {{ userName }}! }}";
+    const variables = findMdVariables(input);
+    expect(variables).toEqual(new Set(["isParsingFun", "userName"]));
+  });
+
   test("should find variables in nested logic conditions", () => {
     const input =
       "{{ if isParsingFun == true :: {{ if isUserLoggedIn == true :: Hello, {{ userName }}! }} }}";
