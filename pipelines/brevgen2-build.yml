@@ -40,6 +40,8 @@ jobs:
       - task: PublishTestResults@2
         inputs:
           testResultsFiles: "**/junit.xml"
+          mergeTestResults: true
+          failTaskOnMissingResultsFile: true
         condition: succeededOrFailed()
 
       - task: PublishCodeCoverageResults@2

@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { parseDynamicMd, ParseDynamicMdOptions } from "./parse";
+import { parseDynamicMd, ParseDynamicMdOptions } from ".";
 
 test("Variables and nested logic", () => {
   const input = `

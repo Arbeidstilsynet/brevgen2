@@ -42,7 +42,7 @@ export async function fetchReposFromAzure(): Promise<AzureDevOpsRepo[]> {
 
   const data: AzureDevOpsReposResponse = await response.json();
   if (!data.count) {
-    throw new TypeError(
+    throw new Error(
       `Response ok, but no repos found. Check if PAT user has sufficient license to read repos. Organization:${organization} project:${project}.`,
     );
   }

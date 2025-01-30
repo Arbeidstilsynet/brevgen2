@@ -1,9 +1,11 @@
-/// <reference types="vitest" />
-import { defineConfig } from "vite";
+import { coverageConfigDefaults, defineConfig } from "vitest/config";
 
-// override vite config to prevent ESlint from running in tests
 export default defineConfig({
   test: {
-    // ... Specify options here.
+    reporters: ["default", "junit"],
+    outputFile: "junit.xml",
+    coverage: {
+      exclude: [...coverageConfigDefaults.exclude, "**/devServer.ts", "**/vite.dev.config.ts"],
+    },
   },
 });

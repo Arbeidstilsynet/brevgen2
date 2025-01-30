@@ -49,7 +49,7 @@ function processVariable(
     }
     return String(resolvedValue);
   } else {
-    throw new Error(`Undefined variable: ${variableName} at line ${line}`);
+    throw new TypeError(`Undefined variable at line ${line}: ${variableName}`);
   }
 }
 
@@ -67,19 +67,19 @@ function evaluateCondition(
       return !variables[leftOperand.slice(1)];
     } else {
       const variablename = isNegatedVariable(leftOperand) ? leftOperand.slice(1) : leftOperand;
-      throw new Error(`Undefined variable: ${variablename} at line ${line}`);
+      throw new TypeError(`Undefined variable at line ${line}: ${variablename}`);
     }
   }
 
   if (!isValidOperator(operator)) {
-    throw new Error(`Unsupported operator: ${operator} at line ${line}`);
+    throw new TypeError(`Unsupported operator: ${operator} at line ${line}`);
   }
 
   const [leftIsCertainlyValue, leftValue] = processOperand(leftOperand, variables);
   const [rightIsCertainlyValue, rightValue] = processOperand(rightOperand, variables);
 
   if (!leftIsCertainlyValue && !rightIsCertainlyValue) {
-    throw new Error(`Undefined variables: ${leftOperand}, ${rightOperand} at line ${line}`);
+    throw new TypeError(`Undefined variables at line ${line}: ${leftOperand}, ${rightOperand}`);
   }
 
   switch (operator) {

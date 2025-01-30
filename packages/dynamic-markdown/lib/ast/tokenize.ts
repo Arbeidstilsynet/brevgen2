@@ -16,7 +16,7 @@ export function tokenize(input: string): Token[] {
       i = newIndex;
       line = newLine;
     } else if (isEndOfDynamicSection(input, i)) {
-      throw new Error(`Unclosed dynamic section at line ${line}`);
+      throw new TypeError(`Unclosed dynamic section at line ${line}`);
     } else {
       const { token, newIndex, newLine } = extractMarkdown(input, i, line);
       tokens.push(token);
@@ -65,7 +65,7 @@ function extractDynamicSection(
   }
 
   if (nestedLevel !== 0) {
-    throw new Error(`Unclosed dynamic section at line ${line}`);
+    throw new TypeError(`Unclosed dynamic section at line ${line}`);
   }
 
   const content = input.slice(startIndex + 2, i - 2).trim();

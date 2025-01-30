@@ -8,7 +8,9 @@ const corsHeaders = {
 };
 
 export const handler: APIGatewayProxyHandler = async (event) => {
-  console.info(event);
+  if (process.env.NODE_ENV !== "test") {
+    console.info(event);
+  }
 
   if (event.httpMethod === "OPTIONS") {
     return {
@@ -33,7 +35,9 @@ export const handler: APIGatewayProxyHandler = async (event) => {
       body: pdfBase64,
     };
   } catch (err) {
-    console.error(err);
+    if (process.env.NODE_ENV !== "test") {
+      console.error(err);
+    }
     if (err instanceof TypeError) {
       return {
         statusCode: 400,

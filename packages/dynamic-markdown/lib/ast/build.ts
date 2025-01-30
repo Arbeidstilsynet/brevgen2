@@ -46,7 +46,7 @@ function splitAndValidateLogicToken(token: Token): [logic: string, children: str
   const parts = splitLogicToken(token.value);
 
   if (parts.length !== 2) {
-    throw new Error(`Invalid dynamic section format: ${token.value} at line ${token.line}`);
+    throw new TypeError(`Invalid dynamic section format at line ${token.line}: ${token.value}`);
   }
 
   return parts as [string, string];

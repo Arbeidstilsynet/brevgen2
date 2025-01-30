@@ -7,7 +7,7 @@ export const RESERVED_NAMES = ["if", "and", "or", "else", "for"] as const;
 function validateVariables(variables: Record<string, unknown>): void {
   for (const key in variables) {
     if (RESERVED_NAMES.includes(key.toLowerCase() as (typeof RESERVED_NAMES)[number])) {
-      throw new Error(`Variable name ${key} is reserved`);
+      throw new TypeError(`Variable name ${key} is reserved`);
     }
   }
 }

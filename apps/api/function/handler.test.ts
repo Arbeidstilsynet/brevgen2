@@ -1,0 +1,60 @@
+import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from "aws-lambda";
+import { describe, expect, test } from "vitest";
+import { handler } from ".";
+import { HandlerGeneratePdfArgs } from "./handler";
+
+describe("400 errors", () => {
+  test("Missing variable", async () => {
+    const md = "# Hello, {{ name }}";
+    const mdVariables = {};
+    const payload: HandlerGeneratePdfArgs = {
+      md,
+      mdVariables,
+    };
+    const event = { body: JSON.stringify(payload) };
+
+    const response = await handler(event as APIGatewayProxyEvent, {} as Context, () => {});
+
+    expect(response).toBeDefined();
+    expect((response as APIGatewayProxyResult).statusCode).toBe(400);
+    const body = JSON.parse((response as APIGatewayProxyResult).body);
+    expect(body.message).toBe("Invalid input");
+    expect(body.error).toContain("Undefined variable");
+  });
+
+  test("Missing brackets", async () => {
+    const md = "# Hello, {{ name ";
+    const mdVariables = { name: "world" };
+    const payload: HandlerGeneratePdfArgs = {
+      md,
+      mdVariables,
+    };
+    const event = { body: JSON.stringify(payload) };
+
+    const response = await handler(event as APIGatewayProxyEvent, {} as Context, () => {});
+
+    expect(response).toBeDefined();
+    expect((response as APIGatewayProxyResult).statusCode).toBe(400);
+    const body = JSON.parse((response as APIGatewayProxyResult).body);
+    expect(body.message).toBe("Invalid input");
+    expect(body.error).toContain("Unclosed dynamic section");
+  });
+
+  test("Invalid logic", async () => {
+    const md = "{{ if a + b :: # Hello, world }}";
+    const mdVariables = { name: "world" };
+    const payload: HandlerGeneratePdfArgs = {
+      md,
+      mdVariables,
+    };
+    const event = { body: JSON.stringify(payload) };
+
+    const response = await handler(event as APIGatewayProxyEvent, {} as Context, () => {});
+
+    expect(response).toBeDefined();
+    expect((response as APIGatewayProxyResult).statusCode).toBe(400);
+    const body = JSON.parse((response as APIGatewayProxyResult).body);
+    expect(body.message).toBe("Invalid input");
+    expect(body.error).toContain("Unsupported operator");
+  });
+});
