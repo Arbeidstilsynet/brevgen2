@@ -10,7 +10,10 @@ import { HandlerGeneratePdfArgs } from "../../../api/function/handler";
 import { TemplateOption } from "./TemplatePicker";
 
 function getHtml(md: string, css: string) {
-  const dirty = marked(md) as string;
+  const dirty = marked(md, {
+    gfm: true,
+    breaks: true,
+  }) as string;
   const clean = sanitizeHtml(dirty, {
     allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img", "html", "head", "body"]),
     allowedAttributes: false,

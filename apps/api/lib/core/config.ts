@@ -1,6 +1,6 @@
 import { GrayMatterOption } from "gray-matter";
 import { MarkedExtension, MarkedOptions } from "marked";
-import type { FrameAddScriptTagOptions, PDFOptions, PuppeteerLaunchOptions } from "puppeteer-core";
+import type { FrameAddScriptTagOptions, LaunchOptions, PDFOptions } from "puppeteer-core";
 
 export const defaultConfig: Config = {
   basedir: process.cwd(),
@@ -10,7 +10,10 @@ export const defaultConfig: Config = {
   document_title: "",
   body_class: [],
   page_media_type: "screen",
-  marked_options: {},
+  marked_options: {
+    gfm: true,
+    breaks: true,
+  },
   pdf_options: {
     printBackground: true,
     format: "a4",
@@ -118,7 +121,7 @@ interface BasicConfig {
    *
    * @see https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#puppeteerlaunchoptions
    */
-  launch_options: PuppeteerLaunchOptions;
+  launch_options: LaunchOptions;
 
   /**
    * Options for gray-matter (front-matter parser).
