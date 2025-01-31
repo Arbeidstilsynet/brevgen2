@@ -76,13 +76,13 @@ export function DynamicMarkdownEditor() {
   const [indicatedElement, setIndicatedElement] = useState<IndictableElement>(null);
 
   function updateEditor(value: string) {
-    if (monaco) {
-      const editor = monaco.editor.getEditors()[0];
-      if (editor) {
-        editor.setValue(value);
-      }
-    } else {
+    if (!monaco) {
       throw new TypeError("Expected Monaco to be instansiated");
+    }
+    const editor = monaco.editor.getEditors()[0];
+    if (editor) {
+      editor.setValue(value);
+      editor.focus();
     }
   }
 
@@ -113,6 +113,7 @@ export function DynamicMarkdownEditor() {
     }
     updateEditor(data);
     parse(data, vars);
+    setIsConfigOpen(false);
   };
 
   const handleFillRandomValues = () => {
@@ -275,6 +276,9 @@ export function DynamicMarkdownEditor() {
               if (typeof value === "string") {
                 setMd(value);
               }
+            }}
+            onMount={(editor) => {
+              editor.focus();
             }}
             options={{
               wordWrap: "on",
