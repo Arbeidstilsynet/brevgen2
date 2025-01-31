@@ -6,6 +6,7 @@ import { useState } from "react";
 import { BranchSelector } from "./BranchSelector";
 import { FileSelector } from "./FileSelector";
 import { RepoSelector } from "./RepoSelector";
+import { VariablesReport } from "./VariablesReport";
 
 type Props = Readonly<{
   onFileSelected: (repoId: string, branch: string, filePath: string) => void;
@@ -16,7 +17,9 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
   const [selectedRepo, setSelectedRepo] = useState<AzureDevOpsRepo | null>(null);
   const [selectedBranch, setSelectedBranch] = useState<string | null>(null);
 
-  const [activeTab, setActiveTab] = useState<"fileSelect" | "loadExamples">("fileSelect");
+  const [activeTab, setActiveTab] = useState<"fileSelect" | "loadExamples" | "variablesReport">(
+    "fileSelect",
+  );
 
   const { data: repos } = useQuery<AzureDevOpsRepo[]>({
     queryKey: ["repos"],
@@ -45,8 +48,6 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
   return (
     <article className="flex flex-col p-4 space-y-4">
       <h1 className="text-3xl font-bold">Konfigurasjon</h1>
-      <h2 className="text-xl font-semibold">Last inn dokument</h2>
-      <span>Advarsel: dette vil erstatte innholdet i editoren</span>
 
       <div className="flex space-x-4 mb-4">
         <button
@@ -61,11 +62,30 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
         >
           Eksempler
         </button>
+        <button
+          className={`py-2 px-4 ${activeTab === "variablesReport" ? "bg-blue-500 text-white shadow-lg" : "bg-gray-200 hover:bg-gray-300"}`}
+          onClick={() => setActiveTab("variablesReport")}
+        >
+          Flettefeltanalyse
+        </button>
       </div>
+
+      {(activeTab === "fileSelect" || activeTab === "loadExamples") && (
+        <>
+          <h2 className="text-xl font-semibold">Last inn dokument</h2>
+          <div
+            className="bg-yellow-100 border-l-4 border-yellow-500 text-gray-900 p-4 mb-4"
+            role="alert"
+          >
+            <p className="font-bold">Advarsel</p>
+            <p>Dette vil erstatte innholdet i editoren</p>
+          </div>
+        </>
+      )}
 
       {activeTab === "fileSelect" && (
         <>
-          <RepoSelector repos={repos} onRepoSelect={handleRepoSelect} />
+          <RepoSelector repos={repos} selected={selectedRepo} onRepoSelect={handleRepoSelect} />
 
           {selectedRepo && selectedBranch && (
             <>
@@ -77,8 +97,7 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
 
               <h3 className="text-l font-semibold">Velg en Markdown-fil</h3>
               <FileSelector
-                repoId={selectedRepo.id}
-                repoName={selectedRepo.name}
+                repo={selectedRepo}
                 branch={selectedBranch}
                 onFileSelect={onFileSelected}
               />
@@ -105,6 +124,27 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
             </button>
           </div>
         </div>
+      )}
+
+      {activeTab === "variablesReport" && (
+        <>
+          <h2 className="text-xl font-semibold">Oversikt per repo</h2>
+          <span>Dette viser alle variabler som er referert i fagsystemets brevmaler</span>
+
+          <RepoSelector repos={repos} selected={selectedRepo} onRepoSelect={handleRepoSelect} />
+
+          {selectedRepo && selectedBranch && (
+            <>
+              <BranchSelector
+                branches={branches}
+                selectedBranch={selectedBranch}
+                onBranchSelect={(b) => setSelectedBranch(b)}
+              />
+
+              <VariablesReport repo={selectedRepo} branch={selectedBranch} />
+            </>
+          )}
+        </>
       )}
     </article>
   );

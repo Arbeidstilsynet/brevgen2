@@ -1,8 +1,8 @@
-type Props = {
+type Props = Readonly<{
   branches: string[];
   selectedBranch: string;
   onBranchSelect: (branch: string) => void;
-};
+}>;
 
 export function BranchSelector({ branches, selectedBranch, onBranchSelect }: Props) {
   return (

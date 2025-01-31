@@ -81,6 +81,7 @@ export async function fetchBranchesFromAzure(repoId: string): Promise<string[]> 
 interface AzureDevOpsFilesResponse {
   value: AzureDevOpsFile[];
 }
+
 export async function fetchFilesFromAzure(
   repoId: string,
   branch: string,
@@ -121,4 +122,17 @@ export async function fetchFileContentFromAzure(
   }
 
   return await response.text();
+}
+
+export async function fetchManyFileContentFromAzure(
+  repoId: string,
+  branch: string,
+  filePaths: string[],
+) {
+  return await Promise.all(
+    filePaths.map(async (filePath) => ({
+      filePath,
+      content: await fetchFileContentFromAzure(repoId, branch, filePath),
+    })),
+  );
 }

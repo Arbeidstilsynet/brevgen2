@@ -1,7 +1,10 @@
-type RepoName = string;
-type SelectableRepo = {
+type RepoInfo = {
   /**
-   * Pretty name of the repo
+   * Name of the Git repository
+   */
+  repoName: string;
+  /**
+   * Pretty name of the selection
    */
   prettyName: string;
   /**
@@ -10,25 +13,27 @@ type SelectableRepo = {
   onlyPaths: string[] | null;
 };
 
-export const selectableRepos = {
-  "felles-brevgenerator": {
+export const allowedRepos: RepoInfo[] = [
+  {
+    repoName: "felles-brevgenerator",
     prettyName: "Brevgenerator2 (eksempler)",
     onlyPaths: ["apps/preview-web/examples"],
   },
-  "bemanningsforetak-saksbehandling2": {
+  {
+    repoName: "bemanningsforetak-saksbehandling2",
     prettyName: "Bemanning",
     onlyPaths: ["dokumentmaler"],
   },
-  "bilpleie-saksbehandling": {
+  {
+    repoName: "era",
     prettyName: "Bilpleie",
+    onlyPaths: ["apps/bilpleie-saksbehandling/dokumentmaler"],
+  },
+  {
+    repoName: "arbeidstid-service",
+    prettyName: "Arbeidstid",
     onlyPaths: ["dokumentmaler"],
   },
-  "asbest-saksbehandling": {
-    prettyName: "Asbest søknad",
-    onlyPaths: ["dokumentmaler"],
-  },
-  "asbest-melding": {
-    prettyName: "Asbest melding",
-    onlyPaths: ["dokumentmaler"],
-  },
-} as const satisfies Record<RepoName, SelectableRepo>;
+];
+
+export const allowedRepoNames = new Set(allowedRepos.map((r) => r.repoName));

@@ -1,26 +1,27 @@
 import { AzureDevOpsRepo } from "@/actions/azdo";
-import { selectableRepos } from "./selectableRepos";
+import { allowedRepoNames, allowedRepos } from "./selectableRepos";
 
-type Props = {
+type Props = Readonly<{
   repos: AzureDevOpsRepo[];
+  selected: AzureDevOpsRepo | null;
   onRepoSelect: (repo: AzureDevOpsRepo) => void;
-};
+}>;
 
-export function RepoSelector({ repos, onRepoSelect }: Props) {
+export function RepoSelector({ repos, selected, onRepoSelect }: Props) {
   const filteredRepos = repos
-    .filter((repo) => repo.name in selectableRepos)
+    .filter((repo) => allowedRepoNames.has(repo.name))
     .map((r) => ({
       id: r.id,
-      name: selectableRepos[r.name as keyof typeof selectableRepos].prettyName,
+      name: allowedRepos.find((s) => s.repoName === r.name)!.prettyName,
     }));
 
   return (
     <select
-      defaultValue=""
       className="p-2 border border-gray-300 rounded"
+      value={selected?.id ?? ""}
       onChange={(e) => onRepoSelect(repos.find((r) => r.id === e.target.value)!)}
     >
-      <option value="" disabled>
+      <option value={""} disabled>
         Velg fagsystem
       </option>
       {filteredRepos.map((repo) => (
