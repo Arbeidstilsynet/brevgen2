@@ -120,13 +120,12 @@ export function getSignature(variant: SignatureVariant, language: Language) {
     return "";
   }
 
-  return `<br /><br />
-  ${text.hilsen[language]}<br />
-  **Arbeidstilsynet**<br />
-  *${text[variant][language]}*<br /><br />
-  Postadresse: Postboks 4720 Torgarden, 7468 Trondheim, Norge<br />
-  Telefon: +47 73 19 97 00<br />
-  Organisasjonsnummer: 974 761 211<br />
+  return `<br /><br />${text.hilsen[language]}
+  **Arbeidstilsynet**
+  *${text[variant][language]}*<br />
+  Postadresse: Postboks 4720 Torgarden, 7468 Trondheim, Norge
+  Telefon: +47 73 19 97 00
+  Organisasjonsnummer: 974 761 211
   [www.arbeidstilsynet.no](https://www.arbeidstilsynet.no)
   `;
 }
