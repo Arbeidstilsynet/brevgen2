@@ -56,6 +56,11 @@ export type DefaultTemplateFields = {
   };
 };
 
+export function getMd(md: string, args: DefaultTemplateArgs): string {
+  const letterhead = getLetterhead(args.fields, args.language);
+  return `${letterhead}\n\n${md}\n\n${getSignature(args.signatureVariant, args.language)}`;
+}
+
 export const globalCss = `
 body {
   font-family: Calibri,Candara,Segoe,Segoe UI,Optima,Arial,sans-serif;
@@ -85,7 +90,7 @@ a {
 }
 `;
 
-export function getLetterhead(fields: DefaultTemplateFields, language: Language) {
+function getLetterhead(fields: DefaultTemplateFields, language: Language) {
   // Use joined array to avoid extra whitespace from nested template string.
   // Certain whitespace can cause Marked's HTML conversion to insert elements as string literals in <code> tags.
   const lines = [
@@ -115,17 +120,20 @@ export function getLetterhead(fields: DefaultTemplateFields, language: Language)
   return lines.join("\n");
 }
 
-export function getSignature(variant: SignatureVariant, language: Language) {
+function getSignature(variant: SignatureVariant, language: Language) {
   if (variant === "usignert") {
     return "";
   }
 
-  return `<br /><br />${text.hilsen[language]}
-  **Arbeidstilsynet**
-  *${text[variant][language]}*<br />
-  Postadresse: Postboks 4720 Torgarden, 7468 Trondheim, Norge
-  Telefon: +47 73 19 97 00
-  Organisasjonsnummer: 974 761 211
+  // NB: bruk av <br/> er viktig for avstand mellom innhold og signatur, samt formattering av signatur.
+  // Ved endringer av signaturen, test nøye.
+  return `<br /><br />
+  ${text.hilsen[language]}<br />
+  **Arbeidstilsynet**<br />
+  *${text[variant][language]}*<br /><br />
+  Postadresse: Postboks 4720 Torgarden, 7468 Trondheim, Norge<br />
+  Telefon: +47 73 19 97 00<br />
+  Organisasjonsnummer: 974 761 211<br />
   [www.arbeidstilsynet.no](https://www.arbeidstilsynet.no)
   `;
 }

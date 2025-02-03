@@ -2,7 +2,7 @@ import chromium from "@sparticuz/chromium";
 import fs from "fs";
 import getPort from "get-port";
 import path from "path";
-import type { PuppeteerLaunchOptions } from "puppeteer-core";
+import type { LaunchOptions } from "puppeteer-core";
 import { Config, defaultConfig, HtmlConfig, PdfConfig } from "./config";
 import { HtmlOutput, Output, PdfOutput } from "./generate-output";
 import { convertMdToPdf } from "./md-to-pdf";
@@ -87,7 +87,7 @@ export async function mdToPdf(input: Input, config: Partial<Config> = {}): Promi
     defaultViewport: chromium.defaultViewport,
     executablePath: await chromium.executablePath(),
     headless: chromium.headless,
-  } satisfies Partial<PuppeteerLaunchOptions>;
+  } satisfies Partial<LaunchOptions>;
 
   const puppeteer = await loadPuppeteer();
 

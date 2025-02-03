@@ -88,12 +88,7 @@ export async function generatePdf(md: string, options?: GeneratePdfOptions) {
   const pdfConfig = getPdfConfigWithDefaults(options ?? {});
 
   if (isDefaultTemplate(options)) {
-    const { language, signatureVariant } = options!.dynamic!.defaultTemplateArgs!;
-    const letterhead = defaultTemplate.getLetterhead(
-      options!.dynamic!.defaultTemplateArgs!.fields,
-      options!.dynamic!.defaultTemplateArgs!.language,
-    );
-    md = `${letterhead}\n\n${md}\n\n${defaultTemplate.getSignature(signatureVariant, language)}`;
+    md = defaultTemplate.getMd(md, options!.dynamic!.defaultTemplateArgs!);
   }
 
   if (process.env.DEBUG) {

@@ -10,10 +10,7 @@ export const defaultConfig: Config = {
   document_title: "",
   body_class: [],
   page_media_type: "screen",
-  marked_options: {
-    gfm: true,
-    breaks: true,
-  },
+  marked_options: {},
   pdf_options: {
     printBackground: true,
     format: "a4",

@@ -10,10 +10,7 @@ import { HandlerGeneratePdfArgs } from "../../../api/function/handler";
 import { TemplateOption } from "./TemplatePicker";
 
 function getHtml(md: string, css: string) {
-  const dirty = marked(md, {
-    gfm: true,
-    breaks: true,
-  }) as string;
+  const dirty = marked(md) as string;
   const clean = sanitizeHtml(dirty, {
     allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img", "html", "head", "body"]),
     allowedAttributes: false,
@@ -135,27 +132,15 @@ export function Preview({
       let md = parsedMd;
 
       if (selectedTemplate === "default") {
-        const letterhead = defaultTemplate.getLetterhead(
-          defaultTemplateArgs.fields,
-          defaultTemplateArgs.language,
-        );
-        md = `${letterhead}\n\n${md}\n\n${defaultTemplate.getSignature(defaultTemplateArgs.signatureVariant, defaultTemplateArgs.language)}`;
+        md = defaultTemplate.getMd(md, defaultTemplateArgs);
       }
 
       const output = getHtml(md, selectedTemplate === "default" ? defaultTemplate.globalCss : "");
-
       setRenderedHtml(output);
     };
 
     renderHtml();
-  }, [
-    activePreviewTab,
-    defaultTemplateArgs.fields,
-    defaultTemplateArgs.language,
-    defaultTemplateArgs.signatureVariant,
-    parsedMd,
-    selectedTemplate,
-  ]);
+  }, [activePreviewTab, defaultTemplateArgs, parsedMd, selectedTemplate]);
 
   if (activePreviewTab === "markdown") {
     return <pre className="whitespace-pre-wrap">{parsedMd}</pre>;
