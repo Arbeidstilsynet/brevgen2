@@ -3,7 +3,9 @@ FROM node:22-alpine@sha256:e2b39f7b64281324929257d0f8004fb6cb4bf0fdfb9aa8cedb235
 
 FROM base AS builder
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-RUN apk add --no-cache libc6-compat && corepack enable
+RUN apk add --no-cache libc6-compat
+# fix corepack https://github.com/nodejs/corepack/issues/612
+RUN npm i -g corepack@latest && corepack enable
 
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PNPM_HOME="/pnpm"
