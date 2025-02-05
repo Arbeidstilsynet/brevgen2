@@ -30,7 +30,7 @@ const text = {
   },
   hilsen: {
     bm: "Med vennlig hilsen",
-    nn: "Med vennleg hilsen",
+    nn: "Med vennleg helsing",
   },
 } satisfies Record<string, Record<Language, string>>;
 
