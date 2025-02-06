@@ -33,6 +33,28 @@ test("undefined variable throws (nested)", () => {
   ).toThrow(new TypeError("Undefined variable at line 1: myVarInner"));
 });
 
+test("empty logic content throws", () => {
+  const input = `{{ if name == Nils ::}}`;
+  expect(() =>
+    parseDynamicMd(input, {
+      variables: {
+        name: "Nils",
+      },
+    }),
+  ).toThrow(new TypeError("Invalid dynamic section format at line 1: if name == Nils ::"));
+});
+
+test("empty logic content throws (with whitespace)", () => {
+  const input = `{{ if name == Nils ::    }}`;
+  expect(() =>
+    parseDynamicMd(input, {
+      variables: {
+        name: "Nils",
+      },
+    }),
+  ).toThrow(new TypeError("Invalid dynamic section format at line 1: if name == Nils ::"));
+});
+
 // determining if it's a string or missing variable is hard to do while supporting nesting
 // for now it will just fail silently and not insert the logic block value
 test.skip("undefined variable throws (logic condition, left operand)", () => {

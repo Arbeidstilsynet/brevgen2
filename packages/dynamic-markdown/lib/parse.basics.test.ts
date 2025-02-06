@@ -1,13 +1,14 @@
-import { expect, test } from "vitest";
+import { describe, expect, test } from "vitest";
 import { parseDynamicMd, ParseDynamicMdOptions } from ".";
 
-test("plain md unchanged", () => {
-  const input = "# Hello, world!";
-  expect(parseDynamicMd(input)).toEqual(input);
-});
+describe("identity", () => {
+  test("plain md unchanged", () => {
+    const input = "# Hello, world!";
+    expect(parseDynamicMd(input)).toEqual(input);
+  });
 
-test("complex md unchanged", () => {
-  const input = `   Early whitespace
+  test("complex md unchanged", () => {
+    const input = `   Early whitespace
 
 # Hello, world!
   2 spaces
@@ -52,508 +53,483 @@ test("complex md unchanged", () => {
 *
 *
 `;
-  expect(parseDynamicMd(input)).toEqual(input);
+    expect(parseDynamicMd(input)).toEqual(input);
+  });
 });
 
-test("only a single variable (with whitespace)", () => {
-  const input = `{{ VARIABLE }}`;
-  const options: ParseDynamicMdOptions = {
-    variables: {
-      VARIABLE: "Hello, world!",
-    },
-  };
+describe("variables", () => {
+  test("only a single variable (with whitespace)", () => {
+    const input = `{{ VARIABLE }}`;
+    const options: ParseDynamicMdOptions = {
+      variables: {
+        VARIABLE: "Hello, world!",
+      },
+    };
 
-  const expectedOutput = options.variables.VARIABLE;
-  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
-});
+    const expectedOutput = options.variables.VARIABLE;
+    expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+  });
 
-test("only a single variable (no whitespace)", () => {
-  const input = `{{VARIABLE}}`;
-  const options: ParseDynamicMdOptions = {
-    variables: {
-      VARIABLE: "Hello, world!",
-    },
-  };
+  test("only a single variable (no whitespace)", () => {
+    const input = `{{VARIABLE}}`;
+    const options: ParseDynamicMdOptions = {
+      variables: {
+        VARIABLE: "Hello, world!",
+      },
+    };
 
-  const expectedOutput = options.variables.VARIABLE;
-  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
-});
+    const expectedOutput = options.variables.VARIABLE;
+    expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+  });
 
-test("md with variable", () => {
-  const input = `# Test
+  test("md with variable", () => {
+    const input = `# Test
     ## Header 2
     {{ VARIABLE }}
     `;
-  const options: ParseDynamicMdOptions = {
-    variables: {
-      VARIABLE: "Hello, world!",
-    },
-  };
+    const options: ParseDynamicMdOptions = {
+      variables: {
+        VARIABLE: "Hello, world!",
+      },
+    };
 
-  const expectedOutput = `# Test
+    const expectedOutput = `# Test
     ## Header 2
     Hello, world!
     `;
-  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
-});
+    expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+  });
 
-test("md with variable - variable content is not trimmed", () => {
-  const input = `# Test
+  test("md with variable - variable content is not trimmed", () => {
+    const input = `# Test
     ## Header 2
     {{ VARIABLE }}
     `;
-  const options: ParseDynamicMdOptions = {
-    variables: {
-      VARIABLE: "    Hello, world!    ",
-    },
-  };
+    const options: ParseDynamicMdOptions = {
+      variables: {
+        VARIABLE: "    Hello, world!    ",
+      },
+    };
 
-  const expectedOutput = `# Test
+    const expectedOutput = `# Test
     ## Header 2
         Hello, world!${"    "}
     `;
-  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
-});
+    expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+  });
 
-test("md with multiple variables", () => {
-  const input = `# {{ myHeader }}
+  test("md with multiple variables", () => {
+    const input = `# {{ myHeader }}
     ## Header 2
     {{ myVar1 }}
     ### Header 3
     {{ myVar2 }}
     `;
-  const options: ParseDynamicMdOptions = {
-    variables: {
-      myHeader: "Header 1",
-      myVar1: "Hello, world!",
-      myVar2: "Goodbye, world!",
-    },
-  };
+    const options: ParseDynamicMdOptions = {
+      variables: {
+        myHeader: "Header 1",
+        myVar1: "Hello, world!",
+        myVar2: "Goodbye, world!",
+      },
+    };
 
-  const expectedOutput = `# Header 1
+    const expectedOutput = `# Header 1
     ## Header 2
     Hello, world!
     ### Header 3
     Goodbye, world!
     `;
-  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
-});
+    expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+  });
 
-test("md with nested variables", () => {
-  const input = `# Test
+  test("md with nested variables", () => {
+    const input = `# Test
     {{ outer }}
     `;
-  const options: ParseDynamicMdOptions = {
-    variables: {
-      outer: "Hello, {{ inner }}",
-      inner: "world!",
-    },
-  };
+    const options: ParseDynamicMdOptions = {
+      variables: {
+        outer: "Hello, {{ inner }}",
+        inner: "world!",
+      },
+    };
 
-  const expectedOutput = `# Test
+    const expectedOutput = `# Test
     Hello, world!
     `;
-  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
-});
+    expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+  });
 
-test("md with nested variables - variable content is not trimmed", () => {
-  const input = `# Test
+  test("md with nested variables - variable content is not trimmed", () => {
+    const input = `# Test
     {{ outer }}
     `;
-  const options: ParseDynamicMdOptions = {
-    variables: {
-      outer: "Hello, {{ inner }}",
-      inner: "    world!    ",
-    },
-  };
+    const options: ParseDynamicMdOptions = {
+      variables: {
+        outer: "Hello, {{ inner }}",
+        inner: "    world!    ",
+      },
+    };
 
-  const expectedOutput = `# Test
+    const expectedOutput = `# Test
     Hello,     world!${"    "}
     `;
-  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+    expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+  });
 });
 
-test("md with logic - variable equality true - boolean", () => {
-  const input = `# Test
+describe("logic", () => {
+  test("variable equality true - boolean", () => {
+    const input = `# Test
     {{ if isParsingFun == true :: Hello, world! }}
     `;
-  const options: ParseDynamicMdOptions = {
-    variables: {
-      isParsingFun: true,
-    },
-  };
+    const options: ParseDynamicMdOptions = {
+      variables: {
+        isParsingFun: true,
+      },
+    };
 
-  const expectedOutput = `# Test
+    const expectedOutput = `# Test
     Hello, world!
     `;
-  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
-});
+    expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+  });
 
-test("md with logic - variable equality true - string", () => {
-  const input = `# Test
+  test("variable equality true - string", () => {
+    const input = `# Test
     {{ if xyz == abc :: ## Hello, world! }}
     `;
-  const options: ParseDynamicMdOptions = {
-    variables: {
-      xyz: "abc",
-    },
-  };
+    const options: ParseDynamicMdOptions = {
+      variables: {
+        xyz: "abc",
+      },
+    };
 
-  const expectedOutput = `# Test
+    const expectedOutput = `# Test
     ## Hello, world!
     `;
-  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
-});
+    expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+  });
 
-test("md with logic - variable equality true - number", () => {
-  const input = `# Test
+  test("variable equality true - number", () => {
+    const input = `# Test
     {{ if meaning == 42 :: ## Hello, world! }}
     `;
-  const options: ParseDynamicMdOptions = {
-    variables: {
-      meaning: 42,
-    },
-  };
+    const options: ParseDynamicMdOptions = {
+      variables: {
+        meaning: 42,
+      },
+    };
 
-  const expectedOutput = `# Test
+    const expectedOutput = `# Test
     ## Hello, world!
     `;
-  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
-});
+    expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+  });
 
-test("md with logic - variable equality true - number-string", () => {
-  const input = `# Test
+  test("variable equality true - number-string", () => {
+    const input = `# Test
     {{ if meaning == 42 :: ## Hello, world! }}
     `;
-  const options: ParseDynamicMdOptions = {
-    variables: {
-      meaning: "42",
-    },
-  };
+    const options: ParseDynamicMdOptions = {
+      variables: {
+        meaning: "42",
+      },
+    };
 
-  const expectedOutput = `# Test
+    const expectedOutput = `# Test
     ## Hello, world!
     `;
-  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
-});
+    expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+  });
 
-test("md with logic - variable equality true - extra whitespace", () => {
-  const input = `# Test
+  test("variable equality true - extra whitespace", () => {
+    const input = `# Test
     {{    if  isParsingFun  ==      true  :: Hello, world!
         }}`;
-  const options: ParseDynamicMdOptions = {
-    variables: {
-      isParsingFun: true,
-    },
-  };
+    const options: ParseDynamicMdOptions = {
+      variables: {
+        isParsingFun: true,
+      },
+    };
 
-  const expectedOutput = `# Test
+    const expectedOutput = `# Test
     Hello, world!`;
-  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
-});
+    expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+  });
 
-test("md with logic - variable equality true - minimal whitespace", () => {
-  const input = `# Test
+  test("variable equality true - minimal whitespace", () => {
+    const input = `# Test
     {{if isParsingFun == true ::Hello, world!}}`;
-  const options: ParseDynamicMdOptions = {
-    variables: {
-      isParsingFun: true,
-    },
-  };
+    const options: ParseDynamicMdOptions = {
+      variables: {
+        isParsingFun: true,
+      },
+    };
 
-  const expectedOutput = `# Test
+    const expectedOutput = `# Test
     Hello, world!`;
-  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
-});
+    expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+  });
 
-test("md with logic - content is trimmed", () => {
-  const input = `{{if isParsingFun == true ::    Hello, world!    }}`;
-  const options: ParseDynamicMdOptions = {
-    variables: {
-      isParsingFun: true,
-    },
-  };
+  test("content is trimmed", () => {
+    const input = `{{if isParsingFun == true ::    Hello, world!    }}`;
+    const options: ParseDynamicMdOptions = {
+      variables: {
+        isParsingFun: true,
+      },
+    };
 
-  const expectedOutput = `Hello, world!`;
-  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
-});
+    const expectedOutput = `Hello, world!`;
+    expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+  });
 
-test("md with logic - variable as second operand", () => {
-  const input = `# Test
+  test("variable as second operand", () => {
+    const input = `# Test
     {{ if true == isParsingFun :: Hello, world! }}
     `;
-  const options: ParseDynamicMdOptions = {
-    variables: {
-      isParsingFun: true,
-    },
-  };
+    const options: ParseDynamicMdOptions = {
+      variables: {
+        isParsingFun: true,
+      },
+    };
 
-  const expectedOutput = `# Test
+    const expectedOutput = `# Test
     Hello, world!
     `;
-  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
-});
+    expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+  });
 
-test("md with logic - variable equality false", () => {
-  const input = `# Test{{ if isParsingNotFun == true :: Hello, world! }}
+  test("variable equality false", () => {
+    const input = `# Test{{ if isParsingNotFun == true :: Hello, world! }}
     `;
-  const options: ParseDynamicMdOptions = {
-    variables: {
-      isParsingNotFun: false,
-    },
-  };
+    const options: ParseDynamicMdOptions = {
+      variables: {
+        isParsingNotFun: false,
+      },
+    };
 
-  const expectedOutput = `# Test
+    const expectedOutput = `# Test
     `;
-  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
-});
+    expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+  });
 
-test("md with logic - variable inequality condition", () => {
-  const input = `{{ if isParsingFun != false :: Hello, world! }}`;
-  const options: ParseDynamicMdOptions = {
-    variables: {
-      isParsingFun: true,
-    },
-  };
+  test("variable inequality condition", () => {
+    const input = `{{ if isParsingFun != false :: Hello, world! }}`;
+    const options: ParseDynamicMdOptions = {
+      variables: {
+        isParsingFun: true,
+      },
+    };
 
-  const expectedOutput = `Hello, world!`;
-  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
-});
+    const expectedOutput = `Hello, world!`;
+    expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+  });
 
-test("md with nested logic", () => {
-  const nested = "{{ if Emperor == Sheev :: Hello, galaxy! }}";
-  const input = `{{ if Capital == Coruscant :: ${nested} }}`;
-  const options: ParseDynamicMdOptions = {
-    variables: {
-      Capital: "Coruscant",
-      Emperor: "Sheev",
-    },
-  };
+  test("md with nested logic", () => {
+    const nested = "{{ if Emperor == Sheev :: Hello, galaxy! }}";
+    const input = `{{ if Capital == Coruscant :: ${nested} }}`;
+    const options: ParseDynamicMdOptions = {
+      variables: {
+        Capital: "Coruscant",
+        Emperor: "Sheev",
+      },
+    };
 
-  const expectedOutput = `Hello, galaxy!`;
-  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
-});
+    const expectedOutput = `Hello, galaxy!`;
+    expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+  });
 
-test("md with nested logic through variable", () => {
-  const nested = "{{ if Emperor == Sheev :: Hello, galaxy! }}";
-  const input = `{{ if Capital == Coruscant :: {{ NestedLogic }} }}`;
-  const options: ParseDynamicMdOptions = {
-    variables: {
-      Capital: "Coruscant",
-      Emperor: "Sheev",
-      NestedLogic: nested,
-    },
-  };
+  test("md with nested logic through variable", () => {
+    const nested = "{{ if Emperor == Sheev :: Hello, galaxy! }}";
+    const input = `{{ if Capital == Coruscant :: {{ NestedLogic }} }}`;
+    const options: ParseDynamicMdOptions = {
+      variables: {
+        Capital: "Coruscant",
+        Emperor: "Sheev",
+        NestedLogic: nested,
+      },
+    };
 
-  const expectedOutput = `Hello, galaxy!`;
-  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
-});
+    const expectedOutput = `Hello, galaxy!`;
+    expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+  });
 
-test.each(["if", "If", "IF"])("md with logic - case insensitive keyword: %s", (keyword: string) => {
-  const input = `# Test
+  test("can use single colon in return value", () => {
+    const input = `{{if isParsingFun == true :: Hello : world! }}`;
+    const options: ParseDynamicMdOptions = {
+      variables: {
+        isParsingFun: true,
+      },
+    };
+
+    const expectedOutput = `Hello : world!`;
+    expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+  });
+
+  // not supported, requires overhaul of parsing to work properly
+  test("cannot use double colons in return value", () => {
+    const input = `{{if isParsingFun == true :: Hello :: world! }}`;
+    const options: ParseDynamicMdOptions = {
+      variables: {
+        isParsingFun: true,
+      },
+    };
+
+    expect(() => parseDynamicMd(input, options)).toThrow("Invalid dynamic section format");
+  });
+
+  describe("case sensitivity", () => {
+    test("variable names are case sensitive", () => {
+      const input = `# Test {{ if isParsingFun :: Hello, world! }}{{ if isparsingfun :: Goodbye, world! }}`;
+      const options: ParseDynamicMdOptions = {
+        variables: {
+          isparsingfun: true,
+          isParsingFun: false,
+        },
+      };
+
+      const expectedOutput = `# Test Goodbye, world!`;
+      expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+    });
+
+    test.each(["if", "If", "IF"])("case insensitive keyword: %s", (keyword: string) => {
+      const input = `# Test
     {{ ${keyword} isParsingFun == true :: Hello, world! }}
     `;
-  const options: ParseDynamicMdOptions = {
-    variables: {
-      isParsingFun: true,
-    },
-  };
+      const options: ParseDynamicMdOptions = {
+        variables: {
+          isParsingFun: true,
+        },
+      };
 
-  const expectedOutput = `# Test
+      const expectedOutput = `# Test
     Hello, world!
     `;
-  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+      expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+    });
+
+    test.each(["true", "True", "TRUE"])(
+      "case insensitive boolean operand (right side) - %s",
+      (value) => {
+        const input = `# Test {{ if isParsingFun == ${value} ::Hello, world! }}`;
+        const options: ParseDynamicMdOptions = {
+          variables: {
+            isParsingFun: true,
+          },
+        };
+
+        const expectedOutput = `# Test Hello, world!`;
+        expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+      },
+    );
+
+    test.each(["true", "True", "TRUE"])(
+      "case insensitive boolean operand (left side) - %s",
+      (value) => {
+        const input = `# Test {{ if ${value} == isParsingFun :: Hello, world! }}`;
+        const options: ParseDynamicMdOptions = {
+          variables: {
+            isParsingFun: true,
+          },
+        };
+
+        const expectedOutput = `# Test Hello, world!`;
+        expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+      },
+    );
+
+    test.each(["false", "False", "FALSE"])(
+      "case insensitive boolean operand (right side) - %s",
+      (value) => {
+        const input = `# Test {{ if isParsingFun == ${value} :: Hello, world! }}`;
+        const options: ParseDynamicMdOptions = {
+          variables: {
+            isParsingFun: true,
+          },
+        };
+
+        const expectedOutput = `# Test `;
+        expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+      },
+    );
+
+    test.each(["false", "False", "FALSE"])(
+      "case insensitive boolean operand (left side) - %s",
+      (value) => {
+        const input = `# Test {{ if ${value} == isParsingFun :: Hello, world! }}`;
+        const options: ParseDynamicMdOptions = {
+          variables: {
+            isParsingFun: true,
+          },
+        };
+
+        const expectedOutput = `# Test `;
+        expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+      },
+    );
+  });
 });
 
-test("md with logic - can use colon in return value", () => {
-  const input = `{{if isParsingFun == true :: Hello : world! }}`;
-  const options: ParseDynamicMdOptions = {
-    variables: {
-      isParsingFun: true,
-    },
-  };
+describe("truthy logic", () => {
+  test.each([
+    ["true", true],
+    ["non-empty string", "lorem ipsum"],
+    ["non-zero number", 1],
+  ])(`truthy variable - %s`, (_, value) => {
+    const input = `# Test {{ if maybeTruthy :: ## Show stuff }}`;
+    const options: ParseDynamicMdOptions = {
+      variables: {
+        maybeTruthy: value,
+      },
+    };
+    const expectedOutput = `# Test ## Show stuff`;
+    expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+  });
 
-  const expectedOutput = `Hello : world!`;
-  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
-});
+  test.each([
+    ["false", false],
+    ["null", null],
+    ["empty string", ""],
+    ["zero", 0],
+  ])(`falsy variable - %s`, (_, value) => {
+    const input = `# Test {{ if maybeTruthy :: ## Show stuff }}`;
+    const options: ParseDynamicMdOptions = {
+      variables: {
+        maybeTruthy: value,
+      },
+    };
+    const expectedOutput = `# Test `;
+    expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+  });
 
-// not supported, requires overhaul of parsing to work properly
-test.skip("md with logic - can use 2x colons in return value", () => {
-  const input = `{{if isParsingFun == true :: Hello :: world! }}`;
-  const options: ParseDynamicMdOptions = {
-    variables: {
-      isParsingFun: true,
-    },
-  };
+  test.each([
+    ["true", true],
+    ["non-empty string", "some string"],
+    ["non-zero number", 1],
+  ])(`negated condition - truthy variable - %s`, (_, value) => {
+    const input = `# Test {{ if !maybeTruthy :: ## Show stuff }}`;
+    const options: ParseDynamicMdOptions = {
+      variables: {
+        maybeTruthy: value,
+      },
+    };
+    const expectedOutput = `# Test `;
+    expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+  });
 
-  const expectedOutput = `Hello :: world!`;
-  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
-});
-
-test("md with logic - falsy variable - null", () => {
-  const input = `# Test {{ if maybeTruthy :: Show stuff }}`;
-  const options: ParseDynamicMdOptions = {
-    variables: {
-      maybeTruthy: null,
-    },
-  };
-
-  const expectedOutput = `# Test `;
-  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
-});
-
-test("md with logic - truthy variable - boolean", () => {
-  const input = `# Test {{ if maybeTruthy :: Show stuff }}`;
-  const options: ParseDynamicMdOptions = {
-    variables: {
-      maybeTruthy: true,
-    },
-  };
-
-  const expectedOutput = `# Test Show stuff`;
-  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
-});
-
-test("md with logic - falsy variable - boolean", () => {
-  const input = `# Test {{ if maybeTruthy :: Show stuff }}`;
-  const options: ParseDynamicMdOptions = {
-    variables: {
-      maybeTruthy: false,
-    },
-  };
-
-  const expectedOutput = `# Test `;
-  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
-});
-
-test("md with logic - truthy variable - string", () => {
-  const input = `# Test {{ if maybeTruthy :: Show stuff }}`;
-  const options: ParseDynamicMdOptions = {
-    variables: {
-      maybeTruthy: "some string",
-    },
-  };
-
-  const expectedOutput = `# Test Show stuff`;
-  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
-});
-
-test("md with logic - falsy variable - empty string", () => {
-  const input = `# Test {{ if maybeTruthy :: Show stuff }}`;
-  const options: ParseDynamicMdOptions = {
-    variables: {
-      maybeTruthy: "",
-    },
-  };
-
-  const expectedOutput = `# Test `;
-  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
-});
-
-test("md with logic - truthy variable - number", () => {
-  const input = `# Test {{ if maybeTruthy :: Show stuff }}`;
-  const options: ParseDynamicMdOptions = {
-    variables: {
-      maybeTruthy: 1,
-    },
-  };
-
-  const expectedOutput = `# Test Show stuff`;
-  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
-});
-
-test("md with logic - falsy variable - zero", () => {
-  const input = `# Test {{ if maybeTruthy :: Show stuff }}`;
-  const options: ParseDynamicMdOptions = {
-    variables: {
-      maybeTruthy: 0,
-    },
-  };
-
-  const expectedOutput = `# Test `;
-  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
-});
-
-test("md with reversed logic - falsy variable - null", () => {
-  const input = `# Test {{ if !maybeTruthy :: Show stuff }}`;
-  const options: ParseDynamicMdOptions = {
-    variables: {
-      maybeTruthy: null,
-    },
-  };
-
-  const expectedOutput = `# Test Show stuff`;
-  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
-});
-
-test("md with reversed logic - truthy variable - boolean", () => {
-  const input = `# Test {{ if !maybeTruthy :: Show stuff }}`;
-  const options: ParseDynamicMdOptions = {
-    variables: {
-      maybeTruthy: true,
-    },
-  };
-
-  const expectedOutput = `# Test `;
-  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
-});
-
-test("md with reversed logic - falsy variable - boolean", () => {
-  const input = `# Test {{ if !maybeTruthy :: Show stuff }}`;
-  const options: ParseDynamicMdOptions = {
-    variables: {
-      maybeTruthy: false,
-    },
-  };
-
-  const expectedOutput = `# Test Show stuff`;
-  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
-});
-
-test("md with reversed logic - truthy variable - string", () => {
-  const input = `# Test {{ if !maybeTruthy :: Show stuff }}`;
-  const options: ParseDynamicMdOptions = {
-    variables: {
-      maybeTruthy: "some string",
-    },
-  };
-
-  const expectedOutput = `# Test `;
-  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
-});
-
-test("md with reversed logic - falsy variable - empty string", () => {
-  const input = `# Test {{ if !maybeTruthy :: Show stuff }}`;
-  const options: ParseDynamicMdOptions = {
-    variables: {
-      maybeTruthy: "",
-    },
-  };
-
-  const expectedOutput = `# Test Show stuff`;
-  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
-});
-
-test("md with reversed logic - truthy variable - number", () => {
-  const input = `# Test {{ if !maybeTruthy :: Show stuff }}`;
-  const options: ParseDynamicMdOptions = {
-    variables: {
-      maybeTruthy: 1,
-    },
-  };
-
-  const expectedOutput = `# Test `;
-  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
-});
-
-test("md with reversed logic - falsy variable - zero", () => {
-  const input = `# Test {{ if !maybeTruthy :: Show stuff }}`;
-  const options: ParseDynamicMdOptions = {
-    variables: {
-      maybeTruthy: 0,
-    },
-  };
-
-  const expectedOutput = `# Test Show stuff`;
-  expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+  test.each([
+    ["false", false],
+    ["null", null],
+    ["empty string", ""],
+    ["zero", 0],
+  ])(`negated condition - falsy variable - %s`, (_, value) => {
+    const input = `# Test {{ if !maybeTruthy :: ## Show stuff }}`;
+    const options: ParseDynamicMdOptions = {
+      variables: {
+        maybeTruthy: value,
+      },
+    };
+    const expectedOutput = `# Test ## Show stuff`;
+    expect(parseDynamicMd(input, options)).toEqual(expectedOutput);
+  });
 });
