@@ -54,6 +54,9 @@ if ($confirmRun) {
 $imageName = "$envName-brevgen2-web"
 $ecrUrl = "$awsAccount.dkr.ecr.$region.amazonaws.com"
 
+# ensure docker is running before changing directories
+docker info > $null
+
 if ($buildContainer) {
     Write-Host Building container...
     Set-Location ../..

@@ -48,10 +48,13 @@ COPY --from=builder --chown=nextjs:nodejs /app/apps/preview-web/.next/standalone
 COPY --from=builder --chown=nextjs:nodejs /app/apps/preview-web/.next/static ./apps/preview-web/.next/static
 WORKDIR /app/apps/preview-web
 
+RUN apk update && apk add curl && rm -rf /var/cache/apk/*
+
 USER nextjs
 
 EXPOSE 3000
 ENV PORT=3000
+HEALTHCHECK CMD ["curl", "--fail", "http://localhost:3000/api/health", "||", "exit", "1"]
 
 # server.js is created by next build from the standalone output
 # https://nextjs.org/docs/pages/api-reference/next-config-js/output

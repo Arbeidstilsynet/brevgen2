@@ -151,8 +151,6 @@ Resources:
           DEBUG: !Ref DEBUG
       Timeout: 60
       MemorySize: 2048
-      ProvisionedConcurrencyConfig:
-        ProvisionedConcurrentExecutions: 1
       AutoPublishAlias: GenererBrevVersion
       Layers:
         - !Ref ChromiumLayer

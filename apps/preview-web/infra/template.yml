@@ -106,6 +106,9 @@ Resources:
             - !GetAtt VPC.Outputs.PublicSubnet1
             - !GetAtt VPC.Outputs.PublicSubnet2
       DeploymentConfiguration:
+        DeploymentCircuitBreaker:
+          Enable: true
+          Rollback: true
         MaximumPercent: 200
         MinimumHealthyPercent: 50
       TaskDefinition: !Ref FargateTaskDefinition
@@ -140,6 +143,14 @@ Resources:
               Value: !Ref PdfApiKey
             - Name: AZURE_DEVOPS_PAT
               Value: !Ref AzureDevopsPat
+          # Diverse forsøk på task healthcheck har ikke lykkes,
+          # selv om ALb healthcheck mot samme endepunkt fungerer.
+          # curl: (7) Failed to connect to localhost port 3000
+          # HealthCheck:
+          #   Command:
+          #     - CMD-SHELL
+          #     - "curl --fail http://localhost:3000/api/health >> /proc/1/fd/1 2>&1  || exit 1"
+          #   StartPeriod: 5
           LogConfiguration:
             LogDriver: awslogs
             Options:
