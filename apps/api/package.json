@@ -14,7 +14,7 @@
   "dependencies": {
     "@at/document-templates": "workspace:*",
     "@at/dynamic-markdown": "workspace:*",
-    "@aws-sdk/client-lambda": "3.738.0",
+    "@aws-sdk/client-lambda": "3.744.0",
     "@sparticuz/chromium": "131.0.1",
     "get-port": "7.1.0",
     "gray-matter": "4.0.3",
