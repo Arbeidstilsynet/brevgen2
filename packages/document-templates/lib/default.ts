@@ -95,7 +95,7 @@ function getLetterhead(fields: DefaultTemplateFields, language: Language) {
   // Certain whitespace can cause Marked's HTML conversion to insert elements as string literals in <code> tags.
   const lines = [
     `<div style="margin-bottom: 36px;">`,
-    `<img src="${logoBase64}" alt="Logo" style="max-width: 114px; height: auto; text-align: left;" />`,
+    `<img src="${logoBase64}" alt="Logo" style="max-width: 148px; height: auto; text-align: left;" />`,
     `</div>`,
     `<div style="text-align: right; font-size: 10pt;">`,
     `<p style="margin: 0;">Vår dato: ${fields.dato}</p>`,
