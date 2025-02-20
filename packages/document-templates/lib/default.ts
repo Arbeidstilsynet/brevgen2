@@ -139,6 +139,8 @@ function getSignature(variant: SignatureVariant, language: Language) {
 }
 
 export function getFooter(fields: DefaultTemplateFields): string {
+  // nodene med class pageNumber og totalPages blir injected av Puppeteer
+  // se PDFOptions.footerTemplate https://github.com/puppeteer/puppeteer/blob/main/docs/api/puppeteer.pdfoptions.md
   return `
     <div style="font-family: Calibri,Candara,Segoe,Segoe UI,Optima,Arial,sans-serif; font-size: 10px; text-align: right; width: 100%; margin-right: 0.8in; margin-bottom: 0.5in;">
       <div>Vår referanse: ${fields.saksnummer}</div>
