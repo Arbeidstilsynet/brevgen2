@@ -9,7 +9,7 @@ import { RepoSelector } from "./RepoSelector";
 import { VariablesReport } from "./VariablesReport";
 
 type Props = Readonly<{
-  onFileSelected: (repoId: string, branch: string, filePath: string) => void;
+  onFileSelected: (repoId: string, branch: string, filePath: string) => void | Promise<void>;
   onExampleSelected: (example: "initial" | "advanced") => void;
 }>;
 
@@ -47,7 +47,7 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
 
   return (
     <article className="flex flex-col p-4 space-y-4">
-      <h1 className="text-3xl font-bold">Konfigurasjon</h1>
+      <h1 className="text-2xl font-bold">Konfigurasjon</h1>
 
       <div className="flex space-x-4 mb-4">
         <button

@@ -12,9 +12,9 @@ function validateVariables(variables: Record<string, unknown>): void {
   }
 }
 
-export type ParseDynamicMdOptions = {
+export interface ParseDynamicMdOptions {
   variables: Record<string, VariableValue>;
-};
+}
 
 export function parseDynamicMd(input: string, options?: ParseDynamicMdOptions): string {
   const { variables } = options ?? { variables: {} };

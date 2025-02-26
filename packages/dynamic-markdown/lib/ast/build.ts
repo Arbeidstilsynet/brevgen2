@@ -20,8 +20,6 @@ export function buildAST(tokens: Token[]): ASTNode[] {
       ast.push(parseLogicToken(token));
     } else if (token.type === "var") {
       ast.push({ type: "var", value: token.value, line: token.line });
-    } else {
-      throw new TypeError(`Unsupported token type: ${token.type} at line ${token.line}`);
     }
     i++;
   }

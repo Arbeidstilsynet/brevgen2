@@ -1,4 +1,3 @@
-import grayMatter from "gray-matter";
 import { Browser } from "puppeteer-core";
 import { Config } from "./config";
 import { generateOutput } from "./generate-output";
@@ -8,34 +7,7 @@ import { getMarginObject } from "./helpers";
 /**
  * Convert markdown to pdf.
  */
-export const convertMdToPdf = async (
-  input: { content: string },
-  config: Config,
-  {
-    browser,
-  }: {
-    browser?: Browser;
-  } = {},
-) => {
-  const { content: md, data: frontMatterConfig } = grayMatter(
-    input.content,
-    config.gray_matter_options,
-  );
-
-  // merge front-matter config
-  if (frontMatterConfig instanceof Error) {
-    console.warn(
-      "Warning: the front-matter was ignored because it could not be parsed:\n",
-      frontMatterConfig,
-    );
-  } else {
-    config = {
-      ...config,
-      ...(frontMatterConfig as Config),
-      pdf_options: { ...config.pdf_options, ...frontMatterConfig.pdf_options },
-    };
-  }
-
+export const convertMdToPdf = async (md: string, config: Config, browser?: Browser) => {
   const { headerTemplate, footerTemplate, displayHeaderFooter } = config.pdf_options;
 
   if ((headerTemplate || footerTemplate) && displayHeaderFooter === undefined) {

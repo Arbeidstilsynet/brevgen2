@@ -54,10 +54,10 @@ if ($confirmRun) {
 $imageName = "$envName-brevgen2-web"
 $ecrUrl = "$awsAccount.dkr.ecr.$region.amazonaws.com"
 
-# ensure docker is running before changing directories
-docker info > $null
-
 if ($buildContainer) {
+    # ensure docker is running before changing directories
+    docker info > $null
+
     Write-Host Building container...
     Set-Location ../..
     docker build . -t $imageName -f apps/preview-web/Dockerfile
@@ -73,10 +73,12 @@ sam build
 sam deploy --no-fail-on-empty-changeset --parameter-overrides "EcrRepositoryName=$imageName"
 Set-Location -
 
-Write-Host "`nTagging and uploading container..."
-aws ecr get-login-password --region "$region" | docker login --username AWS --password-stdin "$ecrUrl"
-docker tag "${imageName}:latest" "${ecrUrl}/${imageName}:latest"
-docker push "${ecrUrl}/${imageName}:latest"
+if ($buildContainer) {
+    Write-Host "`nTagging and uploading container..."
+    aws ecr get-login-password --region "$region" | docker login --username AWS --password-stdin "$ecrUrl"
+    docker tag "${imageName}:latest" "${ecrUrl}/${imageName}:latest"
+    docker push "${ecrUrl}/${imageName}:latest"
+}
 
 # hent image digest for at ECS skal oppdage endring vs. å bruke :latest tag
 $imageDigest = aws ecr describe-images --repository-name "$imageName" --image-ids imageTag=latest --query "imageDetails[0].imageDigest" --output text

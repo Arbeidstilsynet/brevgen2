@@ -128,7 +128,7 @@ export function Preview({
       return;
     }
 
-    const renderHtml = async () => {
+    const renderHtml = () => {
       let md = parsedMd;
 
       if (selectedTemplate === "default") {

@@ -15,6 +15,12 @@ export function Overlay({ children, widthPercent = 80, heightPercent = 80, onClo
   const handleClickOutside = useCallback(
     (event: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+        const path = event.composedPath();
+        // If any element in the path has the data-ignore-outside attribute, do nothing.
+        if (path.some((el) => el instanceof HTMLElement && el.dataset.ignoreOutside)) {
+          return;
+        }
+
         onClose();
       }
     },
@@ -51,11 +57,11 @@ export function Overlay({ children, widthPercent = 80, heightPercent = 80, onClo
         }}
       >
         <button
-          className="absolute top-2 right-2 p-2 bg-gray-200 rounded-full hover:bg-gray-300"
+          className="absolute top-2 right-2 p-2 rounded-full hover:bg-gray-300"
           onClick={onClose}
           aria-label="Close Overlay"
         >
-          &times;
+          🗙
         </button>
         <div className="p-6 overflow-auto h-full">{children}</div>
       </div>

@@ -26,8 +26,6 @@ export function evaluateAST(ast: ASTNode[], variables: Record<string, VariableVa
       }
     } else if (node.type === "var") {
       result += processVariable(node.value, variables, node.line);
-    } else {
-      throw new TypeError(`Unsupported node type: ${node.type} at line ${node.line}`);
     }
   }
 

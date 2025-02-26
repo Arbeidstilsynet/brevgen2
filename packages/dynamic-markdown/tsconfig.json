@@ -1,5 +1,4 @@
 {
   "extends": "@repo/typescript-config/base.json",
-  "include": ["lib"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["lib", "vitest.config.ts"]
 }

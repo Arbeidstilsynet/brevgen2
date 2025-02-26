@@ -1,6 +1,14 @@
 import { join, posix, sep } from "path";
 import { PDFDocument } from "pdf-lib";
-import type { Browser } from "puppeteer-core";
+import type {
+  Browser as PuppeteerBrowser,
+  LaunchOptions as PuppeteerLaunchOptions,
+} from "puppeteer";
+import type {
+  Page,
+  Browser as PuppeteerCoreBrowser,
+  LaunchOptions as PuppeteerCoreLaunchOptions,
+} from "puppeteer-core";
 import { Config, HtmlConfig, PdfConfig } from "./config";
 import { isHttpUrl } from "./helpers";
 import { loadPuppeteer } from "./puppeteer-loader";
@@ -14,6 +22,9 @@ export interface PdfOutput {
 export interface HtmlOutput {
   content: string;
 }
+
+type Browser = PuppeteerBrowser | PuppeteerCoreBrowser;
+type LaunchOptions = PuppeteerLaunchOptions & PuppeteerCoreLaunchOptions;
 
 /**
  * Store a single browser instance reference so that we can re-use it.
@@ -59,7 +70,7 @@ export async function generateOutput(
       browserPromise = puppeteer.launch({
         devtools: config.devtools,
         ...config.launch_options,
-      });
+      } as LaunchOptions);
     }
 
     return browserPromise;
@@ -93,7 +104,9 @@ export async function generateOutput(
    */
   await Promise.all([
     page.waitForNavigation({ waitUntil: "networkidle0" }),
-    page.evaluate(() => history.pushState(undefined, "", "#")) /* eslint no-undef: off */,
+    // workaround for puppeteer vs puppeteer-core
+    // This expression is not callable. Each member of the union type ... has signatures, but none of those signatures are compatible with each other.
+    (page.evaluate as Page["evaluate"])(() => history.pushState(undefined, "", "#")),
   ]);
 
   let outputFileContent: string | Buffer = "";

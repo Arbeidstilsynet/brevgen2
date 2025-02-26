@@ -17,9 +17,9 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 
-app.post<HandlerGeneratePdfArgs>("/genererbrev", async (req, res) => {
+app.post("/genererbrev", async (req, res) => {
   try {
-    const result = await handlerGeneratePdf(req.body);
+    const result = await handlerGeneratePdf(req.body as HandlerGeneratePdfArgs);
     res.json(result);
   } catch (error) {
     console.error("Error processing request:", error);

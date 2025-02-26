@@ -2,7 +2,7 @@ import { defaultTemplate } from "@at/document-templates";
 import mdToPdf from "./core";
 import { PdfConfig } from "./core/config";
 
-type DynamicMdPdfConfig = {
+interface DynamicMdPdfConfig {
   /**
    * Pick letterhead, footer and styling template
    *
@@ -14,7 +14,7 @@ type DynamicMdPdfConfig = {
    * Required if template is "default"
    */
   defaultTemplateArgs?: defaultTemplate.DefaultTemplateArgs;
-};
+}
 
 export type GeneratePdfOptions = Partial<PdfConfig> & {
   dynamic?: DynamicMdPdfConfig;
@@ -95,5 +95,5 @@ export async function generatePdf(md: string, options?: GeneratePdfOptions) {
     console.log({ function: "generatePdf", options, pdfConfig });
   }
 
-  return await mdToPdf({ content: md }, pdfConfig);
+  return await mdToPdf(md, pdfConfig);
 }

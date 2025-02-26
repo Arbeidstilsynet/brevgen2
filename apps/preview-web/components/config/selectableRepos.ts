@@ -1,4 +1,4 @@
-type RepoInfo = {
+interface RepoInfo {
   /**
    * Name of the Git repository
    */
@@ -11,7 +11,7 @@ type RepoInfo = {
    * Restrict file options to these paths if not set to null
    */
   onlyPaths: string[] | null;
-};
+}
 
 export const allowedRepos: RepoInfo[] = [
   {

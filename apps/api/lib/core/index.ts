@@ -2,12 +2,18 @@ import chromium from "@sparticuz/chromium";
 import fs from "fs";
 import getPort from "get-port";
 import path from "path";
-import type { LaunchOptions } from "puppeteer-core";
+import type { LaunchOptions as PuppeteerLaunchOptions } from "puppeteer";
+import type {
+  Browser as PuppeteerCoreBrowser,
+  LaunchOptions as PuppeteerCoreLaunchOptions,
+} from "puppeteer-core";
 import { Config, defaultConfig, HtmlConfig, PdfConfig } from "./config";
 import { HtmlOutput, Output, PdfOutput } from "./generate-output";
 import { convertMdToPdf } from "./md-to-pdf";
 import { loadPuppeteer } from "./puppeteer-loader";
 import { closeServer, serveDirectory } from "./serve-dir";
+
+type LaunchOptions = PuppeteerLaunchOptions & PuppeteerCoreLaunchOptions;
 
 /**
  * Load all fonts for Chromium in given directory
@@ -39,27 +45,12 @@ async function configureChromium() {
   }
 }
 
-type Input = ContentInput;
-
-interface ContentInput {
-  content: string;
-}
-
-const hasContent = (input: Input): input is ContentInput => "content" in input;
-
 /**
  * Convert a markdown file to PDF.
  */
-export async function mdToPdf(input: ContentInput, config?: Partial<PdfConfig>): Promise<PdfOutput>;
-export async function mdToPdf(
-  input: ContentInput,
-  config?: Partial<HtmlConfig>,
-): Promise<HtmlOutput>;
-export async function mdToPdf(input: Input, config: Partial<Config> = {}): Promise<Output> {
-  if (!hasContent(input)) {
-    throw new Error('The input is missing property "content"');
-  }
-
+export async function mdToPdf(md: string, config?: Partial<PdfConfig>): Promise<PdfOutput>;
+export async function mdToPdf(md: string, config?: Partial<HtmlConfig>): Promise<HtmlOutput>;
+export async function mdToPdf(md: string, config: Partial<Config> = {}): Promise<Output> {
   if (!config.port) {
     config.port = await getPort();
   }
@@ -95,9 +86,9 @@ export async function mdToPdf(input: Input, config: Partial<Config> = {}): Promi
     ...(process.env.AWS_LAMBDA_FUNCTION_NAME ? lambdaArgs : {}),
     devtools: config.devtools,
     ...config.launch_options,
-  });
+  } as LaunchOptions);
 
-  const pdf = await convertMdToPdf(input, mergedConfig, { browser });
+  const pdf = await convertMdToPdf(md, mergedConfig, browser as PuppeteerCoreBrowser);
 
   await browser.close();
   await closeServer(server);

@@ -52,4 +52,4 @@ stages:
             RepoName=$(Build.Repository.Name)
             Version=$(Build.SourceBranchName)-$(Build.SourceVersion)
             CostCenter=3103
-            Application=brevgenerator2
+            ApplicationName=brevgenerator2

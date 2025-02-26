@@ -3,10 +3,13 @@
 import { fetchFileContentFromAzure } from "@/actions/azdo";
 import { findMdVariables } from "@at/dynamic-markdown";
 import { Editor, useMonaco } from "@monaco-editor/react";
-import { useReducer, useState } from "react";
+import { useCallback, useReducer, useState } from "react";
 import { Overlay } from "../Overlay";
 import { Config } from "../config";
 import { Explanation, IndictableElement } from "../explanation";
+import { Spinner, SpinnerOverlay } from "../spinner";
+import { Workspace } from "../workspace";
+import { WorkspaceContext } from "../workspace/provider";
 import { Preview } from "./Preview";
 import { TemplateConfig } from "./TemplateConfig";
 import { TemplateOption } from "./TemplatePicker";
@@ -15,6 +18,7 @@ import { advancedMd, advancedVars } from "./examples/advanced";
 import { initialDefaultTemplateArgs, initialMd, initialVars } from "./examples/initial";
 import { defaultTemplateReducer } from "./templateConfigReducer";
 import { useDynamicMarkdown } from "./useDynamicMarkdown";
+import { useLoadPermanentUrl } from "./useLoadPermanentUrl";
 import { getRandomValue } from "./utils";
 
 const getIndicatedElementClass = (
@@ -74,29 +78,22 @@ export function DynamicMarkdownEditor() {
   const [isExplanationOpen, setIsExplanationOpen] = useState(false);
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [indicatedElement, setIndicatedElement] = useState<IndictableElement>(null);
+  const [isWorkspaceOpen, setIsWorkspaceOpen] = useState(false);
 
-  function updateEditor(value: string) {
-    if (!monaco) {
-      throw new TypeError("Expected Monaco to be instansiated");
-    }
-    const editor = monaco.editor.getEditors()[0];
-    if (editor) {
-      editor.setValue(value);
-      editor.focus();
-    }
-  }
-
-  const handleFileSelected = async (repoId: string, branch: string, file: string) => {
-    const data = await fetchFileContentFromAzure(repoId, branch, file);
-    // set empty string defaults for all variables to avoid parsing error
-    const foundVariables = findMdVariables(data);
-    const vars: Record<string, string> = {};
-    foundVariables.forEach((v) => (vars[v] = ""));
-
-    updateEditor(data);
-    parse(data, vars);
-    setIsConfigOpen(false);
-  };
+  const updateEditor = useCallback(
+    (md: string, vars: typeof mdVars) => {
+      if (!monaco) {
+        throw new TypeError("Expected Monaco to be instantiated");
+      }
+      const editor = monaco.editor.getEditors()[0];
+      if (editor) {
+        editor.setValue(md);
+        editor.focus();
+      }
+      parse(md, vars);
+    },
+    [monaco, parse],
+  );
 
   const handleExampleSelected = (example: "initial" | "advanced") => {
     let data: string;
@@ -111,10 +108,36 @@ export function DynamicMarkdownEditor() {
         vars = advancedVars;
         break;
     }
-    updateEditor(data);
-    parse(data, vars);
+    updateEditor(data, vars);
     setIsConfigOpen(false);
   };
+
+  const loadMdWithEmptyVars = useCallback(
+    (md: string) => {
+      const foundVariables = findMdVariables(md);
+      const vars: Record<string, string> = {};
+      // set empty string defaults for all variables to avoid parsing error on load
+      foundVariables.forEach((v) => (vars[v] = ""));
+      updateEditor(md, vars);
+    },
+    [updateEditor],
+  );
+
+  const handleFileSelected = async (repoId: string, branch: string, file: string) => {
+    const md = await fetchFileContentFromAzure(repoId, branch, file);
+    loadMdWithEmptyVars(md);
+    setIsConfigOpen(false);
+  };
+
+  const handleLoadFromWorkspace = useCallback(
+    (md: string) => {
+      loadMdWithEmptyVars(md);
+      setIsWorkspaceOpen(false);
+    },
+    [loadMdWithEmptyVars],
+  );
+
+  const isLoadingPermanentUrl = useLoadPermanentUrl(Boolean(monaco), loadMdWithEmptyVars);
 
   const handleFillRandomValues = () => {
     for (const varName of foundMdVars) {
@@ -124,6 +147,12 @@ export function DynamicMarkdownEditor() {
 
   return (
     <main className="flex flex-col h-screen">
+      {isLoadingPermanentUrl && (
+        <SpinnerOverlay>
+          <Spinner />
+        </SpinnerOverlay>
+      )}
+
       {isExplanationOpen && (
         <Overlay
           onClose={() => {
@@ -135,8 +164,15 @@ export function DynamicMarkdownEditor() {
         </Overlay>
       )}
       {isConfigOpen && (
-        <Overlay onClose={() => setIsConfigOpen(false)}>
+        <Overlay widthPercent={60} onClose={() => setIsConfigOpen(false)}>
           <Config onFileSelected={handleFileSelected} onExampleSelected={handleExampleSelected} />
+        </Overlay>
+      )}
+      {isWorkspaceOpen && (
+        <Overlay widthPercent={55} heightPercent={90} onClose={() => setIsWorkspaceOpen(false)}>
+          <WorkspaceContext value={{ currentMd: md, onLoadMd: handleLoadFromWorkspace }}>
+            <Workspace />
+          </WorkspaceContext>
         </Overlay>
       )}
 
@@ -177,9 +213,7 @@ export function DynamicMarkdownEditor() {
           <div className="flex space-x-2">
             <button
               className="p-1 flex items-center justify-center h-8 w-8 bg-green-100 text-gray-900 rounded-lg hover:bg-green-300 hover:shadow-lg transition duration-200"
-              onClick={() => {
-                navigator.clipboard.writeText(md);
-              }}
+              onClick={() => navigator.clipboard.writeText(md)}
               aria-label="Copy"
               title="Copy"
             >
@@ -192,6 +226,14 @@ export function DynamicMarkdownEditor() {
               title="Save"
             >
               <span className="text-2xl font-bold">💾</span>
+            </button>
+            <button
+              className="p-1 flex items-center justify-center h-8 w-8 bg-green-100 text-gray-900 rounded-lg hover:bg-green-300 hover:shadow-lg transition duration-200"
+              onClick={() => setIsWorkspaceOpen(true)}
+              aria-label="Manage workspace"
+              title="Manage workspace"
+            >
+              <span className="text-2xl font-bold">📂</span>
             </button>
           </div>
         </div>

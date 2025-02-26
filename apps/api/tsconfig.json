@@ -1,5 +1,4 @@
 {
   "extends": "@repo/typescript-config/base.json",
-  "include": ["function", "devServer.ts", "lib"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["function", "lib", "*.ts"]
 }

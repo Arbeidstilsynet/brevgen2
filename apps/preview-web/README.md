@@ -8,9 +8,16 @@ Live: <https://brevgenerator.arbeidstilsynet.no>
 For å kjøre lokalt eller bruke `deploy-fargate.ps1`, opprett ny fil `.env` med følgende miljøvariabler:
 
 ```sh
+# For å kunne bruke PDF-generering
 PDF_API_URL=http://localhost:4000
 PDF_API_KEY=apiKeyDuFinnerIAWS # nødvendig hvis api ikke er localhost
+
+# For å kunne hente maler fra repo
 AZURE_DEVOPS_PAT=yourPAT # trenger Code:Read
+
+# For bruk av Workspace-overlay og maler i S3
+AWS_PROFILE=default
+AWS_BUCKET_NAME={env}-at-brevgenerator2-workspace-bucket
 ```
 
 ## Docker

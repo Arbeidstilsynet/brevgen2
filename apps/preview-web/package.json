@@ -12,6 +12,8 @@
   "dependencies": {
     "@at/document-templates": "workspace:*",
     "@at/dynamic-markdown": "workspace:*",
+    "@aws-sdk/client-s3": "3.750.0",
+    "@aws-sdk/credential-providers": "3.750.0",
     "@monaco-editor/react": "4.7.0",
     "@tanstack/react-query": "5.66.9",
     "@tanstack/react-query-devtools": "5.66.9",
@@ -22,8 +24,8 @@
     "sanitize-html": "2.14.0"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "3.2.0",
     "@eslint/js": "9.21.0",
-    "@types/eslint__js": "8.42.3",
     "@types/node": "22.13.5",
     "@types/react": "19.0.10",
     "@types/react-dom": "19.0.4",
@@ -31,6 +33,7 @@
     "@types/wicg-file-system-access": "2023.10.5",
     "eslint": "9.21.0",
     "eslint-config-next": "15.1.7",
+    "eslint-plugin-react-compiler": "19.0.0-beta-e1e972c-20250221",
     "postcss": "8.5.2",
     "tailwindcss": "3.4.17",
     "typescript": "5.7.3",

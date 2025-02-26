@@ -34,13 +34,13 @@ const text = {
   },
 } satisfies Record<string, Record<Language, string>>;
 
-export type DefaultTemplateArgs = {
+export interface DefaultTemplateArgs {
   language: Language;
   fields: DefaultTemplateFields;
   signatureVariant: SignatureVariant;
-};
+}
 
-export type DefaultTemplateFields = {
+export interface DefaultTemplateFields {
   dato: string;
   saksnummer: string | number;
   deresDato?: string;
@@ -54,7 +54,7 @@ export type DefaultTemplateFields = {
     postnr: string | number;
     poststed: string;
   };
-};
+}
 
 export function getMd(md: string, args: DefaultTemplateArgs): string {
   const letterhead = getLetterhead(args.fields, args.language);

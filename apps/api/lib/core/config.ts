@@ -1,4 +1,3 @@
-import { GrayMatterOption } from "gray-matter";
 import { MarkedExtension, MarkedOptions } from "marked";
 import type { FrameAddScriptTagOptions, LaunchOptions, PDFOptions } from "puppeteer-core";
 
@@ -22,14 +21,6 @@ export const defaultConfig: Config = {
     },
   },
   launch_options: {},
-  gray_matter_options: {
-    engines: {
-      js: () =>
-        new Error(
-          "The JS engine for front-matter is disabled by default for security reasons. You can enable it by configuring gray_matter_options.",
-        ),
-    },
-  },
   as_html: false,
   devtools: false,
   marked_extensions: [],
@@ -119,14 +110,6 @@ interface BasicConfig {
    * @see https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#puppeteerlaunchoptions
    */
   launch_options: LaunchOptions;
-
-  /**
-   * Options for gray-matter (front-matter parser).
-   *
-   * @see https://github.com/jonschlinkert/gray-matter#options
-   */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  gray_matter_options: GrayMatterOption<string, any>;
 
   /**
    * If true, open chromium with devtools instead of saving the pdf. This is

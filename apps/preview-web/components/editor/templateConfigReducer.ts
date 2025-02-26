@@ -5,33 +5,33 @@ type DefaultTemplateFields = defaultTemplate.DefaultTemplateFields;
 type Language = defaultTemplate.DefaultTemplateArgs["language"];
 type SignatureVariant = defaultTemplate.DefaultTemplateArgs["signatureVariant"];
 
-type FieldsAction = {
+interface FieldsAction {
   type: "UPDATE_FIELD";
   field: Exclude<keyof DefaultTemplateFields, "erUnntattOffentlighet">;
   value: string | number;
-};
+}
 
-type BooleanFieldsAction = {
+interface BooleanFieldsAction {
   type: "TOGGLE_FIELD";
   field: Extract<keyof DefaultTemplateFields, "erUnntattOffentlighet">;
   value: boolean;
-};
+}
 
-type VirksomhetAction = {
+interface VirksomhetAction {
   type: "UPDATE_VIRKSOMHET";
   field: keyof DefaultTemplateFields["virksomhet"];
   value: string | number;
-};
+}
 
-type LanguageAction = {
+interface LanguageAction {
   type: "UPDATE_LANGUAGE";
   value: Language;
-};
+}
 
-type SignatureVariantAction = {
+interface SignatureVariantAction {
   type: "UPDATE_SIGNATURE_VARIANT";
   value: SignatureVariant;
-};
+}
 
 export type DefaultTemplateArgsAction =
   | FieldsAction

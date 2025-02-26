@@ -49,6 +49,8 @@ Resources:
   # **************************************
   VPC:
     Type: AWS::Serverless::Application
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       Location: ./vpc.yml
       Parameters:
@@ -143,6 +145,10 @@ Resources:
               Value: !Ref PdfApiKey
             - Name: AZURE_DEVOPS_PAT
               Value: !Ref AzureDevopsPat
+            - Name: AWS_REGION
+              Value: !Ref AWS::Region
+            - Name: AWS_BUCKET_NAME
+              Value: !Ref WorkspaceBucket
           # Diverse forsøk på task healthcheck har ikke lykkes,
           # selv om ALb healthcheck mot samme endepunkt fungerer.
           # curl: (7) Failed to connect to localhost port 3000
@@ -201,6 +207,50 @@ Resources:
                 aws:SourceAccount: !Ref AWS::AccountId
       Path: /
 
+  # **************************************
+  # S3 Bucket
+  # **************************************
+  WorkspaceBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "${Env}-at-brevgenerator2-workspace-bucket"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  WorkspaceBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref WorkspaceBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !GetAtt ECSTaskRole.Arn
+            Action:
+              - s3:ListBucket
+            Resource: !Sub "arn:aws:s3:::${WorkspaceBucket}"
+          - Effect: Allow
+            Principal:
+              AWS: !GetAtt ECSTaskRole.Arn
+            Action:
+              - s3:GetObject
+              - s3:PutObject
+              - s3:DeleteObject
+            Resource: !Sub "arn:aws:s3:::${WorkspaceBucket}/*"
+
+  # **************************************
+  # Outputs
+  # **************************************
 Outputs:
   LoadBalancerURL:
     Value: !GetAtt VPC.Outputs.LoadBalancerDNSName
+  S3WorkspaceBucket:
+    Value: !Ref WorkspaceBucket

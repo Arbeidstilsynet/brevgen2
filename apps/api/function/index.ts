@@ -21,7 +21,11 @@ export const handler: APIGatewayProxyHandler = async (event) => {
   }
 
   try {
-    const body: HandlerGeneratePdfArgs = JSON.parse(event.body!);
+    if (!event.body) {
+      throw new TypeError("Missing body");
+    }
+
+    const body = JSON.parse(event.body) as HandlerGeneratePdfArgs;
 
     if (!("md" in body)) {
       throw new TypeError("Missing body.md");

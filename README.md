@@ -10,18 +10,27 @@ Den nye brevgeneratoren er konfigurert som et integrert monorepo med sentraliser
   - [preview-web](apps/preview-web) - Web-editor med forhåndsvisning og Git-integrasjon
     - [README](apps/preview-web/README.md)
 - packages
-  - [dynamic-markdown](packages/dynamic-markdown) - bibliotek
+  - [dynamic-markdown](packages/dynamic-markdown) - kjernebibliotek
     - [README](packages/dynamic-markdown/README.md)
   - [document-templates](packages/document-templates/) - letterhead/footer/styling for genererte dokumenter
-  - [config-typescript](packages/config-typescript/) - felles tsconfig
+  - [config-typescript](packages/config-typescript/) - felles tsconfigs
   - [nuget-client](packages/nuget-client) - C#-klient for å bruke API - publisert som `AT.Brevgenerator.Klient`
-    - [tenkt å bygges sammen med resten](https://turbo.build/repo/docs/guides/multi-language), men det fungerer ikke akkurat nå
+    - [README](packages/nuget-client/README.md)
 - adhoc
   - [BrevgeneratorKlientLocalTest](adhoc/BrevgeneratorKlientLocalTest) - CLI for å teste nuget-client
 
 ## Lokal kjøring
 
-Se readme i prosjektene under apps
+Kortversjon:
+
+```sh
+$/: pnpm install
+$/apps/api: pnpm dev
+# se apps/preview-web/README.md for nødvendige miljøvariabler
+$/apps/preview-web: pnpm dev
+```
+
+Se readmes i hvert prosjekt for detaljer.
 
 ## Turborepo
 

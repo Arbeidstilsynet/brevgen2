@@ -1,4 +1,3 @@
-import type { PuppeteerNode } from "puppeteer-core";
 import puppeteer from "puppeteer-core";
 
 /**
@@ -8,8 +7,8 @@ export async function loadPuppeteer() {
   const isLocal = process.env.NODE_ENV === "development";
   if (isLocal) {
     const { default: localPuppeteer } = await import(/* @vite-ignore */ "puppeteer");
-    return localPuppeteer as unknown as PuppeteerNode;
+    return localPuppeteer;
   } else {
-    return puppeteer as PuppeteerNode;
+    return puppeteer;
   }
 }

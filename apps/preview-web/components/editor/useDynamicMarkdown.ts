@@ -1,17 +1,19 @@
+"use client";
+
 import { findMdVariables, parseDynamicMd } from "@at/dynamic-markdown";
-import { useReducer } from "react";
+import { useCallback, useReducer } from "react";
 
 type MdVars = Record<string, string | boolean>;
 
-type State = {
+interface State {
   md: string;
   parsedMd: string;
   parseError: Error | null;
   mdVars: MdVars;
   // workaround to preserve values while removing and adding back variables
   foundMdVars: Set<string>;
-  mdVarsTypes: { [key: string]: "string" | "boolean" };
-};
+  mdVarsTypes: Record<string, "string" | "boolean">;
+}
 
 type Action =
   | { type: "SET_MD"; payload: string }
@@ -76,11 +78,10 @@ function reducer(state: State, action: Action): State {
       try {
         newState.foundMdVars = findMdVariables(md);
         newState.mdVarsTypes = getMdVarTypes(newState, newState.foundMdVars);
-        const parsedMd = parseDynamicMd(md, { variables: mdVars });
+        newState.parsedMd = parseDynamicMd(md, { variables: mdVars });
 
         return {
           ...newState,
-          parsedMd,
           parseError: null,
         };
       } catch (error) {
@@ -99,18 +100,18 @@ function reducer(state: State, action: Action): State {
 export function useDynamicMarkdown(initialMd: string, initialVars: MdVars) {
   const [state, dispatch] = useReducer(reducer, { initialMd, initialVars }, getInitialState);
 
-  const setMd = (md: string) => {
+  const setMd = useCallback((md: string) => {
     dispatch({ type: "SET_MD", payload: md });
-  };
+  }, []);
 
-  const setMdVar = (mdVar: string, value: string | boolean) => {
+  const setMdVar = useCallback((mdVar: string, value: string | boolean) => {
     if (mdVar.startsWith("!")) mdVar = mdVar.slice(1); // handle negation
     dispatch({ type: "SET_MD_VAR", payload: { mdVar, value } });
-  };
+  }, []);
 
-  const parse = (md: string, mdVars: MdVars) => {
+  const parse = useCallback((md: string, mdVars: MdVars) => {
     dispatch({ type: "PARSE_MD", payload: { md, mdVars } });
-  };
+  }, []);
 
   return {
     ...state,

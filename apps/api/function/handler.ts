@@ -1,11 +1,11 @@
 import { parseDynamicMd, ParseDynamicMdOptions } from "@at/dynamic-markdown";
 import { generatePdf, GeneratePdfOptions } from "../lib";
 
-export type HandlerGeneratePdfArgs = {
+export interface HandlerGeneratePdfArgs {
   md: string;
   mdVariables: ParseDynamicMdOptions["variables"];
   options?: GeneratePdfOptions;
-};
+}
 
 export async function handlerGeneratePdf({
   md: input,

@@ -12,6 +12,10 @@ Parameters:
     Type: String
     Default: "77.88.94.130"
 
+  WAFWebACLArn:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: "/waf/regional/arbeidstilsynet-public-ip/arn"
+
 Mappings:
   SubnetConfig:
     VPC:
@@ -24,6 +28,11 @@ Mappings:
       CIDR: "10.0.64.0/19"
     Private2:
       CIDR: "10.0.96.0/19"
+  # Mapping for å forhåpentligvis fange opp feil hvis vi skal deploye til en annen region enn Irland.
+  # https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-access-logging.html
+  ELBAccountMap:
+    eu-west-1:
+      Account: "156460612806"
 
 Resources:
   VPC:
@@ -36,7 +45,9 @@ Resources:
         - Key: Name
           Value: !Ref VPCName
 
+  # **************************************
   # VPC Internet Gateway and Attachment
+  # **************************************
   VPCInternetGateway:
     Type: AWS::EC2::InternetGateway
 
@@ -46,7 +57,9 @@ Resources:
       VpcId: !Ref "VPC"
       InternetGatewayId: !Ref VPCInternetGateway
 
-  # Public Subnet
+  # **************************************
+  # Public Subnets
+  # **************************************
   PublicSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
@@ -72,8 +85,7 @@ Resources:
   PublicSubnet1DefaultRoute:
     Type: AWS::EC2::Route
     Properties:
-      RouteTableId:
-        Ref: PublicSubnet1RouteTable
+      RouteTableId: !Ref PublicSubnet1RouteTable
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !Ref VPCInternetGateway
     DependsOn:
@@ -88,8 +100,7 @@ Resources:
     Type: AWS::EC2::NatGateway
     Properties:
       AllocationId: !GetAtt PublicSubnet1EIP.AllocationId
-      SubnetId:
-        Ref: PublicSubnet1
+      SubnetId: !Ref PublicSubnet1
 
   PublicSubnet2:
     Type: AWS::EC2::Subnet
@@ -105,8 +116,7 @@ Resources:
   PublicSubnet2RouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
-      VpcId:
-        Ref: "VPC"
+      VpcId: !Ref VPC
 
   PublicSubnet2RouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
@@ -117,8 +127,7 @@ Resources:
   PublicSubnet2DefaultRoute:
     Type: AWS::EC2::Route
     Properties:
-      RouteTableId:
-        Ref: PublicSubnet2RouteTable
+      RouteTableId: !Ref PublicSubnet2RouteTable
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !Ref VPCInternetGateway
     DependsOn:
@@ -135,7 +144,9 @@ Resources:
       AllocationId: !GetAtt PublicSubnet2EIP.AllocationId
       SubnetId: !Ref PublicSubnet2
 
+  # **************************************
   # Private Subnets
+  # **************************************
   PrivateSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
@@ -192,9 +203,13 @@ Resources:
       DestinationCidrBlock: 0.0.0.0/0
       NatGatewayId: !Ref PublicSubnet2NatGateway
 
-  # Load Balancer Configuration
+  # **************************************
+  # Load Balancer
+  # **************************************
   PublicLoadBalancer:
-    DependsOn: VPCInternetGateway
+    DependsOn:
+      - VPCInternetGateway
+      - ALBAccessLogsBucketPolicy
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
       Scheme: internet-facing
@@ -204,13 +219,17 @@ Resources:
         - !Ref PublicSubnet1
         - !Ref PublicSubnet2
       Type: application
+      LoadBalancerAttributes:
+        - Key: access_logs.s3.enabled
+          Value: "true"
+        - Key: access_logs.s3.bucket
+          Value: !Ref ALBAccessLogsBucket
 
   PublicLBTargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      #  Check if your application is healthy within 20 = 10*2 seconds, compared to 2.5 mins = 30*5 seconds.
-      HealthCheckIntervalSeconds: 10 # Default is 30.
-      HealthyThresholdCount: 2 # Default is 5.
+      HealthCheckIntervalSeconds: 10
+      HealthyThresholdCount: 2
       HealthCheckTimeoutSeconds: 5
       HealthCheckPath: /api/health
       VpcId: !Ref VPC
@@ -223,7 +242,7 @@ Resources:
       IpAddressType: ipv4
 
   PublicLBListener:
-    Type: "AWS::ElasticLoadBalancingV2::Listener"
+    Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
       DefaultActions:
         - Type: forward
@@ -236,7 +255,7 @@ Resources:
         - CertificateArn: !Ref CertificateArn
 
   PublicHTTPListener:
-    Type: "AWS::ElasticLoadBalancingV2::Listener"
+    Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
       DefaultActions:
         - Type: redirect
@@ -248,6 +267,56 @@ Resources:
       Port: 80
       Protocol: HTTP
 
+  # **************************************
+  # Load Balancer WAF
+  # **************************************
+  ALBWebACLAssociation:
+    Type: AWS::WAFv2::WebACLAssociation
+    Properties:
+      ResourceArn: !GetAtt PublicLoadBalancer.LoadBalancerArn
+      WebACLArn: !Ref WAFWebACLArn
+
+  # **************************************
+  # Access Logs
+  # **************************************
+  ALBAccessLogsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  ALBAccessLogsBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref ALBAccessLogsBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: "AWSALBLogsPolicy"
+            Effect: Allow
+            Principal:
+              AWS: !Sub
+                - "arn:${AWS::Partition}:iam::${ELBAccount}:root"
+                - {
+                    ELBAccount:
+                      !FindInMap [ELBAccountMap, !Ref "AWS::Region", Account],
+                  }
+            Action: "s3:PutObject"
+            Resource: !Sub "${ALBAccessLogsBucket.Arn}/*"
+
+  # **************************************
+  # Security Groups
+  # **************************************
   ALBSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -285,6 +354,9 @@ Resources:
           Description: Allow all outbound traffic
           IpProtocol: "-1"
 
+# **************************************
+# Outputs
+# **************************************
 Outputs:
   PublicSubnet1:
     Value: !Ref PublicSubnet1
