@@ -1,12 +1,15 @@
 import { listFiles } from "@/actions/s3";
 import { useQuery } from "@tanstack/react-query";
 import { use, useState } from "react";
+import { useToast } from "../toast/provider";
 import { useUploadFile } from "./hooks";
 import { WorkspaceContext } from "./provider";
 import { createKey, handleAddTag, isFilenameValid } from "./utils";
 
 export function SharedFileNew() {
   const { currentMd } = use(WorkspaceContext);
+  const { addToast } = useToast();
+
   const uploadFile = useUploadFile();
 
   const [newFilename, setNewFilename] = useState("");
@@ -27,6 +30,7 @@ export function SharedFileNew() {
         onSuccess: () => {
           setNewFilename("");
           setNewTags(new Set());
+          addToast("success", `File ${newFilename} saved`);
         },
       },
     );

@@ -8,8 +8,10 @@ export function SharedFileList() {
   return (
     <div className="border rounded shadow p-4">
       <h2 className="text-lg font-semibold mb-3">Filer</h2>
+
       {isLoading && <p>Loading...</p>}
       {error && <div className="text-red-500 text-m">{error.toString()}</div>}
+
       {isSuccess && (
         <ul className="space-y-3">
           {files.map((file) => (

@@ -8,6 +8,7 @@ import { Overlay } from "../Overlay";
 import { Config } from "../config";
 import { Explanation, IndictableElement } from "../explanation";
 import { Spinner, SpinnerOverlay } from "../spinner";
+import { ToastProvider } from "../toast/provider";
 import { Workspace } from "../workspace";
 import { WorkspaceContext } from "../workspace/provider";
 import { Preview } from "./Preview";
@@ -165,14 +166,18 @@ export function DynamicMarkdownEditor() {
       )}
       {isConfigOpen && (
         <Overlay widthPercent={60} onClose={() => setIsConfigOpen(false)}>
-          <Config onFileSelected={handleFileSelected} onExampleSelected={handleExampleSelected} />
+          <ToastProvider>
+            <Config onFileSelected={handleFileSelected} onExampleSelected={handleExampleSelected} />
+          </ToastProvider>
         </Overlay>
       )}
       {isWorkspaceOpen && (
         <Overlay widthPercent={55} heightPercent={90} onClose={() => setIsWorkspaceOpen(false)}>
-          <WorkspaceContext value={{ currentMd: md, onLoadMd: handleLoadFromWorkspace }}>
-            <Workspace />
-          </WorkspaceContext>
+          <ToastProvider>
+            <WorkspaceContext value={{ currentMd: md, onLoadMd: handleLoadFromWorkspace }}>
+              <Workspace />
+            </WorkspaceContext>
+          </ToastProvider>
         </Overlay>
       )}
 

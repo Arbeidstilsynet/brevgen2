@@ -1,4 +1,5 @@
 import { use, useEffect, useRef, useState } from "react";
+import { useToast } from "../toast/provider";
 import { useDeleteFile, useLoadFile, useUploadFile } from "./hooks";
 import { WorkspaceContext } from "./provider";
 import { SharedFileListItemRename } from "./SharedFileListItemRename";
@@ -11,12 +12,12 @@ interface SharedFileListItemProps {
 
 export function SharedFileListItem({ fileKey, allFileKeys }: Readonly<SharedFileListItemProps>) {
   const { currentMd, onLoadMd } = use(WorkspaceContext);
-
-  const [isEditing, setIsRenaming] = useState(false);
+  const { addToast } = useToast();
 
   const menuRef = useRef<HTMLDivElement>(null);
   const [showMenu, setShowMenu] = useState(false);
   const [confirmAction, setConfirmAction] = useState<null | "overwrite" | "delete">(null);
+  const [isEditing, setIsRenaming] = useState(false);
 
   const loadFile = useLoadFile();
   const uploadFile = useUploadFile();
@@ -44,6 +45,11 @@ export function SharedFileListItem({ fileKey, allFileKeys }: Readonly<SharedFile
     const onSuccess = () => {
       setShowMenu(false);
       setConfirmAction(null);
+      let toastMessage = "";
+      const { fileName } = extractTags(fileKey);
+      if (confirmAction === "overwrite") toastMessage = `File ${fileName} overwritten`;
+      if (confirmAction === "delete") toastMessage = `File ${fileName} deleted`;
+      addToast("success", toastMessage);
     };
 
     if (confirmAction === "overwrite") {
@@ -88,7 +94,10 @@ export function SharedFileListItem({ fileKey, allFileKeys }: Readonly<SharedFile
           {loadFile.error && <div className="text-red-500 text-m">{loadFile.error.message}</div>}
           <div className="flex gap-2">
             <button
-              onClick={() => handleCopyUrlWorkspace(fileKey)}
+              onClick={async () => {
+                await handleCopyUrlWorkspace(fileKey);
+                addToast("success", "Permanent URL copied to clipboard");
+              }}
               className="rounded bg-indigo-500 p-2 text-white hover:bg-indigo-600 shadow disabled:bg-gray-200 disabled:text-gray-500 disabled:cursor-not-allowed"
               title="Copy permanent URL"
             >

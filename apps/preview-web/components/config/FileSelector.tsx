@@ -1,4 +1,5 @@
 import { AzureDevOpsRepo } from "@/actions/azdo";
+import { useToast } from "../toast/provider";
 import { useGetMarkdownFilesInfo } from "./useGetMarkdownFilesInfo";
 import { handleCopyUrlGit } from "./utils";
 
@@ -10,6 +11,7 @@ type Props = Readonly<{
 
 export function FileSelector({ repo, branch, onFileSelect }: Props) {
   const { data, isLoading } = useGetMarkdownFilesInfo(repo, branch);
+  const { addToast } = useToast();
 
   if (isLoading) {
     return <div>Laster filer...</div>;
@@ -32,7 +34,10 @@ export function FileSelector({ repo, branch, onFileSelect }: Props) {
               {file.path.split("/").at(-1)}
             </button>
             <button
-              onClick={() => handleCopyUrlGit(repo.id, branch, file.path)}
+              onClick={async () => {
+                await handleCopyUrlGit(repo.id, branch, file.path);
+                addToast("success", "Permanent URL copied to clipboard");
+              }}
               className="rounded bg-indigo-500 p-2 text-white hover:bg-indigo-600 shadow disabled:bg-gray-200 disabled:text-gray-500 disabled:cursor-not-allowed"
               title="Copy permanent URL"
             >

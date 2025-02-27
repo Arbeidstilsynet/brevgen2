@@ -3,6 +3,8 @@
 import { AzureDevOpsRepo, fetchBranchesFromAzure, fetchReposFromAzure } from "@/actions/azdo";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import { useToast } from "../toast/provider";
+import { Toast } from "../toast/Toast";
 import { BranchSelector } from "./BranchSelector";
 import { FileSelector } from "./FileSelector";
 import { RepoSelector } from "./RepoSelector";
@@ -14,6 +16,8 @@ type Props = Readonly<{
 }>;
 
 export function Config({ onFileSelected, onExampleSelected }: Props) {
+  const { message, variant, clearToast } = useToast();
+
   const [selectedRepo, setSelectedRepo] = useState<AzureDevOpsRepo | null>(null);
   const [selectedBranch, setSelectedBranch] = useState<string | null>(null);
 
@@ -49,6 +53,8 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
     <article className="flex flex-col p-4 space-y-4">
       <h1 className="text-2xl font-bold">Konfigurasjon</h1>
 
+      {message && <Toast message={message} variant={variant} onClose={clearToast} />}
+
       <div className="flex space-x-4 mb-4">
         <button
           className={`py-2 px-4 ${activeTab === "fileSelect" ? "bg-blue-500 text-white shadow-lg" : "bg-gray-200 hover:bg-gray-300"}`}
@@ -66,13 +72,13 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
           className={`py-2 px-4 ${activeTab === "variablesReport" ? "bg-blue-500 text-white shadow-lg" : "bg-gray-200 hover:bg-gray-300"}`}
           onClick={() => setActiveTab("variablesReport")}
         >
-          Flettefeltanalyse
+          Flettefelt
         </button>
       </div>
 
       {(activeTab === "fileSelect" || activeTab === "loadExamples") && (
         <>
-          <h2 className="text-xl font-semibold">Last inn dokument</h2>
+          <h2 className="text-xl font-semibold">Last inn dokument fra repository</h2>
           <div
             className="bg-yellow-100 border-l-4 border-yellow-500 text-gray-900 p-4 mb-4"
             role="alert"

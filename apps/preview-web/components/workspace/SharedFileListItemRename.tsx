@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useToast } from "../toast/provider";
 import { useDeleteFile, useLoadFile, useUploadFile } from "./hooks";
 import { createKey, extractTags, handleAddTag, isFilenameValid } from "./utils";
 
@@ -14,6 +15,7 @@ export function SharedFileListItemRename({
   onFinished,
 }: SharedFileListItemRenameProps) {
   const { fileName, tags } = extractTags(fileKey);
+  const { addToast } = useToast();
 
   const [editFilename, setEditFilename] = useState(fileName);
   const [editTags, setEditTags] = useState(tags);
@@ -33,6 +35,8 @@ export function SharedFileListItemRename({
         onSuccess: async () => {
           await deleteFile.mutateAsync(oldKey);
           onFinished();
+          const { fileName } = extractTags(oldKey);
+          addToast("success", `File ${fileName} renamed to ${editFilename}`);
         },
       },
     );
@@ -102,7 +106,7 @@ export function SharedFileListItemRename({
           data-ignore-outside
           className="rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600 shadow disabled:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={() => handleRenameFile(fileKey)}
-          disabled={Boolean(customErrorMessage)}
+          disabled={Boolean(customErrorMessage) || fileKey === createKey(editFilename, editTags)}
         >
           Save Rename
         </button>
