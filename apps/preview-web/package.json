@@ -34,7 +34,7 @@
     "eslint": "9.21.0",
     "eslint-config-next": "15.1.7",
     "eslint-plugin-react-compiler": "19.0.0-beta-e1e972c-20250221",
-    "postcss": "8.5.2",
+    "postcss": "8.5.3",
     "tailwindcss": "3.4.17",
     "typescript": "5.7.3",
     "typescript-eslint": "8.24.1"
