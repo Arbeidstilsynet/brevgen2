@@ -3,6 +3,15 @@
 Editor for dynamisk markdown med forhåndsvisning av ulike format.
 Live: <https://brevgenerator.arbeidstilsynet.no>
 
+## Integrasjoner
+
+| Integrasjon           | Auth                           | Formål                        |
+| --------------------- | ------------------------------ | ----------------------------- |
+| Brevgenerator2 API    | API Key                        | Generering av PDF             |
+| Azure DevOps REST API | PAT Code:Read                  | Henting av brevmaler fra repo |
+| AWS SDK S3            | Default credentials (dev: SSO) | Lagring av WIP brevmaler      |
+| Apertium API          | Ingen                          | Tekstoversetting              |
+
 ## Miljøvariabler
 
 For å kjøre lokalt eller bruke `deploy-fargate.ps1`, opprett ny fil `.env` med følgende miljøvariabler:
@@ -55,7 +64,7 @@ For å deploye må vi gjøre et par ting:
 
 For å hjelpe med dette har vi et script:
 
-1. Hvis du ikke har gjort det, opprett samconfig.toml i `ecr-infra` og `infra`
-2. Lag .env med miljøvariablene ovenfor
-3. Velg AWS-profil: `$env:AWS_PROFILE="verifi"`
+1. Hvis du ikke har gjort det, opprett `samconfig.toml` i `ecr-infra` og `infra`
+2. Lag `.env` med miljøvariablene ovenfor
+3. Velg AWS-profil: `$env:AWS_PROFILE="dev"`
 4. Kjør deploy-script: `./deploy-fargate.ps1 -envName myname`

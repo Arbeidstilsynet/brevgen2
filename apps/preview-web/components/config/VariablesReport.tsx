@@ -2,6 +2,7 @@ import { AzureDevOpsRepo, fetchManyFileContentFromAzure } from "@/actions/azdo";
 import { findMdVariables } from "@at/dynamic-markdown";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import { TabButton } from "../buttons";
 import { useGetMarkdownFilesInfo } from "./useGetMarkdownFilesInfo";
 
 type Props = Readonly<{
@@ -60,19 +61,13 @@ export function VariablesReport({ repo, branch }: Props) {
 
   return (
     <div className="p-4 bg-white rounded shadow">
-      <div className="flex space-x-4 mb-4">
-        <button
-          className={`py-2 px-4 ${viewMode === "counts" ? "bg-blue-500 text-white" : "bg-gray-300 text-gray-800"} rounded`}
-          onClick={() => setViewMode("counts")}
-        >
+      <div className="flex mb-4 gap-2">
+        <TabButton isActive={viewMode === "counts"} onClick={() => setViewMode("counts")}>
           Sum
-        </button>
-        <button
-          className={`py-2 px-4 ${viewMode === "perFile" ? "bg-blue-500 text-white" : "bg-gray-300 text-gray-800"} rounded`}
-          onClick={() => setViewMode("perFile")}
-        >
+        </TabButton>
+        <TabButton isActive={viewMode === "perFile"} onClick={() => setViewMode("perFile")}>
           Per brevmal
-        </button>
+        </TabButton>
       </div>
 
       {viewMode === "counts" && (

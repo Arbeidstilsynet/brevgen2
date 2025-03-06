@@ -37,7 +37,14 @@ export const initialVars = {
   visEksempelAvsnitt: true,
 } as const;
 
-export const initialDefaultTemplateArgs: defaultTemplate.DefaultTemplateArgs = {
+// make fields required for the sake of the controlled inputs
+interface InitialDefaultTemplateArgs {
+  language: defaultTemplate.DefaultTemplateArgs["language"];
+  fields: Required<defaultTemplate.DefaultTemplateFields>;
+  signatureVariant: defaultTemplate.DefaultTemplateArgs["signatureVariant"];
+}
+
+export const initialDefaultTemplateArgs = {
   language: "bm",
   fields: {
     dato: "13.09.2024",
@@ -55,4 +62,4 @@ export const initialDefaultTemplateArgs: defaultTemplate.DefaultTemplateArgs = {
     },
   },
   signatureVariant: "elektroniskGodkjent",
-};
+} as const satisfies defaultTemplate.DefaultTemplateArgs satisfies InitialDefaultTemplateArgs;

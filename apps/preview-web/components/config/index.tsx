@@ -3,6 +3,7 @@
 import { AzureDevOpsRepo, fetchBranchesFromAzure, fetchReposFromAzure } from "@/actions/azdo";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import { ActionButton, TabButton } from "../buttons";
 import { useToast } from "../toast/provider";
 import { Toast } from "../toast/Toast";
 import { BranchSelector } from "./BranchSelector";
@@ -55,30 +56,29 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
 
       {message && <Toast message={message} variant={variant} onClose={clearToast} />}
 
-      <div className="flex space-x-4 mb-4">
-        <button
-          className={`py-2 px-4 ${activeTab === "fileSelect" ? "bg-blue-500 text-white shadow-lg" : "bg-gray-200 hover:bg-gray-300"}`}
-          onClick={() => setActiveTab("fileSelect")}
-        >
-          Versjonskontroll (Git)
-        </button>
-        <button
-          className={`py-2 px-4 ${activeTab === "loadExamples" ? "bg-blue-500 text-white shadow-lg" : "bg-gray-200 hover:bg-gray-300"}`}
+      <div>
+        <TabButton isActive={activeTab === "fileSelect"} onClick={() => setActiveTab("fileSelect")}>
+          Versjonskontroll
+        </TabButton>
+        <TabButton
+          isActive={activeTab === "loadExamples"}
           onClick={() => setActiveTab("loadExamples")}
         >
           Eksempler
-        </button>
-        <button
-          className={`py-2 px-4 ${activeTab === "variablesReport" ? "bg-blue-500 text-white shadow-lg" : "bg-gray-200 hover:bg-gray-300"}`}
+        </TabButton>
+        <TabButton
+          isActive={activeTab === "variablesReport"}
           onClick={() => setActiveTab("variablesReport")}
         >
           Flettefelt
-        </button>
+        </TabButton>
       </div>
 
       {(activeTab === "fileSelect" || activeTab === "loadExamples") && (
         <>
-          <h2 className="text-xl font-semibold">Last inn dokument fra repository</h2>
+          <h2 className="text-xl font-semibold">
+            Last inn dokument fra {activeTab === "fileSelect" ? "versjonskontroll" : "eksempler"}
+          </h2>
           <div
             className="bg-yellow-100 border-l-4 border-yellow-500 text-gray-900 p-4 mb-4"
             role="alert"
@@ -115,19 +115,9 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
       {activeTab === "loadExamples" && (
         <div className="flex flex-col space-y-4">
           <h3 className="text-l font-semibold">Velg et eksempel</h3>
-          <div className="flex space-x-4">
-            <button
-              className="py-2 px-4 text-white bg-green-500 hover:bg-green-700 hover:shadow-lg transition duration-200"
-              onClick={() => onExampleSelected("initial")}
-            >
-              Vanlig
-            </button>
-            <button
-              className="py-2 px-4 text-white bg-green-500 hover:bg-green-700 hover:shadow-lg transition duration-200"
-              onClick={() => onExampleSelected("advanced")}
-            >
-              Avansert
-            </button>
+          <div className="flex gap-4">
+            <ActionButton onClick={() => onExampleSelected("initial")}>Vanlig</ActionButton>
+            <ActionButton onClick={() => onExampleSelected("advanced")}>Avansert</ActionButton>
           </div>
         </div>
       )}

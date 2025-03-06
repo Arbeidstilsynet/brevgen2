@@ -1,8 +1,10 @@
 import { defaultTemplate } from "@at/document-templates";
 import { Dispatch } from "react";
+import { Select } from "../Select";
 import { TemplateConfigDefaultForm } from "./TemplateConfigDefaultForm";
 import { DefaultTemplateArgsAction } from "./templateConfigReducer";
-import { TemplateOption, TemplatePicker } from "./TemplatePicker";
+
+export type TemplateOption = "default" | "custom";
 
 type Props = Readonly<{
   selectedTemplate: TemplateOption;
@@ -19,11 +21,15 @@ export function TemplateConfig({
 }: Props) {
   return (
     <>
-      <div className="flex items-center space-x-2">
-        <TemplatePicker
-          selectedTemplate={selectedTemplate}
-          setSelectedTemplate={setSelectedTemplate}
+      <div className="flex items-center gap-2">
+        <Select
+          className="flex items-center gap-2"
+          label="Template"
+          value={selectedTemplate}
+          options={{ default: "Default", custom: "Custom" }}
+          onChange={setSelectedTemplate}
         />
+
         <div className="relative group">
           <span className="flex items-center justify-center w-8 h-8 bg-yellow-100 rounded-full cursor-pointer font-bold text-lg">
             ?

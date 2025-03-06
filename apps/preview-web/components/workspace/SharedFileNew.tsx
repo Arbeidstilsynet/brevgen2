@@ -1,8 +1,6 @@
-import { listFiles } from "@/actions/s3";
-import { useQuery } from "@tanstack/react-query";
 import { use, useState } from "react";
 import { useToast } from "../toast/provider";
-import { useUploadFile } from "./hooks";
+import { useQueryWorkspaceFiles, useUploadFile } from "./hooks";
 import { WorkspaceContext } from "./provider";
 import { createKey, handleAddTag, isFilenameValid } from "./utils";
 
@@ -16,10 +14,7 @@ export function SharedFileNew() {
   const [newTags, setNewTags] = useState(new Set<string>());
   const [customErrorMessage, setCustomErrorMessage] = useState("");
 
-  const { data: files = [] } = useQuery({
-    queryKey: ["workspace"],
-    queryFn: () => listFiles(),
-  });
+  const { data: files = [] } = useQueryWorkspaceFiles();
 
   const handleSaveNewFile = () => {
     if (!newFilename.trim()) return;

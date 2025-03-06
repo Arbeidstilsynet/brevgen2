@@ -7,7 +7,8 @@ import { marked } from "marked";
 import { useEffect, useRef, useState } from "react";
 import sanitizeHtml from "sanitize-html";
 import { HandlerGeneratePdfArgs } from "../../../api/function/handler";
-import { TemplateOption } from "./TemplatePicker";
+import { ActivePreviewTab } from "./header/PreviewControls";
+import { TemplateOption } from "./TemplateConfig";
 
 function getHtml(md: string, css: string) {
   const dirty = marked(md) as string;
@@ -33,7 +34,7 @@ function getHtml(md: string, css: string) {
 }
 
 type Props = Readonly<{
-  activePreviewTab: string;
+  activePreviewTab: ActivePreviewTab;
   md: string;
   parsedMd: string;
   mdVariables: Record<string, string | boolean>;
@@ -142,7 +143,7 @@ export function Preview({
     renderHtml();
   }, [activePreviewTab, defaultTemplateArgs, parsedMd, selectedTemplate]);
 
-  if (activePreviewTab === "markdown") {
+  if (activePreviewTab === "md") {
     return <pre className="whitespace-pre-wrap">{parsedMd}</pre>;
   }
 

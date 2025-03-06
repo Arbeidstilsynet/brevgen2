@@ -2,6 +2,12 @@ import { HoverableText } from "../editor/HoverableText";
 
 export type IndictableElement = "editor" | "preview" | "vars" | "previewTabs" | null;
 
+export const getIndicatedElementClass = (
+  element: IndictableElement,
+  indicatedElement: IndictableElement,
+) =>
+  `outline-dashed outline-4 ${indicatedElement === element ? "outline-blue-500" : "outline-transparent"}`;
+
 type Props = Readonly<{
   setHoveredElement: (element: IndictableElement) => void;
 }>;

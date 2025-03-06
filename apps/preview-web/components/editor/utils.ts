@@ -1,3 +1,37 @@
+export async function saveLocal(md: string) {
+  // use native save window in chromium
+  if (window.showSaveFilePicker) {
+    try {
+      const newHandle = await window.showSaveFilePicker({
+        types: [
+          {
+            description: "Markdown Files",
+            accept: { "text/markdown": [".md"] },
+          },
+        ],
+      });
+      const writableStream = await newHandle.createWritable();
+      await writableStream.write(md);
+      await writableStream.close();
+    } catch (err) {
+      const isError = err instanceof Error;
+      // silently skip AbortError that occurs if user closes the save window
+      if (!isError || (isError && err.name !== "AbortError")) {
+        throw err;
+      }
+    }
+  }
+  // handle firefox etc.
+  else {
+    const blob = new Blob([md], { type: "text/markdown" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "document.md";
+    link.click();
+    URL.revokeObjectURL(link.href);
+  }
+}
+
 function getRandomDateString(): string {
   const start = new Date(2000, 0, 1);
   const end = new Date();
@@ -31,6 +65,8 @@ export function getRandomValue(variableName: string): string {
     return getRandomDateString();
   } else if (lowerVar.includes("organisasjonsnummer") || lowerVar.includes("orgnr")) {
     return getRandomNumberString(9);
+  } else if (lowerVar.includes("saksnummer") || lowerVar.includes("saksnr")) {
+    return `${getRandomNumberString(4)}/${getRandomNumberString(3)}`;
   } else if (lowerVar.includes("nummer") || lowerVar.includes("number")) {
     return getRandomNumberString(Math.floor(Math.random() * 5) + 1);
   } else if (

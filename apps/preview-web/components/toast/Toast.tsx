@@ -37,7 +37,7 @@ export function Toast({ message, variant, onClose }: Props) {
   return (
     <div
       data-ignore-outside
-      className={`absolute top-0 left-1/2 transform -translate-x-1/2 mt-4
+      className={`z-50 absolute top-0 left-1/2 transform -translate-x-1/2 mt-4
         ${styles.background} ${styles.text} px-4 py-3 rounded-md
         border border-opacity-20 ${styles.border} border-l-4
         flex items-center justify-between min-w-[200px] max-w-[90%] shadow-md`}
