@@ -1,19 +1,25 @@
 import { deleteFile, getFile, listFiles, uploadFile } from "@/actions/s3";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, UseMutationOptions, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const QUERY_KEY_FILES = "workspace";
 
 export function useQueryWorkspaceFiles() {
   return useQuery({
-    queryKey: ["workspace"],
+    queryKey: [QUERY_KEY_FILES],
     queryFn: () => listFiles(),
   });
 }
 
-export function useLoadFile() {
+export function useLoadFile(
+  options?: Omit<
+    UseMutationOptions<string | undefined, Error, string>,
+    "mutationKey" | "mutationFn"
+  >,
+) {
   return useMutation({
     mutationKey: [QUERY_KEY_FILES],
     mutationFn: (s3Key: string) => getFile(s3Key),
+    ...options,
   });
 }
 

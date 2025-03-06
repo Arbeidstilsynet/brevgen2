@@ -1,8 +1,10 @@
 "use client";
 
 import { fetchFileContentFromAzure } from "@/actions/azdo";
+import { useMutation } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useToast } from "../toast/provider";
 import { useLoadFile, useQueryWorkspaceFiles } from "../workspace/hooks";
 import { extractTags, URL_SEARCH_PARAM_WORKSPACE } from "../workspace/utils";
 
@@ -17,84 +19,93 @@ export const GIT_PARAMS = {
  */
 export function useLoadPermanentUrl(isEditorReady: boolean, onLoad: (md: string) => void) {
   const params = useSearchParams();
+  const { addToast } = useToast();
 
   const gitParam = params.get(GIT_PARAMS.git);
   const branchParam = params.get(GIT_PARAMS.branch);
   const fileParam = params.get(GIT_PARAMS.file);
+  const decodedFileParam = decodeURIComponent(fileParam ?? "");
 
-  const workspaceParam = params.get(URL_SEARCH_PARAM_WORKSPACE);
+  // If git parameters are provided, they take precedence.
+  const workspaceParam = !gitParam ? params.get(URL_SEARCH_PARAM_WORKSPACE) : null;
   const decodedParam = decodeURIComponent(workspaceParam ?? "");
 
   const {
-    data: filesData,
-    isSuccess: isSuccessFiles,
-    isPending: isPendingFiles,
-  } = useQueryWorkspaceFiles();
-  const { isPending: isPendingLoad, isSuccess: isSuccessLoad, mutate } = useLoadFile();
+    mutate: getGit,
+    isPending: isPendingGit,
+    isIdle: isIdleGit,
+  } = useMutation({
+    mutationFn: async () => {
+      if (!gitParam || !branchParam || !fileParam) throw new TypeError("Missing Git parameters");
+      return fetchFileContentFromAzure(gitParam, branchParam, decodedFileParam);
+    },
+    onSuccess: (md) => {
+      onLoad(md);
+      const fileName = decodedFileParam.split("/").at(-1);
+      addToast("info", `Loaded ${fileName} from Git`);
+    },
+    onError: (error) => {
+      console.error("Error loading file from Git:", error);
+      if (error instanceof Error) {
+        addToast("error", error.message);
+      }
+    },
+  });
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [hasLoaded, setHasLoaded] = useState(false);
+  const {
+    data: workspaceList,
+    isSuccess: isSuccessWorkspaceList,
+    isPending: isPendingWorkspaceList,
+  } = useQueryWorkspaceFiles();
+
+  const {
+    mutate: getWorkspaceFile,
+    isPending: isPendingWorkspaceFile,
+    isIdle: isIdleWorkspaceFile,
+  } = useLoadFile({
+    onSuccess: (md) => {
+      onLoad(md ?? "");
+      addToast("info", `Loaded ${decodedParam} from workspace`);
+    },
+    onError: (error) => {
+      console.error("Error loading file from workspace:", error);
+      if (error instanceof Error) {
+        addToast("error", error.message);
+      }
+    },
+  });
 
   useEffect(() => {
-    if (!isEditorReady || isLoading || hasLoaded) return;
+    if (!isEditorReady || !isIdleGit || !isIdleWorkspaceFile) return;
 
-    // If git parameters are provided, they take precedence.
-    if (gitParam) {
-      if (!branchParam || !fileParam) return;
-      setIsLoading(true);
-      const decodedFileParam = decodeURIComponent(fileParam);
-      fetchFileContentFromAzure(gitParam, branchParam, decodedFileParam)
-        .then((md) => {
-          onLoad(md);
-        })
-        .catch((error) => {
-          console.error("Error loading file from Git:", error);
-        })
-        .finally(() => {
-          setIsLoading(false);
-          setHasLoaded(true);
-        });
-      return;
-    }
+    const loadFromAppropriateSource = () => {
+      if (gitParam) return getGit();
 
-    // Otherwise, use workspace permanent URL logic.
-    if (!decodedParam) return;
-    if (!filesData || !isSuccessFiles || isPendingFiles) return;
-    if (isPendingLoad || isSuccessLoad) return;
+      if (!decodedParam || !isSuccessWorkspaceList || isPendingWorkspaceList) return;
 
-    const file = filesData.find((f) => {
-      if (!f.Key) return false;
-      const { fileName } = extractTags(f.Key);
-      return fileName === decodedParam;
-    });
-    if (!file) return;
+      const file = workspaceList.find((f) => {
+        if (!f.Key) return false;
+        const { fileName } = extractTags(f.Key);
+        return fileName === decodedParam;
+      });
+      if (!file) return addToast("error", `File ${decodedParam} not found in workspace`);
 
-    setIsLoading(true);
-    mutate(file.Key!, {
-      onSuccess: (md) => {
-        onLoad(md ?? "");
-      },
-      onSettled: () => {
-        setIsLoading(false);
-      },
-    });
+      getWorkspaceFile(file.Key!);
+    };
+    loadFromAppropriateSource();
   }, [
-    branchParam,
+    addToast,
     decodedParam,
-    fileParam,
-    filesData,
+    getGit,
+    getWorkspaceFile,
     gitParam,
-    hasLoaded,
     isEditorReady,
-    isLoading,
-    isPendingFiles,
-    isPendingLoad,
-    isSuccessFiles,
-    isSuccessLoad,
-    mutate,
-    onLoad,
-    workspaceParam,
+    isIdleGit,
+    isIdleWorkspaceFile,
+    isPendingWorkspaceList,
+    isSuccessWorkspaceList,
+    workspaceList,
   ]);
 
-  return isLoading;
+  return isPendingGit || isPendingWorkspaceFile;
 }

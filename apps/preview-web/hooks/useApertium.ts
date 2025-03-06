@@ -57,7 +57,7 @@ export function useApertium(
       addToast("success", "Selected text translated");
     },
     onError: (error) => {
-      addToast("error", error.message, 10_000);
+      addToast("error", error.message);
     },
   });
 
