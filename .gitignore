@@ -87,7 +87,7 @@ yarn-error.log*
 *.pem
 
 # test output
-*.pdf
+temp
 test*.html
 
 # SAM

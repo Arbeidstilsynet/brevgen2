@@ -1,6 +1,6 @@
 import sanitizeHtml from "sanitize-html";
-import { Config } from "./config";
-import { getMarked } from "./get-marked-with-highlighter";
+import type { Config } from "./config";
+import { getMarked } from "./get-marked";
 
 /**
  * Generates a HTML document from a markdown string and returns it as a string.

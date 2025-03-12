@@ -7,7 +7,7 @@ namespace AT.Brevgenerator.Klient.Model;
 /// <summary>
 /// Parametre for å opprette brev via brevgenerator2.
 /// <br/><br/>
-/// Basert på TypeScript-typen HandlerGeneratePdfArgs i felles-brevgenerator/apps/api/function/handler.ts
+/// Basert på TypeScript-typen HandlerGeneratePdfArgs i felles-brevgenerator/apps/api/lib/handler.ts
 /// </summary>
 public class GenererBrevArgs
 {

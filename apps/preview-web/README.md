@@ -25,8 +25,10 @@ PDF_API_KEY=apiKeyDuFinnerIAWS # nødvendig hvis api ikke er localhost
 AZURE_DEVOPS_PAT=yourPAT # trenger Code:Read
 
 # For bruk av Workspace-overlay og maler i S3
-AWS_PROFILE=default
 AWS_BUCKET_NAME={env}-at-brevgenerator2-workspace-bucket
+# Vanlige miljøvariabler for default credentials, kan bruke AWS_ACCESS_KEY_ID og AWS_SECRET_ACCESS_KEY
+AWS_PROFILE=ssoProfile
+AWS_REGION=eu-west-1
 ```
 
 ## Docker

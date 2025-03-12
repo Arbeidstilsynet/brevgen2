@@ -20,9 +20,8 @@ COPY apps/preview-web ./apps/preview-web
 # copy api also for a relative imported type
 COPY apps/api ./apps/api
 
-WORKDIR /app/apps/preview-web
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
-RUN pnpm run build
+RUN pnpm --filter preview-web build
 
 
 # Production image, copy all the files and run next
@@ -38,10 +37,8 @@ WORKDIR /app
 # Set the correct permission for prerender cache
 RUN mkdir .next && chown nextjs:nodejs .next
 
-# Automatically leverage output traces to reduce image size
-# https://nextjs.org/docs/advanced-features/output-file-tracing
+# https://nextjs.org/docs/app/api-reference/config/next-config-js/output
 COPY --from=builder --chown=nextjs:nodejs /app/apps/preview-web/.next/standalone /app
-# COPY --from=builder --chown=nextjs:nodejs /app/apps/preview-web/.next/static ./.next/static
 
 # workaround for rar mappestruktur
 COPY --from=builder --chown=nextjs:nodejs /app/apps/preview-web/.next/static ./apps/preview-web/.next/static

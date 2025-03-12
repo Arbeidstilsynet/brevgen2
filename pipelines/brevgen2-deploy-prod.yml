@@ -49,6 +49,31 @@ stages:
             CostCenter=3103
             ApplicationName=brevgenerator2
 
+  - stage: Brevgen2IntegrationTests
+    displayName: Integration Tests
+    jobs:
+      - job: Testcontainer
+        steps:
+          - template: pnpm/setup-pnpm.yaml@Templates
+          - script: "pnpm test:integration"
+            displayName: "Test"
+            workingDirectory: "apps/api"
+
+          - task: PublishTestResults@2
+            inputs:
+              testResultsFiles: "**/junit.xml"
+              mergeTestResults: true
+              failTaskOnMissingResultsFile: true
+            condition: succeededOrFailed()
+
+          - task: PublishPipelineArtifact@1
+            displayName: "Publish snapshots"
+            inputs:
+              targetPath: "apps/api/integration-tests/__snapshots__"
+              artifact: "integration-tests-snapshots-$(System.StageName)-$(System.JobAttempt)"
+              publishLocation: pipeline
+            condition: failed()
+
   - stage: Brevgen2DeployProd
     displayName: Prod
     jobs:
@@ -64,7 +89,7 @@ stages:
         parameters:
           initialJobsDependsOn: Confirmation
           env: prod
-          awsCredentials: ProdDeploy
+          awsCredentials: ProdDeployCD
           region: eu-west-1
           infraBucket: "infra-prod-deploy-bucket"
           chromiumLayerBucket: prod-brevgenerator2-lambda-layers

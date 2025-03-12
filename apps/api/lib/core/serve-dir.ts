@@ -1,6 +1,6 @@
 import { createServer, Server } from "http";
 import serveHandler from "serve-handler";
-import { Config } from "./config";
+import type { Config } from "./config";
 
 /**
  * Serve a directory on a random port using a HTTP server and the serve-handler package.

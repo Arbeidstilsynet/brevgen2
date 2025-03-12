@@ -5,12 +5,12 @@ import { VitePluginNode } from "vite-plugin-node";
 
 export default defineConfig({
   server: {
-    port: 4000,
+    port: process.env.PORT ? Number(process.env.PORT) : 4000,
   },
   plugins: [
     VitePluginNode({
       adapter: "express",
-      appPath: "./devServer.ts",
+      appPath: "./server.ts",
       exportName: "app",
       tsCompiler: "esbuild",
     }),

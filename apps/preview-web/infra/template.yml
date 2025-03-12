@@ -136,6 +136,7 @@ Resources:
         - Name: web
           Image: !Ref ImageURI
           Essential: true
+          ReadonlyRootFilesystem: true
           PortMappings:
             - ContainerPort: 3000
           Environment:

@@ -1,5 +1,5 @@
 import { parseDynamicMd, ParseDynamicMdOptions } from "@at/dynamic-markdown";
-import { generatePdf, GeneratePdfOptions } from "../lib";
+import { generatePdf, GeneratePdfOptions } from "./pdf";
 
 export interface HandlerGeneratePdfArgs {
   md: string;

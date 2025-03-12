@@ -1,5 +1,5 @@
 import type { APIGatewayProxyHandler } from "aws-lambda";
-import { handlerGeneratePdf, HandlerGeneratePdfArgs } from "./handler";
+import { handlerGeneratePdf, HandlerGeneratePdfArgs } from "../lib/handler";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",

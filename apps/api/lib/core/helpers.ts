@@ -1,4 +1,4 @@
-import { PDFOptions } from "puppeteer-core";
+import type { PDFOptions } from "puppeteer-core";
 
 /**
  * Get a margin object from a CSS-like margin string.

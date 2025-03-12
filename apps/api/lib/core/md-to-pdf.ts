@@ -1,5 +1,5 @@
-import { Browser } from "puppeteer-core";
-import { Config } from "./config";
+import type { Browser } from "puppeteer-core";
+import type { Config } from "./config";
 import { generateOutput } from "./generate-output";
 import { getHtml } from "./get-html";
 import { getMarginObject } from "./helpers";

@@ -51,3 +51,25 @@ jobs:
 
       - script: pnpm build --filter=!nuget-client
         displayName: "Build"
+
+  - job: Testcontainer
+    steps:
+      - template: pnpm/setup-pnpm.yaml@Templates
+      - script: "pnpm test:integration"
+        displayName: "Test"
+        workingDirectory: "apps/api"
+
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFiles: "**/junit.xml"
+          mergeTestResults: true
+          failTaskOnMissingResultsFile: true
+        condition: succeededOrFailed()
+
+      - task: PublishPipelineArtifact@1
+        displayName: "Publish snapshots"
+        inputs:
+          targetPath: "apps/api/integration-tests/__snapshots__"
+          artifact: "integration-tests-snapshots-$(System.StageName)-$(System.JobAttempt)"
+          publishLocation: pipeline
+        condition: failed()

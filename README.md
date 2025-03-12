@@ -21,7 +21,10 @@ Den nye brevgeneratoren er konfigurert som et integrert monorepo med sentraliser
 
 ## Lokal kjøring
 
+Se readmes i hvert prosjekt for detaljer.
 Kortversjon:
+
+### Dev (fast refresh for web)
 
 ```sh
 $/: pnpm install
@@ -30,7 +33,13 @@ $/apps/api: pnpm dev
 $/apps/preview-web: pnpm dev
 ```
 
-Se readmes i hvert prosjekt for detaljer.
+### Docker Compose (isolert miljø)
+
+`compose.override.yaml` inkluderer [mock av S3](https://github.com/adobe/S3Mock)
+
+```sh
+$/: docker compose up -d
+```
 
 ## Turborepo
 

@@ -6,7 +6,7 @@ import { defaultTemplate } from "@at/document-templates";
 import { marked } from "marked";
 import { useEffect, useRef, useState } from "react";
 import sanitizeHtml from "sanitize-html";
-import { HandlerGeneratePdfArgs } from "../../../api/function/handler";
+import { HandlerGeneratePdfArgs } from "../../../api/lib/handler";
 import { ActivePreviewTab } from "./header/PreviewControls";
 import { TemplateOption } from "./TemplateConfig";
 

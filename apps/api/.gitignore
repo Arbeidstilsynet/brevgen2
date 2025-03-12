@@ -1,0 +1,6 @@
+# snapshot comparisons
+*.diff.png
+*.new.png
+
+# ad hoc local files
+test-pdf-default-template-modified.pdf

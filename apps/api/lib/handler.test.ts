@@ -2,7 +2,7 @@
 
 import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from "aws-lambda";
 import { describe, expect, test } from "vitest";
-import { handler } from ".";
+import { handler } from "../lambda";
 import { HandlerGeneratePdfArgs } from "./handler";
 
 describe("400 errors", () => {

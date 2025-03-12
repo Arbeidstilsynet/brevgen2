@@ -1,12 +1,22 @@
 import { deleteFile, getFile, listFiles, uploadFile } from "@/actions/s3";
-import { useMutation, UseMutationOptions, useQuery, useQueryClient } from "@tanstack/react-query";
+import { _Object } from "@aws-sdk/client-s3";
+import {
+  useMutation,
+  UseMutationOptions,
+  useQuery,
+  useQueryClient,
+  UseQueryOptions,
+} from "@tanstack/react-query";
 
 const QUERY_KEY_FILES = "workspace";
 
-export function useQueryWorkspaceFiles() {
+export function useQueryWorkspaceFiles(
+  options?: Omit<UseQueryOptions<_Object[] | undefined>, "queryKey" | "queryFn">,
+) {
   return useQuery({
     queryKey: [QUERY_KEY_FILES],
     queryFn: () => listFiles(),
+    ...options,
   });
 }
 

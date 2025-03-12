@@ -5,7 +5,7 @@ export default defineConfig({
     reporters: ["default", "junit"],
     outputFile: "junit.xml",
     coverage: {
-      exclude: [...coverageConfigDefaults.exclude, "**/devServer.ts", "**/vite.dev.config.ts"],
+      exclude: [...coverageConfigDefaults.exclude, "**/server.ts", "**/vite.dev.config.ts"],
     },
   },
 });

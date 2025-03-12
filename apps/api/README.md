@@ -1,19 +1,31 @@
 # Brevgenerator2 API
 
-## Autentisering
-
-Bruker API Key til å autentisere.
-
-## Local test (Docker)
+## Local (express dev server)
 
 ```sh
-$/apps/api: pnpm build
-$/: docker build --platform linux/amd64 -f apps/api/Dockerfile -t brevgenerator2-api:test .
-$/: docker run --rm --platform linux/amd64 -p 4000:8080 brevgenerator2-api:test
-$/: http POST http://localhost:4000/2015-03-31/functions/function/invocations Content-Type:application/json md="## Sample Markdown"  mdVariables:='{"variable1": "value1", "variable2": "value2"}' generatePdfOptions:='{"dynamic": {"template": "default", "defaultTemplateFields": {"field1": "value1", "field2": "value2"}}}'
+$/apps/api: pnpm dev
 ```
 
+## Local (Docker)
+
+```sh
+# docker must run from root to add monorepo packages
+$/: pnpm docker:api:build
+$/: pnpm docker:api:run
+$/: http POST http://localhost:4000/genererbrev Content-Type:application/json md="## Sample Markdown"  mdVariables:='{"variable1": "value1", "variable2": "value2"}' options:='{"dynamic": {"template": "default", "defaultTemplateArgs": {"language": "bm", "signatureVariant": "elektroniskGodkjent", "fields": {"dato": "24.12.2025", "saksnummer": "2025/999", "saksbehandlerNavn": "Bob Bobson", "virksomhet": {"navn": "A", "adresse": "B", "postnr": "C", "poststed": "D"}}}}}'
+```
+
+## Integrasjonstester
+
+Starter API med [Testcontainers](https://testcontainers.com/) og gjør spørringer mot det.
+
+`pnpm test:integration`
+
 ## AWS deploy
+
+### Autentisering
+
+Bruker API Key til å autentisere ved deploy til AWS Lambda.
 
 ### samconfig.toml
 

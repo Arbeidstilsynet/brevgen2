@@ -56,7 +56,9 @@ export function useLoadPermanentUrl(isEditorReady: boolean, onLoad: (md: string)
     data: workspaceList,
     isSuccess: isSuccessWorkspaceList,
     isPending: isPendingWorkspaceList,
-  } = useQueryWorkspaceFiles();
+  } = useQueryWorkspaceFiles({
+    enabled: Boolean(decodedParam),
+  });
 
   const {
     mutate: getWorkspaceFile,
@@ -81,7 +83,9 @@ export function useLoadPermanentUrl(isEditorReady: boolean, onLoad: (md: string)
     const loadFromAppropriateSource = () => {
       if (gitParam) return getGit();
 
-      if (!decodedParam || !isSuccessWorkspaceList || isPendingWorkspaceList) return;
+      if (!decodedParam || !isSuccessWorkspaceList || !workspaceList || isPendingWorkspaceList) {
+        return;
+      }
 
       const file = workspaceList.find((f) => {
         if (!f.Key) return false;

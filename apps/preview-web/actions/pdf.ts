@@ -1,36 +1,36 @@
 "use server";
 
-import { HandlerGeneratePdfArgs } from "../../api/function/handler";
+import type { HandlerGeneratePdfArgs } from "../../api/lib/handler";
 
-const PDF_API = process.env.PDF_API_URL;
+const PDF_API_URL = process.env.PDF_API_URL;
+const PDF_API_KEY = process.env.PDF_API_KEY;
 
 function validateEnvVars() {
-  if (!PDF_API) {
+  if (!PDF_API_URL) {
     throw new Error("Missing NEXT_PUBLIC_PDF_API environment variable");
   }
-  if (!PDF_API.includes("localhost") && !process.env.PDF_API_KEY) {
+  if (!PDF_API_URL.includes("localhost") && !PDF_API_KEY) {
     throw new Error("Missing NEXT_PUBLIC_PDF_API_KEY environment variable");
   }
 }
 
-const PDF_API_URLS = {
-  GENERATE: new URL("genererbrev", PDF_API).toString(),
+const PDF_API_ENDPOINTS = {
+  GENERATE: new URL("genererbrev", PDF_API_URL).toString(),
 };
 
 export async function genererPdf(payload: HandlerGeneratePdfArgs) {
   validateEnvVars();
 
-  const API_KEY = process.env.PDF_API_KEY ?? "";
-  const apiUrl = PDF_API_URLS.GENERATE;
+  const url = PDF_API_ENDPOINTS.GENERATE;
 
   const headers: HeadersInit = {
     "Content-Type": "application/json",
   };
-  if (!apiUrl.includes("localhost")) {
-    headers["x-api-key"] = API_KEY;
+  if (!url?.includes("localhost")) {
+    headers["x-api-key"] = PDF_API_KEY ?? "";
   }
 
-  const response = await fetch(apiUrl, {
+  const response = await fetch(url, {
     method: "POST",
     headers,
     body: JSON.stringify(payload),

@@ -9,7 +9,7 @@ import type {
   Browser as PuppeteerCoreBrowser,
   LaunchOptions as PuppeteerCoreLaunchOptions,
 } from "puppeteer-core";
-import { Config, HtmlConfig, PdfConfig } from "./config";
+import type { Config, HtmlConfig, PdfConfig } from "./config";
 import { isHttpUrl } from "./helpers";
 import { loadPuppeteer } from "./puppeteer-loader";
 

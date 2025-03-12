@@ -7,18 +7,11 @@ import {
   PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
-import { fromSSO } from "@aws-sdk/credential-providers";
 
 const BUCKET_NAME = process.env.AWS_BUCKET_NAME!;
 
 const client = new S3Client({
-  region: process.env.AWS_REGION ?? "eu-west-1",
-  credentials:
-    process.env.NODE_ENV === "development"
-      ? fromSSO({
-          profile: process.env.AWS_PROFILE,
-        })
-      : undefined,
+  forcePathStyle: process.env.AWS_S3_FORCE_PATH_STYLE === "true" ? true : undefined,
 });
 
 export async function listFiles() {

@@ -9,7 +9,11 @@
     "typecheck": "turbo typecheck",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md,css,scss}\"",
     "check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md,css,scss}\"",
-    "circular": "npx --yes madge --circular --extensions \"js,jsx,ts,tsx\" --exclude \".next|dist\" ."
+    "circular": "npx --yes madge --circular --extensions \"js,jsx,ts,tsx\" --exclude \".next|dist\" .",
+    "docker:api:build": "docker build -f apps/api/Dockerfile -t brevgenerator2-api:test .",
+    "docker:api:run": "docker run --rm -p 4000:4000 brevgenerator2-api:test",
+    "docker:web:build": "docker build -f apps/preview-web/Dockerfile -t brevgenerator2-web:test .",
+    "docker:web:run": "docker run --rm -p 3000:3000 brevgenerator2-web:test"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
