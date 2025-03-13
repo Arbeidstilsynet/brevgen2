@@ -24,7 +24,8 @@ steps:
 
   - script: |
       mkdir -p ~/.ssh
-      echo "$(GITHUB_DEPLOY_KEY_PRIVATE)" > ~/.ssh/id_ed25519
+      GITHUB_DEPLOY_KEY_PRIVATE=$(GITHUB_DEPLOY_KEY_PRIVATE)
+      echo "$GITHUB_DEPLOY_KEY_PRIVATE" > ~/.ssh/id_ed25519
       chmod 600 ~/.ssh/id_ed25519
       ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
 
