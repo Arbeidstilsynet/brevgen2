@@ -1,13 +1,6 @@
 pool:
   vmImage: "ubuntu-latest"
 
-resources:
-  repositories:
-    - repository: Templates
-      type: git
-      name: felles-pipeline-templates
-      ref: develop
-
 trigger:
   batch: true
   branches:
@@ -22,13 +15,12 @@ steps:
     fetchDepth: 0
     persistCredentials: true
 
-  - script: |
-      mkdir -p ~/.ssh
-      GITHUB_DEPLOY_KEY_PRIVATE=$(GITHUB_DEPLOY_KEY_PRIVATE)
-      echo "$GITHUB_DEPLOY_KEY_PRIVATE" > ~/.ssh/id_ed25519
-      chmod 600 ~/.ssh/id_ed25519
-      ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+  - task: InstallSSHKey@0
+    inputs:
+      knownHostsEntry: github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl
+      sshKeySecureFile: github_deploy_key_brevgen2
 
+  - script: |
       git config --global user.name "Azure DevOps pipeline"
       git config --global user.email "grunde.thorheim@arbeidstilsynet.no"
       git remote add github git@github.com:Arbeidstilsynet/brevgen2.git
