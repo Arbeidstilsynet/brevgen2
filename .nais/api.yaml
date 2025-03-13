@@ -1,0 +1,30 @@
+apiVersion: nais.io/v1alpha1
+kind: Application
+metadata:
+  name: brevgen2-api
+  namespace: plattform
+spec:
+  env:
+    - name: PORT
+      value: 4000
+  accessPolicy:
+    inbound:
+      rules:
+        - application: brevgen2-web
+          namespace: plattform
+  image: "{{image}}"
+  port: 4000
+  replicas:
+    max: 1
+    min: 1
+  resources:
+    requests:
+      cpu: 30m
+      memory: 256Mi
+  readiness:
+    failureThreshold: 10
+    initialDelay: 20
+    path: /health
+    periodSeconds: 5
+    port: 4000
+    timeout: 1

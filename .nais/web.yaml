@@ -1,0 +1,37 @@
+apiVersion: nais.io/v1alpha1
+kind: Application
+metadata:
+  name: nais-mono-poc-web
+  namespace: plattform
+spec:
+  env:
+    - name: PDF_API_URL
+      value: http://brevgen2-api
+    - name: PDF_API_KEY
+      value: foobar
+    - name: AZURE_DEVOPS_PAT
+      value: foobar
+    - name: AWS_REGION
+      value: eu-west-1
+    - name: AWS_BUCKET_NAME
+      value: "{{s3bucket}}"
+  envFrom:
+    - secret: nais-test-aws-sdk
+  ingresses:
+    - https://brevgen2.dev.atil.cloud.nais.io
+    - https://brevgen2.intern.dev.arbeidstilsynet.no/
+  accessPolicy:
+    outbound:
+      rules:
+        - application: brevgen2-api
+      external:
+        - host: "{{s3bucket}}.s3.eu-west-1.amazonaws.com"
+  image: "{{image}}"
+  port: 3000
+  replicas:
+    max: 1
+    min: 1
+  resources:
+    requests:
+      cpu: 10m
+      memory: 256Mi
