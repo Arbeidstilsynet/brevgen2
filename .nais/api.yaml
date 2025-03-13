@@ -6,7 +6,7 @@ metadata:
 spec:
   env:
     - name: PORT
-      value: 4000
+      value: "4000"
   accessPolicy:
     inbound:
       rules:
