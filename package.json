@@ -29,6 +29,8 @@
     "onlyBuiltDependencies": [
       "puppeteer"
     ],
-    "overrides": {}
+    "overrides": {
+      "@babel/helpers@<7.26.10": ">=7.26.10"
+    }
   }
 }
