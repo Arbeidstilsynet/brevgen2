@@ -7,9 +7,6 @@ trigger:
     include:
       - develop
 
-variables:
-  - group: brevgenerator2
-
 steps:
   - checkout: self
     fetchDepth: 0
@@ -24,5 +21,5 @@ steps:
       git config --global user.name "Azure DevOps pipeline"
       git config --global user.email "grunde.thorheim@arbeidstilsynet.no"
       git remote add github git@github.com:Arbeidstilsynet/brevgen2.git
-      git push github HEAD:main
+      git push github HEAD:refs/heads/main
     displayName: "Mirror to GitHub"
