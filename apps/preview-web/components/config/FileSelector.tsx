@@ -1,4 +1,5 @@
 import { AzureDevOpsRepo } from "@/actions/azdo";
+import { ErrorDetails } from "../ErrorDetails";
 import { useToast } from "../toast/provider";
 import { useGetMarkdownFilesInfo } from "./useGetMarkdownFilesInfo";
 import { handleCopyUrlGit } from "./utils";
@@ -10,8 +11,12 @@ type Props = Readonly<{
 }>;
 
 export function FileSelector({ repo, branch, onFileSelect }: Props) {
-  const { data, isLoading } = useGetMarkdownFilesInfo(repo, branch);
+  const { data, isLoading, error } = useGetMarkdownFilesInfo(repo, branch);
   const { addToast } = useToast();
+
+  if (error) {
+    return <ErrorDetails error={error} label="Kunne ikke hente filer" />;
+  }
 
   if (isLoading) {
     return <div>Laster filer...</div>;

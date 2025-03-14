@@ -4,6 +4,7 @@ import { AzureDevOpsRepo, fetchBranchesFromAzure, fetchReposFromAzure } from "@/
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { ActionButton, TabButton } from "../buttons";
+import { ErrorDetails } from "../ErrorDetails";
 import { useToast } from "../toast/provider";
 import { Toast } from "../toast/Toast";
 import { BranchSelector } from "./BranchSelector";
@@ -26,13 +27,13 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
     "fileSelect",
   );
 
-  const { data: repos } = useQuery<AzureDevOpsRepo[]>({
+  const { data: repos, error: reposError } = useQuery<AzureDevOpsRepo[]>({
     queryKey: ["repos"],
     queryFn: fetchReposFromAzure,
     initialData: [],
   });
 
-  const { data: branches = [] } = useQuery<string[]>({
+  const { data: branches = [], error: branchesError } = useQuery<string[]>({
     queryKey: ["branches", selectedRepo?.id],
     queryFn: async () => {
       const data = await fetchBranchesFromAzure(selectedRepo!.id);
@@ -92,6 +93,8 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
       {activeTab === "fileSelect" && (
         <>
           <RepoSelector repos={repos} selected={selectedRepo} onRepoSelect={handleRepoSelect} />
+          <ErrorDetails error={reposError} label="Kunne ikke hente repos" />
+          <ErrorDetails error={branchesError} label="Kunne ikke hente branches" />
 
           {selectedRepo && selectedBranch && (
             <>

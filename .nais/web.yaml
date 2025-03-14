@@ -26,7 +26,11 @@ spec:
         - application: brevgen2-api
       external:
         - host: "{{s3bucket}}.s3.eu-west-1.amazonaws.com"
+        # Azure DevOps REST API
         - host: dev.azure.com
+        - host: spsprodweu1.vssps.visualstudio.com
+        - host: spsprodweu2.vssps.visualstudio.com
+        - host: spsprodweu3.vssps.visualstudio.com
   image: "{{image}}"
   port: 3000
   replicas:
