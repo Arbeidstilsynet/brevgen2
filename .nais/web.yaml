@@ -26,6 +26,7 @@ spec:
         - application: brevgen2-api
       external:
         - host: "{{s3bucket}}.s3.eu-west-1.amazonaws.com"
+        - host: dev.azure.com
   image: "{{image}}"
   port: 3000
   replicas:

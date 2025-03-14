@@ -45,5 +45,4 @@ EXPOSE 4000
 
 HEALTHCHECK --interval=30s --timeout=10s CMD curl -f http://localhost:4000/health || exit 1
 
-
 CMD ["node", "server.cjs"]

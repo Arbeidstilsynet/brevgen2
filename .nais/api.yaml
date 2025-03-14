@@ -19,8 +19,8 @@ spec:
     min: 1
   resources:
     requests:
-      cpu: 30m
-      memory: 256Mi
+      cpu: 20m
+      memory: 512Mi
   readiness:
     failureThreshold: 10
     initialDelay: 20

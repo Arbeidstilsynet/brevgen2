@@ -52,13 +52,10 @@ async function configureChromium() {
  * Get browser launch options based on environment
  */
 async function getBrowserLaunchOptions(): Promise<LaunchOptions> {
-  // Default options for local development
-  let options: LaunchOptions = {};
-
   // Configure for AWS Lambda
   if (process.env.AWS_LAMBDA_FUNCTION_NAME) {
     chromium ??= (await import("@sparticuz/chromium")).default;
-    options = {
+    return {
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
       executablePath: await chromium.executablePath(),
@@ -67,14 +64,24 @@ async function getBrowserLaunchOptions(): Promise<LaunchOptions> {
   }
   // Configure for Docker with system Chromium
   else if (process.env.PUPPETEER_EXECUTABLE_PATH) {
-    options = {
+    return {
       executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
-      args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--disable-crash-reporter",
+        "--disable-breakpad",
+        "--disable-extensions",
+        "--disable-default-apps",
+        "--mute-audio",
+      ],
       headless: true,
     };
   }
 
-  return options;
+  // Default options for local development
+  return {};
 }
 
 /**
