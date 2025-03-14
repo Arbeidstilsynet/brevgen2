@@ -10,6 +10,9 @@ services:
       - "4000:4000"
     environment:
       - NODE_ENV=production
+    read_only: true
+    tmpfs:
+      - /tmp
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:4000/health"]
       interval: 30s
@@ -31,6 +34,9 @@ services:
     env_file:
       - path: apps/preview-web/.env
         required: false
+    read_only: true
+    tmpfs:
+      - /tmp
     depends_on:
       api:
         condition: service_healthy

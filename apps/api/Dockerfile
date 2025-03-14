@@ -30,9 +30,11 @@ RUN mkdir -p /usr/share/fonts/truetype/custom
 COPY apps/api/fonts/*.ttf /usr/share/fonts/truetype/custom/
 RUN fc-cache -fv
 
+ENV NODE_ENV=production
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
-ENV NODE_ENV=production
+ENV XDG_CONFIG_HOME=/tmp/.chromium
+ENV XDG_CACHE_HOME=/tmp/.chromium
 
 WORKDIR /app
 

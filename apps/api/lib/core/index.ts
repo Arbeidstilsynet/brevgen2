@@ -68,6 +68,7 @@ async function getBrowserLaunchOptions(): Promise<LaunchOptions> {
       executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
       args: [
         "--no-sandbox",
+        "--no-zygote",
         "--disable-setuid-sandbox",
         "--disable-dev-shm-usage",
         "--disable-crash-reporter",
