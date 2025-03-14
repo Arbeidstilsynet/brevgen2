@@ -1,5 +1,5 @@
 import type { Browser } from "puppeteer-core";
-import type { Config } from "./config";
+import type { ConfigWithPort } from "./config";
 import { generateOutput } from "./generate-output";
 import { getHtml } from "./get-html";
 import { getMarginObject } from "./helpers";
@@ -7,7 +7,7 @@ import { getMarginObject } from "./helpers";
 /**
  * Convert markdown to pdf.
  */
-export const convertMdToPdf = async (md: string, config: Config, browser?: Browser) => {
+export const convertMdToPdf = async (md: string, config: ConfigWithPort, browser?: Browser) => {
   const { headerTemplate, footerTemplate, displayHeaderFooter } = config.pdf_options;
 
   if ((headerTemplate || footerTemplate) && displayHeaderFooter === undefined) {
@@ -34,10 +34,6 @@ export const convertMdToPdf = async (md: string, config: Config, browser?: Brows
   const output = await generateOutput(html, config, browser);
 
   if (!output) {
-    if (config.devtools) {
-      throw new Error("No file is generated with --devtools.");
-    }
-
     throw new Error(`Failed to create ${config.as_html ? "HTML" : "PDF"}.`);
   }
 

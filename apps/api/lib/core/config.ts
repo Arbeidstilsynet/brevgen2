@@ -19,13 +19,13 @@ export const defaultConfig: Config = {
     },
   },
   as_html: false,
-  devtools: false,
 };
 
 /**
  * In config keys, dashes of cli flag names are replaced with underscores.
  */
 export type Config = PdfConfig | HtmlConfig;
+export type ConfigWithPort = Config & { port: number };
 
 export interface PdfConfig extends BasicConfig {
   /**
@@ -92,15 +92,4 @@ interface BasicConfig {
    * @see https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#pagepdfoptions
    */
   pdf_options: PDFOptions;
-
-  /**
-   * If true, open chromium with devtools instead of saving the pdf. This is
-   * meant for development only, to inspect the rendered HTML.
-   */
-  devtools: boolean;
-
-  /**
-   * Port to run the local server on.
-   */
-  port?: number;
 }

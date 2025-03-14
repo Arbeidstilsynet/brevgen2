@@ -6,7 +6,7 @@ import type {
   Browser as PuppeteerCoreBrowser,
   LaunchOptions as PuppeteerCoreLaunchOptions,
 } from "puppeteer-core";
-import { Config, defaultConfig, HtmlConfig, PdfConfig } from "./config";
+import { Config, ConfigWithPort, defaultConfig, HtmlConfig, PdfConfig } from "./config";
 import { HtmlOutput, Output, PdfOutput } from "./generate-output";
 import { convertMdToPdf } from "./md-to-pdf";
 import { loadPuppeteer } from "./puppeteer-loader";
@@ -91,18 +91,15 @@ async function getBrowserLaunchOptions(): Promise<LaunchOptions> {
 export async function mdToPdf(md: string, config?: Partial<PdfConfig>): Promise<PdfOutput>;
 export async function mdToPdf(md: string, config?: Partial<HtmlConfig>): Promise<HtmlOutput>;
 export async function mdToPdf(md: string, config: Partial<Config> = {}): Promise<Output> {
-  if (!config.port) {
-    config.port = await getPort();
-  }
-
   if (!config.basedir) {
     config.basedir = process.cwd();
   }
 
-  const mergedConfig: Config = {
+  const mergedConfig: ConfigWithPort = {
     ...defaultConfig,
     ...config,
     pdf_options: { ...defaultConfig.pdf_options, ...config.pdf_options },
+    port: await getPort(),
   };
 
   if (process.env.DEBUG) {
@@ -110,18 +107,10 @@ export async function mdToPdf(md: string, config: Partial<Config> = {}): Promise
   }
 
   const server = await serveDirectory(mergedConfig);
-
   await configureChromium();
-
   const options = await getBrowserLaunchOptions();
-
   const puppeteer = await loadPuppeteer();
-
-  const browser = await puppeteer.launch({
-    ...options,
-    devtools: config.devtools,
-  });
-
+  const browser = await puppeteer.launch(options);
   const pdf = await convertMdToPdf(md, mergedConfig, browser as PuppeteerCoreBrowser);
 
   await browser.close();

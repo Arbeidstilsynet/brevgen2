@@ -7,7 +7,13 @@ import type { Config } from "./config";
  *
  * @returns a promise that resolves with the server instance once the server is ready and listening.
  */
-export const serveDirectory = async ({ basedir, port }: Config) =>
+export const serveDirectory = async ({
+  basedir,
+  port,
+}: {
+  basedir: Config["basedir"];
+  port: number;
+}) =>
   new Promise<Server>((resolve) => {
     const server = createServer(async (request, response) =>
       serveHandler(request, response, { public: basedir }),

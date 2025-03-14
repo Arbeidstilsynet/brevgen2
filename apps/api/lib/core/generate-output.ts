@@ -2,7 +2,7 @@ import { join, posix, sep } from "path";
 import { PDFDocument } from "pdf-lib";
 import type { Browser as PuppeteerBrowser } from "puppeteer";
 import type { Page, Browser as PuppeteerCoreBrowser } from "puppeteer-core";
-import type { Config, HtmlConfig, PdfConfig } from "./config";
+import type { ConfigWithPort } from "./config";
 import { isHttpUrl } from "./helpers";
 import { loadPuppeteer } from "./puppeteer-loader";
 
@@ -33,24 +33,24 @@ export const closeBrowser = async () => (await browserPromise)?.close();
  */
 export async function generateOutput(
   html: string,
-  config: PdfConfig,
+  config: ConfigWithPort,
   browserRef?: Browser,
 ): Promise<PdfOutput>;
 export async function generateOutput(
   html: string,
-  config: HtmlConfig,
+  config: ConfigWithPort,
   browserRef?: Browser,
 ): Promise<HtmlOutput>;
 export async function generateOutput(
   html: string,
-  config: Config,
+  config: ConfigWithPort,
   browserRef?: Browser,
 ): Promise<Output>;
 export async function generateOutput(
   html: string,
-  config: Config,
+  config: ConfigWithPort,
   browserRef?: Browser,
-): Promise<Output | undefined> {
+): Promise<Output> {
   async function getBrowser() {
     const puppeteer = await loadPuppeteer();
 
@@ -59,9 +59,7 @@ export async function generateOutput(
     }
 
     if (!browserPromise) {
-      browserPromise = puppeteer.launch({
-        devtools: config.devtools,
-      });
+      browserPromise = puppeteer.launch();
     }
 
     return browserPromise;
@@ -72,7 +70,7 @@ export async function generateOutput(
 
   const urlPathname = join(".", "index.html").split(sep).join(posix.sep);
 
-  await page.goto(`http://localhost:${config.port!}/${urlPathname}`); // make sure relative paths work as expected
+  await page.goto(`http://localhost:${config.port}/${urlPathname}`); // make sure relative paths work as expected
   await page.setContent(html); // overwrite the page content with what was generated from the markdown
 
   for (const stylesheet of config.stylesheet) {
@@ -102,9 +100,7 @@ export async function generateOutput(
 
   let outputFileContent: string | Buffer = "";
 
-  if (config.devtools) {
-    await new Promise((resolve) => page.on("close", resolve));
-  } else if (config.as_html) {
+  if (config.as_html) {
     outputFileContent = await page.content();
   } else {
     await page.emulateMediaType(config.page_media_type);
@@ -118,10 +114,6 @@ export async function generateOutput(
   }
 
   await page.close();
-
-  if (config.devtools) {
-    return undefined;
-  }
 
   if (config.as_html) {
     return {
