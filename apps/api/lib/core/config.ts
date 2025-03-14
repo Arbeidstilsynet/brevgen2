@@ -1,5 +1,5 @@
 import { MarkedExtension, MarkedOptions } from "marked";
-import type { FrameAddScriptTagOptions, LaunchOptions, PDFOptions } from "puppeteer-core";
+import type { FrameAddScriptTagOptions, PDFOptions } from "puppeteer-core";
 
 export const defaultConfig: Config = {
   basedir: process.cwd(),
@@ -20,7 +20,6 @@ export const defaultConfig: Config = {
       left: "20mm",
     },
   },
-  launch_options: {},
   as_html: false,
   devtools: false,
   marked_extensions: [],
@@ -103,13 +102,6 @@ interface BasicConfig {
    * @see https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#pagepdfoptions
    */
   pdf_options: PDFOptions;
-
-  /**
-   * Launch options for Puppeteer.
-   *
-   * @see https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#puppeteerlaunchoptions
-   */
-  launch_options: LaunchOptions;
 
   /**
    * If true, open chromium with devtools instead of saving the pdf. This is

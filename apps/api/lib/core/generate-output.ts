@@ -1,14 +1,7 @@
 import { join, posix, sep } from "path";
 import { PDFDocument } from "pdf-lib";
-import type {
-  Browser as PuppeteerBrowser,
-  LaunchOptions as PuppeteerLaunchOptions,
-} from "puppeteer";
-import type {
-  Page,
-  Browser as PuppeteerCoreBrowser,
-  LaunchOptions as PuppeteerCoreLaunchOptions,
-} from "puppeteer-core";
+import type { Browser as PuppeteerBrowser } from "puppeteer";
+import type { Page, Browser as PuppeteerCoreBrowser } from "puppeteer-core";
 import type { Config, HtmlConfig, PdfConfig } from "./config";
 import { isHttpUrl } from "./helpers";
 import { loadPuppeteer } from "./puppeteer-loader";
@@ -24,7 +17,6 @@ export interface HtmlOutput {
 }
 
 type Browser = PuppeteerBrowser | PuppeteerCoreBrowser;
-type LaunchOptions = PuppeteerLaunchOptions & PuppeteerCoreLaunchOptions;
 
 /**
  * Store a single browser instance reference so that we can re-use it.
@@ -69,8 +61,7 @@ export async function generateOutput(
     if (!browserPromise) {
       browserPromise = puppeteer.launch({
         devtools: config.devtools,
-        ...config.launch_options,
-      } as LaunchOptions);
+      });
     }
 
     return browserPromise;

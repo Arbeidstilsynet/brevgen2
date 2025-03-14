@@ -120,8 +120,7 @@ export async function mdToPdf(md: string, config: Partial<Config> = {}): Promise
   const browser = await puppeteer.launch({
     ...options,
     devtools: config.devtools,
-    ...config.launch_options,
-  } as LaunchOptions);
+  });
 
   const pdf = await convertMdToPdf(md, mergedConfig, browser as PuppeteerCoreBrowser);
 
