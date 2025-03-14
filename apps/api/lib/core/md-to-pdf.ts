@@ -7,7 +7,7 @@ import { getMarginObject } from "./helpers";
 /**
  * Convert markdown to pdf.
  */
-export const convertMdToPdf = async (md: string, config: ConfigWithPort, browser?: Browser) => {
+export const convertMdToPdf = async (md: string, config: ConfigWithPort, browser: Browser) => {
   const { headerTemplate, footerTemplate, displayHeaderFooter } = config.pdf_options;
 
   if ((headerTemplate || footerTemplate) && displayHeaderFooter === undefined) {

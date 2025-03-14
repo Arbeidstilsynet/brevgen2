@@ -4,7 +4,6 @@ import type { Browser as PuppeteerBrowser } from "puppeteer";
 import type { Page, Browser as PuppeteerCoreBrowser } from "puppeteer-core";
 import type { ConfigWithPort } from "./config";
 import { isHttpUrl } from "./helpers";
-import { loadPuppeteer } from "./puppeteer-loader";
 
 export type Output = PdfOutput | HtmlOutput;
 
@@ -34,38 +33,23 @@ export const closeBrowser = async () => (await browserPromise)?.close();
 export async function generateOutput(
   html: string,
   config: ConfigWithPort,
-  browserRef?: Browser,
+  browser: Browser,
 ): Promise<PdfOutput>;
 export async function generateOutput(
   html: string,
   config: ConfigWithPort,
-  browserRef?: Browser,
+  browser: Browser,
 ): Promise<HtmlOutput>;
 export async function generateOutput(
   html: string,
   config: ConfigWithPort,
-  browserRef?: Browser,
+  browser: Browser,
 ): Promise<Output>;
 export async function generateOutput(
   html: string,
   config: ConfigWithPort,
-  browserRef?: Browser,
+  browser: Browser,
 ): Promise<Output> {
-  async function getBrowser() {
-    const puppeteer = await loadPuppeteer();
-
-    if (browserRef) {
-      return browserRef;
-    }
-
-    if (!browserPromise) {
-      browserPromise = puppeteer.launch();
-    }
-
-    return browserPromise;
-  }
-
-  const browser = await getBrowser();
   const page = await browser.newPage();
 
   const urlPathname = join(".", "index.html").split(sep).join(posix.sep);
