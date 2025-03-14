@@ -9,14 +9,13 @@ spec:
       value: http://brevgen2-api
     - name: PDF_API_KEY
       value: foobar
-    - name: AZURE_DEVOPS_PAT
-      value: foobar
     - name: AWS_REGION
       value: eu-west-1
     - name: AWS_BUCKET_NAME
       value: "{{s3bucket}}"
   envFrom:
     - secret: nais-test-aws-sdk
+    - secret: azure-devops-pat-code-read
   ingresses:
     - https://brevgen2.dev.atil.cloud.nais.io
     - https://brevgen2.intern.dev.arbeidstilsynet.no/
