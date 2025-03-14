@@ -1,4 +1,3 @@
-import { MarkedExtension, MarkedOptions } from "marked";
 import type { FrameAddScriptTagOptions, PDFOptions } from "puppeteer-core";
 
 export const defaultConfig: Config = {
@@ -9,7 +8,6 @@ export const defaultConfig: Config = {
   document_title: "",
   body_class: [],
   page_media_type: "screen",
-  marked_options: {},
   pdf_options: {
     printBackground: true,
     format: "a4",
@@ -22,7 +20,6 @@ export const defaultConfig: Config = {
   },
   as_html: false,
   devtools: false,
-  marked_extensions: [],
 };
 
 /**
@@ -90,13 +87,6 @@ interface BasicConfig {
   page_media_type: "screen" | "print";
 
   /**
-   * Options for the Marked parser.
-   *
-   * @see https://marked.js.org/#/USING_ADVANCED.md
-   */
-  marked_options: MarkedOptions;
-
-  /**
    * PDF options for Puppeteer.
    *
    * @see https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#pagepdfoptions
@@ -113,11 +103,4 @@ interface BasicConfig {
    * Port to run the local server on.
    */
   port?: number;
-
-  /**
-   * Custm Extensions to be passed to marked.
-   *
-   * @see https://marked.js.org/using_pro#extensions
-   */
-  marked_extensions: MarkedExtension[];
 }

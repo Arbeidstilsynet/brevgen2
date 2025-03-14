@@ -1,12 +1,12 @@
+import { marked } from "marked";
 import sanitizeHtml from "sanitize-html";
 import type { Config } from "./config";
-import { getMarked } from "./get-marked";
 
 /**
  * Generates a HTML document from a markdown string and returns it as a string.
  */
 export function getHtml(md: string, config: Config) {
-  const dirty = getMarked(config.marked_options, config.marked_extensions)(md) as string;
+  const dirty = marked(md) as string;
 
   const clean = sanitizeHtml(dirty, {
     allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img", "html", "head", "body"]),
