@@ -18,16 +18,6 @@ export interface HtmlOutput {
 type Browser = PuppeteerBrowser | PuppeteerCoreBrowser;
 
 /**
- * Store a single browser instance reference so that we can re-use it.
- */
-let browserPromise: Promise<Browser> | undefined;
-
-/**
- * Close the browser instance.
- */
-export const closeBrowser = async () => (await browserPromise)?.close();
-
-/**
  * Generate the output (either PDF or HTML).
  */
 export async function generateOutput(
