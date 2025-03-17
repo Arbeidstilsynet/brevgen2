@@ -33,7 +33,7 @@ stages:
           region: eu-west-1
           infraBucket: "infra-dev-deploy-bucket"
           chromiumLayerBucket: dev-brevgenerator2-lambda-layers
-          chromiumVersion: "131.0.1"
+          chromiumVersion: "133.0.0"
           imageName: dev-brevgenerator2-web
           stackParametersApi: >-
             Env=dev
