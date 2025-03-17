@@ -48,70 +48,69 @@ if (!existsSync(fixturesDir)) {
 
 // run inner describes in sequence
 // as the visual regression tests are dependent on the downloaded PDFs from api tests
-describe.sequential("Integration tests", () => {
-  describe.concurrent("API tests with testcontainers (Docker Compose)", () => {
-    let environment: StartedDockerComposeEnvironment;
-    let apiHost: string;
-    let apiPort: number;
-    let genererBrevUrl: string;
-    let logStream: Readable;
+describe.sequential("Integration tests with testcontainers", () => {
+  let environment: StartedDockerComposeEnvironment;
+  let genererBrevUrl: string;
+  let healthUrl: string;
+  let logStream: Readable;
 
-    beforeAll(async () => {
-      console.log("Setting up Docker Compose environment...");
+  beforeAll(async () => {
+    console.log("Setting up Docker Compose environment...");
 
-      const rootDir = path.resolve(__dirname, "../../../");
-      const composeFile = "compose.yaml";
-      const composeFilePath = path.join(rootDir, composeFile);
+    const rootDir = path.resolve(__dirname, "../../../");
+    const composeFile = "compose.yaml";
+    const composeFilePath = path.join(rootDir, composeFile);
 
-      if (!existsSync(composeFilePath)) {
-        throw new Error(`Compose file not found at ${composeFilePath}`);
-      }
-      console.log(`Docker Compose file exists at: ${composeFilePath}`);
+    if (!existsSync(composeFilePath)) {
+      throw new Error(`Compose file not found at ${composeFilePath}`);
+    }
+    console.log(`Docker Compose file exists at: ${composeFilePath}`);
 
-      environment = await new DockerComposeEnvironment(rootDir, composeFile)
-        .withBuild()
-        .withWaitStrategy("api-1", Wait.forHealthCheck())
-        .up(["api"]); // Only start the API service
+    environment = await new DockerComposeEnvironment(rootDir, composeFile)
+      .withBuild()
+      .withWaitStrategy("api-1", Wait.forHealthCheck())
+      .up(["api"]); // Only start the API service
 
-      console.log("Docker Compose environment started");
+    console.log("Docker Compose environment started");
 
-      const apiContainer = environment.getContainer("api-1");
-      apiHost = apiContainer.getHost();
-      apiPort = apiContainer.getMappedPort(4000);
-      genererBrevUrl = `http://${apiHost}:${apiPort}/genererbrev`;
-      logStream = await setupLogStreaming(environment, "api-1");
+    logStream = await setupLogStreaming(environment, "api-1");
 
-      console.log({
-        apiHost,
-        apiPort,
-        genererBrevUrl,
-        apiContainer: {
-          id: apiContainer.getId(),
-          name: apiContainer.getName(),
-          labels: apiContainer.getLabels(),
-          host: apiContainer.getHost(),
-          hostname: apiContainer.getHostname(),
-          networkNames: apiContainer.getNetworkNames(),
-        },
-      });
+    const apiContainer = environment.getContainer("api-1");
+    const apiHost = apiContainer.getHost();
+    const apiPort = apiContainer.getMappedPort(4000);
+    genererBrevUrl = `http://${apiHost}:${apiPort}/genererbrev`;
+    healthUrl = `http://${apiHost}:${apiPort}/health`;
 
-      // Give the API a moment to fully initialize
-      await new Promise((resolve) => setTimeout(resolve, 5000));
-    }, 180_000); // Increase timeout to 3 minutes since building containers can take time
+    console.log({
+      genererBrevUrl,
+      apiContainer: {
+        id: apiContainer.getId(),
+        name: apiContainer.getName(),
+        labels: apiContainer.getLabels(),
+        host: apiContainer.getHost(),
+        hostname: apiContainer.getHostname(),
+        networkNames: apiContainer.getNetworkNames(),
+      },
+    });
 
-    afterAll(async () => {
-      console.log("Tearing down Docker Compose environment...");
+    // Give the API a moment to fully initialize
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+  }, 180_000); // Increase timeout to 3 minutes since building containers can take time
 
-      if (logStream) {
-        logStream.destroy();
-      }
-      if (environment) {
-        await environment.down();
-      }
-    }, 60_000);
+  afterAll(async () => {
+    console.log("Tearing down Docker Compose environment...");
 
+    if (logStream) {
+      logStream.destroy();
+    }
+    if (environment) {
+      await environment.down();
+    }
+  }, 60_000);
+
+  describe.concurrent("API tests", () => {
     test("Health endpoint returns 200", async () => {
-      const response = await fetch(`http://${apiHost}:${apiPort}/health`);
+      const response = await fetch(healthUrl);
       expect(response.status).toBe(200);
     });
 

@@ -26,7 +26,7 @@ jobs:
           docker_context: "."
           dockerfile: "./apps/api/Dockerfile"
           build_args: |
-            CHROMIUM_VERSION: "131.*"
+            CHROMIUM_VERSION: "134.*"
       - uses: nais/deploy/actions/deploy@7e3c2dd373a307827e55a757b5f3b51e9fe352d5 # v2
         env:
           CLUSTER: dev
