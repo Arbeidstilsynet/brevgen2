@@ -16,8 +16,8 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: nais/docker-build-push@v0
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: nais/docker-build-push@791ebb6f74b82849c742a9bc9c97abe44c6c111f # v0
         id: docker-build-push-api
         with:
           team: plattform
@@ -27,7 +27,7 @@ jobs:
           dockerfile: "./apps/api/Dockerfile"
           build_args: |
             CHROMIUM_VERSION: "131.*"
-      - uses: nais/deploy/actions/deploy@v2
+      - uses: nais/deploy/actions/deploy@7e3c2dd373a307827e55a757b5f3b51e9fe352d5 # v2
         env:
           CLUSTER: dev
           RESOURCE: .nais/api.yaml
@@ -41,8 +41,8 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: nais/docker-build-push@v0
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: nais/docker-build-push@791ebb6f74b82849c742a9bc9c97abe44c6c111f # v0
         id: docker-build-push-web
         with:
           team: plattform
@@ -50,7 +50,7 @@ jobs:
           # web app must be built from root for pnpm lockfile and packages to be available
           docker_context: "."
           dockerfile: "./apps/preview-web/Dockerfile"
-      - uses: nais/deploy/actions/deploy@v2
+      - uses: nais/deploy/actions/deploy@7e3c2dd373a307827e55a757b5f3b51e9fe352d5 # v2
         env:
           CLUSTER: dev
           RESOURCE: .nais/web.yaml
