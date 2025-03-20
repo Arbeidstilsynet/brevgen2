@@ -15,7 +15,7 @@ trigger:
       - src
 
 pool:
-  vmImage: "ubuntu-20.04"
+  vmImage: "ubuntu-latest"
 
 jobs:
   - deployment: FellesBrevgeneratorApiDeployVerifikasjon
@@ -48,5 +48,4 @@ jobs:
                   ProjectName=digisam
                   Name=felles-brevgenerator
                   Application=felles-brevgenerator
-                  Owner=magnus.alvestad.mikalsen@arbeidstilsynet.no
                   CostCenter=2016
