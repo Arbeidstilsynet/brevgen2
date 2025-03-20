@@ -1,22 +1,25 @@
-import { AzureDevOpsRepo, fetchManyFileContentFromAzure } from "@/actions/azdo";
+import { fetchManyFileContentFromAzure } from "@/actions/azdo";
 import { findMdVariables } from "@at/dynamic-markdown";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { TabButton } from "../buttons";
+import { AzDoRepoWithName } from "./selectableRepos";
 import { useGetMarkdownFilesInfo } from "./useGetMarkdownFilesInfo";
 
 type Props = Readonly<{
-  repo: AzureDevOpsRepo;
+  repoWithName: AzDoRepoWithName;
   branch: string;
 }>;
 
-export function VariablesReport({ repo, branch }: Props) {
+export function VariablesReport({ repoWithName, branch }: Props) {
+  const [repo, prettyName] = repoWithName;
+
   const [viewMode, setViewMode] = useState<"counts" | "perFile">("counts");
 
-  const { data, isLoading } = useGetMarkdownFilesInfo(repo, branch);
+  const { data, isLoading } = useGetMarkdownFilesInfo(repoWithName, branch);
 
   const { data: variablesReport, isLoading: reportLoading } = useQuery({
-    queryKey: ["variablesReport", repo.id, branch],
+    queryKey: ["variablesReport", repo.id, branch, prettyName],
     queryFn: async () => {
       const filePaths = data!.map((file) => file.path);
       const files = await fetchManyFileContentFromAzure(repo.id, branch, filePaths);

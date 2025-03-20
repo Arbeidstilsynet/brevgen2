@@ -1,17 +1,22 @@
-import { AzureDevOpsRepo } from "@/actions/azdo";
 import { ErrorDetails } from "../ErrorDetails";
 import { useToast } from "../toast/provider";
+import { AzDoRepoWithName } from "./selectableRepos";
 import { useGetMarkdownFilesInfo } from "./useGetMarkdownFilesInfo";
 import { handleCopyUrlGit } from "./utils";
 
 type Props = Readonly<{
-  repo: AzureDevOpsRepo;
+  repoWithName: AzDoRepoWithName;
   branch: string;
-  onFileSelect: (repoId: string, branch: string, filePath: string) => void | Promise<void>;
+  onFileSelected: (
+    repoId: string,
+    branch: string,
+    filePath: string,
+    systemName: string,
+  ) => void | Promise<void>;
 }>;
 
-export function FileSelector({ repo, branch, onFileSelect }: Props) {
-  const { data, isLoading, error } = useGetMarkdownFilesInfo(repo, branch);
+export function FileSelector({ repoWithName, branch, onFileSelected }: Props) {
+  const { data, isLoading, error } = useGetMarkdownFilesInfo(repoWithName, branch);
   const { addToast } = useToast();
 
   if (error) {
@@ -26,6 +31,8 @@ export function FileSelector({ repo, branch, onFileSelect }: Props) {
     return <div>Ingen filer funnet</div>;
   }
 
+  const [repo, prettyName] = repoWithName;
+
   return (
     <div>
       <ul className="space-y-2">
@@ -34,7 +41,7 @@ export function FileSelector({ repo, branch, onFileSelect }: Props) {
             <button
               title={file.path}
               className="p-2 mr-2 border border-gray-300 rounded hover:bg-gray-200 w-full text-left"
-              onClick={() => onFileSelect(repo.id, branch, file.path)}
+              onClick={() => onFileSelected(repo.id, branch, file.path, prettyName)}
             >
               {file.path.split("/").at(-1)}
             </button>

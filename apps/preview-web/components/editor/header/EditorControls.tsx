@@ -7,6 +7,7 @@ type Props = Readonly<{
   saveLocal: (md: string) => void;
   handleTranslateSelection: () => void;
   isApertiumPending: boolean;
+  lastLoadedFileName: string | null;
 }>;
 
 export function EditorControls({
@@ -15,11 +16,12 @@ export function EditorControls({
   saveLocal,
   handleTranslateSelection,
   isApertiumPending,
+  lastLoadedFileName,
 }: Props) {
   const { addToast } = useToast();
   return (
     <div className="w-2/5">
-      <div className="flex">
+      <div className="flex items-center">
         <div className="flex gap-2">
           <IconButton
             variant="green"
@@ -58,6 +60,21 @@ export function EditorControls({
             {isApertiumPending ? "⟳" : "🌍"}
           </IconButton>
         </div>
+
+        {lastLoadedFileName && (
+          <div className="ml-10 flex items-center overflow-hidden">
+            <span className="mr-1">📄</span>
+            <div className="overflow-hidden">
+              <div className="text-xs text-gray-500 leading-tight">Last opened</div>
+              <div
+                className="text-sm font-medium whitespace-nowrap overflow-hidden text-ellipsis"
+                title={lastLoadedFileName}
+              >
+                {lastLoadedFileName}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

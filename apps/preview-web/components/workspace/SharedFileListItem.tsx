@@ -63,7 +63,8 @@ export function SharedFileListItem({ fileKey, allFileKeys }: Readonly<SharedFile
     loadFile.mutate(key, {
       onSuccess: (data) => {
         if (!data) return console.error(`File was empty`);
-        onLoadMd(data);
+        const { fileName } = extractTags(key);
+        onLoadMd(data, fileName);
       },
     });
   };

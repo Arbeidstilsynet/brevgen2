@@ -1,4 +1,10 @@
+import { AzureDevOpsRepo } from "@/actions/azdo";
+
 interface RepoInfo {
+  /**
+   * Id of the Git repository
+   */
+  id: string;
   /**
    * Name of the Git repository
    */
@@ -8,32 +14,38 @@ interface RepoInfo {
    */
   prettyName: string;
   /**
-   * Restrict file options to these paths if not set to null
+   * Restrict file options to these paths
    */
-  onlyPaths: string[] | null;
+  onlyPaths: string[];
 }
 
 export const allowedRepos: RepoInfo[] = [
   {
+    id: "95900fce-b90e-44b1-ab49-36043c6c1c00",
     repoName: "felles-brevgenerator",
     prettyName: "Brevgenerator2 (eksempler)",
     onlyPaths: ["apps/preview-web/examples"],
   },
   {
-    repoName: "bemanningsforetak-saksbehandling2",
+    id: "4914f041-a899-4900-b228-8ca96122fb45",
+    repoName: "era",
     prettyName: "Bemanning",
-    onlyPaths: ["dokumentmaler"],
+    onlyPaths: ["apps/bemanning-saksbehandling/dokumentmaler"],
   },
   {
+    id: "4914f041-a899-4900-b228-8ca96122fb45",
     repoName: "era",
     prettyName: "Bilpleie",
     onlyPaths: ["apps/bilpleie-saksbehandling/dokumentmaler"],
   },
   {
+    id: "cb3181b5-a126-4519-99cb-bb941ccd79b3",
     repoName: "arbeidstid-service",
     prettyName: "Arbeidstid",
     onlyPaths: ["dokumentmaler"],
   },
-];
+].toSorted((a, b) => a.prettyName.localeCompare(b.prettyName));
 
 export const allowedRepoNames = new Set(allowedRepos.map((r) => r.repoName));
+
+export type AzDoRepoWithName = Readonly<[AzureDevOpsRepo, prettyName: string]>;

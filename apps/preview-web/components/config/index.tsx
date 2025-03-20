@@ -10,17 +10,23 @@ import { Toast } from "../toast/Toast";
 import { BranchSelector } from "./BranchSelector";
 import { FileSelector } from "./FileSelector";
 import { RepoSelector } from "./RepoSelector";
+import { AzDoRepoWithName } from "./selectableRepos";
 import { VariablesReport } from "./VariablesReport";
 
 type Props = Readonly<{
-  onFileSelected: (repoId: string, branch: string, filePath: string) => void | Promise<void>;
+  onFileSelected: (
+    repoId: string,
+    branch: string,
+    filePath: string,
+    systemName: string,
+  ) => void | Promise<void>;
   onExampleSelected: (example: "initial" | "advanced") => void;
 }>;
 
 export function Config({ onFileSelected, onExampleSelected }: Props) {
   const { message, variant, clearToast } = useToast();
 
-  const [selectedRepo, setSelectedRepo] = useState<AzureDevOpsRepo | null>(null);
+  const [selectedRepo, setSelectedRepo] = useState<AzDoRepoWithName | null>(null);
   const [selectedBranch, setSelectedBranch] = useState<string | null>(null);
 
   const [activeTab, setActiveTab] = useState<"fileSelect" | "loadExamples" | "variablesReport">(
@@ -34,11 +40,11 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
   });
 
   const { data: branches = [], error: branchesError } = useQuery<string[]>({
-    queryKey: ["branches", selectedRepo?.id],
+    queryKey: ["branches", selectedRepo?.[0].id],
     queryFn: async () => {
-      const data = await fetchBranchesFromAzure(selectedRepo!.id);
+      const data = await fetchBranchesFromAzure(selectedRepo![0].id);
       if (!selectedBranch) {
-        setSelectedBranch(selectedRepo!.defaultBranch.replace("refs/heads/", ""));
+        setSelectedBranch(selectedRepo![0].defaultBranch.replace("refs/heads/", ""));
       }
       return data;
     },
@@ -46,9 +52,11 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
     select: (data) => data.map((b) => b.replace("refs/heads/", "")),
   });
 
-  const handleRepoSelect = (repo: AzureDevOpsRepo) => {
+  const handleRepoSelected = (repo: AzDoRepoWithName) => {
     setSelectedRepo(repo);
-    setSelectedBranch(null);
+    if (!selectedRepo || selectedRepo[0].id !== repo[0].id) {
+      setSelectedBranch(null);
+    }
   };
 
   return (
@@ -92,7 +100,11 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
 
       {activeTab === "fileSelect" && (
         <>
-          <RepoSelector repos={repos} selected={selectedRepo} onRepoSelect={handleRepoSelect} />
+          <RepoSelector
+            repos={repos}
+            selectedRepoName={selectedRepo?.[1] ?? null}
+            onRepoSelected={handleRepoSelected}
+          />
           <ErrorDetails error={reposError} label="Kunne ikke hente repos" />
           <ErrorDetails error={branchesError} label="Kunne ikke hente branches" />
 
@@ -106,9 +118,9 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
 
               <h3 className="text-l font-semibold">Velg en Markdown-fil</h3>
               <FileSelector
-                repo={selectedRepo}
+                repoWithName={selectedRepo}
                 branch={selectedBranch}
-                onFileSelect={onFileSelected}
+                onFileSelected={onFileSelected}
               />
             </>
           )}
@@ -130,7 +142,11 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
           <h2 className="text-xl font-semibold">Oversikt per repo</h2>
           <span>Dette viser alle variabler som er referert i fagsystemets brevmaler</span>
 
-          <RepoSelector repos={repos} selected={selectedRepo} onRepoSelect={handleRepoSelect} />
+          <RepoSelector
+            repos={repos}
+            selectedRepoName={selectedRepo?.[1] ?? null}
+            onRepoSelected={handleRepoSelected}
+          />
 
           {selectedRepo && selectedBranch && (
             <>
@@ -140,7 +156,7 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
                 onBranchSelect={(b) => setSelectedBranch(b)}
               />
 
-              <VariablesReport repo={selectedRepo} branch={selectedBranch} />
+              <VariablesReport repoWithName={selectedRepo} branch={selectedBranch} />
             </>
           )}
         </>

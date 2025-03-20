@@ -4,9 +4,11 @@ import { fetchFileContentFromAzure } from "@/actions/azdo";
 import { useMutation } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
+import { allowedRepos } from "../config/selectableRepos";
 import { useToast } from "../toast/provider";
 import { useLoadFile, useQueryWorkspaceFiles } from "../workspace/hooks";
 import { extractTags, URL_SEARCH_PARAM_WORKSPACE } from "../workspace/utils";
+import { getLoadedRepoFileName, getLoadedWorkspaceName } from "./utils";
 
 export const GIT_PARAMS = {
   git: "git",
@@ -17,7 +19,11 @@ export const GIT_PARAMS = {
 /**
  * Load a file from the workspace or Git based on seach params
  */
-export function useLoadPermanentUrl(isEditorReady: boolean, onLoad: (md: string) => void) {
+export function useLoadPermanentUrl(
+  isEditorReady: boolean,
+  onLoad: (md: string) => void,
+  setLastLoadedFileName: (fileName: string) => void,
+) {
   const params = useSearchParams();
   const { addToast } = useToast();
 
@@ -28,7 +34,7 @@ export function useLoadPermanentUrl(isEditorReady: boolean, onLoad: (md: string)
 
   // If git parameters are provided, they take precedence.
   const workspaceParam = !gitParam ? params.get(URL_SEARCH_PARAM_WORKSPACE) : null;
-  const decodedParam = decodeURIComponent(workspaceParam ?? "");
+  const decodedWorkspaceParam = decodeURIComponent(workspaceParam ?? "");
 
   const {
     mutate: getGit,
@@ -40,8 +46,14 @@ export function useLoadPermanentUrl(isEditorReady: boolean, onLoad: (md: string)
       return fetchFileContentFromAzure(gitParam, branchParam, decodedFileParam);
     },
     onSuccess: (md) => {
+      const fileName = decodedFileParam.split("/").at(-1)!;
+      const systemName =
+        allowedRepos.find(
+          (r) => r.id === gitParam && r.onlyPaths.some((p) => decodedFileParam.includes(p)),
+        )?.prettyName ?? "unknown";
+
       onLoad(md);
-      const fileName = decodedFileParam.split("/").at(-1);
+      setLastLoadedFileName(getLoadedRepoFileName({ systemName, fileName }));
       addToast("info", `Loaded ${fileName} from Git`);
     },
     onError: (error) => {
@@ -57,7 +69,7 @@ export function useLoadPermanentUrl(isEditorReady: boolean, onLoad: (md: string)
     isSuccess: isSuccessWorkspaceList,
     isPending: isPendingWorkspaceList,
   } = useQueryWorkspaceFiles({
-    enabled: Boolean(decodedParam),
+    enabled: Boolean(decodedWorkspaceParam),
   });
 
   const {
@@ -67,7 +79,8 @@ export function useLoadPermanentUrl(isEditorReady: boolean, onLoad: (md: string)
   } = useLoadFile({
     onSuccess: (md) => {
       onLoad(md ?? "");
-      addToast("info", `Loaded ${decodedParam} from workspace`);
+      setLastLoadedFileName(getLoadedWorkspaceName(decodedWorkspaceParam));
+      addToast("info", `Loaded ${decodedWorkspaceParam} from workspace`);
     },
     onError: (error) => {
       console.error("Error loading file from workspace:", error);
@@ -83,23 +96,28 @@ export function useLoadPermanentUrl(isEditorReady: boolean, onLoad: (md: string)
     const loadFromAppropriateSource = () => {
       if (gitParam) return getGit();
 
-      if (!decodedParam || !isSuccessWorkspaceList || !workspaceList || isPendingWorkspaceList) {
+      if (
+        !decodedWorkspaceParam ||
+        !isSuccessWorkspaceList ||
+        !workspaceList ||
+        isPendingWorkspaceList
+      ) {
         return;
       }
 
       const file = workspaceList.find((f) => {
         if (!f.Key) return false;
         const { fileName } = extractTags(f.Key);
-        return fileName === decodedParam;
+        return fileName === decodedWorkspaceParam;
       });
-      if (!file) return addToast("error", `File ${decodedParam} not found in workspace`);
+      if (!file) return addToast("error", `File ${decodedWorkspaceParam} not found in workspace`);
 
       getWorkspaceFile(file.Key!);
     };
     loadFromAppropriateSource();
   }, [
     addToast,
-    decodedParam,
+    decodedWorkspaceParam,
     getGit,
     getWorkspaceFile,
     gitParam,

@@ -40,7 +40,7 @@ export async function fetchReposFromAzure(): Promise<AzureDevOpsRepo[]> {
     );
   }
 
-  const data: AzureDevOpsReposResponse = await response.json();
+  const data = (await response.json()) as AzureDevOpsReposResponse;
   if (!data.count) {
     throw new Error(
       `Response ok, but no repos found. Check if PAT user has sufficient license to read repos. Organization:${organization} project:${project}.`,
@@ -74,7 +74,7 @@ export async function fetchBranchesFromAzure(repoId: string): Promise<string[]> 
     );
   }
 
-  const data: AzureDevOpsBranchesResponse = await response.json();
+  const data = (await response.json()) as AzureDevOpsBranchesResponse;
   return data.value.map((branch) => branch.name);
 }
 
@@ -99,7 +99,7 @@ export async function fetchFilesFromAzure(
     );
   }
 
-  const data: AzureDevOpsFilesResponse = await response.json();
+  const data = (await response.json()) as AzureDevOpsFilesResponse;
   return data.value;
 }
 

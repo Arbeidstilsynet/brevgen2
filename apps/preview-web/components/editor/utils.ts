@@ -80,3 +80,17 @@ export function getRandomValue(variableName: string): string {
     return getRandomWord();
   }
 }
+
+export function getLoadedWorkspaceName(fileName: string): string {
+  return `Workspace/${fileName}`;
+}
+
+export function getLoadedRepoFileName({
+  systemName,
+  fileName,
+}: {
+  systemName: string;
+  fileName: string;
+}) {
+  return `${systemName}/${fileName}`;
+}

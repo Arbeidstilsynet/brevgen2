@@ -5,19 +5,25 @@ const isRepoChooseable = (repoName: string) => allowedRepoNames.has(repoName);
 
 const isMarkdownFile = (path: string): boolean => path.endsWith(".md") || path.endsWith(".mdat");
 
-function isPathAllowed(repoName: string, path: string): boolean {
-  const repoInfo = allowedRepos.find((r) => r.repoName === repoName);
+function isPathAllowed(prettyName: string, path: string): boolean {
+  const repoInfo = allowedRepos.find((r) => r.prettyName === prettyName);
   if (!repoInfo) {
     return false;
   }
-  if (!repoInfo.onlyPaths) {
-    return true;
-  }
+
   return repoInfo.onlyPaths.some((p) => path.includes(p));
 }
 
-export function isAzDoFileAllowed(repoName: string, path: string): boolean {
-  return isRepoChooseable(repoName) && isMarkdownFile(path) && isPathAllowed(repoName, path);
+export function isAzDoFileAllowed({
+  repoName,
+  prettyName,
+  path,
+}: {
+  repoName: string;
+  prettyName: string;
+  path: string;
+}): boolean {
+  return isRepoChooseable(repoName) && isMarkdownFile(path) && isPathAllowed(prettyName, path);
 }
 
 function generatePermanentUrlGit(repoId: string, branch: string, key: string) {

@@ -1,32 +1,32 @@
 import { AzureDevOpsRepo } from "@/actions/azdo";
-import { allowedRepoNames, allowedRepos } from "./selectableRepos";
+import { allowedRepos, AzDoRepoWithName } from "./selectableRepos";
 
 type Props = Readonly<{
   repos: AzureDevOpsRepo[];
-  selected: AzureDevOpsRepo | null;
-  onRepoSelect: (repo: AzureDevOpsRepo) => void;
+  selectedRepoName: string | null;
+  onRepoSelected: (repo: AzDoRepoWithName) => void;
 }>;
 
-export function RepoSelector({ repos, selected, onRepoSelect }: Props) {
-  const filteredRepos = repos
-    .filter((repo) => allowedRepoNames.has(repo.name))
-    .map((r) => ({
-      id: r.id,
-      name: allowedRepos.find((s) => s.repoName === r.name)!.prettyName,
-    }));
+export function RepoSelector({ repos, selectedRepoName, onRepoSelected }: Props) {
+  const reposOptions: AzDoRepoWithName[] = allowedRepos
+    .map((allowedRepo) => {
+      const actualRepo = repos.find((repo) => repo.name === allowedRepo.repoName);
+      return actualRepo ? ([actualRepo, allowedRepo.prettyName] as const) : null;
+    })
+    .filter((r): r is NonNullable<typeof r> => Boolean(r));
 
   return (
     <select
       className="p-2 border border-gray-300 rounded"
-      value={selected?.id ?? ""}
-      onChange={(e) => onRepoSelect(repos.find((r) => r.id === e.target.value)!)}
+      value={selectedRepoName ?? ""}
+      onChange={(e) => onRepoSelected(reposOptions.find((r) => r[1] === e.target.value)!)}
     >
       <option value={""} disabled>
         Velg fagsystem
       </option>
-      {filteredRepos.map((repo) => (
-        <option key={repo.id} value={repo.id}>
-          {repo.name}
+      {reposOptions.map((repo) => (
+        <option key={repo[1]} value={repo[1]}>
+          {repo[1]}
         </option>
       ))}
     </select>
