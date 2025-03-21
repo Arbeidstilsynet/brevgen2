@@ -1,5 +1,6 @@
 import { use, useEffect, useRef, useState } from "react";
 import { useToast } from "../toast/provider";
+import { FileTag } from "./FileTag";
 import { useDeleteFile, useLoadFile, useUploadFile } from "./hooks";
 import { WorkspaceContext } from "./provider";
 import { SharedFileListItemRename } from "./SharedFileListItemRename";
@@ -61,10 +62,9 @@ export function SharedFileListItem({ fileKey, allFileKeys }: Readonly<SharedFile
 
   const handleLoadFile = (key: string) => {
     loadFile.mutate(key, {
-      onSuccess: (data) => {
-        if (!data) return console.error(`File was empty`);
-        const { fileName } = extractTags(key);
-        onLoadMd(data, fileName);
+      onSuccess: (file) => {
+        const { md, fileName, tags } = file;
+        onLoadMd(md, fileName, tags);
       },
     });
   };
@@ -83,13 +83,8 @@ export function SharedFileListItem({ fileKey, allFileKeys }: Readonly<SharedFile
           >
             <span className="font-medium">{fileName}</span>
             <span className="text-gray-500 ml-1">.md</span>
-            {Array.from(tags).map((tag, index) => (
-              <span
-                key={index}
-                className="ml-2 inline-flex items-center rounded-full bg-blue-100 border border-blue-200 px-2 py-0.5 text-xs text-blue-800 shadow"
-              >
-                {tag}
-              </span>
+            {Array.from(tags).map((tag) => (
+              <FileTag key={tag} tag={tag} />
             ))}
           </button>
           {loadFile.error && <div className="text-red-500 text-m">{loadFile.error.message}</div>}

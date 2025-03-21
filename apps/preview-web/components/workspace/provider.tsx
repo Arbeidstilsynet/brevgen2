@@ -2,7 +2,7 @@ import { createContext } from "react";
 
 type WorkspaceContextValue = Readonly<{
   currentMd: string;
-  onLoadMd: (md: string, fileName: string) => void;
+  onLoadMd: (md: string, fileName: string, tags: Set<string>) => void;
 }>;
 
 export const WorkspaceContext = createContext<WorkspaceContextValue>({

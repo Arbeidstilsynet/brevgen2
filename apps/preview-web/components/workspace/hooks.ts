@@ -7,6 +7,7 @@ import {
   useQueryClient,
   UseQueryOptions,
 } from "@tanstack/react-query";
+import { extractTags } from "./utils";
 
 const QUERY_KEY_FILES = "workspace";
 
@@ -20,15 +21,28 @@ export function useQueryWorkspaceFiles(
   });
 }
 
+interface UseLoadFileReturn {
+  md: string;
+  fileName: string;
+  tags: Set<string>;
+}
+
 export function useLoadFile(
   options?: Omit<
-    UseMutationOptions<string | undefined, Error, string>,
+    UseMutationOptions<UseLoadFileReturn | undefined, Error, string>,
     "mutationKey" | "mutationFn"
   >,
 ) {
   return useMutation({
     mutationKey: [QUERY_KEY_FILES],
-    mutationFn: (s3Key: string) => getFile(s3Key),
+    mutationFn: async (s3Key: string) => {
+      const md = await getFile(s3Key);
+      if (typeof md !== "string") {
+        throw new TypeError("getFile returned empty string or nullish");
+      }
+      const { fileName, tags } = extractTags(s3Key);
+      return { md, fileName, tags };
+    },
     ...options,
   });
 }

@@ -1,5 +1,7 @@
 import { IconButton } from "@/components/buttons";
 import { useToast } from "@/components/toast/provider";
+import { FileTag } from "@/components/workspace/FileTag";
+import { LastLoadedFile } from "../utils";
 
 type Props = Readonly<{
   md: string;
@@ -7,7 +9,7 @@ type Props = Readonly<{
   saveLocal: (md: string) => void;
   handleTranslateSelection: () => void;
   isApertiumPending: boolean;
-  lastLoadedFileName: string | null;
+  lastLoadedFile: LastLoadedFile | null;
 }>;
 
 export function EditorControls({
@@ -16,9 +18,12 @@ export function EditorControls({
   saveLocal,
   handleTranslateSelection,
   isApertiumPending,
-  lastLoadedFileName,
+  lastLoadedFile,
 }: Props) {
   const { addToast } = useToast();
+
+  const { fileName, tags } = lastLoadedFile ?? { fileName: null, tags: null };
+
   return (
     <div className="w-2/5">
       <div className="flex items-center">
@@ -61,16 +66,25 @@ export function EditorControls({
           </IconButton>
         </div>
 
-        {lastLoadedFileName && (
+        {fileName && (
           <div className="ml-10 flex items-center overflow-hidden">
             <span className="mr-1">📄</span>
-            <div className="overflow-hidden">
-              <div className="text-xs text-gray-500 leading-tight">Last opened</div>
-              <div
-                className="text-sm font-medium whitespace-nowrap overflow-hidden text-ellipsis"
-                title={lastLoadedFileName}
-              >
-                {lastLoadedFileName}
+            <div className="flex flex-col overflow-hidden">
+              <div className="text-xs text-gray-500">Last opened</div>
+              <div className="flex">
+                <div
+                  className="text-sm font-medium whitespace-nowrap overflow-hidden text-ellipsis"
+                  title={fileName}
+                >
+                  {fileName}
+                </div>
+                {tags && tags.size > 0 && (
+                  <div className="flex mr-4">
+                    {Array.from(tags).map((tag, index) => (
+                      <FileTag key={index} tag={tag} />
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>

@@ -94,3 +94,8 @@ export function getLoadedRepoFileName({
 }) {
   return `${systemName}/${fileName}`;
 }
+
+export interface LastLoadedFile {
+  fileName: string;
+  tags: Set<string> | null;
+}

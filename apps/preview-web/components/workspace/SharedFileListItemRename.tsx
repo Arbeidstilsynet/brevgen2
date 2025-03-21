@@ -28,9 +28,9 @@ export function SharedFileListItemRename({
   const handleRenameFile = async (oldKey: string) => {
     if (!editFilename.trim()) return;
     const newKey = createKey(editFilename.trim(), editTags);
-    const content = await loadFile.mutateAsync(oldKey);
+    const file = await loadFile.mutateAsync(oldKey);
     await uploadFile.mutateAsync(
-      { key: newKey, content: content! },
+      { key: newKey, content: file.md },
       {
         onSuccess: async () => {
           await deleteFile.mutateAsync(oldKey);

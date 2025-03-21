@@ -8,7 +8,7 @@ import { allowedRepos } from "../config/selectableRepos";
 import { useToast } from "../toast/provider";
 import { useLoadFile, useQueryWorkspaceFiles } from "../workspace/hooks";
 import { extractTags, URL_SEARCH_PARAM_WORKSPACE } from "../workspace/utils";
-import { getLoadedRepoFileName, getLoadedWorkspaceName } from "./utils";
+import { getLoadedRepoFileName, getLoadedWorkspaceName, LastLoadedFile } from "./utils";
 
 export const GIT_PARAMS = {
   git: "git",
@@ -22,7 +22,7 @@ export const GIT_PARAMS = {
 export function useLoadPermanentUrl(
   isEditorReady: boolean,
   onLoad: (md: string) => void,
-  setLastLoadedFileName: (fileName: string) => void,
+  setLastLoadedFile: (file: LastLoadedFile) => void,
 ) {
   const params = useSearchParams();
   const { addToast } = useToast();
@@ -53,7 +53,10 @@ export function useLoadPermanentUrl(
         )?.prettyName ?? "unknown";
 
       onLoad(md);
-      setLastLoadedFileName(getLoadedRepoFileName({ systemName, fileName }));
+      setLastLoadedFile({
+        fileName: getLoadedRepoFileName({ systemName, fileName }),
+        tags: null,
+      });
       addToast("info", `Loaded ${fileName} from Git`);
     },
     onError: (error) => {
@@ -77,9 +80,11 @@ export function useLoadPermanentUrl(
     isPending: isPendingWorkspaceFile,
     isIdle: isIdleWorkspaceFile,
   } = useLoadFile({
-    onSuccess: (md) => {
-      onLoad(md ?? "");
-      setLastLoadedFileName(getLoadedWorkspaceName(decodedWorkspaceParam));
+    onSuccess: (value) => {
+      if (!value) return console.error(`File was empty`);
+      const { md, fileName, tags } = value;
+      onLoad(md);
+      setLastLoadedFile({ fileName: getLoadedWorkspaceName(fileName), tags });
       addToast("info", `Loaded ${decodedWorkspaceParam} from workspace`);
     },
     onError: (error) => {

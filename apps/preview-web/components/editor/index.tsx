@@ -26,7 +26,13 @@ import { TopLeft } from "./header/TopLeft";
 import { defaultTemplateReducer } from "./templateConfigReducer";
 import { useDynamicMarkdown } from "./useDynamicMarkdown";
 import { useLoadPermanentUrl } from "./useLoadPermanentUrl";
-import { getLoadedRepoFileName, getLoadedWorkspaceName, getRandomValue, saveLocal } from "./utils";
+import {
+  getLoadedRepoFileName,
+  getLoadedWorkspaceName,
+  getRandomValue,
+  LastLoadedFile,
+  saveLocal,
+} from "./utils";
 
 export function DynamicMarkdownEditor() {
   const monaco = useMonaco();
@@ -47,7 +53,10 @@ export function DynamicMarkdownEditor() {
   const [indicatedElement, setIndicatedElement] = useState<IndictableElement>(null);
   const [isWorkspaceOpen, setIsWorkspaceOpen] = useState(false);
 
-  const [lastLoadedFileName, setLastLoadedFileName] = useState<string | null>(`Examples/initial`);
+  const [lastLoadedFile, setLastLoadedFile] = useState<LastLoadedFile | null>({
+    fileName: "Examples/initial",
+    tags: null,
+  });
 
   const updateEditor = useCallback(
     (md: string, vars: typeof mdVars) => {
@@ -79,7 +88,7 @@ export function DynamicMarkdownEditor() {
     }
     updateEditor(data, vars);
     setIsConfigOpen(false);
-    setLastLoadedFileName(`Examples/${example}`);
+    setLastLoadedFile({ fileName: `Examples/${example}`, tags: null });
   };
 
   const loadMdWithEmptyVars = useCallback(
@@ -103,14 +112,14 @@ export function DynamicMarkdownEditor() {
     loadMdWithEmptyVars(md);
     setIsConfigOpen(false);
     const fileName = filePath.split("/").at(-1)!;
-    setLastLoadedFileName(getLoadedRepoFileName({ systemName, fileName }));
+    setLastLoadedFile({ fileName: getLoadedRepoFileName({ systemName, fileName }), tags: null });
   };
 
   const handleLoadFromWorkspace = useCallback(
-    (md: string, fileName: string) => {
+    (md: string, fileName: string, tags: Set<string>) => {
       loadMdWithEmptyVars(md);
       setIsWorkspaceOpen(false);
-      setLastLoadedFileName(getLoadedWorkspaceName(fileName));
+      setLastLoadedFile({ fileName: getLoadedWorkspaceName(fileName), tags });
     },
     [loadMdWithEmptyVars],
   );
@@ -118,7 +127,7 @@ export function DynamicMarkdownEditor() {
   const isLoadingPermanentUrl = useLoadPermanentUrl(
     Boolean(monaco),
     loadMdWithEmptyVars,
-    setLastLoadedFileName,
+    setLastLoadedFile,
   );
 
   const handleFillRandomValues = () => {
@@ -183,7 +192,7 @@ export function DynamicMarkdownEditor() {
           saveLocal={saveLocal}
           handleTranslateSelection={handleTranslateSelection}
           isApertiumPending={isApertiumPending}
-          lastLoadedFileName={lastLoadedFileName}
+          lastLoadedFile={lastLoadedFile}
         />
         <PreviewControls
           activePreviewTab={activePreviewTab}
