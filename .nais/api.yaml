@@ -15,15 +15,15 @@ spec:
   image: "{{image}}"
   port: 4000
   replicas:
-    max: 1
-    min: 1
+    max: 5
+    min: 2
   resources:
     limits:
-      cpu: 100m
-      memory: 1536Mi
+      cpu: 1000m
+      memory: 2048Mi
     requests:
-      cpu: 30m
-      memory: 768Mi
+      cpu: 200m
+      memory: 1024Mi
   readiness:
     failureThreshold: 10
     initialDelay: 20
