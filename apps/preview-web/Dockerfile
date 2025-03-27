@@ -44,7 +44,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/apps/preview-web/.next/standalone
 COPY --from=builder --chown=nextjs:nodejs /app/apps/preview-web/.next/static ./apps/preview-web/.next/static
 WORKDIR /app/apps/preview-web
 
-RUN apk update && apk add curl && rm -rf /var/cache/apk/*
+RUN apk add --no-cache curl
 
 USER nextjs
 
