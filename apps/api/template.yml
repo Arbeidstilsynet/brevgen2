@@ -94,6 +94,15 @@ Resources:
           DNSName: !GetAtt BrevgeneratorApi.DomainName.RegionalDomainName
 
   ###################
+  ### WAF
+  ###################
+  BrevgeneratorApiWaf:
+    Type: AWS::WAFv2::WebACLAssociation
+    Properties:
+      ResourceArn: !Sub "arn:aws:apigateway:${AWS::Region}::/restapis/${BrevgeneratorApi}/stages/${Env}"
+      WebACLArn: "{{resolve:ssm:/waf/regional/data-api/arn}}"
+
+  ###################
   ### Parameter Store
   ###################
   ParameterStoreApiKeyId:
