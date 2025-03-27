@@ -2,6 +2,7 @@
 
 import { fetchFileContentFromAzure } from "@/actions/azdo";
 import { useApertium } from "@/hooks/useApertium";
+import { TemplateOption } from "@at/document-templates";
 import { findMdVariables } from "@at/dynamic-markdown";
 import { Editor, useMonaco } from "@monaco-editor/react";
 import { useCallback, useReducer, useState } from "react";
@@ -15,7 +16,7 @@ import { ToastProvider, useToast } from "../toast/provider";
 import { Workspace } from "../workspace";
 import { WorkspaceContext } from "../workspace/provider";
 import { Preview } from "./Preview";
-import { TemplateConfig, TemplateOption } from "./TemplateConfig";
+import { TemplateConfig } from "./TemplateConfig";
 import { VariableInput } from "./VariableInput";
 import { advancedMd, advancedVars } from "./examples/advanced";
 import { initialDefaultTemplateArgs, initialMd, initialVars } from "./examples/initial";

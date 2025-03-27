@@ -1,16 +1,14 @@
 import fs from "fs";
-import getPort from "get-port";
 import path from "path";
 import type { LaunchOptions as PuppeteerLaunchOptions } from "puppeteer";
 import type {
   Browser as PuppeteerCoreBrowser,
   LaunchOptions as PuppeteerCoreLaunchOptions,
 } from "puppeteer-core";
-import { Config, ConfigWithPort, defaultConfig, HtmlConfig, PdfConfig } from "./config";
-import { HtmlOutput, Output, PdfOutput } from "./generate-output";
+import { Config, defaultConfig } from "./config";
 import { convertMdToPdf } from "./md-to-pdf";
 import { loadPuppeteer } from "./puppeteer-loader";
-import { closeServer, serveDirectory } from "./serve-dir";
+import { InferOutputType } from "./types";
 
 // conditionally import @sparticuz/chromium as it's only used in AWS Lambda
 let chromium: typeof import("@sparticuz/chromium");
@@ -88,35 +86,24 @@ async function getBrowserLaunchOptions(): Promise<LaunchOptions> {
 /**
  * Convert a markdown file to PDF.
  */
-export async function mdToPdf(md: string, config?: Partial<PdfConfig>): Promise<PdfOutput>;
-export async function mdToPdf(md: string, config?: Partial<HtmlConfig>): Promise<HtmlOutput>;
-export async function mdToPdf(md: string, config: Partial<Config> = {}): Promise<Output> {
-  if (!config.basedir) {
-    config.basedir = process.cwd();
-  }
-
-  const mergedConfig: ConfigWithPort = {
+export async function mdToPdf<T extends Partial<Config>>(
+  md: string,
+  config: T = {} as T,
+): Promise<InferOutputType<T>> {
+  const mergedConfig: Config = {
     ...defaultConfig,
     ...config,
     pdf_options: { ...defaultConfig.pdf_options, ...config.pdf_options },
-    port: await getPort(),
   };
+  console.info("api/lib/core mdToPdf()", { mergedConfig });
 
-  if (process.env.DEBUG) {
-    console.log({ function: "core/mdToPdf", mergedConfig });
-  }
-
-  const server = await serveDirectory(mergedConfig);
   await configureChromium();
   const options = await getBrowserLaunchOptions();
   const puppeteer = await loadPuppeteer();
   const browser = await puppeteer.launch(options);
-  const pdf = await convertMdToPdf(md, mergedConfig, browser as PuppeteerCoreBrowser);
+  const result = await convertMdToPdf(md, mergedConfig, browser as PuppeteerCoreBrowser);
 
   await browser.close();
-  await closeServer(server);
 
-  return pdf;
+  return result as InferOutputType<T>;
 }
-
-export default mdToPdf;

@@ -2,13 +2,12 @@
 
 import { genererPdf } from "@/actions/pdf";
 import { useDebouncedMutation } from "@/hooks/useDebouncedMutation";
-import { defaultTemplate } from "@at/document-templates";
+import { defaultTemplate, TemplateOption } from "@at/document-templates";
 import { marked } from "marked";
 import { useEffect, useRef, useState } from "react";
 import sanitizeHtml from "sanitize-html";
 import { HandlerGeneratePdfArgs } from "../../../api/lib/handler";
 import { ActivePreviewTab } from "./header/PreviewControls";
-import { TemplateOption } from "./TemplateConfig";
 
 function getHtml(md: string, css: string) {
   const dirty = marked(md) as string;
@@ -136,7 +135,11 @@ export function Preview({
         md = defaultTemplate.getMd(md, defaultTemplateArgs);
       }
 
-      const output = getHtml(md, selectedTemplate === "default" ? defaultTemplate.globalCss : "");
+      const css =
+        selectedTemplate === "default" || selectedTemplate === "blank"
+          ? defaultTemplate.globalCss
+          : "";
+      const output = getHtml(md, css);
       setRenderedHtml(output);
     };
 

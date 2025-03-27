@@ -1,76 +1,27 @@
-import { join, posix, sep } from "path";
 import { PDFDocument } from "pdf-lib";
 import type { Browser as PuppeteerBrowser } from "puppeteer";
-import type { Page, Browser as PuppeteerCoreBrowser } from "puppeteer-core";
-import type { ConfigWithPort } from "./config";
-import { isHttpUrl } from "./helpers";
-
-export type Output = PdfOutput | HtmlOutput;
-
-export interface PdfOutput {
-  content: Buffer;
-}
-
-export interface HtmlOutput {
-  content: string;
-}
+import type { Browser as PuppeteerCoreBrowser } from "puppeteer-core";
+import type { Config } from "./config";
+import { InferOutputType } from "./types";
 
 type Browser = PuppeteerBrowser | PuppeteerCoreBrowser;
 
 /**
- * Generate the output (either PDF or HTML).
+ * Generate the output (either PDF or HTML) based on config.
  */
-export async function generateOutput(
+export async function generateOutput<T extends Config>(
   html: string,
-  config: ConfigWithPort,
+  config: T,
   browser: Browser,
-): Promise<PdfOutput>;
-export async function generateOutput(
-  html: string,
-  config: ConfigWithPort,
-  browser: Browser,
-): Promise<HtmlOutput>;
-export async function generateOutput(
-  html: string,
-  config: ConfigWithPort,
-  browser: Browser,
-): Promise<Output>;
-export async function generateOutput(
-  html: string,
-  config: ConfigWithPort,
-  browser: Browser,
-): Promise<Output> {
+): Promise<InferOutputType<T>> {
   const page = await browser.newPage();
 
-  const urlPathname = join(".", "index.html").split(sep).join(posix.sep);
-
-  await page.goto(`http://localhost:${config.port}/${urlPathname}`); // make sure relative paths work as expected
-  await page.setContent(html); // overwrite the page content with what was generated from the markdown
-
-  for (const stylesheet of config.stylesheet) {
-    await page.addStyleTag(isHttpUrl(stylesheet) ? { url: stylesheet } : { path: stylesheet });
-  }
+  await page.goto("about:blank");
+  await page.setContent(html, { waitUntil: "domcontentloaded" });
 
   if (config.css) {
     await page.addStyleTag({ content: config.css });
   }
-
-  for (const scriptTagOptions of config.script) {
-    await page.addScriptTag(scriptTagOptions);
-  }
-
-  /**
-   * Trick to wait for network to be idle.
-   *
-   * @todo replace with page.waitForNetworkIdle once exposed
-   * @see https://github.com/GoogleChrome/puppeteer/issues/3083
-   */
-  await Promise.all([
-    page.waitForNavigation({ waitUntil: "networkidle0" }),
-    // workaround for puppeteer vs puppeteer-core
-    // This expression is not callable. Each member of the union type ... has signatures, but none of those signatures are compatible with each other.
-    (page.evaluate as Page["evaluate"])(() => history.pushState(undefined, "", "#")),
-  ]);
 
   let outputFileContent: string | Buffer = "";
 
@@ -89,13 +40,7 @@ export async function generateOutput(
 
   await page.close();
 
-  if (config.as_html) {
-    return {
-      content: outputFileContent as string,
-    } as HtmlOutput;
-  } else {
-    return {
-      content: outputFileContent,
-    } as PdfOutput;
-  }
+  return {
+    content: outputFileContent,
+  } as InferOutputType<T>;
 }

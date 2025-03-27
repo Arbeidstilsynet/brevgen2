@@ -1,5 +1,9 @@
 # Versjonslogg
 
+## 2.3.0 - 2025-03-27
+
+Lagt til støtte for blank template
+
 ## 2.2.0 - 2025-01-22
 
 Lagt til støtte for `null` som variabelverdi i forbindelse med truthy logikk

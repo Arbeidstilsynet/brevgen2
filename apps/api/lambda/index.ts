@@ -31,12 +31,12 @@ export const handler: APIGatewayProxyHandler = async (event) => {
       throw new TypeError("Missing body.md");
     }
 
-    const pdfBase64 = await handlerGeneratePdf(body);
+    const result = await handlerGeneratePdf(body);
 
     return {
       statusCode: 200,
       headers: corsHeaders,
-      body: pdfBase64,
+      body: result,
     };
   } catch (err) {
     if (process.env.NODE_ENV !== "test") {

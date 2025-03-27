@@ -70,8 +70,12 @@ public class DynamicMdPdfConfig
 {
     /// <summary>
     /// Pick letterhead, footer and styling template
+    /// <br />
     /// "default" - standard Arbeidstilsynet SOM template
-    /// "custom" - user controlled, pass in `options.pdf_options` with header/footerTemplate
+    /// <br />
+    /// "custom" - user controlled, pass in `options.pdf_options` as needed
+    /// <br />
+    /// "blank" - similar to custom, but retains default styling
     /// </summary>
     [JsonPropertyName("template")]
     public TemplateType Template { get; set; }
@@ -101,7 +105,10 @@ public enum TemplateType
     Default,
 
     [EnumMember(Value = "custom")]
-    Custom
+    Custom,
+
+    [EnumMember(Value = "blank")]
+    Blank
 }
 
 public class PdfConfig : BasicConfig
@@ -121,7 +128,6 @@ public class PdfConfig : BasicConfig
 
 /// <summary>
 /// Basert på felles-brevgenerator/apps/api/lib/core/config.ts
-/// Eksluderer mange felter som ikke gir mening å konfigurere for klienten
 /// </summary>
 public class BasicConfig
 {

@@ -15,7 +15,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.json());
+app.use(express.json({ limit: "10mb" }));
 
 app.get("/health", (req, res) => {
   res.status(200).send();
@@ -25,7 +25,7 @@ app.post("/genererbrev", async (req, res) => {
   try {
     console.info(req.body);
     const result = await handlerGeneratePdf(req.body as HandlerGeneratePdfArgs);
-    res.json(result);
+    res.send(result);
   } catch (err) {
     console.error("Error processing request:", err);
     if (err instanceof TypeError) {

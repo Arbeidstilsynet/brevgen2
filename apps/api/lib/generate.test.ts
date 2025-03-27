@@ -3,7 +3,7 @@ import { parseDynamicMd } from "@at/dynamic-markdown";
 import fs from "fs";
 import path from "path";
 import { describe, expect, test, vi } from "vitest";
-import { generatePdf } from "./pdf";
+import { generateDocument } from "./generate";
 import { generateLoremIpsum } from "./testUtils";
 
 describe("validation", () => {
@@ -17,7 +17,7 @@ describe("validation", () => {
     };
 
     const parsedMd = parseDynamicMd(testdata.md);
-    await expect(() => generatePdf(parsedMd, options)).rejects.toThrow(
+    await expect(() => generateDocument(parsedMd, options)).rejects.toThrow(
       "defaultTemplateArgs are required when using the default template",
     );
   });
@@ -29,7 +29,7 @@ describe("validation", () => {
 
     const parsedMd = parseDynamicMd(testdata.md);
     await expect(() =>
-      generatePdf(parsedMd, {
+      generateDocument(parsedMd, {
         dynamic: {
           defaultTemplateArgs: {
             language: "bm",
@@ -74,10 +74,8 @@ const defaultTemplateArgs: defaultTemplate.DefaultTemplateArgs = {
 describe.skip("pdf generation", () => {
   describe("templates", () => {
     test("can use custom template", async () => {
-      // vi.stubEnv("DEBUG", "1");
-
       const parsedMd = parseDynamicMd("# Lorem ipsum");
-      const pdf = await generatePdf(parsedMd, {
+      const pdf = await generateDocument(parsedMd, {
         document_title: "Hello, world",
         dynamic: {
           template: "custom",
@@ -94,7 +92,7 @@ describe.skip("pdf generation", () => {
 
   test("hello world", async () => {
     const md = "# Hello, world!\n## Subtitle";
-    const pdf = await generatePdf(md, {
+    const pdf = await generateDocument(md, {
       document_title: "Hello, world",
       dynamic: {
         defaultTemplateArgs,
@@ -104,7 +102,7 @@ describe.skip("pdf generation", () => {
   });
 
   test("pdf is sanitized", async () => {
-    const pdfPromise = generatePdf("# Hello, world <script>alert('XSS')</script>", {
+    const pdfPromise = generateDocument("# Hello, world <script>alert('XSS')</script>", {
       document_title: "Hello, world",
       dynamic: {
         defaultTemplateArgs,
@@ -145,7 +143,7 @@ ${generateLoremIpsum(100)}
     const parsedMd = parseDynamicMd(testdata.md, {
       variables: testdata.variables,
     });
-    const pdf = await generatePdf(parsedMd, {
+    const pdf = await generateDocument(parsedMd, {
       document_title: "Hello, world",
       dynamic: {
         defaultTemplateArgs,

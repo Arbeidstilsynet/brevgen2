@@ -27,10 +27,6 @@ Parameters:
     Type: String
     Description: The version of the Chromium layer to use
 
-  DEBUG:
-    Type: String
-    Default: ""
-
 Resources:
   ###################
   ### Certificate
@@ -157,7 +153,6 @@ Resources:
       Environment:
         Variables:
           NODE_OPTIONS: "--enable-source-maps"
-          DEBUG: !Ref DEBUG
       Timeout: 60
       MemorySize: 2048
       AutoPublishAlias: GenererBrevVersion

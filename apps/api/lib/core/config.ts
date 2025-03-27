@@ -1,9 +1,6 @@
-import type { FrameAddScriptTagOptions, PDFOptions } from "puppeteer-core";
+import type { PDFOptions } from "puppeteer-core";
 
 export const defaultConfig: Config = {
-  basedir: process.cwd(),
-  stylesheet: [],
-  script: [],
   css: "",
   document_title: "",
   body_class: [],
@@ -25,7 +22,6 @@ export const defaultConfig: Config = {
  * In config keys, dashes of cli flag names are replaced with underscores.
  */
 export type Config = PdfConfig | HtmlConfig;
-export type ConfigWithPort = Config & { port: number };
 
 export interface PdfConfig extends BasicConfig {
   /**
@@ -48,28 +44,9 @@ export interface HtmlConfig extends BasicConfig {
 
 interface BasicConfig {
   /**
-   * Base directory to be served by the file server.
-   */
-  basedir: string;
-
-  /**
-   * List of css files to use for styling.
-   *
-   * @todo change to `FrameAddStyleTagOptions` (will be a breaking change)
-   */
-  stylesheet: string[];
-
-  /**
    * Custom css styles.
    */
   css: string;
-
-  /**
-   * List of scripts to load into the page.
-   *
-   * @see https://github.com/puppeteer/puppeteer/blob/main/docs/api.md#pageaddscripttagoptions
-   */
-  script: FrameAddScriptTagOptions[];
 
   /**
    * Name of the HTML Document.

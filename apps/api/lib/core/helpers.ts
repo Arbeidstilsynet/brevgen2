@@ -24,16 +24,3 @@ export const getMarginObject = (margin: string): PDFOptions["margin"] => {
           ? { top, right: top, bottom: top, left: top }
           : undefined;
 };
-
-/**
- * Check whether the input is a url.
- *
- * @returns `true` if a URL can be constructed from `input`, `false` otherwise.
- */
-export const isHttpUrl = (input: string) => {
-  try {
-    return new URL(input).protocol.startsWith("http");
-  } catch {
-    return false;
-  }
-};

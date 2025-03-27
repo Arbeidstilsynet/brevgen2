@@ -25,11 +25,18 @@ public interface IChooseTemplateStep
 
     /// <summary>
     /// Velg custom template. Dette har i praksis minimalt med styling og layout.
-    /// Du må selv mate inn ønsket konfigurasjon via AddPuppeteerOptions.
+    /// Du må selv mate inn ønsket konfigurasjon via WithConversionOptions.
     /// <br /><br/>
     /// Mest egnet for testing, ikke til å lage produksjonsdokument.
     /// </summary>
     IBuildStep WithCustomTemplate();
+
+    /// <summary>
+    /// Velg blank template. Dette er som et blankt ark, uten header/footer, men med samme styling som default template.
+    /// <br />
+    /// Du kan legge til egen header/footer osv. med WithConversionOptions
+    /// </summary>
+    IBuildStep WithBlankTemplate();
 }
 
 public interface IDefaultTemplateFieldsStep
@@ -105,6 +112,14 @@ internal class BuilderSteps : IAddMarkdownStep, IChooseTemplateStep, IDefaultTem
     {
         args.Options.Dynamic.ThrowIfNull(MissingInitializerErrorMessage);
         args.Options!.Dynamic!.Template = TemplateType.Custom;
+        return this;
+    }
+
+    /// <inheritdoc/>
+    public IBuildStep WithBlankTemplate()
+    {
+        args.Options.Dynamic.ThrowIfNull(MissingInitializerErrorMessage);
+        args.Options!.Dynamic!.Template = TemplateType.Blank;
         return this;
     }
 

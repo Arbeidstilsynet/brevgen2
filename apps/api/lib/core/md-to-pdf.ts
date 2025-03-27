@@ -1,34 +1,28 @@
 import type { Browser } from "puppeteer-core";
-import type { ConfigWithPort } from "./config";
+import type { Config } from "./config";
 import { generateOutput } from "./generate-output";
 import { getHtml } from "./get-html";
 import { getMarginObject } from "./helpers";
+import { InferOutputType } from "./types";
 
 /**
  * Convert markdown to pdf.
  */
-export const convertMdToPdf = async (md: string, config: ConfigWithPort, browser: Browser) => {
+export async function convertMdToPdf<T extends Config>(
+  md: string,
+  config: T,
+  browser: Browser,
+): Promise<InferOutputType<T>> {
   const { headerTemplate, footerTemplate, displayHeaderFooter } = config.pdf_options;
 
   if ((headerTemplate || footerTemplate) && displayHeaderFooter === undefined) {
     config.pdf_options.displayHeaderFooter = true;
   }
 
-  const arrayOptions = ["body_class", "script", "stylesheet"] as const;
-
-  // sanitize frontmatter array options
-  for (const option of arrayOptions) {
-    if (!Array.isArray(config[option])) {
-      config[option] = [config[option]].filter(Boolean);
-    }
-  }
-
   // sanitize the margin in pdf_options
   if (typeof config.pdf_options.margin === "string") {
     config.pdf_options.margin = getMarginObject(config.pdf_options.margin);
   }
-
-  config.stylesheet = [...new Set([...config.stylesheet])];
 
   const html = getHtml(md, config);
   const output = await generateOutput(html, config, browser);
@@ -38,4 +32,4 @@ export const convertMdToPdf = async (md: string, config: ConfigWithPort, browser
   }
 
   return output;
-};
+}

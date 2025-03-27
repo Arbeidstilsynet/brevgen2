@@ -1,10 +1,8 @@
-import { defaultTemplate } from "@at/document-templates";
+import { defaultTemplate, TemplateOption } from "@at/document-templates";
 import { Dispatch } from "react";
 import { Select } from "../Select";
 import { TemplateConfigDefaultForm } from "./TemplateConfigDefaultForm";
 import { DefaultTemplateArgsAction } from "./templateConfigReducer";
-
-export type TemplateOption = "default" | "custom";
 
 type Props = Readonly<{
   selectedTemplate: TemplateOption;
@@ -26,7 +24,7 @@ export function TemplateConfig({
           className="flex items-center gap-2"
           label="Template"
           value={selectedTemplate}
-          options={{ default: "Default", custom: "Custom" }}
+          options={{ default: "Default", blank: "Blank", custom: "Custom" }}
           onChange={setSelectedTemplate}
         />
 
@@ -45,6 +43,13 @@ export function TemplateConfig({
             Alternativer for standardmalen vises nedenfor når den er valgt. Disse valgene vil settes
             av fagsystemet når den benytter brevgeneratoren, men du kan endre på eksempelverdiene
             her for å se ulike varianter av det genererte brevet.
+            <br />
+            <br />
+            Ytterligere maler:
+            <br />
+            Blank - ingen innhold, men standard styling.
+            <br />
+            Custom - ingen innhold, minimal styling. For testing eller avansert bruk.
           </div>
         </div>
       </div>
