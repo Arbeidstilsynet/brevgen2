@@ -18,6 +18,7 @@ trigger:
       - src # legacy
       - "**/*.md" # markdown
       - "**/*.mdat" # dynamisk markdown
+      - ".*"
 
 variables:
   - group: brevgenerator2
