@@ -73,11 +73,11 @@ export function SharedFileListItem({ fileKey, allFileKeys }: Readonly<SharedFile
   const disabled = uploadFile.isPending || deleteFile.isPending || loadFile.isPending;
 
   return (
-    <li key={fileKey} className="border p-3 rounded hover:shadow-md">
+    <li key={fileKey} className="p-3 border border-gray-200 rounded-sm hover:shadow-md">
       {!isEditing && (
         <div className="flex justify-between items-center">
           <button
-            className="p-2 mr-2 border border-gray-300 rounded hover:bg-gray-200 w-full text-left"
+            className="p-2 mr-2 border border-gray-300 rounded-sm hover:bg-gray-200 w-full text-left"
             onClick={() => handleLoadFile(fileKey)}
             disabled={disabled}
           >
@@ -94,7 +94,7 @@ export function SharedFileListItem({ fileKey, allFileKeys }: Readonly<SharedFile
                 await handleCopyUrlWorkspace(fileKey);
                 addToast("success", "Permanent URL copied to clipboard");
               }}
-              className="rounded bg-indigo-500 p-2 text-white hover:bg-indigo-600 shadow disabled:bg-gray-200 disabled:text-gray-500 disabled:cursor-not-allowed"
+              className="rounded-sm bg-indigo-500 p-2 text-white hover:bg-indigo-600 shadow-sm disabled:bg-gray-200 disabled:text-gray-500 disabled:cursor-not-allowed"
               title="Copy permanent URL"
             >
               {/* Clipboard icon */}
@@ -119,7 +119,7 @@ export function SharedFileListItem({ fileKey, allFileKeys }: Readonly<SharedFile
                   setShowMenu(!showMenu);
                   setConfirmAction(null);
                 }}
-                className="p-2 rounded hover:bg-gray-200 disabled:cursor-not-allowed"
+                className="p-2 rounded-sm hover:bg-gray-200 disabled:cursor-not-allowed"
                 disabled={disabled}
               >
                 {/* Three dots icon */}
@@ -140,7 +140,7 @@ export function SharedFileListItem({ fileKey, allFileKeys }: Readonly<SharedFile
               </button>
 
               {showMenu && (
-                <div className="absolute right-0 mt-2 w-40 rounded shadow-lg bg-white border z-10">
+                <div className="absolute right-0 mt-2 w-40 rounded-sm shadow-lg bg-white border border-gray-200 z-10">
                   {confirmAction ? (
                     <div className="px-4 py-2" data-ignore-outside>
                       <p className="text-sm mb-2">Are you sure you want to {confirmAction}?</p>

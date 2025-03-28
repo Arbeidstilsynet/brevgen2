@@ -7,7 +7,7 @@ type Props = Readonly<{
 export function BranchSelector({ branches, selectedBranch, onBranchSelect }: Props) {
   return (
     <select
-      className="p-2 border border-gray-300 rounded"
+      className="p-2 border border-gray-300 rounded-sm"
       value={selectedBranch}
       onChange={(e) => onBranchSelect(e.target.value)}
     >

@@ -27,7 +27,7 @@ export function Select<T extends TValue>({
         id="default-form-language"
         value={value}
         onChange={(e) => onChange(e.target.value as T)}
-        className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+        className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-xs focus:ring-indigo-500 focus:border-indigo-500"
       >
         {(Object.entries(options) as [T, string][]).map(([value, label]) => (
           <option key={value} value={value}>

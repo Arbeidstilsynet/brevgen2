@@ -41,7 +41,7 @@ export function Input({ type = "text", label, value, checked, onChange }: Readon
         value={value}
         checked={checked}
         onChange={onChange}
-        className={`${labeledInputClasses[type]} p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500`}
+        className={`${labeledInputClasses[type]} p-2 border border-gray-300 rounded-md shadow-xs focus:ring-indigo-500 focus:border-indigo-500`}
       />
     </div>
   );

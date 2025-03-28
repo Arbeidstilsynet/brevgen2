@@ -9,7 +9,7 @@ export function VariableInput({ variable, varType, value, handleVarInputChange }
   return (
     <div className="mb-4">
       <div className="flex items-center mb-2">
-        <label className="flex-grow">{variable}</label>
+        <label className="grow">{variable}</label>
       </div>
       {varType === "boolean" ? (
         <div>
@@ -25,7 +25,7 @@ export function VariableInput({ variable, varType, value, handleVarInputChange }
           <textarea
             value={(value ?? "") as string}
             onChange={(e) => handleVarInputChange(variable, e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 border border-gray-300 rounded-sm"
           />
         </div>
       )}

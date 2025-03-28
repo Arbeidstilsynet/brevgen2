@@ -57,7 +57,7 @@ export function SharedFileListItemRename({
             type="text"
             value={editFilename}
             onChange={(e) => handleSetFilename(e.target.value)}
-            className="w-80 border border-gray-300 rounded-l px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-80 border border-gray-300 rounded-l px-3 py-2 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
           />
           <span className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 bg-gray-100 rounded-r border border-l-0 border-gray-300">
             .md
@@ -82,7 +82,7 @@ export function SharedFileListItemRename({
               handleAddTag(e.currentTarget.value, editTags, setCustomErrorMessage, setEditTags);
               e.currentTarget.value = "";
             }}
-            className="w-32 border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-32 border border-gray-300 rounded-sm px-2 py-1 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
           />
           <div className="flex items-center gap-2 flex-1 flex-wrap">
             {Array.from(editTags).map((tag, index) => (
@@ -93,7 +93,7 @@ export function SharedFileListItemRename({
                 onClick={() =>
                   setEditTags(new Set(Array.from(editTags).filter((_, i) => i !== index)))
                 }
-                className="inline-flex items-center rounded bg-gray-200 border border-gray-300 px-2 py-1 text-sm shadow whitespace-nowrap hover:bg-gray-300 hover:text-gray-800"
+                className="inline-flex items-center rounded-sm bg-gray-200 border border-gray-300 px-2 py-1 text-sm shadow-sm whitespace-nowrap hover:bg-gray-300 hover:text-gray-800"
               >
                 {tag}
               </button>
@@ -104,7 +104,7 @@ export function SharedFileListItemRename({
       <div className="flex justify-end gap-2">
         <button
           data-ignore-outside
-          className="rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600 shadow disabled:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="rounded-sm bg-green-500 px-4 py-2 text-white hover:bg-green-600 shadow-sm disabled:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={() => handleRenameFile(fileKey)}
           disabled={Boolean(customErrorMessage) || fileKey === createKey(editFilename, editTags)}
         >
@@ -112,7 +112,7 @@ export function SharedFileListItemRename({
         </button>
         <button
           data-ignore-outside
-          className="rounded bg-gray-500 px-4 py-2 text-white hover:bg-gray-600 shadow"
+          className="rounded-sm bg-gray-500 px-4 py-2 text-white hover:bg-gray-600 shadow-sm"
           onClick={onFinished}
         >
           Cancel

@@ -17,7 +17,7 @@ export function RepoSelector({ repos, selectedRepoName, onRepoSelected }: Props)
 
   return (
     <select
-      className="p-2 border border-gray-300 rounded"
+      className="p-2 border border-gray-300 rounded-sm"
       value={selectedRepoName ?? ""}
       onChange={(e) => onRepoSelected(reposOptions.find((r) => r[1] === e.target.value)!)}
     >

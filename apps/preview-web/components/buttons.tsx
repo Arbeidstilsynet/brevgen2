@@ -68,7 +68,7 @@ export function ActionButton({
 }: Readonly<ActionButtonProps>) {
   return (
     <button
-      className={`rounded font-medium border transition duration-200 shadow hover:shadow-lg ${actionButtonVariantClasses[variant]} ${actionButtonSizeClasses[size]} ${className ?? ""}`}
+      className={`rounded-sm font-medium border transition duration-200 shadow-sm hover:shadow-lg ${actionButtonVariantClasses[variant]} ${actionButtonSizeClasses[size]} ${className ?? ""}`}
       {...rest}
     >
       {children}

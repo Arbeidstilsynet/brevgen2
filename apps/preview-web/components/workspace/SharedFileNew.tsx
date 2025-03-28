@@ -47,7 +47,7 @@ export function SharedFileNew() {
     uploadFile.isPending;
 
   return (
-    <div className="border rounded shadow p-4">
+    <div className="border border-gray-200 rounded-sm shadow-sm p-4">
       <h2 className="text-lg font-semibold mb-3">Lagre ny</h2>
       <div className="space-y-3">
         {/* Filename Row */}
@@ -60,7 +60,7 @@ export function SharedFileNew() {
                 value={newFilename}
                 onChange={(e) => handleSetFilename(e.currentTarget.value)}
                 placeholder="Enter filename"
-                className="w-80 border border-gray-300 rounded-l px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-80 border border-gray-300 rounded-l px-3 py-2 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
               />
               <span className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 bg-gray-100 rounded-r border border-l-0 border-gray-300">
                 .md
@@ -70,7 +70,7 @@ export function SharedFileNew() {
               onClick={handleSaveNewFile}
               disabled={disabled}
               title={currentMd.trim().length ? "" : "No content to save"}
-              className="rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600 shadow disabled:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="rounded-sm bg-green-500 px-4 py-2 text-white hover:bg-green-600 shadow-sm disabled:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Save
             </button>
@@ -98,7 +98,7 @@ export function SharedFileNew() {
                 handleAddTag(e.currentTarget.value, newTags, setCustomErrorMessage, setNewTags);
                 e.currentTarget.value = "";
               }}
-              className="w-32 border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-32 border border-gray-300 rounded-sm px-2 py-1 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
             />
             {/* Tags container that fills remaining space */}
             <div className="flex items-center gap-2 flex-1 flex-wrap">
@@ -110,7 +110,7 @@ export function SharedFileNew() {
                   onClick={() =>
                     setNewTags(new Set(newTags.values().filter((_, i) => i !== index)))
                   }
-                  className="inline-flex items-center rounded bg-gray-200 px-2 py-1 text-sm shadow whitespace-nowrap hover:bg-gray-300 hover:text-gray-800"
+                  className="inline-flex items-center rounded-sm bg-gray-200 px-2 py-1 text-sm shadow-sm whitespace-nowrap hover:bg-gray-300 hover:text-gray-800"
                 >
                   {tag}
                 </button>

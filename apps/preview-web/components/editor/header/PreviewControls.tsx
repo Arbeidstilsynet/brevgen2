@@ -15,16 +15,23 @@ export function PreviewControls({
   indicatedElement,
 }: Props) {
   return (
-    <div className={`w-2/5 flex ${getIndicatedElementClass("previewTabs", indicatedElement)}`}>
-      <TabButton isActive={activePreviewTab === "md"} onClick={() => setActivePreviewTab("md")}>
-        Markdown
-      </TabButton>
-      <TabButton isActive={activePreviewTab === "html"} onClick={() => setActivePreviewTab("html")}>
-        HTML
-      </TabButton>
-      <TabButton isActive={activePreviewTab === "pdf"} onClick={() => setActivePreviewTab("pdf")}>
-        PDF
-      </TabButton>
+    <div className="w-2/5">
+      <span
+        className={`flex max-w-min ${getIndicatedElementClass("previewTabs", indicatedElement)}`}
+      >
+        <TabButton isActive={activePreviewTab === "md"} onClick={() => setActivePreviewTab("md")}>
+          Markdown
+        </TabButton>
+        <TabButton
+          isActive={activePreviewTab === "html"}
+          onClick={() => setActivePreviewTab("html")}
+        >
+          HTML
+        </TabButton>
+        <TabButton isActive={activePreviewTab === "pdf"} onClick={() => setActivePreviewTab("pdf")}>
+          PDF
+        </TabButton>
+      </span>
     </div>
   );
 }

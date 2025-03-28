@@ -40,7 +40,7 @@ export function FileSelector({ repoWithName, branch, onFileSelected }: Props) {
           <li key={file.path} className="flex flex-row">
             <button
               title={file.path}
-              className="p-2 mr-2 border border-gray-300 rounded hover:bg-gray-200 w-full text-left"
+              className="p-2 mr-2 border border-gray-300 rounded-sm hover:bg-gray-200 w-full text-left"
               onClick={() => onFileSelected(repo.id, branch, file.path, prettyName)}
             >
               {file.path.split("/").at(-1)}
@@ -50,7 +50,7 @@ export function FileSelector({ repoWithName, branch, onFileSelected }: Props) {
                 await handleCopyUrlGit(repo.id, branch, file.path);
                 addToast("success", "Permanent URL copied to clipboard");
               }}
-              className="rounded bg-indigo-500 p-2 text-white hover:bg-indigo-600 shadow disabled:bg-gray-200 disabled:text-gray-500 disabled:cursor-not-allowed"
+              className="rounded-sm bg-indigo-500 p-2 text-white hover:bg-indigo-600 shadow-sm disabled:bg-gray-200 disabled:text-gray-500 disabled:cursor-not-allowed"
               title="Copy permanent URL"
             >
               {/* Clipboard icon */}

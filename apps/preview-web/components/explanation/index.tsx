@@ -2,11 +2,14 @@ import { HoverableText } from "../editor/HoverableText";
 
 export type IndictableElement = "editor" | "preview" | "vars" | "previewTabs" | null;
 
-export const getIndicatedElementClass = (
+export function getIndicatedElementClass(
   element: IndictableElement,
   indicatedElement: IndictableElement,
-) =>
-  `outline-dashed outline-4 ${indicatedElement === element ? "outline-blue-500" : "outline-transparent"}`;
+) {
+  const pseudoOutline =
+    "after:absolute after:inset-0 after:border-3 after:border-dashed after:border-blue-500";
+  return `relative ${indicatedElement === element ? pseudoOutline : ""}`;
+}
 
 type Props = Readonly<{
   setHoveredElement: (element: IndictableElement) => void;
@@ -88,7 +91,7 @@ export function Explanation({ setHoveredElement }: Props) {
 
       <h3 className="text-l font-bold mb-4">Eksempel på Dynamisk Markdown</h3>
       <section>
-        <pre className="bg-gray-100 rounded mb-4">
+        <pre className="bg-gray-100 rounded-sm mb-4">
           {`
     ## H2 overskrift
     Deres saksnummer er {{ Saksnummer }}
@@ -98,7 +101,7 @@ export function Explanation({ setHoveredElement }: Props) {
           Når fagsystemet sender denne teksten til Brevgenerator2 sammen med en variabel{" "}
           <code>Saksnummer=&quot;2024/123&quot;</code> blir det til:
         </p>
-        <pre className="bg-gray-100 rounded mb-4">
+        <pre className="bg-gray-100 rounded-sm mb-4">
           {`
     ## H2 overskrift
     Deres saksnummer er 2024/123

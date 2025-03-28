@@ -32,7 +32,7 @@ export function TemplateConfig({
           <span className="flex items-center justify-center w-8 h-8 bg-yellow-100 rounded-full cursor-pointer font-bold text-lg">
             ?
           </span>
-          <div className="absolute left-0 w-48 p-2 mt-2 text-sm text-white bg-gray-800 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none group-hover:pointer-events-auto">
+          <div className="absolute left-0 w-48 p-2 mt-2 text-sm text-white bg-gray-800 rounded-sm shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none group-hover:pointer-events-auto">
             Velg en dokumentmal for forhåndsvisning.
             <br />
             <br />

@@ -204,7 +204,7 @@ export function DynamicMarkdownEditor() {
 
       <main className="flex flex-1 overflow-hidden">
         <div
-          className={`w-1/5 p-4 overflow-y-auto bg-gray-100  ${getIndicatedElementClass("vars", indicatedElement)}`}
+          className={`w-1/5 p-4 overflow-y-auto bg-gray-100 ${getIndicatedElementClass("vars", indicatedElement)}`}
         >
           {activeVarTab === "template" && (
             <TemplateConfig
@@ -241,7 +241,7 @@ export function DynamicMarkdownEditor() {
           className={`w-2/5 p-4 relative ${getIndicatedElementClass("editor", indicatedElement)}`}
         >
           {parseError && (
-            <div className="absolute top-2 right-8 max-w-[calc(40%-20px)] bg-red-800 text-white p-2 rounded z-50 break-words">
+            <div className="absolute top-2 right-8 max-w-[calc(40%-20px)] bg-red-800 text-white p-2 rounded-sm z-50 break-words">
               {parseError.message}
             </div>
           )}

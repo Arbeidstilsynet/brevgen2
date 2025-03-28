@@ -17,10 +17,8 @@ export function Workspace() {
         lagret i et repository. Hvis du vil endre en eksisterende mal, må du enten overskrive den
         eller opprette en ny.
       </span>
-      <aside
-        className="bg-yellow-100 border-l-4 border-yellow-500 text-gray-900 p-4 mb-4"
-        role="alert"
-      >
+
+      <aside className="p-4 bg-yellow-100 border-l-4 border-yellow-500 text-gray-900" role="alert">
         <p className="font-bold">
           Filer som ligger her er felles for alle. Ikke slett før malen er lagt ut i repository.
         </p>
@@ -30,12 +28,13 @@ export function Workspace() {
         </p>
       </aside>
 
-      <aside className="mb-6 mt-6 p-4 border-l-4 border-blue-500 bg-blue-50">
+      <aside className="p-4 border-l-4 border-blue-500 bg-blue-50">
         <p>
           Du kan lage link direkte til en fil med knappen “Copy permanent URL” med for å dele malen
           med andre eller lage bokmerker for deg selv
         </p>
       </aside>
+
       <div className="p-4 space-y-6">
         <SharedFileNew />
         <SharedFileList />

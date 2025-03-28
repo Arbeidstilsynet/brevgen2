@@ -63,7 +63,7 @@ export function VariablesReport({ repoWithName, branch }: Props) {
   );
 
   return (
-    <div className="p-4 bg-white rounded shadow">
+    <div className="p-4 bg-white rounded-sm shadow-sm">
       <div className="flex mb-4 gap-2">
         <TabButton isActive={viewMode === "counts"} onClick={() => setViewMode("counts")}>
           Sum

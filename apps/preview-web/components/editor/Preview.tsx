@@ -187,7 +187,7 @@ function ErrorOverlay({ error }: Readonly<{ error: Error | null }>) {
   if (!error) return null;
   console.error(error);
   return (
-    <div className="fixed top-12 right-2 max-w-[calc(40%-20px)] bg-red-800 text-white p-2 rounded z-50 break-words">
+    <div className="fixed top-12 right-2 max-w-[calc(40%-20px)] bg-red-800 text-white p-2 rounded-sm z-50 break-words">
       {error.message}
     </div>
   );
