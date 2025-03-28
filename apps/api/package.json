@@ -38,7 +38,7 @@
     "prettier": "3.5.3",
     "puppeteer": "24.3.1",
     "rimraf": "6.0.1",
-    "testcontainers": "10.21.0",
+    "testcontainers": "10.23.0",
     "tsup": "8.4.0",
     "typescript": "5.8.2",
     "typescript-eslint": "8.28.0",
