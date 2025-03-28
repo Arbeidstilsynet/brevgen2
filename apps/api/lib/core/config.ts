@@ -3,7 +3,6 @@ import type { PDFOptions } from "puppeteer-core";
 export const defaultConfig: Config = {
   css: "",
   document_title: "",
-  body_class: [],
   page_media_type: "screen",
   pdf_options: {
     printBackground: true,
@@ -54,12 +53,8 @@ interface BasicConfig {
   document_title: string;
 
   /**
-   * List of classes for the body tag.
-   */
-  body_class: string[];
-
-  /**
    * Media type to emulate the page with.
+   * @default "screen"
    */
   page_media_type: "screen" | "print";
 

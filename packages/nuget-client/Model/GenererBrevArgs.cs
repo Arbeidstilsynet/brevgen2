@@ -144,14 +144,9 @@ public class BasicConfig
     public string DocumentTitle { get; set; } = string.Empty;
 
     /// <summary>
-    /// List of classes for the body tag.
-    /// </summary>
-    [JsonPropertyName("body_class")]
-    public List<string>? BodyClass { get; set; }
-
-    /// <summary>
     /// Media type to emulate the page with.
-    /// "screen" or "print"
+    /// "screen" or "print".
+    /// Default: "screen"
     /// </summary>
     [JsonPropertyName("page_media_type")]
     public string? PageMediaType { get; set; }

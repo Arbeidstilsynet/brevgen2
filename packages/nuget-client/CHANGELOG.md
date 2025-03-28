@@ -1,5 +1,9 @@
 # Versjonslogg
 
+## 2.3.1 - 2025-03-28
+
+Fjernet AT.Brevgenerator.Klient.Model.BasicConfig.BodyClass som ikke gjør noe
+
 ## 2.3.0 - 2025-03-27
 
 Lagt til støtte for blank template

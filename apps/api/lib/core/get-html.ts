@@ -20,7 +20,7 @@ export function getHtml(md: string, config: Config) {
   return `<!DOCTYPE html>
 <html lang="no">
 	<head><title>${config.document_title}</title><meta charset="utf-8"></head>
-	<body class="${config.body_class.join(" ")}">
+	<body>
 		${clean}
 	</body>
 </html>
