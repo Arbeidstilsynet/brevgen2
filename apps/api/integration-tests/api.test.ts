@@ -40,7 +40,8 @@ async function setupLogStreaming(
 
 const fixturesDir = path.resolve(__dirname, "temp");
 const DOWNLOADED_PDF_PATH_DEFAULT_TEMPLATE = path.join(fixturesDir, "default.pdf");
-const DOWNLOADED_PDF_PATH_CUSTOM_TEMPLATE = path.join(fixturesDir, "template.pdf");
+const DOWNLOADED_PDF_PATH_CUSTOM_TEMPLATE = path.join(fixturesDir, "custom.pdf");
+const DOWNLOADED_PDF_PATH_BLANK_TEMPLATE = path.join(fixturesDir, "blank.pdf");
 
 if (!existsSync(fixturesDir)) {
   mkdirSync(fixturesDir, { recursive: true });
@@ -150,6 +151,41 @@ describe.sequential("Integration tests with testcontainers", () => {
     );
 
     test(
+      "Can generate a PDF (blank template)",
+      {
+        timeout: 10_000,
+      },
+      async () => {
+        const payload: HandlerGeneratePdfArgs = {
+          md: "# Test PDF\n\nThis is a {{var}}",
+          mdVariables: {
+            var: "test PDF",
+          },
+          options: {
+            dynamic: {
+              template: "blank",
+            },
+          },
+        };
+
+        const response = await fetcher(genererBrevUrl, payload);
+
+        if (!response.ok) {
+          console.error(await response.text());
+        }
+        expect(response.status).toBe(200);
+        const buffer = await parseResponse(response);
+        expect(buffer.length).toBeGreaterThan(0);
+
+        const text = await readPdfText({ data: new Uint8Array(buffer) });
+        expect(text).toContain("This is a test PDF");
+
+        // Save the generated PDF as a fixture for visual tests
+        writeFileSync(DOWNLOADED_PDF_PATH_BLANK_TEMPLATE, buffer);
+      },
+    );
+
+    test(
       "Can generate a PDF (default template)",
       {
         timeout: 10_000,
@@ -208,25 +244,37 @@ describe.sequential("Integration tests with testcontainers", () => {
     // custom template fails because of font rendering difference from deployed Lambda API which is used as baseline
     // will be fixed after switching to container
     test.skip("pdf-visual-diff (custom template)", { timeout: 30_000 }, async () => {
-      const customPdfName = "test-pdf-custom-template";
-      // const baselineCustomPdfPath = path.join("baseline", `${customPdfName}.pdf`);
-      // const downloadedPdf = readFileSync(path.resolve(__dirname, baselineCustomPdfPath));
-      const downloadedPdf = readFileSync(DOWNLOADED_PDF_PATH_CUSTOM_TEMPLATE);
+      const pdfName = "test-pdf-custom-template";
+      // const baselinePdfPath = path.join("baseline", `${pdfName}.pdf`);
+      // const pdf = readFileSync(path.resolve(__dirname, baselinePdfPath));
+      const pdf = readFileSync(DOWNLOADED_PDF_PATH_CUSTOM_TEMPLATE);
 
-      const matched = await comparePdfToSnapshot(downloadedPdf, __dirname, customPdfName, {
+      const matched = await comparePdfToSnapshot(pdf, __dirname, pdfName, {
+        tolerance: 0.05,
+      });
+      expect(matched).toBe(true);
+    });
+
+    test("pdf-visual-diff (blank template)", { timeout: 30_000 }, async () => {
+      const pdfName = "test-pdf-blank-template";
+      // const baselinePdfPath = path.join("baseline", `${pdfName}.pdf`);
+      // const pdf = readFileSync(path.resolve(__dirname, baselinePdfPath));
+      const pdf = readFileSync(DOWNLOADED_PDF_PATH_BLANK_TEMPLATE);
+
+      const matched = await comparePdfToSnapshot(pdf, __dirname, pdfName, {
         tolerance: 0.05,
       });
       expect(matched).toBe(true);
     });
 
     test("pdf-visual-diff (default template)", { timeout: 30_000 }, async () => {
-      const defaultPdfName = "test-pdf-default-template";
-      // const baselineDefaultPdfPath = path.join("baseline", `${defaultPdfName}.pdf`);
-      // const baselineDefaultPdfPath = path.join("baseline", `${defaultPdfName}-modified.pdf`);
-      // const downloadedPdf = readFileSync(path.resolve(__dirname, baselineDefaultPdfPath));
-      const downloadedPdf = readFileSync(DOWNLOADED_PDF_PATH_DEFAULT_TEMPLATE);
+      const pdfName = "test-pdf-default-template";
+      // const baselinePdfPath = path.join("baseline", `${pdfName}.pdf`);
+      // const baselinePdfPath = path.join("baseline", `${pdfName}-modified.pdf`);
+      // const pdf = readFileSync(path.resolve(__dirname, baselinePdfPath));
+      const pdf = readFileSync(DOWNLOADED_PDF_PATH_DEFAULT_TEMPLATE);
 
-      const matched = await comparePdfToSnapshot(downloadedPdf, __dirname, defaultPdfName, {
+      const matched = await comparePdfToSnapshot(pdf, __dirname, pdfName, {
         tolerance: 0.05,
       });
       expect(matched).toBe(true);
