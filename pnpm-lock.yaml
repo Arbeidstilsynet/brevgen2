@@ -106,8 +106,8 @@ importers:
         specifier: 6.2.3
         version: 6.2.3(@types/node@22.13.14)(jiti@2.4.2)(lightningcss@1.29.2)(terser@5.33.0)(yaml@2.5.1)
       vite-plugin-node:
-        specifier: 4.0.0
-        version: 4.0.0(vite@6.2.3(@types/node@22.13.14)(jiti@2.4.2)(lightningcss@1.29.2)(terser@5.33.0)(yaml@2.5.1))
+        specifier: 5.0.0
+        version: 5.0.0(vite@6.2.3(@types/node@22.13.14)(jiti@2.4.2)(lightningcss@1.29.2)(terser@5.33.0)(yaml@2.5.1))
       vitest:
         specifier: 3.0.9
         version: 3.0.9(@types/node@22.13.14)(jiti@2.4.2)(jsdom@25.0.0(canvas@2.11.2))(lightningcss@1.29.2)(terser@5.33.0)(yaml@2.5.1)
@@ -2325,15 +2325,6 @@ packages:
       supports-color:
         optional: true
 
-  debug@4.3.7:
-    resolution: {integrity: sha512-Er2nc/H7RrMXZBFCEim6TCmMk02Z8vLC2Rbi1KEBggpo0fS6l0S1nnapwmIi3yW/+GOJap1Krg4w0Hg80oCqgQ==}
-    engines: {node: '>=6.0'}
-    peerDependencies:
-      supports-color: '*'
-    peerDependenciesMeta:
-      supports-color:
-        optional: true
-
   debug@4.4.0:
     resolution: {integrity: sha512-6WTZ/IxCY/T6BALoZHaE4ctp9xm+Z5kY/pzYaCHRFeyVhojxlrm+46y68HA6hr0TcwEssoxNiDEUJQjfPZ/RYA==}
     engines: {node: '>=6.0'}
@@ -4538,11 +4529,11 @@ packages:
     engines: {node: ^18.0.0 || ^20.0.0 || >=22.0.0}
     hasBin: true
 
-  vite-plugin-node@4.0.0:
-    resolution: {integrity: sha512-KwINBvYBjNqYml/dSmBWJo2rSr+qrRbqbuuG5oNhu7+R3R5Rh9fibpslvr3LUwOjjkreIb9VId/37Rf7KL96qg==}
+  vite-plugin-node@5.0.0:
+    resolution: {integrity: sha512-xvfx5SH4hhzGj3fR9OAohW5KAH0iAvZkcB35xBGG6FGZ7qlV8C7BXC4HZsOalkYzgASzveQPoq7D3ffU1Nx54Q==}
     peerDependencies:
       '@swc/core': ^1.7.26
-      vite: ^5.0.0
+      vite: 'catalog:'
     peerDependenciesMeta:
       '@swc/core':
         optional: true
@@ -7405,10 +7396,6 @@ snapshots:
     dependencies:
       ms: 2.1.3
 
-  debug@4.3.7:
-    dependencies:
-      ms: 2.1.3
-
   debug@4.4.0:
     dependencies:
       ms: 2.1.3
@@ -10073,11 +10060,11 @@ snapshots:
       - tsx
       - yaml
 
-  vite-plugin-node@4.0.0(vite@6.2.3(@types/node@22.13.14)(jiti@2.4.2)(lightningcss@1.29.2)(terser@5.33.0)(yaml@2.5.1)):
+  vite-plugin-node@5.0.0(vite@6.2.3(@types/node@22.13.14)(jiti@2.4.2)(lightningcss@1.29.2)(terser@5.33.0)(yaml@2.5.1)):
     dependencies:
       '@rollup/pluginutils': 4.2.1
       chalk: 4.1.2
-      debug: 4.3.7
+      debug: 4.4.0
       vite: 6.2.3(@types/node@22.13.14)(jiti@2.4.2)(lightningcss@1.29.2)(terser@5.33.0)(yaml@2.5.1)
     transitivePeerDependencies:
       - supports-color
