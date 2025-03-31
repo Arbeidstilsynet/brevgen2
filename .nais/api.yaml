@@ -7,6 +7,8 @@ spec:
   env:
     - name: PORT
       value: "4000"
+  ingresses:
+    - https://brevgen2-api.intern.dev.arbeidstilsynet.no
   accessPolicy:
     inbound:
       rules:
