@@ -1,0 +1,58 @@
+pool:
+  vmImage: "ubuntu-latest"
+
+resources:
+  repositories:
+    - repository: Templates
+      type: git
+      name: felles-pipeline-templates
+      ref: develop
+
+trigger: none
+
+parameters:
+  - name: PARALLEL_REQUESTS
+    type: string
+    default: 20
+
+  - name: BATCH_COUNT
+    type: string
+    default: 10
+
+  - name: BATCH_DELAY_MS
+    type: string
+    default: 1000
+
+jobs:
+  - job: LoadTest
+    displayName: Run Load Tests
+    steps:
+      - template: pnpm/setup-pnpm.yaml@Templates
+
+      - task: AWSShellScript@1
+        displayName: "Fetch API Gateway API Key"
+        inputs:
+          awsCredentials: "TestDeploy"
+          regionName: "eu-west-1"
+          scriptType: "inline"
+          inlineScript: |
+            ssmParameterApiKeyId="/brevgenerator2/test/api_key_id"
+            apiKeyId=$(aws ssm get-parameter --name "$ssmParameterApiKeyId" --query "Parameter.Value" --output text)
+            apiKey=$(aws apigateway get-api-key --api-key "$apiKeyId" --include-value --query "value" --output text)
+            echo "##vso[task.setvariable variable=apiKey;issecret=true]$apiKey"
+
+      - script: "pnpm test:load"
+        displayName: "Run Load Tests"
+        workingDirectory: "apps/api"
+        env:
+          API_URL: "https://brevgenerator2-api-valid.arbeidstilsynet.no/genererbrev"
+          API_KEY: $(apiKey)
+          PARALLEL_REQUESTS: ${{ parameters.PARALLEL_REQUESTS }}
+          BATCH_COUNT: ${{ parameters.BATCH_COUNT }}
+          BATCH_DELAY_MS: ${{ parameters.BATCH_DELAY_MS }}
+          OUTPUT_FILE: "./load-test-results/results.json"
+
+      - task: PublishPipelineArtifact@1
+        inputs:
+          targetPath: "apps/api/load-test-results"
+        condition: always()
