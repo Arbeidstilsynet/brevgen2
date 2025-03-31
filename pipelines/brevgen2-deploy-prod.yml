@@ -114,7 +114,6 @@ stages:
     jobs:
       - template: templates/brevgen2-deploy.yml
         parameters:
-          initialJobsDependsOn: Confirmation
           env: prod
           awsCredentials: ProdDeployCD
           region: eu-west-1
