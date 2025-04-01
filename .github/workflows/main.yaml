@@ -27,7 +27,7 @@ jobs:
           dockerfile: "./apps/api/Dockerfile"
           build_args: |
             CHROMIUM_VERSION: "134.*"
-      - uses: nais/deploy/actions/deploy@0e5eb39ad70e2e094ef233af61a4fab5950e80d9 # v2
+      - uses: nais/deploy/actions/deploy@70ac914d5785b492f1247df72e04b8420c1a6cb7 # v2
         env:
           CLUSTER: dev
           RESOURCE: .nais/api.yaml
@@ -50,7 +50,7 @@ jobs:
           # web app must be built from root for pnpm lockfile and packages to be available
           docker_context: "."
           dockerfile: "./apps/preview-web/Dockerfile"
-      - uses: nais/deploy/actions/deploy@0e5eb39ad70e2e094ef233af61a4fab5950e80d9 # v2
+      - uses: nais/deploy/actions/deploy@70ac914d5785b492f1247df72e04b8420c1a6cb7 # v2
         env:
           CLUSTER: dev
           RESOURCE: .nais/web.yaml
