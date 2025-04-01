@@ -18,8 +18,8 @@
     "@tanstack/react-query-devtools": "5.71.0",
     "marked": "15.0.7",
     "next": "15.2.4",
-    "react": "19.0.0",
-    "react-dom": "19.0.0",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
     "sanitize-html": "2.15.0"
   },
   "devDependencies": {
