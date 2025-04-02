@@ -1,5 +1,6 @@
+import type { GenerateDocumentRequest } from "@repo/shared-types";
 import type { APIGatewayProxyHandler } from "aws-lambda";
-import { handlerGeneratePdf, HandlerGeneratePdfArgs } from "../lib/handler";
+import { handlerGenerateDocument, ValidationError } from "../lib/handler";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -25,13 +26,9 @@ export const handler: APIGatewayProxyHandler = async (event) => {
       throw new TypeError("Missing body");
     }
 
-    const body = JSON.parse(event.body) as HandlerGeneratePdfArgs;
+    const body = JSON.parse(event.body) as GenerateDocumentRequest;
 
-    if (!("md" in body)) {
-      throw new TypeError("Missing body.md");
-    }
-
-    const result = await handlerGeneratePdf(body);
+    const result = await handlerGenerateDocument(body);
 
     return {
       statusCode: 200,
@@ -41,6 +38,17 @@ export const handler: APIGatewayProxyHandler = async (event) => {
   } catch (err) {
     if (process.env.NODE_ENV !== "test") {
       console.error(err);
+    }
+    if (err instanceof ValidationError) {
+      return {
+        statusCode: 400,
+        headers: corsHeaders,
+        body: JSON.stringify({
+          message: "Validation error",
+          error: err.message,
+          details: err.details,
+        }),
+      };
     }
     if (err instanceof TypeError) {
       return {

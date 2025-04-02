@@ -1,6 +1,6 @@
 "use server";
 
-import type { HandlerGeneratePdfArgs } from "../../api/lib/handler";
+import type { GenerateDocumentRequest } from "@repo/shared-types";
 
 const PDF_API_URL = process.env.PDF_API_URL;
 const PDF_API_KEY = process.env.PDF_API_KEY;
@@ -18,7 +18,7 @@ const PDF_API_ENDPOINTS = {
   GENERATE: new URL("genererbrev", PDF_API_URL).toString(),
 };
 
-export async function genererPdf(payload: HandlerGeneratePdfArgs) {
+export async function genererPdf(payload: GenerateDocumentRequest) {
   validateEnvVars();
 
   const url = PDF_API_ENDPOINTS.GENERATE;

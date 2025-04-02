@@ -101,7 +101,7 @@ internal class BuilderSteps : IAddMarkdownStep, IChooseTemplateStep, IDefaultTem
     /// <inheritdoc/>
     public IDefaultTemplateFieldsStep WithDefaultTemplate(Language language, SignatureVariant signatureVariant)
     {
-        args.Options!.Dynamic!.Template = TemplateType.Default;
+        args.Options.Dynamic.Template = TemplateType.Default;
         args.Options.Dynamic.DefaultTemplateArgs!.Language = language;
         args.Options.Dynamic.DefaultTemplateArgs!.SignatureVariant = signatureVariant;
         return this;
@@ -110,25 +110,22 @@ internal class BuilderSteps : IAddMarkdownStep, IChooseTemplateStep, IDefaultTem
     /// <inheritdoc/>
     public IBuildStep WithCustomTemplate()
     {
-        args.Options.Dynamic.ThrowIfNull(MissingInitializerErrorMessage);
-        args.Options!.Dynamic!.Template = TemplateType.Custom;
+        args.Options.Dynamic.Template = TemplateType.Custom;
         return this;
     }
 
     /// <inheritdoc/>
     public IBuildStep WithBlankTemplate()
     {
-        args.Options.Dynamic.ThrowIfNull(MissingInitializerErrorMessage);
-        args.Options!.Dynamic!.Template = TemplateType.Blank;
+        args.Options.Dynamic.Template = TemplateType.Blank;
         return this;
     }
 
     /// <inheritdoc/>
     public IBuildStep WithDefaultTemplateFields(DefaultTemplateFields fields)
     {
-        args.Options.Dynamic.ThrowIfNull(MissingInitializerErrorMessage);
-        args.Options.Dynamic!.DefaultTemplateArgs.ThrowIfNull(MissingInitializerErrorMessage);
-        args.Options.Dynamic!.DefaultTemplateArgs!.Fields = fields;
+        args.Options.Dynamic.DefaultTemplateArgs.ThrowIfNull(MissingInitializerErrorMessage);
+        args.Options.Dynamic.DefaultTemplateArgs!.Fields = fields;
         return this;
     }
 
@@ -156,8 +153,7 @@ internal class BuilderSteps : IAddMarkdownStep, IChooseTemplateStep, IDefaultTem
     /// <inheritdoc/>
     public GenererBrevArgs Build()
     {
-        args.Options.Dynamic.ThrowIfNull(MissingInitializerErrorMessage);
-        args.Options.Dynamic!.DefaultTemplateArgs.ThrowIfNull(MissingInitializerErrorMessage);
+        args.Options.Dynamic.DefaultTemplateArgs.ThrowIfNull(MissingInitializerErrorMessage);
 
         return args;
     }

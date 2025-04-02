@@ -42,7 +42,7 @@ public class GeneratePdfOptions : PdfConfig
     /// Konfigurasjon og standard flettefelter for dokumentmaler, typisk TemplateType.Default
     /// </summary>
     [JsonPropertyName("dynamic")]
-    public DynamicMdPdfConfig? Dynamic { get; set; } = new();
+    public DynamicMdPdfConfig Dynamic { get; set; } = new();
 
     public GeneratePdfOptions() { }
 
@@ -60,7 +60,7 @@ public class GeneratePdfOptions : PdfConfig
         }
     }
 
-    public GeneratePdfOptions(DynamicMdPdfConfig? dynamic)
+    public GeneratePdfOptions(DynamicMdPdfConfig dynamic)
     {
         Dynamic = dynamic;
     }

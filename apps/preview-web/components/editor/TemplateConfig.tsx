@@ -1,13 +1,13 @@
-import { defaultTemplate, TemplateOption } from "@at/document-templates";
-import { Dispatch } from "react";
+import type { DefaultTemplateArgs, DocumentTemplateOption } from "@repo/shared-types";
+import type { Dispatch } from "react";
 import { Select } from "../Select";
 import { TemplateConfigDefaultForm } from "./TemplateConfigDefaultForm";
 import { DefaultTemplateArgsAction } from "./templateConfigReducer";
 
 type Props = Readonly<{
-  selectedTemplate: TemplateOption;
-  setSelectedTemplate: (template: TemplateOption) => void;
-  defaultTemplateState: defaultTemplate.DefaultTemplateArgs;
+  selectedTemplate: DocumentTemplateOption;
+  setSelectedTemplate: (template: DocumentTemplateOption) => void;
+  defaultTemplateState: DefaultTemplateArgs;
   defaultTemplateDispatch: Dispatch<DefaultTemplateArgsAction>;
 }>;
 

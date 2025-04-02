@@ -1,5 +1,9 @@
 # Versjonslogg
 
+## 2.3.2 - 2025-04-02
+
+Fjernt nullability fra AT.Brevgenerator.Klient.Model.GeneratePdfOptions.Dynamic siden det er påkrevd av APIet
+
 ## 2.3.1 - 2025-03-28
 
 Fjernet AT.Brevgenerator.Klient.Model.BasicConfig.BodyClass som ikke gjør noe

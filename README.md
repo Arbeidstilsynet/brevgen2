@@ -6,16 +6,13 @@ Den nye brevgeneratoren er konfigurert som et integrert monorepo med sentraliser
 
 - apps
   - [api](apps/api) - Mikrotjeneste for å konvertere dynamisk markdown til PDF
-    - [README](apps/api/README.md)
   - [preview-web](apps/preview-web) - Web-editor med forhåndsvisning og Git-integrasjon
-    - [README](apps/preview-web/README.md)
 - packages
   - [dynamic-markdown](packages/dynamic-markdown) - kjernebibliotek
-    - [README](packages/dynamic-markdown/README.md)
   - [document-templates](packages/document-templates/) - letterhead/footer/styling for genererte dokumenter
   - [config-typescript](packages/config-typescript/) - felles tsconfigs
+  - [shared-types](packages/shared-types/) - felles typer, inkludert schema for API
   - [nuget-client](packages/nuget-client) - C#-klient for å bruke API - publisert som `AT.Brevgenerator.Klient`
-    - [README](packages/nuget-client/README.md)
 - adhoc
   - [BrevgeneratorKlientLocalTest](adhoc/BrevgeneratorKlientLocalTest) - CLI for å teste nuget-client
 

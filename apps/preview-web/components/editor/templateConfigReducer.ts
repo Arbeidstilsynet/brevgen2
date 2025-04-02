@@ -1,9 +1,9 @@
-import { defaultTemplate } from "@at/document-templates";
-
-type DefaultTemplateArgs = defaultTemplate.DefaultTemplateArgs;
-type DefaultTemplateFields = defaultTemplate.DefaultTemplateFields;
-type Language = defaultTemplate.DefaultTemplateArgs["language"];
-type SignatureVariant = defaultTemplate.DefaultTemplateArgs["signatureVariant"];
+import {
+  DefaultTemplateArgs,
+  DefaultTemplateFields,
+  DefaultTemplateLanguage,
+  DefaultTemplateSignatureVariant,
+} from "@repo/shared-types";
 
 interface FieldsAction {
   type: "UPDATE_FIELD";
@@ -25,12 +25,12 @@ interface VirksomhetAction {
 
 interface LanguageAction {
   type: "UPDATE_LANGUAGE";
-  value: Language;
+  value: DefaultTemplateLanguage;
 }
 
 interface SignatureVariantAction {
   type: "UPDATE_SIGNATURE_VARIANT";
-  value: SignatureVariant;
+  value: DefaultTemplateSignatureVariant;
 }
 
 export type DefaultTemplateArgsAction =

@@ -2,9 +2,9 @@
 
 import { fetchFileContentFromAzure } from "@/actions/azdo";
 import { useApertium } from "@/hooks/useApertium";
-import { TemplateOption } from "@at/document-templates";
 import { findMdVariables } from "@at/dynamic-markdown";
 import { Editor, useMonaco } from "@monaco-editor/react";
+import { DocumentTemplateOption } from "@repo/shared-types";
 import { useCallback, useReducer, useState } from "react";
 import { Overlay } from "../Overlay";
 import { ActionButton } from "../buttons";
@@ -43,7 +43,7 @@ export function DynamicMarkdownEditor() {
   const [activePreviewTab, setActivePreviewTab] = useState<ActivePreviewTab>("md");
   const [activeVarTab, setActiveVarTab] = useState<"variables" | "template">("variables");
 
-  const [selectedTemplate, setSelectedTemplate] = useState<TemplateOption>("default");
+  const [selectedTemplate, setSelectedTemplate] = useState<DocumentTemplateOption>("default");
   const [defaultTemplateState, defaultTemplateDispatch] = useReducer(
     defaultTemplateReducer,
     initialDefaultTemplateArgs,

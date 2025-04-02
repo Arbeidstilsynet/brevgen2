@@ -1,28 +1,28 @@
-import { defaultTemplate } from "@at/document-templates";
+import type { DefaultTemplateArgs, DefaultTemplateFields } from "@repo/shared-types";
 import { ChangeEvent, Dispatch } from "react";
 import { Input } from "../Input";
 import { Select } from "../Select";
-import { DefaultTemplateArgsAction } from "./templateConfigReducer";
+import type { DefaultTemplateArgsAction } from "./templateConfigReducer";
 
 type Props = Readonly<{
-  state: defaultTemplate.DefaultTemplateArgs;
+  state: DefaultTemplateArgs;
   dispatch: Dispatch<DefaultTemplateArgsAction>;
 }>;
 
 export function TemplateConfigDefaultForm({ state, dispatch }: Props) {
   const handleFieldChange = (
     e: ChangeEvent<HTMLInputElement>,
-    field: Exclude<keyof defaultTemplate.DefaultTemplateFields, "erUnntattOffentlighet">,
+    field: Exclude<keyof DefaultTemplateFields, "erUnntattOffentlighet">,
   ) => dispatch({ type: "UPDATE_FIELD", field, value: e.target.value });
 
   const handleBooleanFieldChange = (
     e: ChangeEvent<HTMLInputElement>,
-    field: Extract<keyof defaultTemplate.DefaultTemplateFields, "erUnntattOffentlighet">,
+    field: Extract<keyof DefaultTemplateFields, "erUnntattOffentlighet">,
   ) => dispatch({ type: "TOGGLE_FIELD", field, value: e.target.checked });
 
   const handleVirksomhetChange = (
     e: ChangeEvent<HTMLInputElement>,
-    field: keyof defaultTemplate.DefaultTemplateFields["virksomhet"],
+    field: keyof DefaultTemplateFields["virksomhet"],
   ) => dispatch({ type: "UPDATE_VIRKSOMHET", field, value: e.target.value });
 
   return (

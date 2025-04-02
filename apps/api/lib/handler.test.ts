@@ -1,80 +1,205 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
-
-import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from "aws-lambda";
+import type { GenerateDocumentRequest, GenerateDocumentRequestOptions } from "@repo/shared-types";
 import { describe, expect, test } from "vitest";
-import { handler } from "../lambda";
-import { HandlerGeneratePdfArgs } from "./handler";
+import { handlerGenerateDocument, ValidationError } from "./handler";
 
-describe("400 errors", () => {
-  test("Missing variable", async () => {
-    const md = "# Hello, {{ name }}";
-    const mdVariables = {};
-    const payload: HandlerGeneratePdfArgs = {
-      md,
-      mdVariables,
+describe("schema validation", () => {
+  test("missing defaultTemplateFields (undefined) throws", async () => {
+    const testdata = {
+      md: `# Vedtak om at dere blir tilbakekalt`,
     };
-    const event = { body: JSON.stringify(payload) };
+    const args: GenerateDocumentRequest = {
+      md: testdata.md,
+      mdVariables: {},
+      options: undefined as unknown as GenerateDocumentRequestOptions,
+    };
 
-    const response = (await handler(
-      event as APIGatewayProxyEvent,
-      {} as Context,
-      () => {},
-    )) as APIGatewayProxyResult;
+    const expectedError = new ValidationError(
+      "Validation failed - options: Invalid input; options: Required",
+      [
+        {
+          code: "invalid_union",
+          message: "Invalid input",
+          path: "options",
+        },
+        {
+          code: "invalid_type",
+          message: "Required",
+          path: "options",
+        },
+      ],
+    );
 
-    expect(response).toBeDefined();
-    expect(response.statusCode).toBe(400);
-    const body = JSON.parse(response.body) as { message: string; error: string };
-    expect(body.message).toBe("Invalid input");
-    expect(body.error).toContain("Undefined variable");
+    await expect(() => handlerGenerateDocument(args)).rejects.toThrowError(expectedError);
   });
 
-  test("Missing brackets", async () => {
-    const md = "# Hello, {{ name ";
-    const mdVariables = { name: "world" };
-    const payload: HandlerGeneratePdfArgs = {
-      md,
-      mdVariables,
+  test("missing defaultTemplateFields (empty options) throws", async () => {
+    const testdata = {
+      md: `# Vedtak om at dere blir tilbakekalt`,
     };
-    const event = { body: JSON.stringify(payload) };
-
-    const response = (await handler(
-      event as APIGatewayProxyEvent,
-      {} as Context,
-      () => {},
-    )) as APIGatewayProxyResult;
-
-    expect(response).toBeDefined();
-    expect(response.statusCode).toBe(400);
-    const body = JSON.parse(response.body) as {
-      message: string;
-      error: string;
+    const args: GenerateDocumentRequest = {
+      md: testdata.md,
+      mdVariables: {},
+      options: {} as GenerateDocumentRequestOptions,
     };
-    expect(body.message).toBe("Invalid input");
-    expect(body.error).toContain("Unclosed dynamic section");
+
+    const expectedError = new ValidationError("Validation failed - options.dynamic: Required", [
+      {
+        code: "invalid_type",
+        message: "Required",
+        path: "options.dynamic",
+      },
+    ]);
+
+    await expect(() => handlerGenerateDocument(args)).rejects.toThrowError(expectedError);
   });
 
-  test("Invalid logic", async () => {
-    const md = "{{ if a + b :: # Hello, world }}";
-    const mdVariables = { name: "world" };
-    const payload: HandlerGeneratePdfArgs = {
-      md,
-      mdVariables,
+  test("missing defaultTemplateFields (empty options.dynamic) throws", async () => {
+    const testdata = {
+      md: `# Vedtak om at dere blir tilbakekalt`,
     };
-    const event = { body: JSON.stringify(payload) };
-
-    const response = (await handler(
-      event as APIGatewayProxyEvent,
-      {} as Context,
-      () => {},
-    )) as APIGatewayProxyResult;
-
-    expect(response).toBeDefined();
-    expect(response.statusCode).toBe(400);
-    const body = JSON.parse(response.body) as {
-      message: string;
-      error: string;
+    const args: GenerateDocumentRequest = {
+      md: testdata.md,
+      mdVariables: {},
+      options: { dynamic: {} } as GenerateDocumentRequestOptions,
     };
-    expect(body.message).toBe("Invalid input");
-    expect(body.error).toContain("Unsupported operator");
+
+    const expectedError = new ValidationError(
+      "Validation failed - options.dynamic: defaultTemplateArgs are required when using the default template",
+      [
+        {
+          code: "custom",
+          message: "defaultTemplateArgs are required when using the default template",
+          path: "options.dynamic",
+        },
+      ],
+    );
+
+    await expect(() => handlerGenerateDocument(args)).rejects.toThrowError(expectedError);
+  });
+
+  test("missing defaultTemplateArgs.fields.unntattOffentlighetHjemmel throws", async () => {
+    const testdata = {
+      md: `# Vedtak om at dere blir tilbakekalt`,
+    };
+    const args: GenerateDocumentRequest = {
+      md: testdata.md,
+      options: {
+        dynamic: {
+          defaultTemplateArgs: {
+            language: "bm",
+            signatureVariant: "automatiskBehandlet",
+            fields: {
+              dato: "13.09.2024",
+              saksnummer: "2024/1234",
+              saksbehandlerNavn: "Ola Nordmann",
+              virksomhet: {
+                navn: "Nissene på jordet AS",
+                adresse: "Akersgata 123",
+                postnr: "0152",
+                poststed: "Oslo",
+              },
+              erUnntattOffentlighet: true,
+              unntattOffentlighetHjemmel: undefined,
+            },
+          },
+        },
+      },
+    };
+
+    const expectedError = new ValidationError(
+      "Validation failed - options.dynamic.defaultTemplateArgs.fields: unntattOffentlighetHjemmel is required when erUnntattOffentlighet is true",
+      [
+        {
+          code: "custom",
+          message: "unntattOffentlighetHjemmel is required when erUnntattOffentlighet is true",
+          path: "options.dynamic.defaultTemplateArgs.fields",
+        },
+      ],
+    );
+
+    await expect(() => handlerGenerateDocument(args)).rejects.toThrowError(expectedError);
+  });
+
+  test("invalid language throws", async () => {
+    const testdata = {
+      md: `# Vedtak om at dere blir tilbakekalt`,
+    };
+    const args: GenerateDocumentRequest = {
+      md: testdata.md,
+      options: {
+        dynamic: {
+          defaultTemplateArgs: {
+            language: "bmmm" as "bm",
+            signatureVariant: "automatiskBehandlet",
+            fields: {
+              dato: "13.09.2024",
+              saksnummer: "2024/1234",
+              saksbehandlerNavn: "Ola Nordmann",
+              virksomhet: {
+                navn: "Nissene på jordet AS",
+                adresse: "Akersgata 123",
+                postnr: "0152",
+                poststed: "Oslo",
+              },
+            },
+          },
+        },
+      },
+    };
+
+    const expectedError = new ValidationError(
+      "Validation failed - options.dynamic.defaultTemplateArgs.language: Invalid enum value. Expected 'bm' | 'nn', received 'bmmm'",
+      [
+        {
+          code: "invalid_enum_value",
+          message: "Invalid enum value. Expected 'bm' | 'nn', received 'bmmm'",
+          path: "options.dynamic.defaultTemplateArgs.language",
+        },
+      ],
+    );
+
+    await expect(() => handlerGenerateDocument(args)).rejects.toThrowError(expectedError);
+  });
+
+  test("invalid signatureVariant throws", async () => {
+    const testdata = {
+      md: `# Vedtak om at dere blir tilbakekalt`,
+    };
+    const args: GenerateDocumentRequest = {
+      md: testdata.md,
+      options: {
+        dynamic: {
+          defaultTemplateArgs: {
+            language: "nn",
+            signatureVariant: "automatiskBehandleteeeeet" as "automatiskBehandlet",
+            fields: {
+              dato: "13.09.2024",
+              saksnummer: "2024/1234",
+              saksbehandlerNavn: "Ola Nordmann",
+              virksomhet: {
+                navn: "Nissene på jordet AS",
+                adresse: "Akersgata 123",
+                postnr: "0152",
+                poststed: "Oslo",
+              },
+            },
+          },
+        },
+      },
+    };
+
+    const expectedError = new ValidationError(
+      "Validation failed - options.dynamic.defaultTemplateArgs.signatureVariant: Invalid enum value. Expected 'elektroniskGodkjent' | 'automatiskBehandlet' | 'usignert', received 'automatiskBehandleteeeeet'",
+      [
+        {
+          code: "invalid_enum_value",
+          message:
+            "Invalid enum value. Expected 'elektroniskGodkjent' | 'automatiskBehandlet' | 'usignert', received 'automatiskBehandleteeeeet'",
+          path: "options.dynamic.defaultTemplateArgs.signatureVariant",
+        },
+      ],
+    );
+
+    await expect(() => handlerGenerateDocument(args)).rejects.toThrowError(expectedError);
   });
 });

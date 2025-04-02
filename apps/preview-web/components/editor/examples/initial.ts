@@ -1,4 +1,4 @@
-import { defaultTemplate } from "@at/document-templates";
+import type { DefaultTemplateArgs, DefaultTemplateFields } from "@repo/shared-types";
 
 export const initialMd = `# H1 - Overskrift/Tittel
 Normal tekst
@@ -39,9 +39,9 @@ export const initialVars = {
 
 // make fields required for the sake of the controlled inputs
 interface InitialDefaultTemplateArgs {
-  language: defaultTemplate.DefaultTemplateArgs["language"];
-  fields: Required<defaultTemplate.DefaultTemplateFields>;
-  signatureVariant: defaultTemplate.DefaultTemplateArgs["signatureVariant"];
+  language: DefaultTemplateArgs["language"];
+  fields: Required<DefaultTemplateFields>;
+  signatureVariant: DefaultTemplateArgs["signatureVariant"];
 }
 
 export const initialDefaultTemplateArgs = {
@@ -62,4 +62,4 @@ export const initialDefaultTemplateArgs = {
     },
   },
   signatureVariant: "elektroniskGodkjent",
-} as const satisfies defaultTemplate.DefaultTemplateArgs satisfies InitialDefaultTemplateArgs;
+} as const satisfies DefaultTemplateArgs satisfies InitialDefaultTemplateArgs;

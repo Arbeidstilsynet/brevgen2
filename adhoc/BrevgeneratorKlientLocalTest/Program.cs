@@ -68,7 +68,7 @@ static class Program
             .WithConversionOptions(
                 new()
                 {
-                    AsHtml = true,
+                    // AsHtml = true,
                     PdfOptions = new() { DisplayHeaderFooter = true }
                 }
             )
@@ -78,7 +78,7 @@ static class Program
         Console.WriteLine($"Payload:\n{JsonSerializer.Serialize(payload)}");
         var result = await client1.GenererBrev(payload);
         Console.WriteLine($"Response:\n{result}");
-        Console.WriteLine("Sending request with client2");
-        await client2.GenererBrev(payload);
+        // Console.WriteLine("Sending request with client2");
+        // await client2.GenererBrev(payload);
     }
 }

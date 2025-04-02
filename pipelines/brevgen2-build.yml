@@ -21,11 +21,11 @@ jobs:
     steps:
       - template: pnpm/setup-pnpm.yaml@Templates
 
-      - script: pnpm lint
-        displayName: "Lint"
-
       - script: pnpm typecheck
         displayName: "Type check"
+
+      - script: pnpm lint
+        displayName: "Lint"
 
       - script: pnpm check
         displayName: "Formatting check"

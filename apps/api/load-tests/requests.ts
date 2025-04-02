@@ -1,7 +1,7 @@
+import type { GenerateDocumentRequest } from "@repo/shared-types";
 import fs from "fs";
 import path from "path";
 import { readPdfText } from "pdf-text-reader";
-import { HandlerGeneratePdfArgs } from "../lib/handler";
 import { BatchResult, LoadTestConfig, LoadTestResult, RequestResult } from "./types";
 
 /**
@@ -110,7 +110,7 @@ async function createAndSendRequest(
   validator?: LoadTestConfig["validator"],
   savePdfsDir?: string,
 ): Promise<RequestResult> {
-  const payload: HandlerGeneratePdfArgs = {
+  const payload: GenerateDocumentRequest = {
     md: "# Load Test PDF\n\nThis is a unique identifier: {{requestId}}\n\nThis document was generated for load testing.",
     mdVariables: {
       requestId,

@@ -2,11 +2,15 @@
 
 import { genererPdf } from "@/actions/pdf";
 import { useDebouncedMutation } from "@/hooks/useDebouncedMutation";
-import { defaultTemplate, TemplateOption } from "@at/document-templates";
+import { defaultTemplate } from "@at/document-templates";
+import type {
+  DefaultTemplateArgs,
+  DocumentTemplateOption,
+  GenerateDocumentRequest,
+} from "@repo/shared-types";
 import { marked } from "marked";
 import { useEffect, useRef, useState } from "react";
 import sanitizeHtml from "sanitize-html";
-import { HandlerGeneratePdfArgs } from "../../../api/lib/handler";
 import { ActivePreviewTab } from "./header/PreviewControls";
 
 function getHtml(md: string, css: string) {
@@ -37,8 +41,8 @@ type Props = Readonly<{
   md: string;
   parsedMd: string;
   mdVariables: Record<string, string | boolean>;
-  selectedTemplate: TemplateOption;
-  defaultTemplateArgs: defaultTemplate.DefaultTemplateArgs;
+  selectedTemplate: DocumentTemplateOption;
+  defaultTemplateArgs: DefaultTemplateArgs;
 }>;
 
 export function Preview({
@@ -64,7 +68,7 @@ export function Preview({
     error: pdfError,
   } = useDebouncedMutation({
     mutationKey: ["generate"],
-    mutationFn: async (payload: HandlerGeneratePdfArgs) => {
+    mutationFn: async (payload: GenerateDocumentRequest) => {
       const base64Pdf = await genererPdf(payload);
       const buffer = Buffer.from(base64Pdf, "base64");
       const blob = new Blob([buffer], { type: "application/pdf" });
@@ -116,7 +120,7 @@ export function Preview({
           defaultTemplateArgs: selectedTemplate === "default" ? defaultTemplateArgs : undefined,
         },
       },
-    } satisfies HandlerGeneratePdfArgs;
+    } satisfies GenerateDocumentRequest;
 
     debouncedMutate(payload, {
       debounceMs: 1000,

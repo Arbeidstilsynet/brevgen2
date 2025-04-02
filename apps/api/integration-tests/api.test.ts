@@ -1,3 +1,4 @@
+import type { GenerateDocumentRequest } from "@repo/shared-types";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import path from "path";
 import { readPdfText } from "pdf-text-reader";
@@ -5,9 +6,8 @@ import { comparePdfToSnapshot } from "pdf-visual-diff";
 import { Readable } from "stream";
 import { DockerComposeEnvironment, StartedDockerComposeEnvironment, Wait } from "testcontainers";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
-import { HandlerGeneratePdfArgs } from "../lib/handler";
 
-async function fetcher(url: string, payload: HandlerGeneratePdfArgs) {
+async function fetcher(url: string, payload: GenerateDocumentRequest) {
   const headers: HeadersInit = {
     "Content-Type": "application/json",
   };
@@ -121,7 +121,7 @@ describe.sequential("Integration tests with testcontainers", () => {
         timeout: 10_000,
       },
       async () => {
-        const payload: HandlerGeneratePdfArgs = {
+        const payload: GenerateDocumentRequest = {
           md: "# Test PDF\n\nThis is a {{var}}",
           mdVariables: {
             var: "test PDF",
@@ -156,7 +156,7 @@ describe.sequential("Integration tests with testcontainers", () => {
         timeout: 10_000,
       },
       async () => {
-        const payload: HandlerGeneratePdfArgs = {
+        const payload: GenerateDocumentRequest = {
           md: "# Test PDF\n\nThis is a {{var}}",
           mdVariables: {
             var: "test PDF",
@@ -191,7 +191,7 @@ describe.sequential("Integration tests with testcontainers", () => {
         timeout: 10_000,
       },
       async () => {
-        const payload: HandlerGeneratePdfArgs = {
+        const payload: GenerateDocumentRequest = {
           md: "# Test PDF\n\nThis is a {{var}}",
           mdVariables: {
             var: "test PDF",
@@ -236,6 +236,52 @@ describe.sequential("Integration tests with testcontainers", () => {
 
         // Save the generated PDF as a fixture for visual tests
         writeFileSync(DOWNLOADED_PDF_PATH_DEFAULT_TEMPLATE, buffer);
+      },
+    );
+
+    test(
+      "Can generate HTML with as_html=true (blank template)",
+      {
+        timeout: 10_000,
+      },
+      async () => {
+        const payload: GenerateDocumentRequest = {
+          md: "# Test HTML\n\nThis is a {{var}} with **bold** and *italic* text",
+          mdVariables: {
+            var: "HTML document",
+          },
+          options: {
+            as_html: true,
+            dynamic: {
+              template: "blank",
+            },
+          },
+        };
+
+        const response = await fetcher(genererBrevUrl, payload);
+
+        if (!response.ok) {
+          console.error(await response.text());
+        }
+        expect(response.status).toBe(200);
+
+        // For HTML output, we expect plain text, not base64 encoded content
+        const htmlContent = await response.text();
+        expect(typeof htmlContent).toBe("string");
+
+        // Verify the content is actual HTML
+        expect(htmlContent).toContain("<!DOCTYPE html>");
+        expect(htmlContent).toContain("<html");
+
+        // Verify our markdown was properly converted
+        expect(htmlContent).toContain("This is a HTML document");
+
+        // Verify formatting was preserved
+        expect(htmlContent).toContain("<strong>bold</strong>");
+        expect(htmlContent).toContain("<em>italic</em>");
+
+        // Verify it doesn't contain PDF-specific markers
+        expect(htmlContent).not.toContain("%PDF-");
       },
     );
   });

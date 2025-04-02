@@ -1,6 +1,7 @@
 import fastifyCors from "@fastify/cors";
+import type { GenerateDocumentRequest } from "@repo/shared-types";
 import Fastify from "fastify";
-import { handlerGeneratePdf, HandlerGeneratePdfArgs } from "./lib/handler";
+import { handlerGenerateDocument, ValidationError } from "./lib/handler";
 
 const fastify = Fastify({ logger: true });
 const port = process.env.PORT ? Number(process.env.PORT) : 4000;
@@ -18,19 +19,27 @@ fastify.get("/health", { logLevel: "warn" }, async (request, reply) => {
 
 fastify.post("/genererbrev", async (request, reply) => {
   try {
-    const result = await handlerGeneratePdf(request.body as HandlerGeneratePdfArgs);
+    console.info(request.body);
+    const result = await handlerGenerateDocument(request.body as GenerateDocumentRequest);
     reply.send(result);
   } catch (err) {
     fastify.log.error("Error processing request:", err);
+
+    if (err instanceof ValidationError) {
+      return reply.status(400).send({
+        message: "Validation error",
+        error: err.message,
+        details: err.details,
+      });
+    }
     if (err instanceof TypeError) {
-      reply.status(400).send({
+      return reply.status(400).send({
         message: "Invalid input",
         error: err.message,
       });
-    } else {
-      const error = err instanceof Error ? err.message : String(err);
-      reply.status(500).send({ message: "Internal error", error });
     }
+    const error = err instanceof Error ? err.message : String(err);
+    reply.status(500).send({ message: "Internal error", error });
   }
 });
 

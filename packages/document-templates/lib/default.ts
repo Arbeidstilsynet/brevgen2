@@ -1,7 +1,10 @@
+import type {
+  DefaultTemplateArgs,
+  DefaultTemplateFields,
+  DefaultTemplateLanguage as Language,
+  DefaultTemplateSignatureVariant as SignatureVariant,
+} from "@repo/shared-types";
 import { logoBase64 } from "./default-logo";
-
-export type Language = "bm" | "nn";
-export type SignatureVariant = "elektroniskGodkjent" | "automatiskBehandlet" | "usignert";
 
 const text = {
   saksbehandler: {
@@ -33,28 +36,6 @@ const text = {
     nn: "Med vennleg helsing",
   },
 } satisfies Record<string, Record<Language, string>>;
-
-export interface DefaultTemplateArgs {
-  language: Language;
-  fields: DefaultTemplateFields;
-  signatureVariant: SignatureVariant;
-}
-
-export interface DefaultTemplateFields {
-  dato: string;
-  saksnummer: string | number;
-  deresDato?: string;
-  deresReferanse?: string;
-  saksbehandlerNavn: string;
-  erUnntattOffentlighet?: boolean;
-  unntattOffentlighetHjemmel?: string;
-  virksomhet: {
-    navn: string;
-    adresse: string;
-    postnr: string | number;
-    poststed: string;
-  };
-}
 
 export function getMd(md: string, args: DefaultTemplateArgs): string {
   const letterhead = getLetterhead(args.fields, args.language);

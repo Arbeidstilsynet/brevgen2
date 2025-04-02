@@ -73,12 +73,12 @@ jobs:
     steps:
       - template: pnpm/setup-pnpm.yaml@Templates
 
-      - script: pnpm lint
-        displayName: "Lint"
-
       - script: pnpm typecheck
         displayName: "Type check"
         workingDirectory: "apps/api"
+
+      - script: pnpm lint
+        displayName: "Lint"
 
       - script: pnpm circular
         displayName: "Circular dependencies check"
