@@ -11,7 +11,7 @@ export default defineConfig({
     VitePluginNode({
       adapter: "fastify",
       appPath: "./server.ts",
-      exportName: "app",
+      exportName: "fastify",
       tsCompiler: "esbuild",
     }),
   ],

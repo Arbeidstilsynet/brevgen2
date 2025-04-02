@@ -8,6 +8,7 @@ import type {
   Browser as PuppeteerCoreBrowser,
   LaunchOptions as PuppeteerCoreLaunchOptions,
 } from "puppeteer-core";
+import { logger } from "../../app";
 import { Config, defaultConfig } from "./config";
 import { convertMdToPdf } from "./md-to-pdf";
 import { loadPuppeteer } from "./puppeteer-loader";
@@ -29,7 +30,7 @@ async function loadFonts(fontDir: string) {
   const fontFiles = fs.readdirSync(fontDir).filter((file) => file.endsWith(".ttf"));
   for (const fontFile of fontFiles) {
     const fontPath = path.join(fontDir, fontFile);
-    console.log({ fontPath, currentDir: __dirname });
+    logger.info({ fontPath, currentDir: __dirname }, `Loading font: ${fontFile}`);
     await chromium.font(fontPath);
   }
 }
@@ -110,7 +111,7 @@ export async function mdToPdf<T extends Partial<Config>>(
     ...config,
     pdf_options: { ...defaultConfig.pdf_options, ...config.pdf_options },
   };
-  console.info("api/lib/core mdToPdf()", { mergedConfig });
+  logger.info({ mergedConfig, path: import.meta.url, function: "mdToPdf" });
 
   await configureChromium();
   const browserInstance = await getBrowserInstance();

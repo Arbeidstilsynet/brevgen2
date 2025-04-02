@@ -1,9 +1,8 @@
 import fastifyCors from "@fastify/cors";
 import type { GenerateDocumentRequest } from "@repo/shared-types";
-import Fastify from "fastify";
+import { fastify } from "./app";
 import { handlerGenerateDocument, ValidationError } from "./lib/handler";
 
-const fastify = Fastify({ logger: true });
 const port = process.env.PORT ? Number(process.env.PORT) : 4000;
 
 // local CORS workaround
@@ -19,7 +18,7 @@ fastify.get("/health", { logLevel: "warn" }, async (request, reply) => {
 
 fastify.post("/genererbrev", async (request, reply) => {
   try {
-    console.info(request.body);
+    fastify.log.info(request.body);
     const result = await handlerGenerateDocument(request.body as GenerateDocumentRequest);
     reply.send(result);
   } catch (err) {
@@ -59,4 +58,4 @@ if (process.env.NODE_ENV !== "development") {
   );
 }
 
-export { fastify as app };
+export { fastify };

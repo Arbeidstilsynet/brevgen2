@@ -1,5 +1,6 @@
 import type { GenerateDocumentRequest } from "@repo/shared-types";
 import type { APIGatewayProxyHandler } from "aws-lambda";
+import { logger } from "../app";
 import { handlerGenerateDocument, ValidationError } from "../lib/handler";
 
 const corsHeaders = {
@@ -10,7 +11,7 @@ const corsHeaders = {
 
 export const handler: APIGatewayProxyHandler = async (event) => {
   if (process.env.NODE_ENV !== "test") {
-    console.info(event);
+    logger.info(event);
   }
 
   if (event.httpMethod === "OPTIONS") {
@@ -37,7 +38,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
     };
   } catch (err) {
     if (process.env.NODE_ENV !== "test") {
-      console.error(err);
+      logger.error(err);
     }
     if (err instanceof ValidationError) {
       return {

@@ -81,7 +81,6 @@ export async function generateDocument(
   options: GenerateDocumentRequestOptions,
 ): Promise<Output> {
   const pdfConfig = getConfigWithDefaults(options);
-  console.info("api/lib generatePdf()", { pdfConfig });
 
   if (isDefaultTemplate(options)) {
     md = defaultTemplate.getMd(md, options.dynamic.defaultTemplateArgs!);
