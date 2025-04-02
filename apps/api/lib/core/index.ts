@@ -1,6 +1,9 @@
 import fs from "fs";
 import path from "path";
-import type { LaunchOptions as PuppeteerLaunchOptions } from "puppeteer";
+import type {
+  Browser as PuppeteerBrowser,
+  LaunchOptions as PuppeteerLaunchOptions,
+} from "puppeteer";
 import type {
   Browser as PuppeteerCoreBrowser,
   LaunchOptions as PuppeteerCoreLaunchOptions,
@@ -61,6 +64,7 @@ async function getBrowserLaunchOptions(): Promise<LaunchOptions> {
     };
   }
   // Configure for Docker with system Chromium
+  // https://cri.dev/posts/2020-04-04-Full-list-of-Chromium-Puppeteer-flags/
   else if (process.env.PUPPETEER_EXECUTABLE_PATH) {
     return {
       executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
@@ -83,6 +87,17 @@ async function getBrowserLaunchOptions(): Promise<LaunchOptions> {
   return {};
 }
 
+let browser: PuppeteerCoreBrowser | PuppeteerBrowser | null = null;
+
+async function getBrowserInstance(): Promise<PuppeteerCoreBrowser> {
+  if (!browser) {
+    const options = await getBrowserLaunchOptions();
+    const puppeteer = await loadPuppeteer();
+    browser = await puppeteer.launch(options);
+  }
+  return browser as PuppeteerCoreBrowser;
+}
+
 /**
  * Convert a markdown file to PDF.
  */
@@ -98,12 +113,8 @@ export async function mdToPdf<T extends Partial<Config>>(
   console.info("api/lib/core mdToPdf()", { mergedConfig });
 
   await configureChromium();
-  const options = await getBrowserLaunchOptions();
-  const puppeteer = await loadPuppeteer();
-  const browser = await puppeteer.launch(options);
-  const result = await convertMdToPdf(md, mergedConfig, browser as PuppeteerCoreBrowser);
-
-  await browser.close();
+  const browserInstance = await getBrowserInstance();
+  const result = await convertMdToPdf(md, mergedConfig, browserInstance);
 
   return result as InferOutputType<T>;
 }

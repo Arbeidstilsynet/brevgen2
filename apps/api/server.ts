@@ -1,45 +1,53 @@
-import express, { Express } from "express";
+import fastifyCors from "@fastify/cors";
+import Fastify from "fastify";
 import { handlerGeneratePdf, HandlerGeneratePdfArgs } from "./lib/handler";
 
-const app: Express = express();
+const fastify = Fastify({ logger: true });
 const port = process.env.PORT ? Number(process.env.PORT) : 4000;
 
 // local CORS workaround
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "POST,DELETE,OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
-  }
-  next();
+fastify.register(fastifyCors, {
+  origin: "*",
+  methods: ["OPTIONS", "GET", "POST"],
+  allowedHeaders: ["Content-Type", "Authorization"],
 });
 
-app.use(express.json({ limit: "10mb" }));
-
-app.get("/health", (req, res) => {
-  res.status(200).send();
+fastify.get("/health", { logLevel: "warn" }, async (request, reply) => {
+  reply.status(200).send();
 });
 
-app.post("/genererbrev", async (req, res) => {
+fastify.post("/genererbrev", async (request, reply) => {
   try {
-    console.info(req.body);
-    const result = await handlerGeneratePdf(req.body as HandlerGeneratePdfArgs);
-    res.send(result);
+    const result = await handlerGeneratePdf(request.body as HandlerGeneratePdfArgs);
+    reply.send(result);
   } catch (err) {
-    console.error("Error processing request:", err);
+    fastify.log.error("Error processing request:", err);
     if (err instanceof TypeError) {
-      res.status(400).json({
+      reply.status(400).send({
         message: "Invalid input",
         error: err.message,
       });
     } else {
       const error = err instanceof Error ? err.message : String(err);
-      res.status(500).json({ message: "Internal error", error });
+      reply.status(500).send({ message: "Internal error", error });
     }
   }
 });
 
-app.listen(port);
+// avoid conflict with Vite dev server
+if (process.env.NODE_ENV !== "development") {
+  fastify.listen(
+    {
+      port,
+      host: "0.0.0.0", // Listen on all interfaces
+    },
+    (err) => {
+      if (err) {
+        fastify.log.error(err);
+        process.exit(1);
+      }
+    },
+  );
+}
 
-export { app };
+export { fastify as app };

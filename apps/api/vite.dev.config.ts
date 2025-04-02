@@ -9,7 +9,7 @@ export default defineConfig({
   },
   plugins: [
     VitePluginNode({
-      adapter: "express",
+      adapter: "fastify",
       appPath: "./server.ts",
       exportName: "app",
       tsCompiler: "esbuild",
