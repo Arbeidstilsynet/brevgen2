@@ -30,9 +30,9 @@ async function loadFonts(fontDir: string) {
   const fontFiles = fs.readdirSync(fontDir).filter((file) => file.endsWith(".ttf"));
   for (const fontFile of fontFiles) {
     const fontPath = path.join(fontDir, fontFile);
-    logger.info({ fontPath, currentDir: __dirname }, `Loading font: ${fontFile}`);
     await chromium.font(fontPath);
   }
+  logger.info({ fontFiles }, "Loaded fonts");
 }
 
 async function configureChromium() {
