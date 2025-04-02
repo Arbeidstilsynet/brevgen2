@@ -95,6 +95,7 @@ async function getBrowserInstance(): Promise<PuppeteerCoreBrowser> {
     const options = await getBrowserLaunchOptions();
     const puppeteer = await loadPuppeteer();
     browser = await puppeteer.launch(options);
+    logger.info("Browser instance created");
   }
   return browser as PuppeteerCoreBrowser;
 }
