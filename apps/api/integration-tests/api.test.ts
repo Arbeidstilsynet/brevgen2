@@ -142,7 +142,7 @@ describe.sequential("Integration tests with testcontainers", () => {
         const buffer = await parseResponse(response);
         expect(buffer.length).toBeGreaterThan(0);
 
-        const text = await readPdfText({ data: new Uint8Array(buffer) });
+        const text = await readPdfText({ data: new Uint8Array(buffer), options: { verbosity: 0 } });
         expect(text).toContain("This is a test PDF");
 
         // Save the generated PDF as a fixture for visual tests
@@ -177,7 +177,7 @@ describe.sequential("Integration tests with testcontainers", () => {
         const buffer = await parseResponse(response);
         expect(buffer.length).toBeGreaterThan(0);
 
-        const text = await readPdfText({ data: new Uint8Array(buffer) });
+        const text = await readPdfText({ data: new Uint8Array(buffer), options: { verbosity: 0 } });
         expect(text).toContain("This is a test PDF");
 
         // Save the generated PDF as a fixture for visual tests
@@ -227,7 +227,7 @@ describe.sequential("Integration tests with testcontainers", () => {
         const buffer = await parseResponse(response);
         expect(buffer.length).toBeGreaterThan(0);
 
-        const text = await readPdfText({ data: new Uint8Array(buffer) });
+        const text = await readPdfText({ data: new Uint8Array(buffer), options: { verbosity: 0 } });
         expect(text).toContain("This is a test PDF");
         expect(text).toContain("Test Containers");
         expect(text).toContain("Test Testesen");
