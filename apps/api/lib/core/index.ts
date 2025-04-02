@@ -40,9 +40,6 @@ async function configureChromium() {
   if (process.env.AWS_LAMBDA_FUNCTION_NAME) {
     chromium ??= (await import("@sparticuz/chromium")).default;
 
-    // Optional: If you'd like to use the new headless mode. "shell" is the default.
-    chromium.setHeadlessMode = true;
-
     // Optional: If you'd like to disable webgl, true is the default.
     chromium.setGraphicsMode = false;
 
