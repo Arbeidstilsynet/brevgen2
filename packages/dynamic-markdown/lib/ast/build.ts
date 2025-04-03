@@ -1,3 +1,4 @@
+import { DynamicMarkdownParseError } from "./error";
 import { Token, tokenize } from "./tokenize";
 
 export type ASTNode = {
@@ -44,7 +45,7 @@ function splitAndValidateLogicToken(token: Token): [logic: string, children: str
   const parts = splitLogicToken(token.value);
 
   if (parts.length !== 2) {
-    throw new TypeError(`Invalid dynamic section format at line ${token.line}: ${token.value}`);
+    throw DynamicMarkdownParseError.invalidSection(token.value, token.line);
   }
 
   return parts as [string, string];

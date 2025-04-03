@@ -29,7 +29,7 @@ describe("lambda 400 errors", () => {
     expect(response).toBeDefined();
     expect(response.statusCode).toBe(400);
     const body = JSON.parse(response.body) as { message: string; error: string };
-    expect(body.message).toBe("Invalid input");
+    expect(body.message).toBe("Parse error");
     expect(body.error).toContain("Undefined variable");
   });
 
@@ -59,7 +59,7 @@ describe("lambda 400 errors", () => {
       message: string;
       error: string;
     };
-    expect(body.message).toBe("Invalid input");
+    expect(body.message).toBe("Parse error");
     expect(body.error).toContain("Unclosed dynamic section");
   });
 
@@ -89,7 +89,7 @@ describe("lambda 400 errors", () => {
       message: string;
       error: string;
     };
-    expect(body.message).toBe("Invalid input");
+    expect(body.message).toBe("Parse error");
     expect(body.error).toContain("Unsupported operator");
   });
 });

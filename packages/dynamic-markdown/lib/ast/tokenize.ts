@@ -1,3 +1,5 @@
+import { DynamicMarkdownParseError } from "./error";
+
 export type Token = {
   type: "md" | "logic" | "var";
   value: string;
@@ -16,7 +18,7 @@ export function tokenize(input: string): Token[] {
       i = newIndex;
       line = newLine;
     } else if (isEndOfDynamicSection(input, i)) {
-      throw new TypeError(`Unclosed dynamic section at line ${line}`);
+      throw DynamicMarkdownParseError.unclosedSection(line);
     } else {
       const { token, newIndex, newLine } = extractMarkdown(input, i, line);
       tokens.push(token);
@@ -65,7 +67,7 @@ function extractDynamicSection(
   }
 
   if (nestedLevel !== 0) {
-    throw new TypeError(`Unclosed dynamic section at line ${line}`);
+    throw DynamicMarkdownParseError.unclosedSection(line);
   }
 
   const content = input.slice(startIndex + 2, i - 2).trim();

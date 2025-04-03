@@ -9,6 +9,7 @@ import type {
   LaunchOptions as PuppeteerCoreLaunchOptions,
 } from "puppeteer-core";
 import { logger } from "../../app";
+import { getChromiumArgs } from "./chromium-args";
 import { Config, defaultConfig } from "./config";
 import { convertMdToPdf } from "./md-to-pdf";
 import { loadPuppeteer } from "./puppeteer-loader";
@@ -66,17 +67,7 @@ async function getBrowserLaunchOptions(): Promise<LaunchOptions> {
   else if (process.env.PUPPETEER_EXECUTABLE_PATH) {
     return {
       executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
-      args: [
-        "--no-sandbox",
-        "--no-zygote",
-        "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage",
-        "--disable-crash-reporter",
-        "--disable-breakpad",
-        "--disable-extensions",
-        "--disable-default-apps",
-        "--mute-audio",
-      ],
+      args: getChromiumArgs(),
       headless: true,
     };
   }

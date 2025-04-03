@@ -1,5 +1,6 @@
 import fastifyCors from "@fastify/cors";
 import type { GenerateDocumentRequest } from "@repo/shared-types";
+import { DynamicMarkdownParseError } from "../../packages/dynamic-markdown/lib/ast/error";
 import { fastify } from "./app";
 import { handlerGenerateDocument, ValidationError } from "./lib/handler";
 
@@ -22,7 +23,7 @@ fastify.post("/genererbrev", async (request, reply) => {
     const result = await handlerGenerateDocument(request.body as GenerateDocumentRequest);
     reply.send(result);
   } catch (err) {
-    fastify.log.error("Error processing request:", err);
+    fastify.log.error(err, "Error processing request:");
 
     if (err instanceof ValidationError) {
       return reply.status(400).send({
@@ -31,9 +32,9 @@ fastify.post("/genererbrev", async (request, reply) => {
         details: err.details,
       });
     }
-    if (err instanceof TypeError) {
+    if (err instanceof DynamicMarkdownParseError) {
       return reply.status(400).send({
-        message: "Invalid input",
+        message: "Parse error",
         error: err.message,
       });
     }

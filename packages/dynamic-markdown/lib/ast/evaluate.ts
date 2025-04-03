@@ -1,4 +1,5 @@
 import { ASTNode, buildAST } from "./build";
+import { DynamicMarkdownParseError } from "./error";
 import { tokenize } from "./tokenize";
 
 export type VariableValue = string | number | boolean | null;
@@ -47,7 +48,7 @@ function processVariable(
     }
     return String(resolvedValue);
   } else {
-    throw new TypeError(`Undefined variable at line ${line}: ${variableName}`);
+    throw DynamicMarkdownParseError.undefinedVariable(variableName, line);
   }
 }
 
@@ -65,19 +66,19 @@ function evaluateCondition(
       return !variables[leftOperand.slice(1)];
     } else {
       const variablename = isNegatedVariable(leftOperand) ? leftOperand.slice(1) : leftOperand;
-      throw new TypeError(`Undefined variable at line ${line}: ${variablename}`);
+      throw DynamicMarkdownParseError.undefinedVariable(variablename, line);
     }
   }
 
   if (!isValidOperator(operator)) {
-    throw new TypeError(`Unsupported operator: ${operator} at line ${line}`);
+    throw DynamicMarkdownParseError.unsupportedOperator(operator, line);
   }
 
   const [leftIsCertainlyValue, leftValue] = processOperand(leftOperand, variables);
   const [rightIsCertainlyValue, rightValue] = processOperand(rightOperand, variables);
 
   if (!leftIsCertainlyValue && !rightIsCertainlyValue) {
-    throw new TypeError(`Undefined variables at line ${line}: ${leftOperand}, ${rightOperand}`);
+    throw DynamicMarkdownParseError.undefinedVariables([leftOperand, rightOperand], line);
   }
 
   switch (operator) {

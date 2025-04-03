@@ -1,5 +1,6 @@
 import type { GenerateDocumentRequest } from "@repo/shared-types";
 import type { APIGatewayProxyHandler } from "aws-lambda";
+import { DynamicMarkdownParseError } from "../../../packages/dynamic-markdown/lib/ast/error";
 import { logger } from "../app";
 import { handlerGenerateDocument, ValidationError } from "../lib/handler";
 
@@ -51,12 +52,12 @@ export const handler: APIGatewayProxyHandler = async (event) => {
         }),
       };
     }
-    if (err instanceof TypeError) {
+    if (err instanceof DynamicMarkdownParseError) {
       return {
         statusCode: 400,
         headers: corsHeaders,
         body: JSON.stringify({
-          message: "Invalid input",
+          message: "Parse error",
           error: err.message,
         }),
       };
