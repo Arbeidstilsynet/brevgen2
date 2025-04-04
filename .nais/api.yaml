@@ -17,7 +17,7 @@ spec:
   image: "{{image}}"
   port: 4000
   replicas:
-    max: 5
+    max: 2
     min: 2
   resources:
     limits:
