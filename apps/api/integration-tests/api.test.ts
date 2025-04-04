@@ -5,7 +5,7 @@ import { readPdfText } from "pdf-text-reader";
 import { comparePdfToSnapshot } from "pdf-visual-diff";
 import { Readable } from "stream";
 import { DockerComposeEnvironment, StartedDockerComposeEnvironment, Wait } from "testcontainers";
-import { afterAll, beforeAll, describe, expect, test } from "vitest";
+import { afterAll, afterEach, beforeAll, describe, expect, test } from "vitest";
 
 async function fetcher(url: string, payload: GenerateDocumentRequest) {
   const headers: HeadersInit = {
@@ -69,6 +69,9 @@ describe.sequential("Integration tests with testcontainers", () => {
 
     environment = await new DockerComposeEnvironment(rootDir, composeFile)
       .withBuild()
+      .withEnvironment({
+        TESTCONTAINERS: "true",
+      })
       .withWaitStrategy("api-1", Wait.forHealthCheck())
       .up(["api"]); // Only start the API service
 
@@ -109,7 +112,13 @@ describe.sequential("Integration tests with testcontainers", () => {
     }
   }, 60_000);
 
-  describe.concurrent("API tests", () => {
+  describe.sequential("API tests", () => {
+    afterEach(async () => {
+      // WORKAROUND for instability in testcontainers
+      // wait so that the container will recycle the browser
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    });
+
     test("Health endpoint returns 200", async () => {
       const response = await fetch(healthUrl);
       expect(response.status).toBe(200);
@@ -289,7 +298,7 @@ describe.sequential("Integration tests with testcontainers", () => {
   describe("Visual regression tests", () => {
     // custom template fails because of font rendering difference from deployed Lambda API which is used as baseline
     // will be fixed after switching to container
-    test.skip("pdf-visual-diff (custom template)", { timeout: 30_000 }, async () => {
+    test.skip("pdf-visual-diff (custom template)", { timeout: 10_000 }, async () => {
       const pdfName = "test-pdf-custom-template";
       // const baselinePdfPath = path.join("baseline", `${pdfName}.pdf`);
       // const pdf = readFileSync(path.resolve(__dirname, baselinePdfPath));
@@ -301,7 +310,7 @@ describe.sequential("Integration tests with testcontainers", () => {
       expect(matched).toBe(true);
     });
 
-    test("pdf-visual-diff (blank template)", { timeout: 30_000 }, async () => {
+    test("pdf-visual-diff (blank template)", { timeout: 10_000 }, async () => {
       const pdfName = "test-pdf-blank-template";
       // const baselinePdfPath = path.join("baseline", `${pdfName}.pdf`);
       // const pdf = readFileSync(path.resolve(__dirname, baselinePdfPath));
@@ -313,7 +322,7 @@ describe.sequential("Integration tests with testcontainers", () => {
       expect(matched).toBe(true);
     });
 
-    test("pdf-visual-diff (default template)", { timeout: 30_000 }, async () => {
+    test("pdf-visual-diff (default template)", { timeout: 10_000 }, async () => {
       const pdfName = "test-pdf-default-template";
       // const baselinePdfPath = path.join("baseline", `${pdfName}.pdf`);
       // const baselinePdfPath = path.join("baseline", `${pdfName}-modified.pdf`);
