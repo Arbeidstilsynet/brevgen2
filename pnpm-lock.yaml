@@ -44,9 +44,6 @@ importers:
       fastify:
         specifier: 5.2.2
         version: 5.2.2
-      get-port:
-        specifier: 7.1.0
-        version: 7.1.0
       marked:
         specifier: 15.0.7
         version: 15.0.7
