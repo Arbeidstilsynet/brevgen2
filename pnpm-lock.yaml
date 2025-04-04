@@ -100,8 +100,8 @@ importers:
         specifier: 6.0.1
         version: 6.0.1
       testcontainers:
-        specifier: 10.23.0
-        version: 10.23.0
+        specifier: 10.24.0
+        version: 10.24.0
       tsup:
         specifier: 8.4.0
         version: 8.4.0(@microsoft/api-extractor@7.47.9(@types/node@22.14.0))(jiti@2.4.2)(postcss@8.5.3)(typescript@5.8.2)(yaml@2.5.1)
@@ -4217,8 +4217,8 @@ packages:
     resolution: {integrity: sha512-pFYqmTw68LXVjeWJMST4+borgQP2AyMNbg1BpZh9LbyhUeNkeaPF9gzfPGUAnSMV3qPYdWUwDIjjCLiSDOl7vg==}
     engines: {node: '>=18'}
 
-  testcontainers@10.23.0:
-    resolution: {integrity: sha512-sZeij9mAyR9ixlaAmxU/DNb5LQ2duGCBDVjLaI975QGsX3sWatsBMDr4rqnP3IBemLynp+azZBMEfw75YsXMMg==}
+  testcontainers@10.24.0:
+    resolution: {integrity: sha512-akkNb3LO2IhxnJzl5kj6dDt2c5q0bWHSTUSLSsqqLuZkaJTYCyWCE76uSzJLGpCkASV7Bw4XOOKvn4Tu0GHeFA==}
 
   text-decoder@1.2.0:
     resolution: {integrity: sha512-n1yg1mOj9DNpk3NeZOx7T6jchTbyJS3i3cucbNN6FcdPriMZx7NsgrGpWWdWZZGxD7ES1XB+3uoqHMgOKaN+fg==}
@@ -9579,7 +9579,7 @@ snapshots:
       glob: 10.4.5
       minimatch: 9.0.5
 
-  testcontainers@10.23.0:
+  testcontainers@10.24.0:
     dependencies:
       '@balena/dockerignore': 1.0.2
       '@types/dockerode': 3.3.35
