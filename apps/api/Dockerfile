@@ -19,9 +19,22 @@ RUN pnpm --filter api build:docker
 FROM base AS runner
 ARG CHROMIUM_VERSION
 
-# Install specific Chromium version
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends chromium-common=${CHROMIUM_VERSION} chromium=${CHROMIUM_VERSION} fonts-noto-color-emoji fontconfig curl \
+### Versions managed by Renovate
+### https://dev.azure.com/Atil-utvikling/Produkter%20og%20tjenester/_git/infra-renovate?anchor=custom-managers
+# renovate: datasource=repology depName=debian_12/fontconfig versioning=loose
+ENV FONTCONFIG_VERSION="2.14.1-4"
+# renovate: datasource=repology depName=debian_12_backports/curl versioning=loose
+ENV CURL_VERSION="8.12.1-3~bpo12+1"
+
+# Install specific Chromium version and other dependencies
+RUN echo "deb http://deb.debian.org/debian bookworm-backports main" > /etc/apt/sources.list.d/backports.list \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
+    chromium-common=${CHROMIUM_VERSION} \
+    chromium=${CHROMIUM_VERSION} \
+    fontconfig=${FONTCONFIG_VERSION} \
+    && apt-get install -y --no-install-recommends -t bookworm-backports \
+    curl=${CURL_VERSION} \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
