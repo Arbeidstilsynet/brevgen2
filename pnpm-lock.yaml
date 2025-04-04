@@ -182,8 +182,8 @@ importers:
         specifier: 2.15.0
         version: 2.15.0
       '@types/wicg-file-system-access':
-        specifier: 2023.10.5
-        version: 2023.10.5
+        specifier: 2023.10.6
+        version: 2023.10.6
       eslint:
         specifier: 9.23.0
         version: 9.23.0(jiti@2.4.2)
@@ -1743,8 +1743,8 @@ packages:
   '@types/ssh2@1.15.4':
     resolution: {integrity: sha512-9JTQgVBWSgq6mAen6PVnrAmty1lqgCMvpfN+1Ck5WRUsyMYPa6qd50/vMJ0y1zkGpOEgLzm8m8Dx/Y5vRouLaA==}
 
-  '@types/wicg-file-system-access@2023.10.5':
-    resolution: {integrity: sha512-e9kZO9kCdLqT2h9Tw38oGv9UNzBBWaR1MzuAavxPcsV/7FJ3tWbU6RI3uB+yKIDPGLkGVbplS52ub0AcRLvrhA==}
+  '@types/wicg-file-system-access@2023.10.6':
+    resolution: {integrity: sha512-YO/183gNRzZFSdKu+ikkD7ambAj4PhgjFAF2A/Mw/7wroSF6ne8r804RkpZzqrJ/F6DO2/IYlQF/ULOZ/bhKyA==}
 
   '@types/yauzl@2.10.3':
     resolution: {integrity: sha512-oJoftv0LSuaDZE3Le4DbKX+KS9G36NzOeSap90UIK0yMA/NhKJhqlSGtNDORNRaIbQfzjXDrQa0ytJ6mNRGz/Q==}
@@ -6574,7 +6574,7 @@ snapshots:
     dependencies:
       '@types/node': 18.19.80
 
-  '@types/wicg-file-system-access@2023.10.5': {}
+  '@types/wicg-file-system-access@2023.10.6': {}
 
   '@types/yauzl@2.10.3':
     dependencies:
