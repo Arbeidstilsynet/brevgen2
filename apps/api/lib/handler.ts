@@ -1,7 +1,12 @@
 import { parseDynamicMd } from "@at/dynamic-markdown";
 import { type GenerateDocumentRequest, generateDocumentRequestSchema } from "@repo/shared-types";
+import pLimit from "p-limit";
 import { ZodError } from "zod";
+import { MAX_PAGES_PER_BROWSER } from "./core/get-browser";
 import { generateDocument } from "./generateDocument";
+
+// Protect against too many concurrent requests, to avoid overwhelming the system and improve performance.
+const limit = pLimit(MAX_PAGES_PER_BROWSER);
 
 export interface ValidationErrorDetail {
   path: string;
@@ -55,7 +60,7 @@ export async function handlerGenerateDocument({
   }
 
   const parsedMd = parseDynamicMd(md, { variables: mdVariables ?? {} });
-  const result = await generateDocument(parsedMd, options);
+  const result = await limit(() => generateDocument(parsedMd, options));
   if (typeof result.content === "string") {
     return result.content;
   }

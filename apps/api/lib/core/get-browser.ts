@@ -4,8 +4,10 @@ import { logger } from "../../app";
 import { getBrowserLaunchOptions } from "./get-puppeteer-options";
 import { loadPuppeteer } from "./puppeteer-loader";
 
+// After max pages is reached, we try to close the browser as soon as the last page using it is done.
+// On the next request, a new browser will be created.
 // WORKAROUND for instability in testcontainers, recycle after each request
-const MAX_PAGES_PER_BROWSER = process.env.TESTCONTAINERS ? 1 : 50;
+export const MAX_PAGES_PER_BROWSER = process.env.TESTCONTAINERS ? 1 : 50;
 
 let pageCount = 0;
 let activeUsers = 0;
