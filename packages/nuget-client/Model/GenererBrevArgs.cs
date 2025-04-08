@@ -15,13 +15,13 @@ public class GenererBrevArgs
     /// Dynamisk markdown
     /// </summary>
     [JsonPropertyName("md")]
-    public string Md { get; set; } = string.Empty;
+    public required string Md { get; init; } = string.Empty;
 
     [JsonPropertyName("mdVariables")]
     public Dictionary<string, object?>? MdVariables { get; set; }
 
     [JsonPropertyName("options")]
-    public GeneratePdfOptions Options { get; set; } = new();
+    public required GeneratePdfOptions Options { get; init; } = new();
 
     public GenererBrevArgs() { }
 
@@ -84,7 +84,7 @@ public class DynamicMdPdfConfig
     /// Required if template is "default"
     /// </summary>
     [JsonPropertyName("defaultTemplateArgs")]
-    public DefaultTemplateArgs? DefaultTemplateArgs { get; set; } = new();
+    public DefaultTemplateArgs? DefaultTemplateArgs { get; set; }
 
     public DynamicMdPdfConfig() { }
 

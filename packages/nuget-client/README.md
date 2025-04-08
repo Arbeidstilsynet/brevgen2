@@ -27,3 +27,41 @@ Legg til organisasjonens feed "Atil-utvikling" i konsumerende prosjekt sin `nuge
   </packageSources>
 </configuration>
 ```
+
+## Eksempel
+
+```csharp
+var brevGenConfig = new BrevgeneratorConfig(
+    ApiUrl: Environment.GetEnvironmentVariable("BREVGENERATOR_API_URL")!,
+    ParameterStoreApiKeyIdName: Environment.GetEnvironmentVariable("BREVGENERATOR_API_KEY_ID_SSM")!,
+    RegionEndpoint: RegionEndpoint.GetBySystemName(Environment.GetEnvironmentVariable("AWS_REGION"))
+);
+var client = new BrevgeneratorKlient(brevGenConfig, new ApiKeyRetriever(brevGenConfig));
+
+var payload = GenererBrevArgsBuilder
+    .Create()
+    .AddMarkdown(
+        "# Sample Markdown content\n## {{ exampleVariable }}",
+        new() { { "exampleVariable", "value" } }
+    )
+    .WithDefaultTemplate(Language.Nynorsk, SignatureVariant.ElektroniskGodkjent)
+    .WithDefaultTemplateFields(
+        new()
+        {
+            Dato = "2024",
+            SaksbehandlerNavn = "Lorem Ipsum",
+            Saksnummer = "2024/1234",
+            Virksomhet = new()
+            {
+                Adresse = "Hei",
+                Navn = "Mr Ipsum",
+                Postnr = "1234",
+                Poststed = "Stedet"
+            }
+        }
+    )
+    .WithMetadata(documentTitle: "My document", author: "Look at me, I am the author now")
+    .Build();
+
+var result = await client.GenererBrev(payload);
+```

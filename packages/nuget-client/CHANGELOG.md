@@ -1,5 +1,13 @@
 # Versjonslogg
 
+## 2.3.3 - 2025-04-08
+
+Opprydding i model for å tilsvare API sitt schema:
+
+- Satt de fleste felter i AT.Brevgenerator.Klient.Model.DefaultTemplateFields som required.
+- Satt alle felter i AT.Brevgenerator.Klient.Model.Virksomhet som required.
+- Forbedret håndtering av initialisering i builder.
+
 ## 2.3.2 - 2025-04-02
 
 Fjernt nullability fra AT.Brevgenerator.Klient.Model.GeneratePdfOptions.Dynamic siden det er påkrevd av APIet

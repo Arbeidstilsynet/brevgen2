@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using AT.Brevgenerator.Klient.Model;
 
 namespace AT.Brevgenerator.Klient;
@@ -87,53 +86,63 @@ public class GenererBrevArgsBuilder
 
 internal class BuilderSteps : IAddMarkdownStep, IChooseTemplateStep, IDefaultTemplateFieldsStep, IBuildStep
 {
-    private const string MissingInitializerErrorMessage = "Should be set by default initializer";
-    private readonly GenererBrevArgs args = new();
+    private string? Md { get; set; }
+    private Dictionary<string, object?>? MdVariables { get; set; }
+    private GeneratePdfOptions options = new();
+    private Language? defaultTemplateLanguage;
+    private SignatureVariant? defaultTemplateSignatureVariant;
 
     /// <inheritdoc/>
     public IChooseTemplateStep AddMarkdown(string md, Dictionary<string, object?>? mdVariables)
     {
-        args.Md = md;
-        args.MdVariables = mdVariables;
+        Md = md;
+        MdVariables = mdVariables;
         return this;
     }
 
     /// <inheritdoc/>
     public IDefaultTemplateFieldsStep WithDefaultTemplate(Language language, SignatureVariant signatureVariant)
     {
-        args.Options.Dynamic.Template = TemplateType.Default;
-        args.Options.Dynamic.DefaultTemplateArgs!.Language = language;
-        args.Options.Dynamic.DefaultTemplateArgs!.SignatureVariant = signatureVariant;
+        options.Dynamic.Template = TemplateType.Default;
+        defaultTemplateLanguage = language;
+        defaultTemplateSignatureVariant = signatureVariant;
         return this;
     }
 
     /// <inheritdoc/>
     public IBuildStep WithCustomTemplate()
     {
-        args.Options.Dynamic.Template = TemplateType.Custom;
+        options.Dynamic.Template = TemplateType.Custom;
         return this;
     }
 
     /// <inheritdoc/>
     public IBuildStep WithBlankTemplate()
     {
-        args.Options.Dynamic.Template = TemplateType.Blank;
+        options.Dynamic.Template = TemplateType.Blank;
         return this;
     }
 
     /// <inheritdoc/>
     public IBuildStep WithDefaultTemplateFields(DefaultTemplateFields fields)
     {
-        args.Options.Dynamic.DefaultTemplateArgs.ThrowIfNull(MissingInitializerErrorMessage);
-        args.Options.Dynamic.DefaultTemplateArgs!.Fields = fields;
-        return this;
+        if (
+            defaultTemplateLanguage is Language language
+            && defaultTemplateSignatureVariant is SignatureVariant signatureVariant
+        )
+        {
+            options.Dynamic.DefaultTemplateArgs = new(language, signatureVariant, fields);
+            return this;
+        }
+
+        throw new InvalidOperationException("Must call WithDefaultTemplate before WithDefaultTemplateFields");
     }
 
     /// <inheritdoc/>
     public IBuildStep WithMetadata(string documentTitle, string author)
     {
-        args.Options.DocumentTitle = documentTitle;
-        args.Options.Author = author;
+        options.DocumentTitle = documentTitle;
+        options.Author = author;
         return this;
     }
 
@@ -142,34 +151,27 @@ internal class BuilderSteps : IAddMarkdownStep, IChooseTemplateStep, IDefaultTem
     {
         var mergedOptions = new GeneratePdfOptions(config)
         {
-            Dynamic = args.Options.Dynamic,
-            Author = args.Options.Author,
-            DocumentTitle = args.Options.DocumentTitle
+            Dynamic = options.Dynamic,
+            Author = options.Author,
+            DocumentTitle = options.DocumentTitle
         };
-        args.Options = mergedOptions;
+        options = mergedOptions;
         return this;
     }
 
     /// <inheritdoc/>
     public GenererBrevArgs Build()
     {
-        args.Options.Dynamic.DefaultTemplateArgs.ThrowIfNull(MissingInitializerErrorMessage);
-
-        return args;
-    }
-}
-
-internal static class ThrowHelpers
-{
-    public static void ThrowIfNull(
-        this object? obj,
-        string message,
-        [CallerArgumentExpression(nameof(obj))] string? callerName = default
-    )
-    {
-        if (obj is null)
+        if (options.Dynamic.Template == TemplateType.Default && options.Dynamic.DefaultTemplateArgs is null)
         {
-            throw new ArgumentException(message, callerName);
+            throw new ArgumentException("DefaultTemplateArgs are required when using the default template");
         }
+
+        return new GenererBrevArgs
+        {
+            Md = Md!,
+            MdVariables = MdVariables,
+            Options = options
+        };
     }
 }

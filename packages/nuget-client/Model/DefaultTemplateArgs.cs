@@ -12,12 +12,10 @@ public class DefaultTemplateArgs
     public Language Language { get; set; }
 
     [JsonPropertyName("fields")]
-    public DefaultTemplateFields Fields { get; set; } = new();
+    public DefaultTemplateFields Fields { get; set; }
 
     [JsonPropertyName("signatureVariant")]
     public SignatureVariant SignatureVariant { get; set; }
-
-    public DefaultTemplateArgs() { }
 
     public DefaultTemplateArgs(Language language, SignatureVariant signatureVariant, DefaultTemplateFields fields)
     {
@@ -63,49 +61,49 @@ public class DefaultTemplateFields
     /// "Obligatorisk" felt. Med manglende verdi vises fortsatt feltnavn i letterhead.
     /// </summary>
     [JsonPropertyName("dato")]
-    public string Dato { get; set; } = string.Empty;
+    public required string Dato { get; init; }
 
     /// <summary>
     /// "Obligatorisk" felt. Med manglende verdi vises fortsatt feltnavn i letterhead.
     /// </summary>
     [JsonPropertyName("saksnummer")]
-    public string Saksnummer { get; set; } = string.Empty;
+    public required string Saksnummer { get; init; }
 
     /// <summary>
     /// Valgfritt felt. Manglende verdi gjør at feltet ikke vises i letterhead.
     /// </summary>
     [JsonPropertyName("deresDato")]
-    public string? DeresDato { get; set; } = string.Empty;
+    public string? DeresDato { get; init; }
 
     /// <summary>
     /// Valgfritt felt. Manglende verdi gjør at feltet ikke vises i letterhead.
     /// </summary>
     [JsonPropertyName("deresReferanse")]
-    public string? DeresReferanse { get; set; } = string.Empty;
+    public string? DeresReferanse { get; init; }
 
     /// <summary>
     /// "Obligatorisk" felt. Med manglende verdi vises fortsatt feltnavn i letterhead.
     /// </summary>
     [JsonPropertyName("saksbehandlerNavn")]
-    public string SaksbehandlerNavn { get; set; } = string.Empty;
+    public required string SaksbehandlerNavn { get; init; }
 
     /// <summary>
     /// Valgfritt felt. Må også sette UnntattOffentlighetHjemmel. False eller null gjør at tekst om unntatt offentlighet ikke vises i letterhead.
     /// </summary>
     [JsonPropertyName("erUnntattOffentlighet")]
-    public bool? ErUnntattOffentlighet { get; set; } = false;
+    public bool? ErUnntattOffentlighet { get; init; }
 
     /// <summary>
     /// Må settes når "erUnntattOffentlighet" er true. Settes etter "Unntatt offentlighet, " i letterhead. Eksempelvis "jf. offl. § 14".
     /// </summary>
     [JsonPropertyName("unntattOffentlighetHjemmel")]
-    public string? UnntattOffentlighetHjemmel { get; set; } = string.Empty;
+    public string? UnntattOffentlighetHjemmel { get; init; }
 
     /// <summary>
     /// Adresse for virksomhet. Vises nedenfor og til venstre for de andre feltene.
     /// </summary>
     [JsonPropertyName("virksomhet")]
-    public Virksomhet Virksomhet { get; set; } = new();
+    public required Virksomhet Virksomhet { get; init; }
 }
 
 /// <summary>
@@ -114,14 +112,14 @@ public class DefaultTemplateFields
 public class Virksomhet
 {
     [JsonPropertyName("navn")]
-    public string Navn { get; set; } = string.Empty;
+    public required string Navn { get; init; }
 
     [JsonPropertyName("adresse")]
-    public string Adresse { get; set; } = string.Empty;
+    public required string Adresse { get; init; }
 
     [JsonPropertyName("postnr")]
-    public string Postnr { get; set; } = string.Empty;
+    public required string Postnr { get; init; }
 
     [JsonPropertyName("poststed")]
-    public string Poststed { get; set; } = string.Empty;
+    public required string Poststed { get; init; }
 }
