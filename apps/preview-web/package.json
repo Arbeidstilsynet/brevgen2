@@ -16,7 +16,7 @@
     "@monaco-editor/react": "4.7.0",
     "@tanstack/react-query": "5.71.10",
     "@tanstack/react-query-devtools": "5.71.10",
-    "marked": "15.0.7",
+    "marked": "15.0.9",
     "next": "15.2.4",
     "react": "19.1.0",
     "react-dom": "19.1.0",
