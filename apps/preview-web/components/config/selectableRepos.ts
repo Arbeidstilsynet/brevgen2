@@ -48,4 +48,4 @@ export const allowedRepos: RepoInfo[] = [
 
 export const allowedRepoNames = new Set(allowedRepos.map((r) => r.repoName));
 
-export type AzDoRepoWithName = Readonly<[AzureDevOpsRepo, prettyName: string]>;
+export type AzDoRepoWithName = Readonly<[azDoRepo: AzureDevOpsRepo, prettyName: string]>;
