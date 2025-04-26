@@ -21,7 +21,7 @@
     "@repo/shared-types": "workspace:^",
     "@sparticuz/chromium": "133.0.0",
     "fastify": "5.3.2",
-    "marked": "15.0.9",
+    "marked": "15.0.11",
     "p-limit": "6.2.0",
     "pdf-lib": "1.17.1",
     "puppeteer-core": "24.3.1",

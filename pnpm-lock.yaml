@@ -45,8 +45,8 @@ importers:
         specifier: 5.3.2
         version: 5.3.2
       marked:
-        specifier: 15.0.9
-        version: 15.0.9
+        specifier: 15.0.11
+        version: 15.0.11
       p-limit:
         specifier: 6.2.0
         version: 6.2.0
@@ -142,8 +142,8 @@ importers:
         specifier: 5.74.6
         version: 5.74.6(@tanstack/react-query@5.74.4(react@19.1.0))(react@19.1.0)
       marked:
-        specifier: 15.0.9
-        version: 15.0.9
+        specifier: 15.0.11
+        version: 15.0.11
       next:
         specifier: 15.3.1
         version: 15.3.1(@babel/core@7.26.9)(babel-plugin-react-compiler@19.1.0-rc.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -3457,8 +3457,8 @@ packages:
     resolution: {integrity: sha512-hXdUTZYIVOt1Ex//jAQi+wTZZpUpwBj/0QsOzqegb3rGMMeJiSEu5xLHnYfBrRV4RH2+OCSOO95Is/7x1WJ4bw==}
     engines: {node: '>=10'}
 
-  marked@15.0.9:
-    resolution: {integrity: sha512-9AW/bn9DxQeZVjR52l5jsc0W2pwuhP04QaQewPvylil12Cfr2GBfWmgp6mu8i9Jy8UlBjqDZ9uMTDuJ8QOGZJA==}
+  marked@15.0.11:
+    resolution: {integrity: sha512-1BEXAU2euRCG3xwgLVT1y0xbJEld1XOrmRJpUwRCcy7rxhSCwMrmEu9LXoPhHSCJG41V7YcQ2mjKRr5BA3ITIA==}
     engines: {node: '>= 18'}
     hasBin: true
 
@@ -8725,7 +8725,7 @@ snapshots:
     dependencies:
       semver: 7.7.1
 
-  marked@15.0.9: {}
+  marked@15.0.11: {}
 
   merge2@1.4.1: {}
 
