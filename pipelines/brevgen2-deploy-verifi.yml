@@ -33,7 +33,8 @@ stages:
           awsCredentialsApi: DevDeploy
           awsCredentialsWeb: DevPubDeploy
           region: eu-west-1
-          infraBucket: "infra-dev-deploy-bucket"
+          infraBucketApi: "infra-dev-deploy-bucket"
+          infraBucketWeb: "infra-dev-deploy-pub-bucket"
           chromiumLayerBucket: dev-brevgenerator2-lambda-layers
           chromiumVersion: "133.0.0"
           imageName: dev-brevgenerator2-web

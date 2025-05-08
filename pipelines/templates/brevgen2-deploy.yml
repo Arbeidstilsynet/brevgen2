@@ -18,7 +18,10 @@ parameters:
   - name: region
     type: string
 
-  - name: infraBucket
+  - name: infraBucketApi
+    type: string
+
+  - name: infraBucketWeb
     type: string
 
   - name: chromiumLayerBucket
@@ -112,7 +115,7 @@ jobs:
             --capabilities ${{ parameters.samCapabilities }}
             --stack-name brevgenerator2-api-${{ parameters.env }}
             --s3-prefix brevgenerator2-api-${{ parameters.env }}
-            --s3-bucket ${{ parameters.infraBucket }}
+            --s3-bucket ${{ parameters.infraBucketApi }}
             --parameter-overrides ${{ parameters.stackParametersApi }} ChromiumVersion=${{ parameters.chromiumVersion }} ChromiumLayerBucket=${{ parameters.chromiumLayerBucket }}
             --tags ${{ parameters.tags }}
 
@@ -138,7 +141,7 @@ jobs:
             --capabilities ${{ parameters.samCapabilities }}
             --stack-name brevgenerator2-web-ecr-${{ parameters.env }}
             --s3-prefix brevgenerator2-web-ecr-${{ parameters.env }}
-            --s3-bucket ${{ parameters.infraBucket }}
+            --s3-bucket ${{ parameters.infraBucketWeb }}
             --parameter-overrides ${{ parameters.stackParametersApi }} EcrRepositoryName=${{ parameters.imageName }}
             --tags ${{ parameters.tags }}
 
@@ -260,6 +263,6 @@ jobs:
             --capabilities ${{ parameters.samCapabilities }}
             --stack-name brevgenerator2-web-fargate-${{ parameters.env }}
             --s3-prefix brevgenerator2-web-fargate-${{ parameters.env }}
-            --s3-bucket ${{ parameters.infraBucket }}
+            --s3-bucket ${{ parameters.infraBucketWeb }}
             --parameter-overrides ${{ parameters.stackParametersFargate }} ImageURI=$(imageUri) PdfApiKey=$1
             --tags ${{ parameters.tags }}
