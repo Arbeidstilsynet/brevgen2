@@ -30,7 +30,8 @@ stages:
       - template: templates/brevgen2-deploy.yml
         parameters:
           env: dev
-          awsCredentials: DevDeploy
+          awsCredentialsApi: DevDeploy
+          awsCredentialsWeb: DevPubDeploy
           region: eu-west-1
           infraBucket: "infra-dev-deploy-bucket"
           chromiumLayerBucket: dev-brevgenerator2-lambda-layers

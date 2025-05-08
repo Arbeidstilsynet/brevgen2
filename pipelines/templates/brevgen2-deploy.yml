@@ -9,7 +9,10 @@ parameters:
   - name: tags
     type: string
 
-  - name: awsCredentials
+  - name: awsCredentialsApi
+    type: string
+
+  - name: awsCredentialsWeb
     type: string
 
   - name: region
@@ -61,7 +64,7 @@ jobs:
         displayName: "Run upload script"
         inputs:
           workingDirectory: "apps/api"
-          awsCredentials: ${{ parameters.awsCredentials }}
+          awsCredentials: ${{ parameters.awsCredentialsApi }}
           regionName: ${{ parameters.region }}
           scriptType: "inline"
           disableAutoCwd: true
@@ -99,7 +102,7 @@ jobs:
         displayName: Deploy
         inputs:
           workingDirectory: "apps/api"
-          awsCredentials: ${{ parameters.awsCredentials }}
+          awsCredentials: ${{ parameters.awsCredentialsApi }}
           regionName: ${{ parameters.region }}
           scriptType: "inline"
           disableAutoCwd: true
@@ -125,7 +128,7 @@ jobs:
         displayName: "Deploy infrastructure"
         inputs:
           workingDirectory: "apps/preview-web/ecr-infra"
-          awsCredentials: ${{ parameters.awsCredentials }}
+          awsCredentials: ${{ parameters.awsCredentialsWeb }}
           regionName: ${{ parameters.region }}
           scriptType: "inline"
           disableAutoCwd: true
@@ -151,7 +154,7 @@ jobs:
         displayName: "Set variable ecrUrl"
         inputs:
           workingDirectory: "apps/preview-web/ecr-infra"
-          awsCredentials: ${{ parameters.awsCredentials }}
+          awsCredentials: ${{ parameters.awsCredentialsWeb }}
           regionName: ${{ parameters.region }}
           scriptType: "inline"
           disableAutoCwd: true
@@ -183,7 +186,7 @@ jobs:
         displayName: "Tag and upload image"
         inputs:
           workingDirectory: "apps/preview-web/ecr-infra"
-          awsCredentials: ${{ parameters.awsCredentials }}
+          awsCredentials: ${{ parameters.awsCredentialsWeb }}
           regionName: ${{ parameters.region }}
           scriptType: "inline"
           disableAutoCwd: true
@@ -206,7 +209,7 @@ jobs:
       - task: AWSShellScript@1
         displayName: "Set variable imageUri"
         inputs:
-          awsCredentials: ${{ parameters.awsCredentials }}
+          awsCredentials: ${{ parameters.awsCredentialsWeb }}
           regionName: ${{ parameters.region }}
           scriptType: "inline"
           disableAutoCwd: true
@@ -223,7 +226,7 @@ jobs:
       - task: AWSShellScript@1
         displayName: "Get API Key"
         inputs:
-          awsCredentials: ${{ parameters.awsCredentials }}
+          awsCredentials: ${{ parameters.awsCredentialsApi }}
           regionName: ${{ parameters.region }}
           scriptType: "inline"
           disableAutoCwd: true
@@ -246,7 +249,7 @@ jobs:
         displayName: "Deploy infrastructure"
         inputs:
           workingDirectory: "apps/preview-web/infra"
-          awsCredentials: ${{ parameters.awsCredentials }}
+          awsCredentials: ${{ parameters.awsCredentialsWeb }}
           regionName: ${{ parameters.region }}
           scriptType: "inline"
           disableAutoCwd: true

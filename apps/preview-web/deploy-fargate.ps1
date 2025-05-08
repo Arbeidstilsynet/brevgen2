@@ -43,9 +43,10 @@ if (-not ($PDF_API_URL -and $PDF_API_KEY -and $AZURE_DEVOPS_PAT)) {
 
 
 $awsAccount = aws sts get-caller-identity --query Account --output text
+$awsAccountAlias = aws iam list-account-aliases --query 'AccountAliases[0]' --output text
 
 if ($confirmRun) {
-    $confirmationResponse = Read-Host -Prompt "AWS account: $awsAccount, PDF_API_URL=$PDF_API_URL, continue? y/n"
+    $confirmationResponse = Read-Host -Prompt "AWS account: $awsAccount ($awsAccountAlias), PDF_API_URL=$PDF_API_URL, continue? y/n"
     if ($confirmationResponse.ToLower() -ne 'y') {
         exit
     }

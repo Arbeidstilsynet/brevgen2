@@ -24,7 +24,8 @@ stages:
       - template: templates/brevgen2-deploy.yml
         parameters:
           env: test
-          awsCredentials: TestDeploy
+          awsCredentialsApi: TestDeploy
+          awsCredentialsWeb: TestPubDeploy
           region: eu-west-1
           infraBucket: "infra-test-deploy-bucket"
           chromiumLayerBucket: test-brevgenerator2-lambda-layers
@@ -115,7 +116,8 @@ stages:
       - template: templates/brevgen2-deploy.yml
         parameters:
           env: prod
-          awsCredentials: ProdDeployCD
+          awsCredentialsApi: ProdDeployCD
+          awsCredentialsWeb: ProdPubDeployCD
           region: eu-west-1
           infraBucket: "infra-prod-deploy-bucket"
           chromiumLayerBucket: prod-brevgenerator2-lambda-layers

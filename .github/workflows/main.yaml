@@ -54,5 +54,5 @@ jobs:
         env:
           CLUSTER: dev
           RESOURCE: .nais/web.yaml
-          VAR: image=${{ steps.docker-build-push-web.outputs.image }},s3bucket=dev-at-brevgenerator2-workspace-bucket
+          VAR: image=${{ steps.docker-build-push-web.outputs.image }},s3bucket=dev-at-brevgenerator2-workspace
           TELEMETRY: ${{ steps.docker-build-push-web.outputs.telemetry }}
