@@ -24,7 +24,7 @@ ARG CHROMIUM_VERSION
 # renovate: datasource=repology depName=debian_12/fontconfig versioning=loose
 ENV FONTCONFIG_VERSION="2.14.1-4"
 # renovate: datasource=repology depName=debian_12_backports/curl versioning=loose
-ENV CURL_VERSION="8.12.1-3~bpo12+1"
+ENV CURL_VERSION="8.13.0-5~bpo12+1"
 
 # Install specific Chromium version and other dependencies
 RUN echo "deb http://deb.debian.org/debian bookworm-backports main" > /etc/apt/sources.list.d/backports.list \
