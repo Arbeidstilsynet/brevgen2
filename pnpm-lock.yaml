@@ -60,8 +60,8 @@ importers:
         specifier: 2.16.0
         version: 2.16.0
       zod:
-        specifier: 3.24.3
-        version: 3.24.3
+        specifier: 3.24.4
+        version: 3.24.4
     devDependencies:
       '@eslint/js':
         specifier: 9.26.0
@@ -268,8 +268,8 @@ importers:
   packages/shared-types:
     dependencies:
       zod:
-        specifier: 3.24.3
-        version: 3.24.3
+        specifier: 3.24.4
+        version: 3.24.4
     devDependencies:
       prettier:
         specifier: 3.5.3
@@ -5132,8 +5132,8 @@ packages:
     peerDependencies:
       zod: ^3.18.0
 
-  zod@3.24.3:
-    resolution: {integrity: sha512-HhY1oqzWCQWuUqvBFnsyrtZRhyPeR7SUGv+C4+MsisMuVfSPx8HpwWqH8tRahSlt6M3PiFAcoeFhZAqIXTxoSg==}
+  zod@3.24.4:
+    resolution: {integrity: sha512-OdqJE9UDRPwWsrHjLN2F8bPxvwJBK22EHLWtanu0LSYr5YqzsaaW3RMgmjwr8Rypg5k+meEJdSPXJZXE/yqOMg==}
 
 snapshots:
 
@@ -6085,7 +6085,7 @@ snapshots:
     dependencies:
       '@jimp/types': 1.6.0
       '@jimp/utils': 1.6.0
-      zod: 3.24.3
+      zod: 3.24.4
 
   '@jimp/plugin-blur@1.6.0':
     dependencies:
@@ -6095,7 +6095,7 @@ snapshots:
   '@jimp/plugin-circle@1.6.0':
     dependencies:
       '@jimp/types': 1.6.0
-      zod: 3.24.3
+      zod: 3.24.4
 
   '@jimp/plugin-color@1.6.0':
     dependencies:
@@ -6103,7 +6103,7 @@ snapshots:
       '@jimp/types': 1.6.0
       '@jimp/utils': 1.6.0
       tinycolor2: 1.6.0
-      zod: 3.24.3
+      zod: 3.24.4
 
   '@jimp/plugin-contain@1.6.0':
     dependencies:
@@ -6112,7 +6112,7 @@ snapshots:
       '@jimp/plugin-resize': 1.6.0
       '@jimp/types': 1.6.0
       '@jimp/utils': 1.6.0
-      zod: 3.24.3
+      zod: 3.24.4
 
   '@jimp/plugin-cover@1.6.0':
     dependencies:
@@ -6120,20 +6120,20 @@ snapshots:
       '@jimp/plugin-crop': 1.6.0
       '@jimp/plugin-resize': 1.6.0
       '@jimp/types': 1.6.0
-      zod: 3.24.3
+      zod: 3.24.4
 
   '@jimp/plugin-crop@1.6.0':
     dependencies:
       '@jimp/core': 1.6.0
       '@jimp/types': 1.6.0
       '@jimp/utils': 1.6.0
-      zod: 3.24.3
+      zod: 3.24.4
 
   '@jimp/plugin-displace@1.6.0':
     dependencies:
       '@jimp/types': 1.6.0
       '@jimp/utils': 1.6.0
-      zod: 3.24.3
+      zod: 3.24.4
 
   '@jimp/plugin-dither@1.6.0':
     dependencies:
@@ -6143,12 +6143,12 @@ snapshots:
     dependencies:
       '@jimp/types': 1.6.0
       '@jimp/utils': 1.6.0
-      zod: 3.24.3
+      zod: 3.24.4
 
   '@jimp/plugin-flip@1.6.0':
     dependencies:
       '@jimp/types': 1.6.0
-      zod: 3.24.3
+      zod: 3.24.4
 
   '@jimp/plugin-hash@1.6.0':
     dependencies:
@@ -6166,7 +6166,7 @@ snapshots:
   '@jimp/plugin-mask@1.6.0':
     dependencies:
       '@jimp/types': 1.6.0
-      zod: 3.24.3
+      zod: 3.24.4
 
   '@jimp/plugin-print@1.6.0':
     dependencies:
@@ -6179,18 +6179,18 @@ snapshots:
       parse-bmfont-binary: 1.0.6
       parse-bmfont-xml: 1.1.6
       simple-xml-to-json: 1.2.3
-      zod: 3.24.3
+      zod: 3.24.4
 
   '@jimp/plugin-quantize@1.6.0':
     dependencies:
       image-q: 4.0.0
-      zod: 3.24.3
+      zod: 3.24.4
 
   '@jimp/plugin-resize@1.6.0':
     dependencies:
       '@jimp/core': 1.6.0
       '@jimp/types': 1.6.0
-      zod: 3.24.3
+      zod: 3.24.4
 
   '@jimp/plugin-rotate@1.6.0':
     dependencies:
@@ -6199,7 +6199,7 @@ snapshots:
       '@jimp/plugin-resize': 1.6.0
       '@jimp/types': 1.6.0
       '@jimp/utils': 1.6.0
-      zod: 3.24.3
+      zod: 3.24.4
 
   '@jimp/plugin-threshold@1.6.0':
     dependencies:
@@ -6208,11 +6208,11 @@ snapshots:
       '@jimp/plugin-hash': 1.6.0
       '@jimp/types': 1.6.0
       '@jimp/utils': 1.6.0
-      zod: 3.24.3
+      zod: 3.24.4
 
   '@jimp/types@1.6.0':
     dependencies:
-      zod: 3.24.3
+      zod: 3.24.4
 
   '@jimp/utils@1.6.0':
     dependencies:
@@ -6309,8 +6309,8 @@ snapshots:
       express-rate-limit: 7.5.0(express@5.1.0)
       pkce-challenge: 5.0.0
       raw-body: 3.0.0
-      zod: 3.24.3
-      zod-to-json-schema: 3.24.5(zod@3.24.3)
+      zod: 3.24.4
+      zod-to-json-schema: 3.24.5(zod@3.24.4)
     transitivePeerDependencies:
       - supports-color
 
@@ -7731,7 +7731,7 @@ snapshots:
     dependencies:
       devtools-protocol: 0.0.1402036
       mitt: 3.0.1
-      zod: 3.24.3
+      zod: 3.24.4
 
   client-only@0.0.1: {}
 
@@ -8299,8 +8299,8 @@ snapshots:
       '@babel/plugin-proposal-private-methods': 7.18.6(@babel/core@7.26.9)
       eslint: 9.26.0(jiti@2.4.2)
       hermes-parser: 0.25.1
-      zod: 3.24.3
-      zod-validation-error: 3.4.0(zod@3.24.3)
+      zod: 3.24.4
+      zod-validation-error: 3.4.0(zod@3.24.4)
     transitivePeerDependencies:
       - supports-color
 
@@ -8377,7 +8377,7 @@ snapshots:
       minimatch: 3.1.2
       natural-compare: 1.4.0
       optionator: 0.9.4
-      zod: 3.24.3
+      zod: 3.24.4
     optionalDependencies:
       jiti: 2.4.2
     transitivePeerDependencies:
@@ -11009,12 +11009,12 @@ snapshots:
       compress-commons: 6.0.2
       readable-stream: 4.7.0
 
-  zod-to-json-schema@3.24.5(zod@3.24.3):
+  zod-to-json-schema@3.24.5(zod@3.24.4):
     dependencies:
-      zod: 3.24.3
+      zod: 3.24.4
 
-  zod-validation-error@3.4.0(zod@3.24.3):
+  zod-validation-error@3.4.0(zod@3.24.4):
     dependencies:
-      zod: 3.24.3
+      zod: 3.24.4
 
-  zod@3.24.3: {}
+  zod@3.24.4: {}
