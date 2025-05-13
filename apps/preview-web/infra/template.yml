@@ -63,6 +63,14 @@ Parameters:
     Type: AWS::SSM::Parameter::Value<String>
     Default: "/vpc/shared-public-vpc/subnet/public/b/id"
 
+  VpcPrivateSubnet1Id:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: "/vpc/shared-public-vpc/subnet/private/a/id"
+
+  VpcPrivateSubnet2Id:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: "/vpc/shared-public-vpc/subnet/private/b/id"
+
 Mappings:
   # Mapping for å forhåpentligvis fange opp feil hvis vi skal deploye til en annen region enn Irland.
   # https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-access-logging.html
@@ -118,12 +126,12 @@ Resources:
       HealthCheckGracePeriodSeconds: 5
       NetworkConfiguration:
         AwsvpcConfiguration:
-          AssignPublicIp: ENABLED
+          AssignPublicIp: DISABLED
           SecurityGroups:
             - !Ref ECSTaskSecurityGroup
           Subnets:
-            - !Ref VpcPublicSubnet1Id
-            - !Ref VpcPublicSubnet2Id
+            - !Ref VpcPrivateSubnet1Id
+            - !Ref VpcPrivateSubnet2Id
       DeploymentConfiguration:
         DeploymentCircuitBreaker:
           Enable: true
