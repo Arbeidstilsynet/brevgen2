@@ -29,12 +29,12 @@
     "zod": "3.24.4"
   },
   "devDependencies": {
-    "@eslint/js": "9.26.0",
+    "@eslint/js": "9.27.0",
     "@repo/typescript-config": "workspace:^",
     "@types/aws-lambda": "8.10.149",
     "@types/node": "22.15.18",
     "@types/sanitize-html": "2.16.0",
-    "eslint": "9.26.0",
+    "eslint": "9.27.0",
     "globals": "16.1.0",
     "pdf-text-reader": "5.1.0",
     "pdf-visual-diff": "0.14.0",
