@@ -146,7 +146,7 @@ importers:
         version: 15.0.11
       next:
         specifier: 15.3.2
-        version: 15.3.2(@babel/core@7.26.9)(babel-plugin-react-compiler@19.1.0-rc.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        version: 15.3.2(@babel/core@7.26.9)(babel-plugin-react-compiler@19.1.0-rc.2)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       react:
         specifier: 19.1.0
         version: 19.1.0
@@ -173,11 +173,11 @@ importers:
         specifier: 22.15.18
         version: 22.15.18
       '@types/react':
-        specifier: 19.1.3
-        version: 19.1.3
+        specifier: 19.1.4
+        version: 19.1.4
       '@types/react-dom':
-        specifier: 19.1.3
-        version: 19.1.3(@types/react@19.1.3)
+        specifier: 19.1.5
+        version: 19.1.5(@types/react@19.1.4)
       '@types/sanitize-html':
         specifier: 2.16.0
         version: 2.16.0
@@ -185,8 +185,8 @@ importers:
         specifier: 2023.10.6
         version: 2023.10.6
       babel-plugin-react-compiler:
-        specifier: 19.1.0-rc.1
-        version: 19.1.0-rc.1
+        specifier: 19.1.0-rc.2
+        version: 19.1.0-rc.2
       eslint:
         specifier: 9.26.0
         version: 9.26.0(jiti@2.4.2)
@@ -194,8 +194,8 @@ importers:
         specifier: 15.3.2
         version: 15.3.2(eslint@9.26.0(jiti@2.4.2))(typescript@5.8.3)
       eslint-plugin-react-compiler:
-        specifier: 19.1.0-rc.1
-        version: 19.1.0-rc.1(eslint@9.26.0(jiti@2.4.2))
+        specifier: 19.1.0-rc.2
+        version: 19.1.0-rc.2(eslint@9.26.0(jiti@2.4.2))
       tailwindcss:
         specifier: 4.1.6
         version: 4.1.6
@@ -1860,13 +1860,13 @@ packages:
   '@types/node@22.15.18':
     resolution: {integrity: sha512-v1DKRfUdyW+jJhZNEI1PYy29S2YRxMV5AOO/x/SjKmW0acCIOqmbj6Haf9eHAhsPmrhlHSxEhv/1WszcLWV4cg==}
 
-  '@types/react-dom@19.1.3':
-    resolution: {integrity: sha512-rJXC08OG0h3W6wDMFxQrZF00Kq6qQvw0djHRdzl3U5DnIERz0MRce3WVc7IS6JYBwtaP/DwYtRRjVlvivNveKg==}
+  '@types/react-dom@19.1.5':
+    resolution: {integrity: sha512-CMCjrWucUBZvohgZxkjd6S9h0nZxXjzus6yDfUb+xLxYM7VvjKNH1tQrE9GWLql1XoOP4/Ds3bwFqShHUYraGg==}
     peerDependencies:
       '@types/react': ^19.0.0
 
-  '@types/react@19.1.3':
-    resolution: {integrity: sha512-dLWQ+Z0CkIvK1J8+wrDPwGxEYFA4RAyHoZPxHVGspYmFVnwGSNT24cGIhFJrtfRnWVuW8X7NO52gCXmhkVUWGQ==}
+  '@types/react@19.1.4':
+    resolution: {integrity: sha512-EB1yiiYdvySuIITtD5lhW4yPyJ31RkJkkDw794LaQYrxCSaQV/47y5o1FMC4zF9ZyjUjzJMZwbovEnT5yHTW6g==}
 
   '@types/sanitize-html@2.16.0':
     resolution: {integrity: sha512-l6rX1MUXje5ztPT0cAFtUayXF06DqPhRyfVXareEN5gGCFaP/iwsxIyKODr9XDhfxPpN6vXUFNfo5kZMXCxBtw==}
@@ -2203,8 +2203,8 @@ packages:
   b4a@1.6.6:
     resolution: {integrity: sha512-5Tk1HLk6b6ctmjIkAcU/Ujv/1WqiDl0F0JdRCR80VsOcUlHcu7pWeWRlOqQLHfDEsVx9YH/aif5AG4ehoCtTmg==}
 
-  babel-plugin-react-compiler@19.1.0-rc.1:
-    resolution: {integrity: sha512-M4fpG+Hfq5gWzsJeeMErdRokzg0fdJ8IAk+JDhfB/WLT+U3WwJWR8edphypJrk447/JEvYu6DBFwsTn10bMW4Q==}
+  babel-plugin-react-compiler@19.1.0-rc.2:
+    resolution: {integrity: sha512-kSNA//p5fMO6ypG8EkEVPIqAjwIXm5tMjfD1XRPL/sRjYSbJ6UsvORfaeolNWnZ9n310aM0xJP7peW26BuCVzA==}
 
   balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
@@ -2764,8 +2764,8 @@ packages:
     peerDependencies:
       eslint: ^3 || ^4 || ^5 || ^6 || ^7 || ^8 || ^9
 
-  eslint-plugin-react-compiler@19.1.0-rc.1:
-    resolution: {integrity: sha512-3umw5eqZXapBl7aQGmvcjheKhUbsElb9jTETxRZg371e1LG4EPs/zCHt2JzP+wNcdaZWzjU/R730zPUJblY2zw==}
+  eslint-plugin-react-compiler@19.1.0-rc.2:
+    resolution: {integrity: sha512-oKalwDGcD+RX9mf3NEO4zOoUMeLvjSvcbbEOpquzmzqEEM2MQdp7/FY/Hx9NzmUwFzH1W9SKTz5fihfMldpEYw==}
     engines: {node: ^14.17.0 || ^16.0.0 || >= 18.0.0}
     peerDependencies:
       eslint: '>=7'
@@ -7085,11 +7085,11 @@ snapshots:
     dependencies:
       undici-types: 6.21.0
 
-  '@types/react-dom@19.1.3(@types/react@19.1.3)':
+  '@types/react-dom@19.1.5(@types/react@19.1.4)':
     dependencies:
-      '@types/react': 19.1.3
+      '@types/react': 19.1.4
 
-  '@types/react@19.1.3':
+  '@types/react@19.1.4':
     dependencies:
       csstype: 3.1.3
 
@@ -7546,7 +7546,7 @@ snapshots:
 
   b4a@1.6.6: {}
 
-  babel-plugin-react-compiler@19.1.0-rc.1:
+  babel-plugin-react-compiler@19.1.0-rc.2:
     dependencies:
       '@babel/types': 7.26.10
 
@@ -8278,7 +8278,7 @@ snapshots:
       safe-regex-test: 1.0.3
       string.prototype.includes: 2.0.0
 
-  eslint-plugin-react-compiler@19.1.0-rc.1(eslint@9.26.0(jiti@2.4.2)):
+  eslint-plugin-react-compiler@19.1.0-rc.2(eslint@9.26.0(jiti@2.4.2)):
     dependencies:
       '@babel/core': 7.26.9
       '@babel/parser': 7.26.9
@@ -9394,7 +9394,7 @@ snapshots:
 
   netmask@2.0.2: {}
 
-  next@15.3.2(@babel/core@7.26.9)(babel-plugin-react-compiler@19.1.0-rc.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
+  next@15.3.2(@babel/core@7.26.9)(babel-plugin-react-compiler@19.1.0-rc.2)(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
     dependencies:
       '@next/env': 15.3.2
       '@swc/counter': 0.1.3
@@ -9414,7 +9414,7 @@ snapshots:
       '@next/swc-linux-x64-musl': 15.3.2
       '@next/swc-win32-arm64-msvc': 15.3.2
       '@next/swc-win32-x64-msvc': 15.3.2
-      babel-plugin-react-compiler: 19.1.0-rc.1
+      babel-plugin-react-compiler: 19.1.0-rc.2
       sharp: 0.34.1
     transitivePeerDependencies:
       - '@babel/core'
