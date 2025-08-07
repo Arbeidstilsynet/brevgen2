@@ -11,6 +11,7 @@ import { BranchSelector } from "./BranchSelector";
 import { FileSelector } from "./FileSelector";
 import { RepoSelector } from "./RepoSelector";
 import { AzDoRepoWithName } from "./selectableRepos";
+import { Settings } from "./Settings";
 import { VariablesReport } from "./VariablesReport";
 
 type Props = Readonly<{
@@ -29,9 +30,9 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
   const [selectedRepo, setSelectedRepo] = useState<AzDoRepoWithName | null>(null);
   const [selectedBranch, setSelectedBranch] = useState<string | null>(null);
 
-  const [activeTab, setActiveTab] = useState<"fileSelect" | "loadExamples" | "variablesReport">(
-    "fileSelect",
-  );
+  const [activeTab, setActiveTab] = useState<
+    "fileSelect" | "loadExamples" | "variablesReport" | "settings"
+  >("fileSelect");
 
   const { data: repos, error: reposError } = useQuery<AzureDevOpsRepo[]>({
     queryKey: ["repos"],
@@ -61,7 +62,7 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
 
   return (
     <article className="flex flex-col p-4 space-y-4">
-      <h1 className="text-2xl font-bold">Konfigurasjon</h1>
+      <h1 className="text-2xl font-bold">Kontrollpanel</h1>
 
       {message && <Toast message={message} variant={variant} onClose={clearToast} />}
 
@@ -80,6 +81,9 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
           onClick={() => setActiveTab("variablesReport")}
         >
           Flettefelt
+        </TabButton>
+        <TabButton isActive={activeTab === "settings"} onClick={() => setActiveTab("settings")}>
+          Innstillinger
         </TabButton>
       </div>
 
@@ -161,6 +165,8 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
           )}
         </>
       )}
+
+      {activeTab === "settings" && <Settings />}
     </article>
   );
 }

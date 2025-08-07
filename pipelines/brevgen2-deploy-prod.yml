@@ -30,7 +30,7 @@ stages:
           infraBucketApi: "infra-test-deploy-bucket"
           infraBucketWeb: "infra-test-deploy-pub-bucket"
           chromiumLayerBucket: test-brevgenerator2-lambda-layers
-          chromiumVersion: "133.0.0"
+          chromiumVersion: "138.0.2"
           imageName: test-brevgenerator2-web
           stackParametersApi: >-
             Env=test
@@ -123,7 +123,7 @@ stages:
           infraBucketApi: "infra-prod-deploy-bucket"
           infraBucketWeb: "infra-prod-deploy-pub-bucket"
           chromiumLayerBucket: prod-brevgenerator2-lambda-layers
-          chromiumVersion: "133.0.0"
+          chromiumVersion: "138.0.2"
           imageName: prod-brevgenerator2-web
           stackParametersApi: >-
             Env=prod

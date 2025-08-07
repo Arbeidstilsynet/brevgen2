@@ -189,7 +189,7 @@ Resources:
       Description: !Sub "@sparticuz/chromium v${ChromiumVersion}, Chromium for AWS Serverless"
       Content:
         S3Bucket: !Ref ChromiumLayerBucket
-        S3Key: !Sub "chromiumLayers/chromium-v${ChromiumVersion}-layer.zip"
+        S3Key: !Sub "chromiumLayers/chromium-v${ChromiumVersion}-layer.x64.zip"
       CompatibleRuntimes:
         - nodejs22.x
       CompatibleArchitectures:

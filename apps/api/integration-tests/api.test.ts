@@ -6,40 +6,12 @@ import { comparePdfToSnapshot } from "pdf-visual-diff";
 import { Readable } from "stream";
 import { DockerComposeEnvironment, StartedDockerComposeEnvironment, Wait } from "testcontainers";
 import { afterAll, afterEach, beforeAll, describe, expect, test } from "vitest";
-
-async function fetcher(url: string, payload: GenerateDocumentRequest) {
-  const headers: HeadersInit = {
-    "Content-Type": "application/json",
-  };
-  return await fetch(url, {
-    method: "POST",
-    headers,
-    body: JSON.stringify(payload),
-  });
-}
-
-async function parseResponse(response: Response) {
-  const base64Pdf = await response.text();
-  const buffer = Buffer.from(base64Pdf, "base64");
-  return buffer;
-}
-
-async function setupLogStreaming(
-  environment: StartedDockerComposeEnvironment,
-  containerName: string,
-): Promise<Readable> {
-  const container = environment.getContainer(containerName);
-  const logStream = await container.logs();
-
-  logStream.on("data", (line) => {
-    console.log(`[${containerName}]: ${line}`);
-  });
-
-  return logStream;
-}
+import { defaultTemplateLongPayload, defaultTemplateShortPayload } from "./testdata";
+import { fetcher, parseResponse, setupLogStreaming } from "./utils";
 
 const fixturesDir = path.resolve(__dirname, "temp");
-const DOWNLOADED_PDF_PATH_DEFAULT_TEMPLATE = path.join(fixturesDir, "default.pdf");
+const DOWNLOADED_PDF_PATH_DEFAULT_SHORT_TEMPLATE = path.join(fixturesDir, "default-short.pdf");
+const DOWNLOADED_PDF_PATH_DEFAULT_LONG_TEMPLATE = path.join(fixturesDir, "default-long.pdf");
 const DOWNLOADED_PDF_PATH_CUSTOM_TEMPLATE = path.join(fixturesDir, "custom.pdf");
 const DOWNLOADED_PDF_PATH_BLANK_TEMPLATE = path.join(fixturesDir, "blank.pdf");
 
@@ -65,7 +37,6 @@ describe.sequential("Integration tests with testcontainers", () => {
     if (!existsSync(composeFilePath)) {
       throw new Error(`Compose file not found at ${composeFilePath}`);
     }
-    console.log(`Docker Compose file exists at: ${composeFilePath}`);
 
     environment = await new DockerComposeEnvironment(rootDir, composeFile)
       .withBuild()
@@ -143,7 +114,6 @@ describe.sequential("Integration tests with testcontainers", () => {
         };
 
         const response = await fetcher(genererBrevUrl, payload);
-
         if (!response.ok) {
           console.error(await response.text());
         }
@@ -178,7 +148,6 @@ describe.sequential("Integration tests with testcontainers", () => {
         };
 
         const response = await fetcher(genererBrevUrl, payload);
-
         if (!response.ok) {
           console.error(await response.text());
         }
@@ -195,40 +164,12 @@ describe.sequential("Integration tests with testcontainers", () => {
     );
 
     test(
-      "Can generate a PDF (default template)",
+      "Can generate a PDF (default template, short)",
       {
         timeout: 10_000,
       },
       async () => {
-        const payload: GenerateDocumentRequest = {
-          md: "# Test PDF\n\nThis is a {{var}}",
-          mdVariables: {
-            var: "test PDF",
-          },
-          options: {
-            dynamic: {
-              template: "default",
-              defaultTemplateArgs: {
-                language: "bm",
-                signatureVariant: "automatiskBehandlet",
-                fields: {
-                  dato: "12.24.2030",
-                  saksnummer: "2030/999",
-                  saksbehandlerNavn: "Test Testesen",
-                  virksomhet: {
-                    navn: "Test Containers",
-                    adresse: "Testveien 1",
-                    postnr: "1234",
-                    poststed: "Teststed",
-                  },
-                },
-              },
-            },
-          },
-        };
-
-        const response = await fetcher(genererBrevUrl, payload);
-
+        const response = await fetcher(genererBrevUrl, defaultTemplateShortPayload);
         if (!response.ok) {
           console.error(await response.text());
         }
@@ -244,7 +185,32 @@ describe.sequential("Integration tests with testcontainers", () => {
         expect(text).toContain("12.24.2030");
 
         // Save the generated PDF as a fixture for visual tests
-        writeFileSync(DOWNLOADED_PDF_PATH_DEFAULT_TEMPLATE, buffer);
+        writeFileSync(DOWNLOADED_PDF_PATH_DEFAULT_SHORT_TEMPLATE, buffer);
+      },
+    );
+
+    test(
+      "Can generate a PDF (default template, long)",
+      {
+        timeout: 10_000,
+      },
+      async () => {
+        const response = await fetcher(genererBrevUrl, defaultTemplateLongPayload);
+        if (!response.ok) {
+          console.error(await response.text());
+        }
+        expect(response.status).toBe(200);
+        const buffer = await parseResponse(response);
+        expect(buffer.length).toBeGreaterThan(0);
+
+        const text = await readPdfText({
+          data: new Uint8Array(buffer),
+          options: { verbosity: 0 },
+        });
+        expect(text).toContain("Baz bazilikum");
+
+        // Save the generated PDF as a fixture for visual tests
+        writeFileSync(DOWNLOADED_PDF_PATH_DEFAULT_LONG_TEMPLATE, buffer);
       },
     );
 
@@ -268,29 +234,20 @@ describe.sequential("Integration tests with testcontainers", () => {
         };
 
         const response = await fetcher(genererBrevUrl, payload);
-
         if (!response.ok) {
           console.error(await response.text());
         }
         expect(response.status).toBe(200);
 
-        // For HTML output, we expect plain text, not base64 encoded content
-        const htmlContent = await response.text();
+        const htmlContent = await response.text(); // For HTML output, we expect plain text, not base64 pdf
         expect(typeof htmlContent).toBe("string");
 
-        // Verify the content is actual HTML
         expect(htmlContent).toContain("<!DOCTYPE html>");
         expect(htmlContent).toContain("<html");
-
-        // Verify our markdown was properly converted
         expect(htmlContent).toContain("This is a HTML document");
-
-        // Verify formatting was preserved
         expect(htmlContent).toContain("<strong>bold</strong>");
         expect(htmlContent).toContain("<em>italic</em>");
-
-        // Verify it doesn't contain PDF-specific markers
-        expect(htmlContent).not.toContain("%PDF-");
+        expect(htmlContent).not.toContain("%PDF-"); // Verify it doesn't contain PDF-specific markers
       },
     );
   });
@@ -322,12 +279,25 @@ describe.sequential("Integration tests with testcontainers", () => {
       expect(matched).toBe(true);
     });
 
-    test("pdf-visual-diff (default template)", { timeout: 10_000 }, async () => {
-      const pdfName = "test-pdf-default-template";
+    test("pdf-visual-diff (default template, short)", { timeout: 10_000 }, async () => {
+      const pdfName = "test-pdf-default-template-short";
       // const baselinePdfPath = path.join("baseline", `${pdfName}.pdf`);
       // const baselinePdfPath = path.join("baseline", `${pdfName}-modified.pdf`);
       // const pdf = readFileSync(path.resolve(__dirname, baselinePdfPath));
-      const pdf = readFileSync(DOWNLOADED_PDF_PATH_DEFAULT_TEMPLATE);
+      const pdf = readFileSync(DOWNLOADED_PDF_PATH_DEFAULT_SHORT_TEMPLATE);
+
+      const matched = await comparePdfToSnapshot(pdf, __dirname, pdfName, {
+        tolerance: 0.05,
+      });
+      expect(matched).toBe(true);
+    });
+
+    test("pdf-visual-diff (default template, long)", { timeout: 10_000 }, async () => {
+      const pdfName = "test-pdf-default-template-long";
+      const baselinePdfPath = path.join("baseline", `${pdfName}.pdf`);
+      // const baselinePdfPath = path.join("baseline", `${pdfName}-modified.pdf`);
+      const pdf = readFileSync(path.resolve(__dirname, baselinePdfPath));
+      // const pdf = readFileSync(DOWNLOADED_PDF_PATH_DEFAULT_LONG_TEMPLATE);
 
       const matched = await comparePdfToSnapshot(pdf, __dirname, pdfName, {
         tolerance: 0.05,

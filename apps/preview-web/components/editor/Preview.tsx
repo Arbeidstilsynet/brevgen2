@@ -1,6 +1,6 @@
 "use client";
 
-import { genererPdf } from "@/actions/pdf";
+import { sendGenerateDocument } from "@/actions/pdf";
 import { useDebouncedMutation } from "@/hooks/useDebouncedMutation";
 import { defaultTemplate } from "@at/document-templates";
 import type {
@@ -53,30 +53,52 @@ export function Preview({
   selectedTemplate,
   defaultTemplateArgs,
 }: Props) {
-  const [renderedHtml, setRenderedHtml] = useState<string | null>(null);
-  const previousValues = useRef({
+  const [localHtml, setLocalHtml] = useState<string | null>(null);
+
+  // refs for storing pevious request payloads and results
+  // used for proper (re)request behavior on tab switching
+  const previousPdfValues = useRef({
+    md,
+    mdVariables,
+    selectedTemplate,
+    defaultTemplateArgs,
+  });
+  const previousHtmlValues = useRef({
     md,
     mdVariables,
     selectedTemplate,
     defaultTemplateArgs,
   });
   const pdfUrlRef = useRef<string | null>(null);
+  const remoteHtmlRef = useRef<string | null>(null);
 
   const {
-    debouncedMutate,
+    debouncedMutate: debouncedMutatePdf,
     data: pdfUrl,
     error: pdfError,
   } = useDebouncedMutation({
     mutationKey: ["generate"],
     mutationFn: async (payload: GenerateDocumentRequest) => {
-      const base64Pdf = await genererPdf(payload);
+      const base64Pdf = await sendGenerateDocument(payload);
       const buffer = Buffer.from(base64Pdf, "base64");
       const blob = new Blob([buffer], { type: "application/pdf" });
       const blobUrl = URL.createObjectURL(blob);
       return blobUrl;
     },
-    onSuccess: (url) => {
-      pdfUrlRef.current = url;
+    onSuccess: (data) => {
+      pdfUrlRef.current = data;
+    },
+  });
+
+  const {
+    debouncedMutate: debouncedMutateHtml,
+    data: renderedRemoteHtml,
+    error: htmlError,
+  } = useDebouncedMutation({
+    mutationKey: ["generate-html"],
+    mutationFn: async (payload: GenerateDocumentRequest) => await sendGenerateDocument(payload),
+    onSuccess: (data) => {
+      remoteHtmlRef.current = data;
     },
   });
 
@@ -91,7 +113,7 @@ export function Preview({
       mdVariables: prevMdVariables,
       selectedTemplate: prevTemplate,
       defaultTemplateArgs: prevTemplateArgs,
-    } = previousValues.current;
+    } = previousPdfValues.current;
     if (
       prevMd === md &&
       prevMdVariables === mdVariables &&
@@ -102,7 +124,7 @@ export function Preview({
       return;
     }
 
-    previousValues.current = {
+    previousPdfValues.current = {
       md,
       mdVariables,
       selectedTemplate,
@@ -122,10 +144,71 @@ export function Preview({
       },
     } satisfies GenerateDocumentRequest;
 
-    debouncedMutate(payload, {
+    debouncedMutatePdf(payload, {
       debounceMs: 1000,
     });
-  }, [activePreviewTab, debouncedMutate, defaultTemplateArgs, md, mdVariables, selectedTemplate]);
+  }, [
+    activePreviewTab,
+    debouncedMutatePdf,
+    defaultTemplateArgs,
+    md,
+    mdVariables,
+    selectedTemplate,
+  ]);
+
+  useEffect(() => {
+    if (activePreviewTab !== "html-remote") {
+      return;
+    }
+
+    // Check if any of the values have changed since the last render
+    const {
+      md: prevMd,
+      mdVariables: prevMdVariables,
+      selectedTemplate: prevTemplate,
+      defaultTemplateArgs: prevTemplateArgs,
+    } = previousHtmlValues.current;
+    if (
+      prevMd === md &&
+      prevMdVariables === mdVariables &&
+      prevTemplate === selectedTemplate &&
+      prevTemplateArgs === defaultTemplateArgs &&
+      remoteHtmlRef.current // don't skip if this is first render
+    ) {
+      return;
+    }
+
+    previousHtmlValues.current = {
+      md,
+      mdVariables,
+      selectedTemplate,
+      defaultTemplateArgs,
+    };
+
+    const payload = {
+      md,
+      mdVariables,
+      options: {
+        document_title: "Brev fra Arbeidstilsynet",
+        dynamic: {
+          template: selectedTemplate,
+          defaultTemplateArgs: selectedTemplate === "default" ? defaultTemplateArgs : undefined,
+        },
+        as_html: true,
+      },
+    } satisfies GenerateDocumentRequest;
+
+    debouncedMutateHtml(payload, {
+      debounceMs: 1000,
+    });
+  }, [
+    activePreviewTab,
+    debouncedMutateHtml,
+    defaultTemplateArgs,
+    md,
+    mdVariables,
+    selectedTemplate,
+  ]);
 
   useEffect(() => {
     if (activePreviewTab !== "html") {
@@ -144,7 +227,7 @@ export function Preview({
           ? defaultTemplate.globalCss
           : "";
       const output = getHtml(md, css);
-      setRenderedHtml(output);
+      setLocalHtml(output);
     };
 
     renderHtml();
@@ -158,7 +241,25 @@ export function Preview({
     return (
       <iframe
         title="HTML preview"
-        srcDoc={renderedHtml ?? ""}
+        srcDoc={localHtml ?? ""}
+        style={{ width: "100%", height: "100%", border: "none" }}
+      />
+    );
+  }
+
+  if (activePreviewTab === "html-remote") {
+    if (!renderedRemoteHtml) {
+      return (
+        <>
+          {htmlError && <ErrorOverlay error={htmlError} />}
+          <pre className="whitespace-pre-wrap break-all">Generating...</pre>
+        </>
+      );
+    }
+    return (
+      <iframe
+        title="HTML preview"
+        srcDoc={renderedRemoteHtml ?? ""}
         style={{ width: "100%", height: "100%", border: "none" }}
       />
     );

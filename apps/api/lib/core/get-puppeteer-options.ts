@@ -1,9 +1,19 @@
+import { Viewport } from "puppeteer-core";
 import { getChromiumArgs } from "./chromium-args";
 import { configureLambdaChromium } from "./lambda-config";
 import { LaunchOptions } from "./types";
 
 // conditionally import @sparticuz/chromium as it's only used in AWS Lambda
-let lambdaChromium: typeof import("@sparticuz/chromium");
+let lambdaChromium: typeof import("@sparticuz/chromium").default;
+
+const viewport: Viewport = {
+  deviceScaleFactor: 1,
+  hasTouch: false,
+  height: 1080,
+  isLandscape: true,
+  isMobile: false,
+  width: 1920,
+};
 
 /**
  * Get browser launch options based on environment
@@ -12,20 +22,21 @@ export async function getBrowserLaunchOptions(): Promise<LaunchOptions> {
   // Configure for AWS Lambda
   if (process.env.AWS_LAMBDA_FUNCTION_NAME) {
     lambdaChromium ??= (await import("@sparticuz/chromium")).default;
-    await configureLambdaChromium(lambdaChromium);
+    configureLambdaChromium(lambdaChromium);
     return {
-      args: lambdaChromium.args,
-      defaultViewport: lambdaChromium.defaultViewport,
+      args: getChromiumArgs(),
+      defaultViewport: viewport,
       executablePath: await lambdaChromium.executablePath(),
-      headless: lambdaChromium.headless,
+      headless: "shell",
     };
   }
   // Configure for Docker with system Chromium
   // https://cri.dev/posts/2020-04-04-Full-list-of-Chromium-Puppeteer-flags/
   else if (process.env.PUPPETEER_EXECUTABLE_PATH) {
     return {
-      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
       args: getChromiumArgs(),
+      defaultViewport: viewport,
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
       headless: true,
     };
   }

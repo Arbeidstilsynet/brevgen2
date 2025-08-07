@@ -1,6 +1,6 @@
-ARG CHROMIUM_VERSION="134.*"
+ARG CHROMIUM_VERSION="139.*"
 
-FROM node:22-slim@sha256:ec318fe0dc46b56bcc1ca42a202738aeb4f3e347a7b4dd9f9f1df12ea7aa385a as base
+FROM node:22-slim@sha256:ec318fe0dc46b56bcc1ca42a202738aeb4f3e347a7b4dd9f9f1df12ea7aa385a AS base
 FROM base AS builder
 
 RUN npm i -g corepack@latest && corepack enable
@@ -24,17 +24,15 @@ ARG CHROMIUM_VERSION
 # renovate: datasource=repology depName=debian_12/fontconfig versioning=loose
 ENV FONTCONFIG_VERSION="2.14.1-4"
 # renovate: datasource=repology depName=debian_12_backports/curl versioning=loose
-ENV CURL_VERSION="8.13.0-5~bpo12+1"
+ENV CURL_VERSION="8.14.1-2~bpo12+1"
 
 # Install specific Chromium version and other dependencies
-RUN echo "deb http://deb.debian.org/debian bookworm-backports main" > /etc/apt/sources.list.d/backports.list \
+RUN echo "deb http://security.debian.org/debian-security bookworm-security main" > /etc/apt/sources.list.d/security.list \
+    && echo "deb http://deb.debian.org/debian bookworm-backports main" > /etc/apt/sources.list.d/backports.list \
     && apt-get update \
-    && apt-get install -y --no-install-recommends \
-    chromium-common=${CHROMIUM_VERSION} \
-    chromium=${CHROMIUM_VERSION} \
-    fontconfig=${FONTCONFIG_VERSION} \
-    && apt-get install -y --no-install-recommends -t bookworm-backports \
-    curl=${CURL_VERSION} \
+    && apt-get install -y --no-install-recommends chromium-common=${CHROMIUM_VERSION} chromium=${CHROMIUM_VERSION} \
+    && apt-get install -y --no-install-recommends fontconfig=${FONTCONFIG_VERSION} \
+    && apt-get install -y --no-install-recommends -t bookworm-backports curl=${CURL_VERSION} \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 

@@ -18,7 +18,7 @@ const PDF_API_ENDPOINTS = {
   GENERATE: new URL("genererbrev", PDF_API_URL).toString(),
 };
 
-export async function genererPdf(payload: GenerateDocumentRequest) {
+export async function sendGenerateDocument(payload: GenerateDocumentRequest) {
   validateEnvVars();
 
   const url = PDF_API_ENDPOINTS.GENERATE;

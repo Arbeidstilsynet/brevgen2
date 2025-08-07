@@ -4,7 +4,7 @@ Run before deploying infrastructure that expects the layer content to be in S3.
 
 Usage:
 py upload-layer.py --bucket-name {bucket-name} --chromium-version {chromium-version} [--profile {profile-name}] [--skip-confirmation]
-py upload-layer.py --bucket-name {env}-felles-brevgenerator2-lambda-layers --chromium-version 133.0.0
+py upload-layer.py --bucket-name {env}-felles-brevgenerator2-lambda-layers --chromium-version 138.0.2
 """
 
 import argparse
@@ -158,7 +158,7 @@ def main() -> None:
 
     bucket_name = args.bucket_name
     chromium_version = args.chromium_version
-    layer_file = f"chromium-v{chromium_version}-layer.zip"
+    layer_file = f"chromium-v{chromium_version}-layer.x64.zip"
     s3_key = f"chromiumLayers/{layer_file}"
     chromium_url = f"https://github.com/Sparticuz/chromium/releases/download/v{chromium_version}/{layer_file}"
 

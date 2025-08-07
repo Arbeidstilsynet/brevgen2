@@ -19,18 +19,19 @@
     "@repo/typescript-config": "workspace:*",
     "prettier": "3.5.3",
     "turbo": "2.5.3",
-    "typescript": "5.8.3"
+    "typescript": "5.9.2"
   },
   "engines": {
     "node": ">=22"
   },
-  "packageManager": "pnpm@10.10.0",
+  "packageManager": "pnpm@10.14.0",
   "pnpm": {
     "onlyBuiltDependencies": [
       "puppeteer"
     ],
     "overrides": {
-      "tar-fs@>=2.0.0 <2.1.2": ">=2.1.2"
+      "tar-fs@>=2.0.0 <2.1.2": ">=2.1.2",
+      "undici@<5.29.0": ">=5.29.0"
     }
   }
 }

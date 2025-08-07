@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: apps/api/Dockerfile
       args:
-        CHROMIUM_VERSION: "134.*"
+        CHROMIUM_VERSION: "139.*"
     ports:
       - "4000:4000"
     environment:
