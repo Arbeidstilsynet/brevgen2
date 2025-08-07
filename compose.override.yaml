@@ -9,7 +9,7 @@ services:
       - AWS_S3_FORCE_PATH_STYLE=true
 
   s3mock:
-    image: adobe/s3mock:latest@sha256:cd21b6555e510fa2a8ff6c77339549c5e48502884a4026708aedb4c7d87b3db0
+    image: adobe/s3mock:latest@sha256:468ba0b0e87f20ad54fbb6085e98c143f5bd1e384a844fa12a58535b4e39d4aa
     ports:
       - "9090:9090"
       - "9191:9191"
