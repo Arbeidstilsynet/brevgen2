@@ -4,10 +4,10 @@ export function Spinner() {
   );
 }
 
-export function SpinnerOverlay({ children }: { children: React.ReactNode }) {
+export function SpinnerOverlay() {
   return (
     <div className="absolute inset-0 flex items-center justify-center bg-black/30 z-50">
-      {children}
+      <Spinner />
     </div>
   );
 }

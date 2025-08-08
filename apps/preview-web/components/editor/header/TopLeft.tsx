@@ -1,18 +1,12 @@
 import { IconButton, TabButton } from "@/components/buttons";
 
 type Props = Readonly<{
-  setIsExplanationOpen: (open: boolean) => void;
-  setIsConfigOpen: (open: boolean) => void;
+  setCurrentModal: (modal: "explanation" | "config" | "workspace" | null) => void;
   activeVarTab: "variables" | "template";
   setActiveVarTab: (tab: "variables" | "template") => void;
 }>;
 
-export function TopLeft({
-  setIsExplanationOpen,
-  setIsConfigOpen,
-  activeVarTab,
-  setActiveVarTab,
-}: Props) {
+export function TopLeft({ setCurrentModal, activeVarTab, setActiveVarTab }: Props) {
   return (
     <div className="flex items-center justify-between w-1/5">
       <div className="flex gap-2 ml-2">
@@ -20,7 +14,7 @@ export function TopLeft({
           variant="blue"
           aria-label="Open explanation"
           title="Open explanation"
-          onClick={() => setIsExplanationOpen(true)}
+          onClick={() => setCurrentModal("explanation")}
         >
           ℹ️
         </IconButton>
@@ -28,7 +22,7 @@ export function TopLeft({
           variant="blue"
           aria-label="Open config"
           title="Open config"
-          onClick={() => setIsConfigOpen(true)}
+          onClick={() => setCurrentModal("config")}
         >
           ⚙️
         </IconButton>

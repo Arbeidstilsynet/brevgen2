@@ -7,17 +7,16 @@ import { Editor, useMonaco } from "@monaco-editor/react";
 import { DocumentTemplateOption } from "@repo/shared-types";
 import { useCallback, useReducer, useState } from "react";
 import { Overlay } from "../Overlay";
-import { ActionButton } from "../buttons";
 import { Config } from "../config";
 import { Explanation, getIndicatedElementClass, IndictableElement } from "../explanation";
-import { Spinner, SpinnerOverlay } from "../spinner";
+import { SpinnerOverlay } from "../spinner";
 import { Toast } from "../toast/Toast";
 import { ToastProvider, useToast } from "../toast/provider";
 import { Workspace } from "../workspace";
 import { WorkspaceContext } from "../workspace/provider";
 import { Preview } from "./Preview";
 import { TemplateConfig } from "./TemplateConfig";
-import { VariableInput } from "./VariableInput";
+import { VariablesTab } from "./VariablesTab";
 import { advancedMd, advancedVars } from "./examples/advanced";
 import { initialDefaultTemplateArgs, initialMd, initialVars } from "./examples/initial";
 import { EditorHeader } from "./header";
@@ -27,13 +26,7 @@ import { TopLeft } from "./header/TopLeft";
 import { defaultTemplateReducer } from "./templateConfigReducer";
 import { useDynamicMarkdown } from "./useDynamicMarkdown";
 import { useLoadPermanentUrl } from "./useLoadPermanentUrl";
-import {
-  getLoadedRepoFileName,
-  getLoadedWorkspaceName,
-  getRandomValue,
-  LastLoadedFile,
-  saveLocal,
-} from "./utils";
+import { getLoadedRepoFileName, getLoadedWorkspaceName, LastLoadedFile, saveLocal } from "./utils";
 
 export function DynamicMarkdownEditor() {
   const monaco = useMonaco();
@@ -49,15 +42,17 @@ export function DynamicMarkdownEditor() {
     initialDefaultTemplateArgs,
   );
 
-  const [isExplanationOpen, setIsExplanationOpen] = useState(false);
-  const [isConfigOpen, setIsConfigOpen] = useState(false);
+  const [currentModal, setCurrentModal] = useState<"explanation" | "config" | "workspace" | null>(
+    null,
+  );
   const [indicatedElement, setIndicatedElement] = useState<IndictableElement>(null);
-  const [isWorkspaceOpen, setIsWorkspaceOpen] = useState(false);
 
   const [lastLoadedFile, setLastLoadedFile] = useState<LastLoadedFile | null>({
     fileName: "Examples/initial",
     tags: null,
   });
+
+  const { message, variant, clearToast } = useToast();
 
   const updateEditor = useCallback(
     (md: string, vars: typeof mdVars) => {
@@ -88,7 +83,7 @@ export function DynamicMarkdownEditor() {
         break;
     }
     updateEditor(data, vars);
-    setIsConfigOpen(false);
+    setCurrentModal(null);
     setLastLoadedFile({ fileName: `Examples/${example}`, tags: null });
   };
 
@@ -111,7 +106,7 @@ export function DynamicMarkdownEditor() {
   ) => {
     const md = await fetchFileContentFromAzure(repoId, branch, filePath);
     loadMdWithEmptyVars(md);
-    setIsConfigOpen(false);
+    setCurrentModal(null);
     const fileName = filePath.split("/").at(-1)!;
     setLastLoadedFile({ fileName: getLoadedRepoFileName({ systemName, fileName }), tags: null });
   };
@@ -119,7 +114,7 @@ export function DynamicMarkdownEditor() {
   const handleLoadFromWorkspace = useCallback(
     (md: string, fileName: string, tags: Set<string>) => {
       loadMdWithEmptyVars(md);
-      setIsWorkspaceOpen(false);
+      setCurrentModal(null);
       setLastLoadedFile({ fileName: getLoadedWorkspaceName(fileName), tags });
     },
     [loadMdWithEmptyVars],
@@ -131,47 +126,32 @@ export function DynamicMarkdownEditor() {
     setLastLoadedFile,
   );
 
-  const handleFillRandomValues = () => {
-    for (const varName of foundMdVars) {
-      setMdVar(varName, getRandomValue(varName));
-    }
-  };
-
   const { handleTranslateSelection, isApertiumPending } = useApertium(monaco, (fullEditorText) =>
     setMd(fullEditorText),
   );
 
-  const { message, variant, clearToast } = useToast();
-
-  return (
-    <div className="flex flex-col h-screen">
-      {isLoadingPermanentUrl && (
-        <SpinnerOverlay>
-          <Spinner />
-        </SpinnerOverlay>
-      )}
-
-      {message && <Toast message={message} variant={variant} onClose={clearToast} />}
-
-      {isExplanationOpen && (
+  const renderOverlays = () => (
+    <>
+      {isLoadingPermanentUrl && <SpinnerOverlay />}
+      {currentModal === "explanation" && (
         <Overlay
           onClose={() => {
-            setIsExplanationOpen(false);
+            setCurrentModal(null);
             setIndicatedElement(null);
           }}
         >
           <Explanation setHoveredElement={setIndicatedElement} />
         </Overlay>
       )}
-      {isConfigOpen && (
-        <Overlay widthPercent={60} onClose={() => setIsConfigOpen(false)}>
+      {currentModal === "config" && (
+        <Overlay widthPercent={60} onClose={() => setCurrentModal(null)}>
           <ToastProvider>
             <Config onFileSelected={handleFileSelected} onExampleSelected={handleExampleSelected} />
           </ToastProvider>
         </Overlay>
       )}
-      {isWorkspaceOpen && (
-        <Overlay widthPercent={55} heightPercent={90} onClose={() => setIsWorkspaceOpen(false)}>
+      {currentModal === "workspace" && (
+        <Overlay widthPercent={55} heightPercent={90} onClose={() => setCurrentModal(null)}>
           <ToastProvider>
             <WorkspaceContext value={{ currentMd: md, onLoadMd: handleLoadFromWorkspace }}>
               <Workspace />
@@ -179,17 +159,23 @@ export function DynamicMarkdownEditor() {
           </ToastProvider>
         </Overlay>
       )}
+    </>
+  );
+
+  return (
+    <div className="flex flex-col h-screen">
+      {message && <Toast message={message} variant={variant} onClose={clearToast} />}
+      {renderOverlays()}
 
       <EditorHeader>
         <TopLeft
+          setCurrentModal={setCurrentModal}
           activeVarTab={activeVarTab}
-          setIsExplanationOpen={setIsExplanationOpen}
-          setIsConfigOpen={setIsConfigOpen}
           setActiveVarTab={setActiveVarTab}
         />
         <EditorControls
           md={md}
-          setIsWorkspaceOpen={setIsWorkspaceOpen}
+          openWorkspace={() => setCurrentModal("workspace")}
           saveLocal={saveLocal}
           handleTranslateSelection={handleTranslateSelection}
           isApertiumPending={isApertiumPending}
@@ -206,6 +192,15 @@ export function DynamicMarkdownEditor() {
         <div
           className={`w-1/5 p-4 overflow-y-auto bg-gray-100 ${getIndicatedElementClass("vars", indicatedElement)}`}
         >
+          {activeVarTab === "variables" && (
+            <VariablesTab
+              foundMdVars={foundMdVars}
+              mdVarsTypes={mdVarsTypes}
+              mdVars={mdVars}
+              setMdVar={setMdVar}
+              setCurrentModal={setCurrentModal}
+            />
+          )}
           {activeVarTab === "template" && (
             <TemplateConfig
               selectedTemplate={selectedTemplate}
@@ -213,27 +208,6 @@ export function DynamicMarkdownEditor() {
               defaultTemplateState={defaultTemplateState}
               defaultTemplateDispatch={defaultTemplateDispatch}
             />
-          )}
-          {activeVarTab === "variables" && (
-            <>
-              {Array.from(foundMdVars).length > 0 && (
-                <ActionButton variant="secondary" onClick={handleFillRandomValues} className="mb-4">
-                  Fill random values
-                </ActionButton>
-              )}
-
-              {Array.from(foundMdVars).map((variable) => (
-                <VariableInput
-                  key={variable}
-                  variable={variable}
-                  varType={mdVarsTypes[variable]}
-                  value={mdVars[variable]}
-                  handleVarInputChange={(variable, value) => {
-                    setMdVar(variable, value);
-                  }}
-                />
-              ))}
-            </>
           )}
         </div>
 

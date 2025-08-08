@@ -1,9 +1,5 @@
-import { Spinner, SpinnerOverlay } from "@/components/spinner";
+import { SpinnerOverlay } from "@/components/spinner";
 
 export default function Loading() {
-  return (
-    <SpinnerOverlay>
-      <Spinner />
-    </SpinnerOverlay>
-  );
+  return <SpinnerOverlay />;
 }

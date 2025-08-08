@@ -43,9 +43,9 @@ export function IconButton({
 
 const actionButtonVariantClasses = {
   primary: "bg-indigo-600 text-white hover:bg-indigo-700 border-indigo-700",
-  secondary: "bg-emerald-500 text-white hover:bg-emerald-600 border-emerald-600",
-  danger: "bg-red-500 text-white hover:bg-red-600 border-red-600",
-  neutral: "bg-gray-500 text-white hover:bg-gray-600 border-gray-600",
+  secondary: "bg-emerald-600 text-white hover:bg-emerald-700 border-emerald-700",
+  danger: "bg-red-600 text-white hover:bg-red-700 border-red-700",
+  neutral: "bg-gray-600 text-white hover:bg-gray-700 border-gray-700",
 };
 
 const actionButtonSizeClasses = {

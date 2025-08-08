@@ -1,3 +1,5 @@
+import { useToast } from "../toast/provider";
+
 export async function saveLocal(md: string) {
   // use native save window in chromium
   if (window.showSaveFilePicker) {
@@ -98,4 +100,100 @@ export function getLoadedRepoFileName({
 export interface LastLoadedFile {
   fileName: string;
   tags: Set<string> | null;
+}
+
+type SetVarFn = (name: string, value: string) => void;
+
+function looksLikeJson(text: string): boolean {
+  const t = text.trim();
+  return (t.startsWith("{") && t.endsWith("}")) || (t.startsWith("[") && t.endsWith("]"));
+}
+
+// Accepts direct JSON or serialized/double-escaped JSON like '"{\"abc\":123}"' or '{...}' wrapped in single quotes
+function parsePossiblySerializedJson(raw: string): unknown {
+  let text = raw.trim();
+
+  // Strip one layer of full-string quotes
+  if (
+    (text.startsWith("'") && text.endsWith("'")) ||
+    (text.startsWith('"') && text.endsWith('"') && !looksLikeJson(text))
+  ) {
+    text = text.slice(1, -1);
+  }
+
+  for (let i = 0; i < 3; i++) {
+    try {
+      const parsed = JSON.parse(text) as unknown;
+      if (typeof parsed === "string") {
+        const inner = parsed.trim();
+        if (looksLikeJson(inner)) {
+          text = inner;
+          continue;
+        }
+        return parsed;
+      }
+      return parsed;
+    } catch {
+      if (text.includes('\\"')) {
+        text = text.replace(/\\"/g, '"');
+        continue;
+      }
+      break;
+    }
+  }
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    return undefined;
+  }
+}
+
+function isPrimitive(val: unknown): val is string | number | boolean | null {
+  return (
+    typeof val === "string" || typeof val === "number" || typeof val === "boolean" || val === null
+  );
+}
+
+// Apply only top-level keys; ignore arrays and nested objects
+function applyTopLevelObjectToVars(obj: unknown, foundMdVars: Set<string>, setMdVar: SetVarFn) {
+  if (!obj || typeof obj !== "object" || Array.isArray(obj)) return;
+
+  let matches = 0;
+  for (const [k, v] of Object.entries(obj as Record<string, unknown>)) {
+    if (!foundMdVars.has(k)) continue;
+    if (!isPrimitive(v)) continue;
+    setMdVar(k, v == null ? "" : String(v));
+    matches++;
+  }
+
+  return matches;
+}
+
+export async function fillVarsFromClipboard(
+  foundMdVars: Set<string>,
+  setMdVar: SetVarFn,
+  addToast: ReturnType<typeof useToast>["addToast"],
+) {
+  let raw = "";
+  try {
+    raw = await navigator.clipboard.readText();
+  } catch {
+    raw =
+      window.prompt("Clipboard access unavailable. Paste JSON here to fill variables.", "") ?? "";
+  }
+  if (!raw) return addToast("error", "No text provided from clipboard or prompt");
+
+  const parsed = parsePossiblySerializedJson(raw);
+  if (parsed === undefined) return addToast("error", "Failed to parse JSON");
+  if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) {
+    return addToast("error", "Input JSON must be an object with top-level key/value pairs");
+  }
+
+  const matches = applyTopLevelObjectToVars(parsed, foundMdVars, setMdVar);
+  if (matches === 0) {
+    addToast("warning", "No matching variables found in provided JSON");
+  } else {
+    addToast("success", `${matches} variables filled from JSON`);
+  }
 }

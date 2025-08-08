@@ -5,7 +5,7 @@ import { LastLoadedFile } from "../utils";
 
 type Props = Readonly<{
   md: string;
-  setIsWorkspaceOpen: (open: boolean) => void;
+  openWorkspace: () => void;
   saveLocal: (md: string) => void;
   handleTranslateSelection: () => void;
   isApertiumPending: boolean;
@@ -14,7 +14,7 @@ type Props = Readonly<{
 
 export function EditorControls({
   md,
-  setIsWorkspaceOpen,
+  openWorkspace,
   saveLocal,
   handleTranslateSelection,
   isApertiumPending,
@@ -46,7 +46,7 @@ export function EditorControls({
             variant="green"
             aria-label="Manage workspace"
             title="Manage workspace"
-            onClick={() => setIsWorkspaceOpen(true)}
+            onClick={openWorkspace}
           >
             📂
           </IconButton>
