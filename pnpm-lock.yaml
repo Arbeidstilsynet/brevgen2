@@ -71,8 +71,8 @@ importers:
         specifier: workspace:^
         version: link:../../packages/config-typescript
       '@types/aws-lambda':
-        specifier: 8.10.149
-        version: 8.10.149
+        specifier: 8.10.152
+        version: 8.10.152
       '@types/node':
         specifier: 22.15.18
         version: 22.15.18
@@ -1765,8 +1765,8 @@ packages:
   '@types/argparse@1.0.38':
     resolution: {integrity: sha512-ebDJ9b0e702Yr7pWgB0jzm+CX4Srzz8RcXtLJDJB+BSccqMa36uyH/zUsSYao5+BD1ytv3k3rPYCq4mAE1hsXA==}
 
-  '@types/aws-lambda@8.10.149':
-    resolution: {integrity: sha512-NXSZIhfJjnXqJgtS7IwutqIF/SOy1Wz5Px4gUY1RWITp3AYTyuJS4xaXr/bIJY1v15XMzrJ5soGnPM+7uigZjA==}
+  '@types/aws-lambda@8.10.152':
+    resolution: {integrity: sha512-soT/c2gYBnT5ygwiHPmd9a1bftj462NWVk2tKCc1PYHSIacB2UwbTS2zYG4jzag1mRDuzg/OjtxQjQ2NKRB6Rw==}
 
   '@types/chai@5.2.2':
     resolution: {integrity: sha512-8kB30R7Hwqf40JPiKhVzodJs2Qc1ZJ5zuT3uzw5Hq/dhNCl3G3l83jfpdI1e20BP348+fV7VIL/+FxaXkqBmWg==}
@@ -6733,7 +6733,7 @@ snapshots:
   '@types/argparse@1.0.38':
     optional: true
 
-  '@types/aws-lambda@8.10.149': {}
+  '@types/aws-lambda@8.10.152': {}
 
   '@types/chai@5.2.2':
     dependencies:
