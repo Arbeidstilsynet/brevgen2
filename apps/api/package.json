@@ -17,7 +17,7 @@
   "dependencies": {
     "@at/document-templates": "workspace:*",
     "@at/dynamic-markdown": "workspace:*",
-    "@fastify/cors": "11.0.1",
+    "@fastify/cors": "11.1.0",
     "@repo/shared-types": "workspace:^",
     "@sparticuz/chromium": "138.0.2",
     "fastify": "5.3.3",
