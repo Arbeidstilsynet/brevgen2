@@ -24,7 +24,7 @@ export class ValidationError extends Error {
   }
 
   static fromZodError(error: ZodError): ValidationError {
-    const details: ValidationErrorDetail[] = error.errors.map((err) => ({
+    const details: ValidationErrorDetail[] = error.issues.map((err) => ({
       path: err.path.join("."),
       message: err.message,
       code: err.code,
@@ -32,7 +32,7 @@ export class ValidationError extends Error {
 
     return new ValidationError(
       "Validation failed - " +
-        error.errors.map((err) => `${err.path.join(".")}: ${err.message}`).join("; "),
+        error.issues.map((err) => `${err.path.join(".")}: ${err.message}`).join("; "),
       details,
     );
   }

@@ -14,7 +14,7 @@ describe("schema validation", () => {
     };
 
     const expectedError = new ValidationError(
-      "Validation failed - options: Invalid input; options: Required",
+      "Validation failed - options: Invalid input; options: Invalid input: expected object, received undefined",
       [
         {
           code: "invalid_union",
@@ -23,7 +23,7 @@ describe("schema validation", () => {
         },
         {
           code: "invalid_type",
-          message: "Required",
+          message: "Invalid input: expected object, received undefined",
           path: "options",
         },
       ],
@@ -42,13 +42,16 @@ describe("schema validation", () => {
       options: {} as GenerateDocumentRequestOptions,
     };
 
-    const expectedError = new ValidationError("Validation failed - options.dynamic: Required", [
-      {
-        code: "invalid_type",
-        message: "Required",
-        path: "options.dynamic",
-      },
-    ]);
+    const expectedError = new ValidationError(
+      "Validation failed - options.dynamic: Invalid input: expected object, received undefined",
+      [
+        {
+          code: "invalid_type",
+          message: "Invalid input: expected object, received undefined",
+          path: "options.dynamic",
+        },
+      ],
+    );
 
     await expect(() => handlerGenerateDocument(args)).rejects.toThrowError(expectedError);
   });
@@ -148,11 +151,11 @@ describe("schema validation", () => {
     };
 
     const expectedError = new ValidationError(
-      "Validation failed - options.dynamic.defaultTemplateArgs.language: Invalid enum value. Expected 'bm' | 'nn', received 'bmmm'",
+      'Validation failed - options.dynamic.defaultTemplateArgs.language: Invalid option: expected one of "bm"|"nn"',
       [
         {
-          code: "invalid_enum_value",
-          message: "Invalid enum value. Expected 'bm' | 'nn', received 'bmmm'",
+          code: "invalid_value",
+          message: 'Invalid option: expected one of "bm"|"nn"',
           path: "options.dynamic.defaultTemplateArgs.language",
         },
       ],
@@ -189,12 +192,12 @@ describe("schema validation", () => {
     };
 
     const expectedError = new ValidationError(
-      "Validation failed - options.dynamic.defaultTemplateArgs.signatureVariant: Invalid enum value. Expected 'elektroniskGodkjent' | 'automatiskBehandlet' | 'usignert', received 'automatiskBehandleteeeeet'",
+      'Validation failed - options.dynamic.defaultTemplateArgs.signatureVariant: Invalid option: expected one of "elektroniskGodkjent"|"automatiskBehandlet"|"usignert"',
       [
         {
-          code: "invalid_enum_value",
+          code: "invalid_value",
           message:
-            "Invalid enum value. Expected 'elektroniskGodkjent' | 'automatiskBehandlet' | 'usignert', received 'automatiskBehandleteeeeet'",
+            'Invalid option: expected one of "elektroniskGodkjent"|"automatiskBehandlet"|"usignert"',
           path: "options.dynamic.defaultTemplateArgs.signatureVariant",
         },
       ],
