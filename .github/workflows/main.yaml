@@ -16,7 +16,7 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
       - uses: nais/docker-build-push@791ebb6f74b82849c742a9bc9c97abe44c6c111f # v0
         id: docker-build-push-api
         with:
@@ -41,7 +41,7 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
       - uses: nais/docker-build-push@791ebb6f74b82849c742a9bc9c97abe44c6c111f # v0
         id: docker-build-push-web
         with:
