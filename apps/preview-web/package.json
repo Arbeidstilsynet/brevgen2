@@ -28,7 +28,7 @@
     "@repo/shared-types": "workspace:^",
     "@tailwindcss/postcss": "4.1.11",
     "@types/node": "22.17.2",
-    "@types/react": "19.1.9",
+    "@types/react": "19.1.10",
     "@types/react-dom": "19.1.7",
     "@types/sanitize-html": "2.16.0",
     "@types/wicg-file-system-access": "2023.10.6",
