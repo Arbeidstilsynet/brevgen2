@@ -42,6 +42,7 @@ describe.sequential("Integration tests with testcontainers", () => {
       .withBuild()
       .withEnvironment({
         TESTCONTAINERS: "true",
+        DANGEROUS_DISABLE_AUTH: "true",
       })
       .withWaitStrategy("api-1", Wait.forHealthCheck())
       .up(["api"]); // Only start the API service

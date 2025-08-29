@@ -1,19 +1,25 @@
 apiVersion: nais.io/v1alpha1
 kind: Application
 metadata:
-  name: brevgen2-api
-  namespace: plattform
+  name: "{{api.name}}"
+  namespace: "{{team}}"
+  labels:
+    team: "{{team}}"
 spec:
   env:
     - name: PORT
       value: "4000"
+    - name: AZURE_TENANT_ID
+      value: "{{azure_tenant_id}}"
+    - name: AZURE_APPLICATION_ID
+      value: "{{azure_app_id}}"
   ingresses:
-    - https://brevgen2-api.intern.dev.arbeidstilsynet.no
+    - "{{api.ingress}}"
   accessPolicy:
     inbound:
       rules:
-        - application: brevgen2-web
-          namespace: plattform
+        - application: "{{web.name}}"
+          namespace: "{{team}}"
   image: "{{image}}"
   port: 4000
   replicas:

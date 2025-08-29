@@ -1,12 +1,17 @@
 services:
   web:
     environment:
+      - PDF_AUTH_MODE=none
       - AWS_ACCESS_KEY_ID=foo
       - AWS_SECRET_ACCESS_KEY=bar
       - AWS_BUCKET_NAME=test-bucket
       - AWS_REGION=eu-west-1
       - AWS_ENDPOINT_URL_S3=http://s3mock:9090
       - AWS_S3_FORCE_PATH_STYLE=true
+
+  api:
+    environment:
+      - DANGEROUS_DISABLE_AUTH=true
 
   s3mock:
     image: adobe/s3mock:latest@sha256:468ba0b0e87f20ad54fbb6085e98c143f5bd1e384a844fa12a58535b4e39d4aa

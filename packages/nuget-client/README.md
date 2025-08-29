@@ -1,10 +1,13 @@
 # `AT.Brevgenerator.Klient`
 
-NuGet-pakke i C# for å konsumere API. Henter automatisk ut API Key. Kjørende miljø må ha rettigheter til å hente ut API Keys.
+NuGet-pakke i C# for å konsumere Brevgenerator-API.
 
 Modeller for payload ligger i `AT.Brevgenerator.Klient.Model`
 
-Klienten henter selv ut API Key for å benytte Bregenerator-APIet. For å hente API Key må den ha nødvendige rettigheter og få ID på en SSM-parameter som inneholder API Key ID. Brevgenerator-API-stacken oppretter denne parameteren: `/brevgenerator2/{env}/api_key_id`.
+Autentisering må angis eksplisitt av konsumenten. Klienten støtter to moduser:
+
+- BearerToken – async factory som returnerer et gyldig bearer token (f.eks. Entra ID client credentials). Anbefalt.
+- ApiKey – async factory som returnerer ApiKey, som sendes i headeren `x-api-key`.
 
 ## Hvordan publisere ny versjon av NuGet-pakken
 
@@ -31,12 +34,21 @@ Legg til organisasjonens feed "Atil-utvikling" i konsumerende prosjekt sin `nuge
 ## Eksempel
 
 ```csharp
-var brevGenConfig = new BrevgeneratorConfig(
-    ApiUrl: Environment.GetEnvironmentVariable("BREVGENERATOR_API_URL")!,
-    ParameterStoreApiKeyIdName: Environment.GetEnvironmentVariable("BREVGENERATOR_API_KEY_ID_SSM")!,
-    RegionEndpoint: RegionEndpoint.GetBySystemName(Environment.GetEnvironmentVariable("AWS_REGION"))
+var brevGenConfig = new BrevgeneratorConfig(Environment.GetEnvironmentVariable("BREVGENERATOR_API_URL")!);
+
+// Bearer token-modus (f.eks. Entra ID client credentials)
+var client = new BrevgeneratorKlient(
+    brevGenConfig,
+    BrevgeneratorKlient.AuthMode.BearerToken,
+    bearerTokenFactory: async () => await HentAzureTokenAsync()
 );
-var client = new BrevgeneratorKlient(brevGenConfig, new ApiKeyRetriever(brevGenConfig));
+
+// ApiKey-modus (for AWS)
+var client = new BrevgeneratorKlient(
+    brevGenConfig,
+    BrevgeneratorKlient.AuthMode.ApiKey,
+    apiKeyFactory: () => Task.FromResult(Environment.GetEnvironmentVariable("BREVGENERATOR_API_KEY")!)
+);
 
 var payload = GenererBrevArgsBuilder
     .Create()

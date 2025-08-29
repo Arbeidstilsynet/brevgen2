@@ -1,6 +1,6 @@
 # Brevgenerator2 API
 
-## Local (express dev server)
+## Local (Fastify dev server)
 
 ```sh
 $/apps/api: pnpm dev
@@ -21,11 +21,40 @@ Starter API med [Testcontainers](https://testcontainers.com/) og gjør spørring
 
 `pnpm test:integration`
 
-## AWS deploy
+## Auth
 
-### Autentisering
+### Container/Fastify
 
-Bruker API Key til å autentisere ved deploy til AWS Lambda.
+API-et forventer et Azure Entra ID (Azure AD) access token hentet via OAuth2 Client Credentials flow.
+
+Se applikasjonene `Brevgenerator2 <DEV/PROD>` i EntraId.
+
+[jwks-rsa](https://www.npmjs.com/package/jwks-rsa) brukes for caching og henting av public keys.
+[@fastify/jwt](https://www.npmjs.com/package/@fastify/jwt) brukes for validering av token.
+
+#### Konfigurasjon av app i Entra
+
+Oppskrift:
+
+- Opprett ny app: `App registrations -> New registration`
+- I `Expose an API`, legg til `Application ID URI` med default forslag (`api://<appid>`)
+- I `Certificates & secrets`, opprett en Client secret. Husk å legge den inn i Keeper
+- Consumers kan nå bruke client secret med MSAL-bibliotek for å skaffe en access token som API godtar
+
+### AWS Lambda
+
+API-et bruker AWS Gateway API Key ved deploy til lambda.
+
+## Miljøvariabler
+
+```sh
+PORT=4000 # default
+AZURE_TENANT_ID=da4bf886-a8a6-450d-a806-c347b8eb8d80 # default, Arbeidstilsynet
+AZURE_APPLICATION_ID # Brevgenerator2 DEV: 079a726c-1419-4907-9aeb-e230f700e22a
+
+# ONLY to be used in tests/locally to not require authorization header
+# DANGEROUS_DISABLE_AUTH=true
+```
 
 ### samconfig.toml
 

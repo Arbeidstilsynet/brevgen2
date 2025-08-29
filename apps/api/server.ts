@@ -1,10 +1,16 @@
 import fastifyCors from "@fastify/cors";
 import type { GenerateDocumentRequest } from "@repo/shared-types";
+import { configDotenv } from "dotenv";
 import { DynamicMarkdownParseError } from "../../packages/dynamic-markdown/lib/ast/error";
 import { fastify } from "./app";
+import { setupAuth } from "./auth";
 import { handlerGenerateDocument, ValidationError } from "./lib/handler";
 
+configDotenv();
+
 const port = process.env.PORT ? Number(process.env.PORT) : 4000;
+
+const { DANGEROUS_DISABLE_AUTH } = setupAuth(fastify);
 
 // local CORS workaround
 fastify.register(fastifyCors, {
@@ -18,12 +24,16 @@ fastify.get("/health", { logLevel: "warn" }, async (request, reply) => {
 });
 
 fastify.post("/genererbrev", async (request, reply) => {
+  if (!DANGEROUS_DISABLE_AUTH) {
+    const user = request.user;
+    request.log.debug({ user });
+  }
   try {
-    fastify.log.info(request.body);
+    request.log.info(request.body);
     const result = await handlerGenerateDocument(request.body as GenerateDocumentRequest);
     reply.send(result);
   } catch (err) {
-    fastify.log.error(err, "Error processing request:");
+    request.log.error(err, "Error processing request:");
 
     if (err instanceof ValidationError) {
       return reply.status(400).send({

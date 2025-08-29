@@ -1,28 +1,32 @@
 apiVersion: nais.io/v1alpha1
 kind: Application
 metadata:
-  name: brevgen2-web
-  namespace: plattform
+  name: "{{web.name}}"
+  namespace: "{{team}}"
+  labels:
+    team: "{{team}}"
 spec:
   env:
     - name: PDF_API_URL
-      value: http://brevgen2-api
-    - name: PDF_API_KEY
-      value: foobar
+      value: "http://{{api.name}}"
+    - name: PDF_AUTH_MODE
+      value: bearer
+    - name: AZURE_APPLICATION_ID
+      value: "{{azure_app_id}}"
     - name: AWS_REGION
       value: eu-west-1
     - name: AWS_BUCKET_NAME
       value: "{{s3bucket}}"
   envFrom:
-    - secret: nais-test-aws-sdk
-    - secret: azure-devops-pat-code-read
+    - secret: nais-test-aws-sdk # AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
+    - secret: azure-devops-pat-code-read # AZURE_DEVOPS_PAT
+    - secret: brevgen2-azure-app-client-secret # AZURE_CLIENT_SECRET
   ingresses:
-    - https://brevgen2.dev.atil.cloud.nais.io
-    - https://brevgen2.intern.dev.arbeidstilsynet.no/
+    - "{{web.ingress}}"
   accessPolicy:
     outbound:
       rules:
-        - application: brevgen2-api
+        - application: "{{api.name}}"
       external:
         - host: "{{s3bucket}}.s3.eu-west-1.amazonaws.com"
         # Azure DevOps REST API

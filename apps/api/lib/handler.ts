@@ -41,23 +41,17 @@ export class ValidationError extends Error {
 /**
  * @returns HTML or Base64-encoded PDF
  */
-export async function handlerGenerateDocument({
-  md,
-  mdVariables,
-  options,
-}: GenerateDocumentRequest) {
+export async function handlerGenerateDocument(request: GenerateDocumentRequest) {
   try {
-    generateDocumentRequestSchema.parse({
-      md: md,
-      mdVariables,
-      options,
-    });
+    generateDocumentRequestSchema.parse(request);
   } catch (error) {
     if (error instanceof ZodError) {
       throw ValidationError.fromZodError(error);
     }
     throw error;
   }
+
+  const { md, mdVariables, options } = request;
 
   const parsedMd = parseDynamicMd(md, { variables: mdVariables ?? {} });
   const result = await limit(() => generateDocument(parsedMd, options));

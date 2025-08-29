@@ -1,0 +1,86 @@
+name: Deploy to Nais
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  build_api:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      image: ${{ steps.docker.outputs.image }}
+      telemetry: ${{ steps.docker.outputs.telemetry }}
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+      - uses: nais/docker-build-push@791ebb6f74b82849c742a9bc9c97abe44c6c111f # v0
+        id: docker
+        with:
+          team: plattform
+          image_suffix: api
+          docker_context: "."
+          dockerfile: "./apps/api/Dockerfile"
+          build_args: |
+            CHROMIUM_VERSION: "139.*"
+
+  build_web:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      image: ${{ steps.docker.outputs.image }}
+      telemetry: ${{ steps.docker.outputs.telemetry }}
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+      - uses: nais/docker-build-push@791ebb6f74b82849c742a9bc9c97abe44c6c111f # v0
+        id: docker
+        with:
+          team: plattform
+          image_suffix: web
+          docker_context: "."
+          dockerfile: "./apps/preview-web/Dockerfile"
+
+  deploy_api:
+    needs: [build_api]
+    name: Deploy API
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+      - uses: nais/deploy/actions/deploy@961addd1e4d4211f1a7333ada5fde85f7c9aa5b7 # v2
+        env:
+          CLUSTER: dev
+          RESOURCE: .nais/api.yaml
+          VAR: image=${{ needs.build_api.outputs.image }}
+          VARS: .nais/vars-dev.yaml
+          TELEMETRY: ${{ needs.build_api.outputs.telemetry }}
+
+  deploy_web:
+    needs: [build_web]
+    name: Deploy web
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+      - uses: nais/deploy/actions/deploy@961addd1e4d4211f1a7333ada5fde85f7c9aa5b7 # v2
+        env:
+          CLUSTER: dev
+          RESOURCE: .nais/web.yaml
+          VAR: image=${{ needs.build_web.outputs.image }}
+          VARS: .nais/vars-dev.yaml
+          TELEMETRY: ${{ needs.build_web.outputs.telemetry }}

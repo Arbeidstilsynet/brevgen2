@@ -1,5 +1,41 @@
 # Versjonslogg
 
+## 3.0.0 - 2025-08-29
+
+Breaking changes:
+
+- Fjernet automatisk uthenting av API Key fra AWS (ApiKeyRetriever og IApiKeyRetriever er fjernet).
+- Fjernet AWS-avhengigheter (APIGateway, SimpleSystemsManagement) og forenklet `BrevgeneratorConfig` til kun `ApiUrl`.
+- Region og ParameterStoreApiKeyIdName fjernet fra konfigurasjon.
+- `AuthMode` må angis eksplisitt i konstruktør.
+
+Nytt:
+
+- Støtte for Bearer token (Entra ID client credentials e.l.) via `bearerTokenFactory`.
+
+Migrering:
+
+- Opprett konfig: `var config = new BrevgeneratorConfig(apiUrl);`
+- Konstruer klient:
+
+```cs
+new BrevgeneratorKlient(
+    config,
+    BrevgeneratorKlient.AuthMode.BearerToken,
+    bearerTokenFactory: async () => await GetToken()
+);
+```
+
+eller
+
+```cs
+new BrevgeneratorKlient(
+   config,
+   BrevgeneratorKlient.AuthMode.ApiKey,
+   apiKeyFactory: async () => await GetApiKey()
+);
+```
+
 ## 2.3.3 - 2025-04-08
 
 Opprydding i model for å tilsvare API sitt schema:

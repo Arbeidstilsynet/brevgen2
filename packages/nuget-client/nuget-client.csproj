@@ -11,7 +11,7 @@
 		<Authors>Arbeidstilsynet</Authors>
 		<Company>Arbeidstilsynet</Company>
 		<Product>Brevgenerator</Product>
-		<Description>Klient med datatyper for Brevgenerator-API. Henter automatisk ut tilhørende API Key for miljøet.</Description>
+		<Description>Klient med datatyper for Brevgenerator-API. Støtter ApiKey (x-api-key) eller Bearer token.</Description>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageReleaseNotes>Skrive release notes (changelog) i filen CHANGELOG.md</PackageReleaseNotes>
 		<PackageProjectUrl>https://dev.azure.com/Atil-utvikling/Produkter%20og%20tjenester/_git/felles-brevgenerator</PackageProjectUrl>
@@ -24,8 +24,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="AWSSDK.APIGateway" Version="3.7.500.7" />
-	  <PackageReference Include="AWSSDK.SimpleSystemsManagement" Version="3.7.500.7" />
 	  <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1" />
 	</ItemGroup>
 

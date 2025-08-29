@@ -5,21 +5,34 @@ Live: <https://brevgenerator.arbeidstilsynet.no>
 
 ## Integrasjoner
 
-| Integrasjon           | Auth                           | Formål                        |
-| --------------------- | ------------------------------ | ----------------------------- |
-| Brevgenerator2 API    | API Key                        | Generering av PDF             |
-| Azure DevOps REST API | PAT Code:Read                  | Henting av brevmaler fra repo |
-| AWS SDK S3            | Default credentials (dev: SSO) | Lagring av WIP brevmaler      |
-| Apertium API          | Ingen                          | Tekstoversetting              |
+| Integrasjon              | Auth                           | Formål                        |
+| ------------------------ | ------------------------------ | ----------------------------- |
+| Brevgenerator2 API       | Bearer JWT / API Key (AWS)     | Generering av PDF             |
+| Azure DevOps REST API    | PAT Code:Read                  | Henting av brevmaler fra repo |
+| GCP Cloud Storage (TODO) |                                | Lagring av WIP brevmaler      |
+| AWS SDK S3               | Default credentials (dev: SSO) | Lagring av WIP brevmaler      |
+| Apertium API             | Ingen                          | Tekstoversetting              |
 
 ## Miljøvariabler
 
 For å kjøre lokalt eller bruke `deploy-fargate.ps1`, opprett ny fil `.env` med følgende miljøvariabler:
 
 ```sh
-# For å kunne bruke PDF-generering
+# For å kunne bruke API for PDF-generering
 PDF_API_URL=http://localhost:4000
-PDF_API_KEY=apiKeyDuFinnerIAWS # nødvendig hvis api ikke er localhost
+
+# Velg hvilken auth å bruke for spørringer til PDF-API: bearer | apikey | none
+PDF_AUTH_MODE=apikey
+# brukes hvis PDF_AUTH_MODE=apikey og api ikke er localhost
+PDF_API_KEY=apiKeyDuFinnerIAWS
+
+# Client credentials for bearer-modus (f.eks. NAIS / Entra ID)
+# TODO: bruk authorization code flow og SSO i preview-web
+AZURE_TENANT_ID=da4bf886-a8a6-450d-a806-c347b8eb8d80 # default, Arbeidstilsynet
+# Se Brevgenerator2 DEV/PROD i Azure app registrations
+AZURE_APPLICATION_ID=...
+AZURE_CLIENT_SECRET=... #
+
 
 # For å kunne hente maler fra repo
 AZURE_DEVOPS_PAT=yourPAT # trenger Code:Read
