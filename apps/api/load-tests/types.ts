@@ -36,6 +36,8 @@ export interface LoadTestConfig {
   batchDelayMs: number;
   /** Optional API key */
   apiKey?: string;
+  /** Optional JWT bearer token */
+  jwt?: string;
   /** Optional output file for results */
   outputFile?: string;
   /** Directory to save generated PDFs (if provided) */
@@ -50,8 +52,8 @@ export interface LoadTestConfig {
 }
 
 export interface ResultData {
-  config: LoadTestConfig;
-  result: LoadTestResult;
   timestamp: string;
   duration: number;
+  config: LoadTestConfig;
+  result: LoadTestResult;
 }

@@ -27,7 +27,7 @@ jobs:
       - script: pnpm lint
         displayName: "Lint"
 
-      - script: pnpm check
+      - script: pnpm format:check
         displayName: "Formatting check"
 
       - script: pnpm circular

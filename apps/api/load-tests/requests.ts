@@ -15,6 +15,7 @@ export async function runLoadTest(config: LoadTestConfig): Promise<LoadTestResul
     timeoutMs = 30000,
     batchDelayMs = 1000,
     apiKey,
+    jwt,
     savePdfsDir,
   } = config;
 
@@ -39,6 +40,7 @@ export async function runLoadTest(config: LoadTestConfig): Promise<LoadTestResul
         apiUrl,
         requestId,
         apiKey,
+        jwt,
         timeoutMs,
         config.validator,
         savePdfsDir,
@@ -106,6 +108,7 @@ async function createAndSendRequest(
   apiUrl: string,
   requestId: string,
   apiKey?: string,
+  jwt?: string,
   timeoutMs = 30000,
   validator?: LoadTestConfig["validator"],
   savePdfsDir?: string,
@@ -129,12 +132,12 @@ async function createAndSendRequest(
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
-    const headers: HeadersInit = {
-      "Content-Type": "application/json",
-    };
-
+    const headers = new Headers({ "Content-Type": "application/json" });
     if (apiKey) {
-      headers["x-api-key"] = apiKey;
+      headers.set("x-api-key", apiKey);
+    }
+    if (jwt) {
+      headers.set("Authorization", `Bearer ${jwt}`);
     }
 
     const response = await fetch(apiUrl, {

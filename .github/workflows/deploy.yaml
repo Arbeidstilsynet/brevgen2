@@ -49,9 +49,8 @@ jobs:
           docker_context: "."
           dockerfile: "./apps/preview-web/Dockerfile"
 
-  deploy_api:
+  deploy_api_dev:
     needs: [build_api]
-    name: Deploy API
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -67,9 +66,8 @@ jobs:
           VARS: .nais/vars-dev.yaml
           TELEMETRY: ${{ needs.build_api.outputs.telemetry }}
 
-  deploy_web:
+  deploy_web_dev:
     needs: [build_web]
-    name: Deploy web
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -84,3 +82,87 @@ jobs:
           VAR: image=${{ needs.build_web.outputs.image }}
           VARS: .nais/vars-dev.yaml
           TELEMETRY: ${{ needs.build_web.outputs.telemetry }}
+
+  load_test_api:
+    name: Load test API (dev)
+    needs: [deploy_api_dev]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: dev
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+
+      - name: Extract NAIS dev variables
+        id: nais
+        shell: bash
+        run: |
+          set -euo pipefail
+          FILE=.nais/vars-dev.yaml
+          TENANT_ID=$(yq -r '.azure_tenant_id' "$FILE")
+          APP_ID=$(yq -r '.azure_app_id' "$FILE")
+          API_INGRESS=$(yq -r '.api.ingress' "$FILE")
+          if [[ -z "$TENANT_ID" || -z "$APP_ID" || -z "$API_INGRESS" || "$TENANT_ID" == null || "$APP_ID" == null || "$API_INGRESS" == null ]]; then
+            echo "Failed to parse required values from $FILE" >&2
+            exit 1
+          fi
+          echo "tenant_id=$TENANT_ID" >> $GITHUB_OUTPUT
+          echo "api_app_id=$APP_ID" >> $GITHUB_OUTPUT
+          echo "api_base=$API_INGRESS" >> $GITHUB_OUTPUT
+          echo "api_url=$API_INGRESS/genererbrev" >> $GITHUB_OUTPUT
+          echo "Parsed tenant=$TENANT_ID app=$APP_ID ingress=$API_INGRESS"
+
+      - name: Acquire Azure AD token (client credentials)
+        id: token
+        env:
+          CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+        shell: bash
+        run: |
+          set -u
+          CLIENT_ID='${{ steps.nais.outputs.api_app_id }}'
+          TENANT_ID='${{ steps.nais.outputs.tenant_id }}'
+          RESPONSE=$(curl -sS https://login.microsoftonline.com/${TENANT_ID}/oauth2/v2.0/token \
+            -H 'Content-Type: application/x-www-form-urlencoded' \
+            --data-urlencode client_id=${CLIENT_ID} \
+            --data-urlencode client_secret=${CLIENT_SECRET} \
+            --data-urlencode scope=api://${CLIENT_ID}/.default \
+            --data-urlencode grant_type=client_credentials)
+          JWT=$(jq -r '.access_token' <<<"$RESPONSE")
+          [ -z "$JWT" -o "$JWT" = null ] && { echo "Token fetch failed"; echo "$RESPONSE"; exit 1; }
+          echo "jwt=$JWT" >> $GITHUB_OUTPUT
+
+      - uses: ./.github/actions/setup
+
+      - name: Run load tests (JWT auth)
+        id: run_load_tests
+        shell: bash
+        env:
+          API_URL: ${{ steps.nais.outputs.api_url }}
+          JWT: ${{ steps.token.outputs.jwt }}
+          PARALLEL_REQUESTS: 200
+          BATCH_COUNT: 10
+          BATCH_DELAY_MS: 500
+          OUTPUT_FILE: apps/api/load-tests/results/gha-results.json
+        run: pnpm --filter api run test:load
+
+      - name: Upload load test results
+        if: ${{ always() && steps.run_load_tests.outcome != 'skipped' && steps.run_load_tests.outcome != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: load-test-results
+          path: apps/api/load-tests/results/gha-results.json
+          if-no-files-found: warn
+
+      - name: Summarize result
+        if: ${{ always() && steps.run_load_tests.outcome != 'skipped' && steps.run_load_tests.outcome != '' }}
+        shell: bash
+        run: |
+          if [[ -f apps/api/load-tests/results/gha-results.json ]]; then
+            echo "Load test results:" >> $GITHUB_STEP_SUMMARY
+            echo '\n```json' >> $GITHUB_STEP_SUMMARY
+            jq '.result | {totalRequests, successfulRequests, failedRequests, totalTimeMs, averageRequestTimeMs}' apps/api/load-tests/results/gha-results.json >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No results file found" >> $GITHUB_STEP_SUMMARY
+          fi

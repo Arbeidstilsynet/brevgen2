@@ -20,13 +20,14 @@ import { deleteOldPdfs } from "./utils";
  * --batchDelayMs=<ms>        Delay between batches in milliseconds (default: 1000)
  * --timeoutMs=<ms>           Request timeout in milliseconds (default: 30000)
  * --apiKey=<key>             Optional API key for authentication
+ * --jwt=<token>              Optional JWT bearer token for authentication
  * --outputFile=<path>        Path to save test results as JSON (e.g., ./results/test-results.json)
  * --savePdfsDir=<path>       Directory to save generated PDFs (e.g., ./results/pdfs)
  *
  * ENVIRONMENT VARIABLES:
  * The same options can be provided as environment variables:
  * API_URL, PARALLEL_REQUESTS, BATCH_COUNT, BATCH_DELAY_MS, TIMEOUT_MS,
- * API_KEY, OUTPUT_FILE, SAVE_PDFS_DIR
+ * API_KEY, JWT, OUTPUT_FILE, SAVE_PDFS_DIR
  *
  * EXAMPLES:
  * Basic test with default settings:
@@ -38,8 +39,11 @@ import { deleteOldPdfs } from "./utils";
  * Save results to file and PDFs to directory:
  *   tsx load-tests/run.ts --outputFile=./results/test.json --savePdfsDir=./results/pdfs
  *
- * Test against production API with API key:
+ * Test against deployed API with API key:
  *   tsx load-tests/run.ts --apiUrl=https://api.example.com/genererbrev --apiKey=myapikey
+ *
+ * Test against deployed API with JWT:
+ *   tsx load-tests/run.ts --apiUrl=https://api.example.com/genererbrev --jwt=myjwttoken
  */
 async function main() {
   const args = process.argv.slice(2);
@@ -71,6 +75,7 @@ async function main() {
     ),
     timeoutMs: parseInt(argMap.timeoutMs ?? process.env.TIMEOUT_MS ?? String(DEFAULT_TIMEOUT_MS)),
     apiKey: argMap.apiKey ?? process.env.API_KEY,
+    jwt: argMap.jwt ?? process.env.JWT,
     outputFile: argMap.outputFile ?? process.env.OUTPUT_FILE,
     savePdfsDir: argMap.savePdfsDir ?? process.env.SAVE_PDFS_DIR,
   };
@@ -83,6 +88,7 @@ async function main() {
   console.log(`Batch Delay: ${config.batchDelayMs}ms`);
   console.log(`Request Timeout: ${config.timeoutMs}ms`);
   console.log(`API Key: ${config.apiKey ? "Provided" : "Not Provided"}`);
+  console.log(`JWT Token: ${config.jwt ? "Provided" : "Not Provided"}`);
   console.log(`Output File: ${config.outputFile ?? "Not Specified"}`);
   console.log(`Save PDFs to: ${config.savePdfsDir ?? "Disabled"}`);
   console.log("\nStarting load test...");
@@ -118,12 +124,15 @@ async function main() {
       if (config.apiKey) {
         config.apiKey = config.apiKey.substring(0, 4) + "****";
       }
+      if (config.jwt) {
+        config.jwt = config.jwt.substring(0, 8) + "****";
+      }
 
       const resultData: ResultData = {
-        config,
-        result,
         timestamp: new Date().toISOString(),
         duration: Date.now() - startTime,
+        config,
+        result,
       };
 
       const outputDir = path.dirname(config.outputFile);
