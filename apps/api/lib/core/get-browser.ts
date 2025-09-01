@@ -4,10 +4,12 @@ import { logger } from "../../app";
 import { getBrowserLaunchOptions } from "./get-puppeteer-options";
 import { loadPuppeteer } from "./puppeteer-loader";
 
-// After max pages is reached, we try to close the browser as soon as the last page using it is done.
-// On the next request, a new browser will be created.
-// WORKAROUND for instability in testcontainers, recycle after each request
-export const MAX_PAGES_PER_BROWSER = process.env.TESTCONTAINERS ? 1 : 50;
+// After max pages is reached, we recycle the browser.
+// This is needed because the Chromium instance can becomes unstable after many pages (100+),
+// causing Puppeteer to error with `target closed`.
+
+// WORKAROUND for instability in testcontainers, recycle after each request there.
+const MAX_PAGES_PER_BROWSER = process.env.TESTCONTAINERS ? 1 : 50;
 
 let pageCount = 0;
 let activeUsers = 0;
@@ -15,6 +17,9 @@ let activeUsers = 0;
 let browser: PuppeteerCoreBrowser | PuppeteerBrowser | null = null;
 let browserInitPromise: Promise<void> | null = null;
 let browserClosePromise: Promise<void> | null = null;
+
+// Set when we have decided no more pages should be handed out from current browser.
+let recycleRequested = false;
 
 /**
  * Called when a user is done with the browser
@@ -24,32 +29,57 @@ function releaseUser(): void {
     activeUsers--;
   }
 
-  // Check if we need to recycle and no active users
-  if (browser && pageCount >= MAX_PAGES_PER_BROWSER && activeUsers === 0 && !browserClosePromise) {
-    // Schedule recycling now that it's safe
+  // If nobody is using it and we either hit the cap or a recycle was requested, recycle now.
+  if (
+    activeUsers === 0 &&
+    (pageCount >= MAX_PAGES_PER_BROWSER || recycleRequested) &&
+    !browserClosePromise
+  ) {
     browserClosePromise = recycleBrowser();
   }
 }
 
 /**
- * Gets a browser instance and returns both the browser and a release function
+ * Gets a browser instance and returns both the browser and a release function.
+ * Ensures a single browser instance is never used for more than MAX_PAGES_PER_BROWSER pages.
  */
 export async function getBrowserInstance(): Promise<[PuppeteerCoreBrowser, () => void]> {
-  // If recycling is in progress, wait for it
-  if (browserClosePromise) {
-    await browserClosePromise;
-  }
+  // Loop until we can safely return a valid browser below page limit.
+  // (Handles waits during recycle transparently.)
+  while (true) {
+    // If recycle in progress, wait.
+    if (browserClosePromise) {
+      await browserClosePromise;
+    }
 
-  // Initialize browser if needed
-  if (!browser) {
-    // Make sure only one initialization happens at a time
-    browserInitPromise ??= initBrowser();
-    await browserInitPromise;
-  }
+    // Initialize browser if needed.
+    if (!browser) {
+      browserInitPromise ??= initBrowser();
+      await browserInitPromise;
+    }
 
-  activeUsers++;
-  pageCount++;
-  return [browser as PuppeteerCoreBrowser, releaseUser];
+    // If page limit reached (or already requested), trigger / wait for recycle before handing out.
+    if (pageCount >= MAX_PAGES_PER_BROWSER || recycleRequested) {
+      recycleRequested = true;
+
+      // If no active users, start recycle immediately (if not already started).
+      if (activeUsers === 0 && !browserClosePromise) {
+        browserClosePromise = recycleBrowser();
+      }
+
+      // If we cannot start recycle yet (others still using the browser),
+      // yield briefly to avoid a tight CPU loop.
+      if (!browserClosePromise) {
+        await new Promise((r) => setTimeout(r, 5));
+      }
+      continue;
+    }
+
+    // Safe to use current browser.
+    activeUsers++;
+    pageCount++;
+    return [browser as PuppeteerCoreBrowser, releaseUser];
+  }
 }
 
 async function initBrowser(): Promise<void> {
@@ -69,10 +99,9 @@ async function recycleBrowser(): Promise<void> {
   try {
     logger.info(`Recycling browser after ${pageCount} pages`);
 
-    // Store reference to avoid race conditions
     const currentBrowser = browser;
 
-    // Reset globals first to allow fresh browser creation
+    // Reset state first so new requests can start initializing next browser once recycle completes.
     browser = null;
     browserInitPromise = null;
     pageCount = 0;
@@ -85,5 +114,6 @@ async function recycleBrowser(): Promise<void> {
     logger.error(error, "Error closing browser");
   } finally {
     browserClosePromise = null;
+    recycleRequested = false;
   }
 }
