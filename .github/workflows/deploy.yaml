@@ -8,6 +8,38 @@ concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: false
 
+#                 +-----------------+                      +-----------------+
+#                 |   build_api     |                      |   build_web     |
+#                 |  (docker img)   |                      |  (docker img)   |
+#                 +--------+--------+                      +--------+--------+
+#                          |                                      |
+#         outputs: image, telemetry                  outputs: image, telemetry
+#                          |                                      |
+#                          v                                      v
+#                 +-----------------+                      +-----------------+
+#                 | deploy_api_dev  |                      | deploy_web_dev  |
+#                 |  (uses image)   |                      |  (uses image)   |
+#                 +--------+--------+                      +--------+--------+
+#                          |                                      |
+#                          |                                      |
+#                          +-----------+--------------+-----------+
+#                                      |              |
+#                                      v              |
+#                             +-----------------+     |
+#                             |  load_test_api  |     |
+#                             |  (needs api)    |     |
+#                             +--------+--------+     |
+#                                      |              |
+#                           gates prod |              | waits for load_test_api
+#                                      |              |
+#                    +-----------------+----+    +----+------------------+
+#                    | deploy_api_prod |    |    |  deploy_web_prod      |
+#                    | (needs build &  |    |    | (needs build_web &    |
+#                    |  load tests)    |    |    |  load tests)          |
+#                    +-----------------+    |    +-----------------------+
+#                                           |
+# Legend: parallel branches left/right; both final prod deploys require load_test_api success.
+
 jobs:
   build_api:
     runs-on: ubuntu-latest
@@ -171,3 +203,37 @@ jobs:
           else
             echo "No results file found" >> $GITHUB_STEP_SUMMARY
           fi
+
+  deploy_api_prod:
+    needs: [build_api, load_test_api]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+      - uses: nais/deploy/actions/deploy@961addd1e4d4211f1a7333ada5fde85f7c9aa5b7 # v2
+        env:
+          CLUSTER: prod
+          RESOURCE: .nais/api.yaml
+          VAR: image=${{ needs.build_api.outputs.image }}
+          VARS: .nais/vars-prod.yaml
+          TELEMETRY: ${{ needs.build_api.outputs.telemetry }}
+
+  deploy_web_prod:
+    needs: [build_web, load_test_api]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+      - uses: nais/deploy/actions/deploy@961addd1e4d4211f1a7333ada5fde85f7c9aa5b7 # v2
+        env:
+          CLUSTER: prod
+          RESOURCE: .nais/web.yaml
+          VAR: image=${{ needs.build_web.outputs.image }}
+          VARS: .nais/vars-prod.yaml
+          TELEMETRY: ${{ needs.build_web.outputs.telemetry }}
