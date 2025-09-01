@@ -148,7 +148,7 @@ jobs:
         run: pnpm --filter api run test:load
 
       - name: Analyze
-        run: pnpm --filter api run test:load:analyze -- results/gha-results.json
+        run: pnpm --filter api run test:load:analyze results/gha-results.json
 
       - name: Upload load test results
         if: ${{ always() && steps.run_load_tests.outcome != 'skipped' && steps.run_load_tests.outcome != '' }}
