@@ -148,7 +148,7 @@ jobs:
 
       - name: Upload load test results
         if: ${{ always() && steps.run_load_tests.outcome != 'skipped' && steps.run_load_tests.outcome != '' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: load-test-results
           path: apps/api/load-tests/results/gha-results.json
