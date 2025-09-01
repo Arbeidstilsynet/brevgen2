@@ -143,7 +143,7 @@ jobs:
           PARALLEL_REQUESTS: 200
           BATCH_COUNT: 10
           BATCH_DELAY_MS: 500
-          OUTPUT_FILE: apps/api/load-tests/results/gha-results.json
+          OUTPUT_FILE: results/gha-results.json
         run: pnpm --filter api run test:load
 
       - name: Upload load test results
@@ -151,17 +151,18 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: load-test-results
-          path: apps/api/load-tests/results/gha-results.json
+          path: apps/api/results/gha-results.json
           if-no-files-found: warn
 
       - name: Summarize result
         if: ${{ always() && steps.run_load_tests.outcome != 'skipped' && steps.run_load_tests.outcome != '' }}
+        working-directory: ./apps/api
         shell: bash
         run: |
-          if [[ -f apps/api/load-tests/results/gha-results.json ]]; then
+          if [[ -f results/gha-results.json ]]; then
             echo "Load test results:" >> $GITHUB_STEP_SUMMARY
             echo '\n```json' >> $GITHUB_STEP_SUMMARY
-            jq '.result | {totalRequests, successfulRequests, failedRequests, totalTimeMs, averageRequestTimeMs}' apps/api/load-tests/results/gha-results.json >> $GITHUB_STEP_SUMMARY
+            jq '.result | {totalRequests, successfulRequests, failedRequests, totalTimeMs, averageRequestTimeMs}' results/gha-results.json >> $GITHUB_STEP_SUMMARY
             echo '```' >> $GITHUB_STEP_SUMMARY
           else
             echo "No results file found" >> $GITHUB_STEP_SUMMARY
