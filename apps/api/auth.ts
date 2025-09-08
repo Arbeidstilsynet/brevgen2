@@ -41,17 +41,13 @@ export function setupAuth(fastify: FastifyInstance) {
       throw new TypeError("Missing AZURE_APPLICATION_ID env var (required when auth enabled)");
     }
 
-    const AUDIENCE = `api://${AZURE_APPLICATION_ID}`;
-    const ISS_V1 = `https://sts.windows.net/${AZURE_TENANT_ID}/`;
-    const ISS_V2 = `https://login.microsoftonline.com/${AZURE_TENANT_ID}/v2.0`;
-
     fastify.register(fastifyJwt, {
       secret: getKey,
       decode: { complete: true },
       verify: {
         algorithms: ["RS256"],
-        allowedIss: [ISS_V1, ISS_V2],
-        allowedAud: [AUDIENCE],
+        allowedIss: [`https://login.microsoftonline.com/${AZURE_TENANT_ID}/v2.0`],
+        allowedAud: [AZURE_APPLICATION_ID],
       },
     });
 

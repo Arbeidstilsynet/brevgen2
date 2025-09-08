@@ -1,6 +1,10 @@
 import { fetchReposFromAzure } from "@/actions/azdo";
+import { auth } from "@/auth";
 
 export default async function RepoList() {
+  const session = await auth();
+  if (!session) return null;
+
   const repos = await fetchReposFromAzure();
 
   return (

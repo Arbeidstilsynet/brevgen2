@@ -1,3 +1,4 @@
+import { AutoSignIn } from "@/components/AutoSignin";
 import type { Metadata } from "next";
 import { Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -21,7 +22,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistMono.variable} antialiased`}>
-        <Providers>{children}</Providers>
+        <Providers>
+          <AutoSignIn />
+          {children}
+        </Providers>
       </body>
     </html>
   );

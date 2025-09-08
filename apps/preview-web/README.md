@@ -3,6 +3,12 @@
 Editor for dynamisk markdown med forhåndsvisning av ulike format.
 Live: <https://brevgenerator.arbeidstilsynet.no>
 
+## Autentisering
+
+OIDC med [Auth.js](https://authjs.dev/getting-started/providers/microsoft-entra-id). Brukere må ha tildelt rollen `Brevgenerator.User` i enterprise application `Brevgenerator2 <DEV/PROD>` for å få logge inn.
+
+Se [api readme for oppsett i Entra](../api/README.md#konfigurasjon-av-app-i-entra).
+
 ## Integrasjoner
 
 | Integrasjon              | Auth                           | Formål                        |
@@ -18,6 +24,11 @@ Live: <https://brevgenerator.arbeidstilsynet.no>
 For å kjøre lokalt eller bruke `deploy-fargate.ps1`, opprett ny fil `.env` med følgende miljøvariabler:
 
 ```sh
+# next-auth config
+# can generate with `openssl rand -base64 32`
+AUTH_SECRET=my-local-development-secret-that-is-long-enough-12345
+
+
 # For å kunne bruke API for PDF-generering
 PDF_API_URL=http://localhost:4000
 
@@ -27,11 +38,10 @@ PDF_AUTH_MODE=apikey
 PDF_API_KEY=apiKeyDuFinnerIAWS
 
 # Client credentials for bearer-modus (f.eks. NAIS / Entra ID)
-# TODO: bruk authorization code flow og SSO i preview-web
 AZURE_TENANT_ID=da4bf886-a8a6-450d-a806-c347b8eb8d80 # default, Arbeidstilsynet
 # Se Brevgenerator2 DEV/PROD i Azure app registrations
 AZURE_APPLICATION_ID=...
-AZURE_CLIENT_SECRET=... #
+AZURE_CLIENT_SECRET=... # Ligger i Keeper
 
 
 # For å kunne hente maler fra repo

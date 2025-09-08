@@ -37,9 +37,33 @@ Se applikasjonene `Brevgenerator2 <DEV/PROD>` i EntraId.
 Oppskrift:
 
 - Opprett ny app: `App registrations -> New registration`
+- I `Manifest`, sett `api.requestedAccessTokenVersion` til `2`
 - I `Expose an API`, legg til `Application ID URI` med default forslag (`api://<appid>`)
 - I `Certificates & secrets`, opprett en Client secret. Husk å legge den inn i Keeper
-- Consumers kan nå bruke client secret med MSAL-bibliotek for å skaffe en access token som API godtar
+- Consumers kan nå bruke client credential flow for å skaffe en access token for API
+
+Oppskrift for bruk av samme app med Authorization Code flow for brukerinnlogging:
+
+- Gå til `Manage -> Authentication`, legg til web platform med redirect URLs (e.g. `http://localhost:3000/api/auth/callback/microsoft-entra-id`)
+- Gå til `App roles` -> `Create app role`, legg til roller:
+
+```txt
+Display name: API.Access
+Allowed member types: Applications
+Value: API.Access
+Description: Allows applications to access the Brevgenerator API via client credentials flow
+```
+
+```txt
+Display name: Brevgenerator.User
+Allowed member types: Users/Groups
+Value: Brevgenerator.User
+Description: Allows users to access the Brevgenerator web platform and all integrated services
+```
+
+- Gå til `API permissions`, legg til application permissions for appen til seg selv
+- Gå til Enterprise Application
+  - -> Manage -> Properties og sett `Assignment required? = Yes`
 
 ### AWS Lambda
 

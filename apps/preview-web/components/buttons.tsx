@@ -1,11 +1,26 @@
+import { clsx } from "clsx/lite";
+
 interface TabButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   isActive?: boolean;
 }
 
-export function TabButton({ children, className, isActive, ...rest }: Readonly<TabButtonProps>) {
+export function TabButton({
+  children,
+  className,
+  disabled,
+  isActive,
+  ...rest
+}: Readonly<TabButtonProps>) {
   return (
     <button
-      className={`mr-2 p-2 transition duration-200 ${className ?? ""} ${isActive ? "bg-blue-500 text-white shadow-lg" : "bg-gray-300 text-gray-800 hover:bg-gray-400"}`}
+      disabled={disabled}
+      className={clsx(
+        "mr-2 p-2 rounded-sm font-medium transition duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-blue-500",
+        isActive && !disabled && "bg-blue-500 text-white shadow-lg",
+        !isActive && !disabled && "bg-gray-300 text-gray-800 hover:bg-gray-400",
+        disabled && "bg-gray-200 text-gray-400 cursor-not-allowed opacity-60 shadow-none",
+        className,
+      )}
       {...rest}
     >
       {children}
@@ -29,14 +44,22 @@ export function IconButton({
   className,
   variant,
   textClassName,
+  disabled,
   ...rest
 }: Readonly<IconButtonsProps>) {
   return (
     <button
-      className={`p-1 flex items-center justify-center h-8 w-8 rounded-lg border hover:shadow-lg transition duration-200 ${iconButtonVariantClasses[variant]} ${className ?? ""}`}
+      disabled={disabled}
+      className={clsx(
+        "p-1 flex items-center justify-center h-8 w-8 rounded-lg border transition duration-200",
+        iconButtonVariantClasses[variant],
+        !disabled && "hover:shadow-lg",
+        disabled && "opacity-50 cursor-not-allowed pointer-events-none shadow-none",
+        className,
+      )}
       {...rest}
     >
-      <span className={`text-2xl ${textClassName ?? ""}`}>{children}</span>
+      <span className={clsx("text-2xl", textClassName)}>{children}</span>
     </button>
   );
 }

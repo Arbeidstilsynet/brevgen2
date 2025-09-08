@@ -1,5 +1,6 @@
 "use server";
 
+import { requireSession } from "@/auth";
 import {
   DeleteObjectCommand,
   GetObjectCommand,
@@ -15,6 +16,8 @@ const client = new S3Client({
 });
 
 export async function listFiles() {
+  await requireSession();
+
   const files = [];
   let continuationToken = undefined;
 
@@ -36,6 +39,7 @@ export async function listFiles() {
 }
 
 export async function getFile(key: string) {
+  await requireSession();
   const command = new GetObjectCommand({
     Bucket: BUCKET_NAME,
     Key: key,
@@ -45,6 +49,7 @@ export async function getFile(key: string) {
 }
 
 export async function uploadFile(key: string, body: string) {
+  await requireSession();
   const command = new PutObjectCommand({
     Bucket: BUCKET_NAME,
     Key: key,
@@ -54,6 +59,7 @@ export async function uploadFile(key: string, body: string) {
 }
 
 export async function deleteFile(key: string) {
+  await requireSession();
   const command = new DeleteObjectCommand({
     Bucket: BUCKET_NAME,
     Key: key,

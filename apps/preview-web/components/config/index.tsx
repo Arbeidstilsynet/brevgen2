@@ -2,6 +2,7 @@
 
 import { AzureDevOpsRepo, fetchBranchesFromAzure, fetchReposFromAzure } from "@/actions/azdo";
 import { useQuery } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { ActionButton, TabButton } from "../buttons";
 import { ErrorDetails } from "../ErrorDetails";
@@ -25,6 +26,8 @@ type Props = Readonly<{
 }>;
 
 export function Config({ onFileSelected, onExampleSelected }: Props) {
+  const { status } = useSession();
+  const isAuthenticated = status === "authenticated";
   const { message, variant, clearToast } = useToast();
 
   const [selectedRepo, setSelectedRepo] = useState<AzDoRepoWithName | null>(null);
@@ -38,6 +41,7 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
     queryKey: ["repos"],
     queryFn: fetchReposFromAzure,
     initialData: [],
+    enabled: isAuthenticated,
   });
 
   const { data: branches = [], error: branchesError } = useQuery<string[]>({
@@ -49,7 +53,7 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
       }
       return data;
     },
-    enabled: Boolean(selectedRepo),
+    enabled: isAuthenticated && Boolean(selectedRepo),
     select: (data) => data.map((b) => b.replace("refs/heads/", "")),
   });
 
@@ -87,6 +91,21 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
         </TabButton>
       </div>
 
+      {!isAuthenticated && (activeTab === "fileSelect" || activeTab === "variablesReport") && (
+        <div className="rounded-md border border-amber-300 bg-amber-50 p-4 text-amber-900 flex gap-3 items-start">
+          <span
+            aria-hidden
+            className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-amber-200 text-amber-800 text-xs font-bold"
+          >
+            !
+          </span>
+          <div>
+            <p className="font-semibold">Innlogging kreves</p>
+            <p className="text-sm">Du må være innlogget for å få tilgang til denne fanen.</p>
+          </div>
+        </div>
+      )}
+
       {(activeTab === "fileSelect" || activeTab === "loadExamples") && (
         <>
           <h2 className="text-xl font-semibold">
@@ -108,6 +127,7 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
             repos={repos}
             selectedRepoName={selectedRepo?.[1] ?? null}
             onRepoSelected={handleRepoSelected}
+            disabled={!isAuthenticated}
           />
           <ErrorDetails error={reposError} label="Kunne ikke hente repos" />
           <ErrorDetails error={branchesError} label="Kunne ikke hente branches" />
@@ -150,6 +170,7 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
             repos={repos}
             selectedRepoName={selectedRepo?.[1] ?? null}
             onRepoSelected={handleRepoSelected}
+            disabled={!isAuthenticated}
           />
 
           {selectedRepo && selectedBranch && (

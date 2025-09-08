@@ -2,6 +2,7 @@ services:
   web:
     environment:
       - PDF_AUTH_MODE=none
+      - AUTH_SECRET=foobar
       - AWS_ACCESS_KEY_ID=foo
       - AWS_SECRET_ACCESS_KEY=bar
       - AWS_BUCKET_NAME=test-bucket

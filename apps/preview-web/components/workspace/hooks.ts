@@ -7,6 +7,7 @@ import {
   useQueryClient,
   UseQueryOptions,
 } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
 import { extractTags } from "./utils";
 
 const QUERY_KEY_FILES = "workspace";
@@ -14,10 +15,12 @@ const QUERY_KEY_FILES = "workspace";
 export function useQueryWorkspaceFiles(
   options?: Omit<UseQueryOptions<_Object[] | undefined>, "queryKey" | "queryFn">,
 ) {
+  const { status } = useSession();
   return useQuery({
     queryKey: [QUERY_KEY_FILES],
     queryFn: () => listFiles(),
     ...options,
+    enabled: status === "authenticated" && (options?.enabled ?? true),
   });
 }
 

@@ -3,6 +3,7 @@
 import { TabButton } from "@/components/buttons";
 import { useSettings } from "@/components/config/settingsProvider";
 import { getIndicatedElementClass, IndictableElement } from "@/components/explanation";
+import { useSession } from "next-auth/react";
 
 export type ActivePreviewTab = "md" | "html" | "html-remote" | "pdf";
 
@@ -18,9 +19,10 @@ export function PreviewControls({
   indicatedElement,
 }: Props) {
   const { settings } = useSettings();
+  const { status } = useSession();
 
   return (
-    <div className="w-2/5">
+    <>
       <span
         className={`flex max-w-min ${getIndicatedElementClass("previewTabs", indicatedElement)}`}
       >
@@ -33,12 +35,17 @@ export function PreviewControls({
         >
           HTML
         </TabButton>
-        <TabButton isActive={activePreviewTab === "pdf"} onClick={() => setActivePreviewTab("pdf")}>
+        <TabButton
+          disabled={status !== "authenticated"}
+          isActive={activePreviewTab === "pdf"}
+          onClick={() => setActivePreviewTab("pdf")}
+        >
           PDF
         </TabButton>
 
         {settings.advancedFeatures.htmlRemoteTab && (
           <TabButton
+            disabled={status !== "authenticated"}
             isActive={activePreviewTab === "html-remote"}
             onClick={() => setActivePreviewTab("html-remote")}
           >
@@ -46,6 +53,6 @@ export function PreviewControls({
           </TabButton>
         )}
       </span>
-    </div>
+    </>
   );
 }

@@ -1,10 +1,13 @@
 "use server";
 
+import { requireSession } from "@/auth";
+
 const organization = "Atil-utvikling";
 const project = "Produkter og tjenester";
 const token = process.env.AZURE_DEVOPS_PAT;
 
 async function azdoFetch(url: string) {
+  await requireSession();
   return await fetch(url, {
     headers: {
       Authorization: `Basic ${Buffer.from(`:${token}`).toString("base64")}`,

@@ -7,6 +7,7 @@ import { Editor, useMonaco } from "@monaco-editor/react";
 import { DocumentTemplateOption } from "@repo/shared-types";
 import { useCallback, useReducer, useState } from "react";
 import { Overlay } from "../Overlay";
+import { Profile } from "../Profile";
 import { Config } from "../config";
 import { Explanation, getIndicatedElementClass, IndictableElement } from "../explanation";
 import { SpinnerOverlay } from "../spinner";
@@ -181,11 +182,14 @@ export function DynamicMarkdownEditor() {
           isApertiumPending={isApertiumPending}
           lastLoadedFile={lastLoadedFile}
         />
-        <PreviewControls
-          activePreviewTab={activePreviewTab}
-          setActivePreviewTab={setActivePreviewTab}
-          indicatedElement={indicatedElement}
-        />
+        <div className="w-2/5 flex justify-between">
+          <PreviewControls
+            activePreviewTab={activePreviewTab}
+            setActivePreviewTab={setActivePreviewTab}
+            indicatedElement={indicatedElement}
+          />
+          <Profile />
+        </div>
       </EditorHeader>
 
       <main className="flex flex-1 overflow-hidden">

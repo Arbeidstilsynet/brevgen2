@@ -1,6 +1,7 @@
 import { IconButton } from "@/components/buttons";
 import { useToast } from "@/components/toast/provider";
 import { FileTag } from "@/components/workspace/FileTag";
+import { useSession } from "next-auth/react";
 import { LastLoadedFile } from "../utils";
 
 type Props = Readonly<{
@@ -21,6 +22,8 @@ export function EditorControls({
   lastLoadedFile,
 }: Props) {
   const { addToast } = useToast();
+  const { status } = useSession();
+  const isAuthenticated = status === "authenticated";
 
   const { fileName, tags } = lastLoadedFile ?? { fileName: null, tags: null };
 
@@ -47,6 +50,7 @@ export function EditorControls({
             aria-label="Manage workspace"
             title="Manage workspace"
             onClick={openWorkspace}
+            disabled={!isAuthenticated}
           >
             📂
           </IconButton>
