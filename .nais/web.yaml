@@ -7,12 +7,14 @@ metadata:
     team: "{{team}}"
 spec:
   env:
+    - name: AZURE_APPLICATION_ID
+      value: "{{azure_app_id}}"
+    - name: AUTH_URL
+      value: "{{web.ingress}}/api/auth"
     - name: PDF_API_URL
       value: "http://{{api.name}}"
     - name: PDF_AUTH_MODE
       value: bearer
-    - name: AZURE_APPLICATION_ID
-      value: "{{azure_app_id}}"
     - name: AWS_REGION
       value: eu-west-1
     - name: AWS_BUCKET_NAME
