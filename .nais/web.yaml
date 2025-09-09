@@ -21,6 +21,7 @@ spec:
     - secret: nais-test-aws-sdk # AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
     - secret: azure-devops-pat-code-read # AZURE_DEVOPS_PAT
     - secret: brevgen2-azure-app-client-secret # AZURE_CLIENT_SECRET
+    - secret: brevgen2-authjs-secret # AUTH_SECRET
   ingresses:
     - "{{web.ingress}}"
   accessPolicy:

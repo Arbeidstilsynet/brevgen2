@@ -31,7 +31,6 @@ stages:
           infraBucketWeb: "infra-test-deploy-pub-bucket"
           chromiumLayerBucket: test-brevgenerator2-lambda-layers
           chromiumVersion: "138.0.2"
-          imageName: test-brevgenerator2-web
           stackParametersApi: >-
             Env=test
             DomainName=brevgenerator2-api-valid.arbeidstilsynet.no
@@ -39,11 +38,6 @@ stages:
             DomainHostedZoneId=Z073533223SF44MXB039V
           stackParametersFargate: >-
             Env=test
-            DomainName=brevgenerator-valid.arbeidstilsynet.no
-            CrossAccountRoute53RoleArn=arn:aws:iam::250640723606:role/felles-cfn-extensions-prod-crossaccount-r53-role
-            DomainHostedZoneId=Z073533223SF44MXB039V
-            PdfApiUrl=https://brevgenerator2-api-valid.arbeidstilsynet.no
-            AzureDevopsPat=$(AZURE_DEVOPS_PAT)
           tags: >-
             Environment=test
             RepoName=$(Build.Repository.Name)
@@ -124,7 +118,6 @@ stages:
           infraBucketWeb: "infra-prod-deploy-pub-bucket"
           chromiumLayerBucket: prod-brevgenerator2-lambda-layers
           chromiumVersion: "138.0.2"
-          imageName: prod-brevgenerator2-web
           stackParametersApi: >-
             Env=prod
             DomainName=brevgenerator2-api.arbeidstilsynet.no
@@ -132,11 +125,6 @@ stages:
             DomainHostedZoneId=Z073533223SF44MXB039V
           stackParametersFargate: >-
             Env=prod
-            DomainName=brevgenerator.arbeidstilsynet.no
-            CrossAccountRoute53RoleArn=arn:aws:iam::250640723606:role/felles-cfn-extensions-prod-crossaccount-r53-role
-            DomainHostedZoneId=Z073533223SF44MXB039V
-            PdfApiUrl=https://brevgenerator2-api.arbeidstilsynet.no
-            AzureDevopsPat=$(AZURE_DEVOPS_PAT)
           tags: >-
             Environment=prod
             RepoName=$(Build.Repository.Name)
