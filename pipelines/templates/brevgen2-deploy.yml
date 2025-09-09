@@ -127,5 +127,5 @@ jobs:
             --stack-name brevgenerator2-web-fargate-${{ parameters.env }}
             --s3-prefix brevgenerator2-web-fargate-${{ parameters.env }}
             --s3-bucket ${{ parameters.infraBucketWeb }}
-            --parameter-overrides ${{ parameters.stackParametersFargate }} ImageURI=$(imageUri) PdfApiKey=$1
+            --parameter-overrides ${{ parameters.stackParametersFargate }}
             --tags ${{ parameters.tags }}
