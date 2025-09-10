@@ -2,21 +2,22 @@
 
 import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
+import { useState } from "react";
 import { ActionButton } from "./buttons";
 import { Spinner } from "./spinner";
 
-export function Profile() {
+export function Profile({ onLogout }: { onLogout: () => void }) {
   const { data: session, status } = useSession();
+  const [loading, setLoading] = useState(false);
 
-  // Optional: while loading, render nothing (or a spinner if desired)
-  if (status === "loading") return <Spinner />;
+  if (status === "loading" || loading) return <Spinner />;
 
   // Not signed in: show Sign in button
   if (!session?.user) {
     return (
       <ActionButton
         onClick={() => {
-          sessionStorage.removeItem("manual-logout");
+          setLoading(true);
           void signIn("microsoft-entra-id");
         }}
         size="sm"
@@ -61,9 +62,11 @@ export function Profile() {
         </div>
         <div className="p-2">
           <button
-            onClick={() => {
-              sessionStorage.setItem("manual-logout", "1");
-              void signOut();
+            onClick={async () => {
+              setLoading(true);
+              await signOut({ redirect: false });
+              onLogout();
+              setLoading(false);
             }}
             className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 rounded"
           >

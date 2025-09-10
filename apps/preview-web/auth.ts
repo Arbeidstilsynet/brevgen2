@@ -12,6 +12,11 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       issuer: `https://login.microsoftonline.com/${tenantId}/v2.0`,
     }),
   ],
+  session: {
+    strategy: "jwt",
+    maxAge: 8 * 60 * 60,
+    updateAge: 30 * 60,
+  },
 });
 
 export async function requireSession() {

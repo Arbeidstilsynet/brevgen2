@@ -188,7 +188,7 @@ export function DynamicMarkdownEditor() {
             setActivePreviewTab={setActivePreviewTab}
             indicatedElement={indicatedElement}
           />
-          <Profile />
+          <Profile onLogout={() => setActivePreviewTab("md")} />
         </div>
       </EditorHeader>
 

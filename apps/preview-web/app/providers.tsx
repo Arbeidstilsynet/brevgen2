@@ -10,12 +10,11 @@ const queryClient = new QueryClient();
 
 export function Providers({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <SessionProvider>
+    <SessionProvider refetchOnWindowFocus refetchInterval={60 * 60}>
       <QueryClientProvider client={queryClient}>
         <ToastProvider>
           <SettingsProvider>{children}</SettingsProvider>
         </ToastProvider>
-
         <ReactQueryDevtools />
       </QueryClientProvider>
     </SessionProvider>
