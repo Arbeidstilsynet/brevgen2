@@ -20,9 +20,6 @@ trigger:
       - "**/*.mdat" # dynamisk markdown
       - ".*"
 
-variables:
-  - group: brevgenerator2
-
 stages:
   - stage: Brevgen2DeployVerifikasjon
     displayName: Verifi

@@ -14,9 +14,6 @@ trigger:
     include:
       - "brevgenerator2-v*"
 
-variables:
-  - group: brevgenerator2
-
 stages:
   - stage: Brevgen2DeployValid
     displayName: Valid
