@@ -48,6 +48,7 @@ export function PreviewControls({
             disabled={status !== "authenticated"}
             isActive={activePreviewTab === "html-remote"}
             onClick={() => setActivePreviewTab("html-remote")}
+            className="whitespace-nowrap"
           >
             HTML (remote)
           </TabButton>

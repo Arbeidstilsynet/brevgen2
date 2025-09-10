@@ -7,4 +7,4 @@ api:
   ingress: https://brevgen2-api.arbeidstilsynet.no
 web:
   name: brevgen2-web
-  ingress: https://brevgen2.intern.arbeidstilsynet.no
+  ingress: https://brevgenerator.arbeidstilsynet.no
