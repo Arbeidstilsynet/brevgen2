@@ -55,8 +55,8 @@ importers:
         specifier: 3.2.0
         version: 3.2.0
       marked:
-        specifier: 16.2.1
-        version: 16.2.1
+        specifier: 16.3.0
+        version: 16.3.0
       pdf-lib:
         specifier: 1.17.1
         version: 1.17.1
@@ -155,8 +155,8 @@ importers:
         specifier: 2.1.1
         version: 2.1.1
       marked:
-        specifier: 16.2.1
-        version: 16.2.1
+        specifier: 16.3.0
+        version: 16.3.0
       next:
         specifier: 15.5.3
         version: 15.5.3(@babel/core@7.26.9)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -3666,8 +3666,8 @@ packages:
     resolution: {integrity: sha512-hXdUTZYIVOt1Ex//jAQi+wTZZpUpwBj/0QsOzqegb3rGMMeJiSEu5xLHnYfBrRV4RH2+OCSOO95Is/7x1WJ4bw==}
     engines: {node: '>=10'}
 
-  marked@16.2.1:
-    resolution: {integrity: sha512-r3UrXED9lMlHF97jJByry90cwrZBBvZmjG1L68oYfuPMW+uDTnuMbyJDymCWwbTE+f+3LhpNDKfpR3a3saFyjA==}
+  marked@16.3.0:
+    resolution: {integrity: sha512-K3UxuKu6l6bmA5FUwYho8CfJBlsUWAooKtdGgMcERSpF7gcBUrCGsLH7wDaaNOzwq18JzSUDyoEb/YsrqMac3w==}
     engines: {node: '>= 20'}
     hasBin: true
 
@@ -9294,7 +9294,7 @@ snapshots:
     dependencies:
       semver: 7.7.2
 
-  marked@16.2.1: {}
+  marked@16.3.0: {}
 
   math-intrinsics@1.1.0: {}
 
