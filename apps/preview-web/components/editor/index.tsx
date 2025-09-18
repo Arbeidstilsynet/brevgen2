@@ -250,6 +250,7 @@ export function DynamicMarkdownEditor() {
             mdVariables={mdVars}
             selectedTemplate={selectedTemplate}
             defaultTemplateArgs={defaultTemplateState}
+            hasParseError={Boolean(parseError)}
           />
         </div>
       </main>

@@ -9,7 +9,7 @@ import type {
   GenerateDocumentRequest,
 } from "@repo/shared-types";
 import { marked } from "marked";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import sanitizeHtml from "sanitize-html";
 import { ActivePreviewTab } from "./header/PreviewControls";
 
@@ -36,6 +36,20 @@ function getHtml(md: string, css: string) {
 `;
 }
 
+function renderHtml(
+  md: string,
+  selectedTemplate: DocumentTemplateOption,
+  defaultTemplateArgs: DefaultTemplateArgs,
+) {
+  if (selectedTemplate === "default") {
+    md = defaultTemplate.getMd(md, defaultTemplateArgs);
+  }
+
+  const css =
+    selectedTemplate === "default" || selectedTemplate === "blank" ? defaultTemplate.globalCss : "";
+  return getHtml(md, css);
+}
+
 type Props = Readonly<{
   activePreviewTab: ActivePreviewTab;
   md: string;
@@ -43,6 +57,7 @@ type Props = Readonly<{
   mdVariables: Record<string, string | boolean>;
   selectedTemplate: DocumentTemplateOption;
   defaultTemplateArgs: DefaultTemplateArgs;
+  hasParseError: boolean;
 }>;
 
 export function Preview({
@@ -52,9 +67,8 @@ export function Preview({
   mdVariables,
   selectedTemplate,
   defaultTemplateArgs,
+  hasParseError,
 }: Props) {
-  const [localHtml, setLocalHtml] = useState<string | null>(null);
-
   // refs for storing pevious request payloads and results
   // used for proper (re)request behavior on tab switching
   const previousPdfValues = useRef({
@@ -103,22 +117,16 @@ export function Preview({
   });
 
   useEffect(() => {
-    if (activePreviewTab !== "pdf") {
+    if (activePreviewTab !== "pdf" || hasParseError) {
       return;
     }
 
-    // Check if any of the values have changed since the last render
-    const {
-      md: prevMd,
-      mdVariables: prevMdVariables,
-      selectedTemplate: prevTemplate,
-      defaultTemplateArgs: prevTemplateArgs,
-    } = previousPdfValues.current;
+    // Check if any of the payload values have changed since the last render
     if (
-      prevMd === md &&
-      prevMdVariables === mdVariables &&
-      prevTemplate === selectedTemplate &&
-      prevTemplateArgs === defaultTemplateArgs &&
+      previousPdfValues.current.md === md &&
+      previousPdfValues.current.mdVariables === mdVariables &&
+      previousPdfValues.current.selectedTemplate === selectedTemplate &&
+      previousPdfValues.current.defaultTemplateArgs === defaultTemplateArgs &&
       pdfUrlRef.current // don't skip if this is first render
     ) {
       return;
@@ -151,28 +159,23 @@ export function Preview({
     activePreviewTab,
     debouncedMutatePdf,
     defaultTemplateArgs,
+    hasParseError,
     md,
     mdVariables,
     selectedTemplate,
   ]);
 
   useEffect(() => {
-    if (activePreviewTab !== "html-remote") {
+    if (activePreviewTab !== "html-remote" || hasParseError) {
       return;
     }
 
-    // Check if any of the values have changed since the last render
-    const {
-      md: prevMd,
-      mdVariables: prevMdVariables,
-      selectedTemplate: prevTemplate,
-      defaultTemplateArgs: prevTemplateArgs,
-    } = previousHtmlValues.current;
+    // Check if any of the payload values have changed since the last render
     if (
-      prevMd === md &&
-      prevMdVariables === mdVariables &&
-      prevTemplate === selectedTemplate &&
-      prevTemplateArgs === defaultTemplateArgs &&
+      previousPdfValues.current.md === md &&
+      previousPdfValues.current.mdVariables === mdVariables &&
+      previousPdfValues.current.selectedTemplate === selectedTemplate &&
+      previousPdfValues.current.defaultTemplateArgs === defaultTemplateArgs &&
       remoteHtmlRef.current // don't skip if this is first render
     ) {
       return;
@@ -205,39 +208,18 @@ export function Preview({
     activePreviewTab,
     debouncedMutateHtml,
     defaultTemplateArgs,
+    hasParseError,
     md,
     mdVariables,
     selectedTemplate,
   ]);
-
-  useEffect(() => {
-    if (activePreviewTab !== "html") {
-      return;
-    }
-
-    const renderHtml = () => {
-      let md = parsedMd;
-
-      if (selectedTemplate === "default") {
-        md = defaultTemplate.getMd(md, defaultTemplateArgs);
-      }
-
-      const css =
-        selectedTemplate === "default" || selectedTemplate === "blank"
-          ? defaultTemplate.globalCss
-          : "";
-      const output = getHtml(md, css);
-      setLocalHtml(output);
-    };
-
-    renderHtml();
-  }, [activePreviewTab, defaultTemplateArgs, parsedMd, selectedTemplate]);
 
   if (activePreviewTab === "md") {
     return <pre className="whitespace-pre-wrap">{parsedMd}</pre>;
   }
 
   if (activePreviewTab === "html") {
+    const localHtml = renderHtml(parsedMd, selectedTemplate, defaultTemplateArgs);
     return (
       <iframe
         title="HTML preview"
@@ -249,6 +231,9 @@ export function Preview({
 
   if (activePreviewTab === "html-remote") {
     if (!renderedRemoteHtml) {
+      if (hasParseError) {
+        return <pre className="whitespace-pre-wrap">Parse error</pre>;
+      }
       return (
         <>
           {htmlError && <ErrorOverlay error={htmlError} />}
@@ -267,6 +252,9 @@ export function Preview({
 
   if (activePreviewTab === "pdf") {
     if (!pdfUrl) {
+      if (hasParseError) {
+        return <pre className="whitespace-pre-wrap">Parse error</pre>;
+      }
       return (
         <>
           {pdfError && <ErrorOverlay error={pdfError} />}
