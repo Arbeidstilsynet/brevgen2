@@ -1,6 +1,6 @@
 import { logger } from "../../app";
 import { Config, defaultConfig } from "./config";
-import { getBrowserInstance } from "./get-browser";
+import { useBrowserWithRetry } from "./get-browser";
 import { convertMdToPdf } from "./md-to-pdf";
 import { InferOutputType } from "./types";
 
@@ -18,12 +18,8 @@ export async function mdToPdf<T extends Partial<Config>>(
   };
   logger.info({ mergedConfig, path: import.meta.url, function: "mdToPdf" });
 
-  const [browserInstance, release] = await getBrowserInstance();
-
-  try {
-    const result = await convertMdToPdf(md, mergedConfig, browserInstance);
+  return await useBrowserWithRetry(async (browser) => {
+    const result = await convertMdToPdf(md, mergedConfig, browser);
     return result as InferOutputType<T>;
-  } finally {
-    release();
-  }
+  });
 }
