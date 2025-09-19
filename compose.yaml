@@ -4,8 +4,6 @@ services:
     build:
       context: .
       dockerfile: apps/api/Dockerfile
-      args:
-        CHROMIUM_VERSION: "139.*"
     ports:
       - "4000:4000"
     environment:

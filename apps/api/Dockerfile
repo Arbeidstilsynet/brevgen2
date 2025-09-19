@@ -1,6 +1,6 @@
-ARG CHROMIUM_VERSION="139.*"
+ARG CHROMIUM_VERSION="140.*"
 
-FROM node:22-slim@sha256:4a4884e8a44826194dff92ba316264f392056cbe243dcc9fd3551e71cea02b90 AS base
+FROM node:24-slim AS base
 FROM base AS builder
 
 RUN npm i -g corepack@latest && corepack enable

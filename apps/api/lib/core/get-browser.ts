@@ -1,5 +1,4 @@
-import type { Browser as PuppeteerBrowser } from "puppeteer";
-import type { Browser as PuppeteerCoreBrowser } from "puppeteer-core";
+import type { Browser } from "puppeteer-core";
 import { logger } from "../../app";
 import { getBrowserLaunchOptions } from "./get-puppeteer-options";
 import { loadPuppeteer } from "./puppeteer-loader";
@@ -17,7 +16,7 @@ const MAX_PAGES_PER_BROWSER = process.env.TESTCONTAINERS ? 1 : 50;
 let pageCount = 0;
 let activeUsers = 0;
 
-let browser: PuppeteerCoreBrowser | PuppeteerBrowser | null = null;
+let browser: Browser | null = null;
 let browserInitPromise: Promise<void> | null = null;
 let browserClosePromise: Promise<void> | null = null;
 
@@ -80,7 +79,7 @@ function releaseUser(): void {
  * Gets a browser instance and returns both the browser and a release function.
  * Ensures a single browser instance is never used for more than MAX_PAGES_PER_BROWSER pages.
  */
-async function getBrowserInstance(): Promise<PuppeteerCoreBrowser> {
+async function getBrowserInstance(): Promise<Browser> {
   // Loop until we can safely return a valid browser below page limit.
   // (Handles waits during recycle transparently.)
   while (true) {
@@ -114,7 +113,7 @@ async function getBrowserInstance(): Promise<PuppeteerCoreBrowser> {
     // Safe to use current browser.
     activeUsers++;
     pageCount++;
-    return browser as PuppeteerCoreBrowser;
+    return browser!;
   }
 }
 
@@ -164,9 +163,7 @@ async function recycleBrowser(): Promise<void> {
  * - Retries a configured number of times.
  * - Each retry waits for the unhealthy browser to recycle to guarantee a new instance.
  */
-export async function useBrowserWithRetry<T>(
-  fn: (browser: PuppeteerCoreBrowser) => Promise<T>,
-): Promise<T> {
+export async function useBrowserWithRetry<T>(fn: (browser: Browser) => Promise<T>): Promise<T> {
   const maxAttempts = MAX_RETRIES_PER_REQUEST + 1;
   let lastError: unknown;
 

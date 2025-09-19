@@ -1,10 +1,7 @@
 import { PDFDocument } from "pdf-lib";
-import type { Browser as PuppeteerBrowser } from "puppeteer";
-import type { Browser as PuppeteerCoreBrowser } from "puppeteer-core";
+import type { Browser } from "puppeteer-core";
 import type { Config } from "./config";
 import { InferOutputType } from "./types";
-
-type Browser = PuppeteerBrowser | PuppeteerCoreBrowser;
 
 /**
  * Generate the output (either PDF or HTML) based on config.

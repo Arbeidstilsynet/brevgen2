@@ -1,7 +1,7 @@
+import type { LaunchOptions } from "puppeteer-core";
 import { Viewport } from "puppeteer-core";
 import { getChromiumArgs } from "./chromium-args";
 import { configureLambdaChromium } from "./lambda-config";
-import { LaunchOptions } from "./types";
 
 // conditionally import @sparticuz/chromium as it's only used in AWS Lambda
 let lambdaChromium: typeof import("@sparticuz/chromium").default;

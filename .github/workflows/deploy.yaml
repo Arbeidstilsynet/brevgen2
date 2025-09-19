@@ -98,8 +98,6 @@ jobs:
           image_suffix: api
           docker_context: "."
           dockerfile: "./apps/api/Dockerfile"
-          build_args: |
-            CHROMIUM_VERSION: "139.*"
 
   build_web:
     needs: check_changes
@@ -205,7 +203,7 @@ jobs:
           [ -z "$JWT" -o "$JWT" = null ] && { echo "Token fetch failed"; echo "$RESPONSE"; exit 1; }
           echo "jwt=$JWT" >> $GITHUB_OUTPUT
 
-      - uses: ./.github/actions/setup
+      - uses: Arbeidstilsynet/action-pnpm-setup@e1b9e26933e5766b9ea74e7fc60d52fea32172a1 # v1
 
       - name: Run load tests (JWT auth)
         id: run_load_tests
