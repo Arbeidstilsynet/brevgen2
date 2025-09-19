@@ -8,40 +8,79 @@ concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: false
 
-#                 +-----------------+                      +-----------------+
-#                 |   build_api     |                      |   build_web     |
-#                 |  (docker img)   |                      |  (docker img)   |
-#                 +--------+--------+                      +--------+--------+
-#                          |                                      |
-#         outputs: image, telemetry                  outputs: image, telemetry
-#                          |                                      |
-#                          v                                      v
-#                 +-----------------+                      +-----------------+
-#                 | deploy_api_dev  |                      | deploy_web_dev  |
-#                 |  (uses image)   |                      |  (uses image)   |
-#                 +--------+--------+                      +--------+--------+
-#                          |                                      |
-#                          |                                      |
-#                          +-----------+--------------+-----------+
-#                                      |              |
-#                                      v              |
-#                             +-----------------+     |
-#                             |  load_test_api  |     |
-#                             |  (needs api)    |     |
-#                             +--------+--------+     |
-#                                      |              |
-#                           gates prod |              | waits for load_test_api
-#                                      |              |
-#                    +-----------------+----+    +----+------------------+
-#                    | deploy_api_prod |    |    |  deploy_web_prod      |
-#                    | (needs build &  |    |    | (needs build_web &    |
-#                    |  load tests)    |    |    |  load tests)          |
-#                    +-----------------+    |    +-----------------------+
-#                                           |
-# Legend: parallel branches left/right; both final prod deploys require load_test_api success.
+  #          +-------------------+
+  #          |   check_changes   |
+  #          +---------+---------+
+  #                    |
+  #        +-----------+-----------+
+  #        |                       |
+  #  +-----------+           +-----------+
+  #  | build_api |           | build_web |
+  #  +-----+-----+           +-----+-----+
+  #        |                       |
+  #  +-----------+           +-----------+
+  #  |deploy_api |           |deploy_web |
+  #  |   _dev    |           |   _dev    |
+  #  +-----+-----+           +-----+-----+
+  #        |                       |
+  #  +-----------+           +-----------+
+  #  |load_test  |           |           |
+  #  |  _api     |           |           |
+  #  +-----+-----+           +-----+-----+
+  #        |                       |
+  #  +-----------+           +-----------+
+  #  |deploy_api |           |deploy_web |
+  #  |   _prod   |           |   _prod   |
+  #  +-----------+           +-----------+
 
 jobs:
+  check_changes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      api: ${{ steps.api.outputs.changes_detected }}
+      web: ${{ steps.web.outputs.changes_detected }}
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+        with:
+          fetch-depth: 0
+
+      - name: API changed?
+        uses: Arbeidstilsynet/action-check-changes@fd4449061cab07565e3906171333db0b515a286a # v1
+        id: api
+        with:
+          include: |
+            apps/api/
+            packages
+            pnpm-lock.yaml
+            .nais/api.yaml
+            .nais/vars-*.yaml
+            .github/workflows/deploy.yml
+          exclude: |
+            **/README.md
+            packages/nuget-client
+
+      - name: Web changed?
+        uses: Arbeidstilsynet/action-check-changes@fd4449061cab07565e3906171333db0b515a286a # v1
+        id: web
+        with:
+          include: |
+            apps/preview-web/
+            packages
+            pnpm-lock.yaml
+            .nais/web.yaml
+            .nais/vars-*.yaml
+            .github/workflows/deploy.yml
+          exclude: |
+            **/README.md
+            packages/nuget-client
+
   build_api:
+    needs: check_changes
+    if: needs.check_changes.result == 'success' && needs.check_changes.outputs.api == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     outputs:
@@ -63,6 +102,8 @@ jobs:
             CHROMIUM_VERSION: "139.*"
 
   build_web:
+    needs: check_changes
+    if: needs.check_changes.result == 'success' && needs.check_changes.outputs.web == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     outputs:
@@ -82,7 +123,7 @@ jobs:
           dockerfile: "./apps/preview-web/Dockerfile"
 
   deploy_api_dev:
-    needs: [build_api]
+    needs: build_api
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -99,7 +140,7 @@ jobs:
           TELEMETRY: ${{ needs.build_api.outputs.telemetry }}
 
   deploy_web_dev:
-    needs: [build_web]
+    needs: build_web
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -117,7 +158,7 @@ jobs:
 
   load_test_api:
     name: Load test API (dev)
-    needs: [deploy_api_dev]
+    needs: deploy_api_dev
     runs-on: ubuntu-latest
     timeout-minutes: 20
     environment: dev
@@ -223,7 +264,7 @@ jobs:
           TELEMETRY: ${{ needs.build_api.outputs.telemetry }}
 
   deploy_web_prod:
-    needs: [build_web, load_test_api]
+    needs: [build_web, deploy_web_dev]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:

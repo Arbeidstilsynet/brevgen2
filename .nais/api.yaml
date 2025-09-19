@@ -26,11 +26,10 @@ spec:
     max: 2
     min: 2
   resources:
-    limits:
-      cpu: 2000m
-      memory: 2048Mi
     requests:
       cpu: 1000m
+      memory: 512Mi
+    limits:
       memory: 1024Mi
   readiness:
     failureThreshold: 10
