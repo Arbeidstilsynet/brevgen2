@@ -17,6 +17,16 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     maxAge: 8 * 60 * 60,
     updateAge: 30 * 60,
   },
+  pages: {
+    // Custom page that instantly triggers provider sign-in
+    signIn: "/auto-login",
+  },
+  callbacks: {
+    authorized: ({ auth }) => {
+      // Logged in users are authorized, otherwise redirect to login page
+      return !!auth;
+    },
+  },
 });
 
 export async function requireSession() {
