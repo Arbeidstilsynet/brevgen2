@@ -9,7 +9,7 @@ spec:
   env:
     - name: AZURE_APPLICATION_ID
       value: "{{azure_app_id}}"
-    - name: AUTH_URL
+    - name: NEXTAUTH_URL
       value: "{{web.ingress}}/api/auth"
     - name: PDF_API_URL
       value: "http://{{api.name}}"

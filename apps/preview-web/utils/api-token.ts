@@ -1,4 +1,4 @@
-import { tenantId } from "@/auth";
+import { tenantId } from "@/pages/api/auth/[...nextauth]";
 import { ConfidentialClientApplication, type Configuration } from "@azure/msal-node";
 import "server-only";
 

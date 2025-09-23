@@ -1,8 +1,8 @@
 import { fetchReposFromAzure } from "@/actions/azdo";
-import { auth } from "@/auth";
+import { getServerSession } from "next-auth";
 
 export default async function RepoList() {
-  const session = await auth();
+  const session = await getServerSession();
   if (!session) return null;
 
   const repos = await fetchReposFromAzure();

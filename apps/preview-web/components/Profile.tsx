@@ -18,7 +18,7 @@ export function Profile({ onLogout }: { onLogout: () => void }) {
       <ActionButton
         onClick={() => {
           setLoading(true);
-          void signIn("microsoft-entra-id");
+          void signIn("azure-ad");
         }}
         size="sm"
       >

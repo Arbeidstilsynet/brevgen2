@@ -3,7 +3,7 @@ services:
     environment:
       - PDF_AUTH_MODE=none
       - AUTH_SECRET=foobar
-      - AUTH_URL=http://localhost:3000/api/auth
+      - NEXTAUTH_URL=http://localhost:3000/api/auth
       - AWS_ACCESS_KEY_ID=foo
       - AWS_SECRET_ACCESS_KEY=bar
       - AWS_BUCKET_NAME=test-bucket

@@ -24,7 +24,7 @@ export function useLoadPermanentUrl(
   onLoad: (md: string) => void,
   setLastLoadedFile: (file: LastLoadedFile) => void,
 ) {
-  const params = useSearchParams();
+  const params = useSearchParams()!;
   const { addToast } = useToast();
 
   const gitParam = params.get(GIT_PARAMS.git);

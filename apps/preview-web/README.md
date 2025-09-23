@@ -5,7 +5,7 @@ Live: <https://brevgenerator.arbeidstilsynet.no>
 
 ## Autentisering
 
-OIDC med [Auth.js](https://authjs.dev/getting-started/providers/microsoft-entra-id). Brukere må ha tildelt rollen `Brevgenerator.User` i enterprise application `Brevgenerator2 <DEV/PROD>` for å få logge inn.
+OIDC med [Next-Auth](https://next-auth.js.org/providers/azure-ad). Brukere må ha tildelt rollen `Brevgenerator.User` i enterprise application `Brevgenerator2 <DEV/PROD>` for å få logge inn.
 
 Se [api readme for oppsett i Entra](../api/README.md#konfigurasjon-av-app-i-entra).
 
@@ -25,6 +25,7 @@ For å kjøre lokalt eller bruke `deploy-fargate.ps1`, opprett ny fil `.env` med
 
 ```sh
 # next-auth config
+NEXTAUTH_URL=http://localhost:3000/api/auth
 # can generate with `openssl rand -base64 32`
 AUTH_SECRET=my-local-development-secret-that-is-long-enough-12345
 

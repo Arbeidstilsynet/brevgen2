@@ -44,7 +44,7 @@ Oppskrift:
 
 Oppskrift for bruk av samme app med Authorization Code flow for brukerinnlogging:
 
-- Gå til `Manage -> Authentication`, legg til web platform med redirect URLs (e.g. `http://localhost:3000/api/auth/callback/microsoft-entra-id`)
+- Gå til `Manage -> Authentication`, legg til web platform med redirect URLs (e.g. `http://localhost:3000/api/auth/callback/azure-ad`)
 - Gå til `App roles` -> `Create app role`, legg til roller:
 
 ```txt

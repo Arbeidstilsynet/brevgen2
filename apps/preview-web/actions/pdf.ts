@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@/auth";
+import { requireSession } from "@/auth";
 import { getApiAccessToken } from "@/utils/api-token";
 import type { GenerateDocumentRequest } from "@repo/shared-types";
 
@@ -25,12 +25,9 @@ function validateEnvVars() {
 }
 
 export async function sendGenerateDocument(payload: GenerateDocumentRequest) {
-  validateEnvVars();
+  await requireSession();
 
-  const session = await auth();
-  if (!session) {
-    throw new Error("Failed to obtain session");
-  }
+  validateEnvVars();
 
   const url = PDF_API_ENDPOINTS.GENERATE;
 
