@@ -5,6 +5,9 @@ metadata:
   namespace: "{{team}}"
   labels:
     team: "{{team}}"
+  annotations:
+    # Increase buffer size to handle large cookies from NextAuth
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "16k"
 spec:
   env:
     - name: AZURE_APPLICATION_ID
