@@ -15,7 +15,7 @@
     "@repo/typescript-config": "workspace:^",
     "eslint": "9.34.0",
     "typescript": "5.9.2",
-    "typescript-eslint": "8.44.0"
+    "typescript-eslint": "8.44.1"
   },
   "dependencies": {
     "@repo/shared-types": "workspace:^"
