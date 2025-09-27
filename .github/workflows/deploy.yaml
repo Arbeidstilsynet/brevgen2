@@ -49,7 +49,7 @@ jobs:
           fetch-depth: 0
 
       - name: API changed?
-        uses: Arbeidstilsynet/action-check-changes@fd4449061cab07565e3906171333db0b515a286a # v1
+        uses: Arbeidstilsynet/action-check-changes@c9e44b58e2d689f14d52b392abe4c669408148b8 # v1
         id: api
         with:
           include: |
@@ -64,7 +64,7 @@ jobs:
             packages/nuget-client
 
       - name: Web changed?
-        uses: Arbeidstilsynet/action-check-changes@fd4449061cab07565e3906171333db0b515a286a # v1
+        uses: Arbeidstilsynet/action-check-changes@c9e44b58e2d689f14d52b392abe4c669408148b8 # v1
         id: web
         with:
           include: |
