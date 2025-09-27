@@ -49,8 +49,8 @@ importers:
         specifier: 17.2.2
         version: 17.2.2
       fastify:
-        specifier: 5.6.0
-        version: 5.6.0
+        specifier: 5.6.1
+        version: 5.6.1
       jwks-rsa:
         specifier: 3.2.0
         version: 3.2.0
@@ -2967,8 +2967,8 @@ packages:
   fastify-plugin@5.0.1:
     resolution: {integrity: sha512-HCxs+YnRaWzCl+cWRYFnHmeRFyR5GVnJTAaCJQiYzQSDwK9MgJdyAsuL3nh0EWRCYMgQ5MeziymvmAhUHYHDUQ==}
 
-  fastify@5.6.0:
-    resolution: {integrity: sha512-9j2r9TnwNsfGiCKGYT0Voqy244qwcoYM9qvNi/i+F8sNNWDnqUEVuGYNc9GyjldhXmMlJmVPS6gI1LdvjYGRJw==}
+  fastify@5.6.1:
+    resolution: {integrity: sha512-WjjlOciBF0K8pDUPZoGPhqhKrQJ02I8DKaDIfO51EL0kbSMwQFl85cRwhOvmSDWoukNOdTo27gLN549pLCcH7Q==}
 
   fastparallel@2.4.1:
     resolution: {integrity: sha512-qUmhxPgNHmvRjZKBFUNI0oZuuH9OlSIOXmJ98lhKPxMZZ7zS/Fi0wRHOihDSz0R1YiIOjxzOY4bq65YTcdBi2Q==}
@@ -8647,7 +8647,7 @@ snapshots:
 
   fastify-plugin@5.0.1: {}
 
-  fastify@5.6.0:
+  fastify@5.6.1:
     dependencies:
       '@fastify/ajv-compiler': 4.0.2
       '@fastify/error': 4.2.0
