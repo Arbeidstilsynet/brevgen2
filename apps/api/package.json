@@ -28,7 +28,7 @@
     "marked": "16.3.0",
     "p-limit": "7.1.1",
     "pdf-lib": "1.17.1",
-    "puppeteer-core": "24.22.0",
+    "puppeteer-core": "24.22.3",
     "sanitize-html": "2.17.0",
     "zod": "4.1.11"
   },
@@ -43,7 +43,7 @@
     "globals": "16.4.0",
     "pdf-text-reader": "5.1.0",
     "pdf-visual-diff": "0.14.0",
-    "puppeteer": "24.22.0",
+    "puppeteer": "24.22.3",
     "testcontainers": "11.6.0",
     "tsup": "8.5.0",
     "typescript": "5.9.2",
