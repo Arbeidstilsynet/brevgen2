@@ -45,10 +45,10 @@ export function useDebouncedMutation<
   const timer = useRef<NodeJS.Timeout>(undefined);
 
   const debouncedMutate: DebouncedMutate<TData, TError, TVariables, TContext> = useCallback(
-    (variables, { debounceMs, ...options }) => {
+    (variables, { debounceMs }) => {
       clearTimeout(timer.current);
       timer.current = setTimeout(() => {
-        mutate(variables, options);
+        mutate(variables);
       }, debounceMs);
     },
     [mutate],

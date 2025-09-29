@@ -152,9 +152,7 @@ export function Preview({
       },
     } satisfies GenerateDocumentRequest;
 
-    debouncedMutatePdf(payload, {
-      debounceMs: 1000,
-    });
+    debouncedMutatePdf(payload, { debounceMs: 1000 });
   }, [
     activePreviewTab,
     debouncedMutatePdf,
@@ -201,9 +199,7 @@ export function Preview({
       },
     } satisfies GenerateDocumentRequest;
 
-    debouncedMutateHtml(payload, {
-      debounceMs: 1000,
-    });
+    debouncedMutateHtml(payload, { debounceMs: 1000 });
   }, [
     activePreviewTab,
     debouncedMutateHtml,
