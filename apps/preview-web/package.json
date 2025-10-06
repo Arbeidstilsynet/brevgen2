@@ -34,7 +34,7 @@
     "@types/react": "19.1.15",
     "@types/react-dom": "19.1.9",
     "@types/sanitize-html": "2.16.0",
-    "@types/wicg-file-system-access": "2023.10.6",
+    "@types/wicg-file-system-access": "2023.10.7",
     "babel-plugin-react-compiler": "19.1.0-rc.3",
     "eslint": "9.36.0",
     "eslint-config-next": "15.5.4",
