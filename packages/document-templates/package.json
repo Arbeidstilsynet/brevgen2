@@ -14,7 +14,7 @@
     "@eslint/js": "9.36.0",
     "@repo/typescript-config": "workspace:^",
     "eslint": "9.36.0",
-    "typescript": "5.9.2",
+    "typescript": "5.9.3",
     "typescript-eslint": "8.44.1"
   },
   "dependencies": {
