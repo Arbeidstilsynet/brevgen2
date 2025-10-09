@@ -1,5 +1,9 @@
 # Versjonslogg
 
+## 3.1.2 - 2025-10-09
+
+Lagt til ClientId, TenantId og Scope i `BrevgeneratorSecret`
+
 ## 3.1.1 - 2025-10-09
 
 Lagt til `AT.Brevgenerator.Klient.Model.BrevgeneratorSecret`
