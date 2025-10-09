@@ -25,10 +25,11 @@ export type DefaultTemplateSignatureVariant = z.infer<typeof defaultTemplateSign
 export const defaultTemplateFieldsSchema = z
   .object({
     dato: z.string(),
-    saksnummer: z.union([z.string(), z.number()]),
-    saksbehandlerNavn: z.string(),
+    saksnummer: z.union([z.string(), z.number()]), // "Vår referanse"
+    tidligereReferanse: z.string().nullish(),
     deresDato: z.string().nullish(),
     deresReferanse: z.string().nullish(),
+    saksbehandlerNavn: z.string(),
     erUnntattOffentlighet: z.boolean().nullish(),
     unntattOffentlighetHjemmel: z.string().nullish(),
     virksomhet: z.object({

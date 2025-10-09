@@ -95,3 +95,35 @@ export const defaultTemplateLongPayload: GenerateDocumentRequest = {
     },
   },
 };
+
+export const defaultTemplateAllOptionalsPayload: GenerateDocumentRequest = {
+  md: "# Test PDF\n\nThis is a {{var}}",
+  mdVariables: {
+    var: "test PDF",
+  },
+  options: {
+    dynamic: {
+      template: "default",
+      defaultTemplateArgs: {
+        language: "nn",
+        signatureVariant: "automatiskBehandlet",
+        fields: {
+          dato: "12.24.2030",
+          saksnummer: "2030/999",
+          saksbehandlerNavn: "Test Testesen",
+          virksomhet: {
+            navn: "Test Containers",
+            adresse: "Testveien 1",
+            postnr: "1234",
+            poststed: "Teststed",
+          },
+          deresDato: "11.11.2030",
+          deresReferanse: "2030-1234-5678",
+          tidligereReferanse: "2029/888",
+          erUnntattOffentlighet: true,
+          unntattOffentlighetHjemmel: "jf. offl. § 14",
+        },
+      },
+    },
+  },
+};

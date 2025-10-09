@@ -7,9 +7,9 @@ import type {
 import { logoBase64 } from "./default-logo";
 
 const text = {
-  saksbehandler: {
-    bm: "saksbehandler",
-    nn: "saksbehandlar",
+  tidligereReferanse: {
+    bm: "Tidligere referanse",
+    nn: "Tidlegare referanse",
   },
   deresDato: {
     bm: "Deres dato",
@@ -19,9 +19,17 @@ const text = {
     bm: "Deres referanse",
     nn: "Dykkar referanse",
   },
+  saksbehandler: {
+    bm: "saksbehandler",
+    nn: "saksbehandlar",
+  },
   unntattOffentlighet: {
     bm: "Unntatt offentlighet, ",
     nn: "Unntatt offentlegheit, ",
+  },
+  hilsen: {
+    bm: "Med vennlig hilsen",
+    nn: "Med vennleg helsing",
   },
   elektroniskGodkjent: {
     bm: "Dette brevet er elektronisk godkjent.",
@@ -30,10 +38,6 @@ const text = {
   automatiskBehandlet: {
     bm: "Dette er automatisk behandlet, og brevet er derfor ikke signert.",
     nn: "Dette er automatisk behandla, og brevet er derfor ikkje signert.",
-  },
-  hilsen: {
-    bm: "Med vennlig hilsen",
-    nn: "Med vennleg helsing",
   },
 } satisfies Record<string, Record<Language, string>>;
 
@@ -80,7 +84,10 @@ function getLetterhead(fields: DefaultTemplateFields, language: Language) {
     `</div>`,
     `<div style="text-align: right; font-size: 10pt;">`,
     `<p style="margin: 0;">Vår dato: ${fields.dato}</p>`,
-    `<p style="margin: 0;">Vår referanse: ${fields.saksnummer}</p>`,
+    `<p style="margin: 0;${fields.tidligereReferanse ? "font-weight: bold;" : ""}">Vår referanse: ${fields.saksnummer}</p>`,
+    fields.tidligereReferanse
+      ? `<p style="margin: 0;">${text.tidligereReferanse[language]}: ${fields.tidligereReferanse}</p>`
+      : "",
     fields.deresDato
       ? `<p style="margin: 0;">${text.deresDato[language]}: ${fields.deresDato}</p>`
       : "",

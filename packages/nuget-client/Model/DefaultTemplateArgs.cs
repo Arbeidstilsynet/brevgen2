@@ -72,6 +72,12 @@ public class DefaultTemplateFields
     /// <summary>
     /// Valgfritt felt. Manglende verdi gjør at feltet ikke vises i letterhead.
     /// </summary>
+    [JsonPropertyName("tidligereReferanse")]
+    public string? TidligereReferanse { get; init; }
+
+    /// <summary>
+    /// Valgfritt felt. Manglende verdi gjør at feltet ikke vises i letterhead.
+    /// </summary>
     [JsonPropertyName("deresDato")]
     public string? DeresDato { get; init; }
 

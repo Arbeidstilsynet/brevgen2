@@ -6,17 +6,43 @@ import { comparePdfToSnapshot } from "pdf-visual-diff";
 import { Readable } from "stream";
 import { DockerComposeEnvironment, StartedDockerComposeEnvironment, Wait } from "testcontainers";
 import { afterAll, afterEach, beforeAll, describe, expect, test } from "vitest";
-import { defaultTemplateLongPayload, defaultTemplateShortPayload } from "./testdata";
+import {
+  defaultTemplateAllOptionalsPayload,
+  defaultTemplateLongPayload,
+  defaultTemplateShortPayload,
+} from "./testdata";
 import { fetcher, parseResponse, setupLogStreaming } from "./utils";
 
-const fixturesDir = path.resolve(__dirname, "temp");
-const DOWNLOADED_PDF_PATH_DEFAULT_SHORT_TEMPLATE = path.join(fixturesDir, "default-short.pdf");
-const DOWNLOADED_PDF_PATH_DEFAULT_LONG_TEMPLATE = path.join(fixturesDir, "default-long.pdf");
-const DOWNLOADED_PDF_PATH_CUSTOM_TEMPLATE = path.join(fixturesDir, "custom.pdf");
-const DOWNLOADED_PDF_PATH_BLANK_TEMPLATE = path.join(fixturesDir, "blank.pdf");
+const tempDir = path.resolve(__dirname, "temp");
+const baselineDir = path.resolve(__dirname, "baseline");
 
-if (!existsSync(fixturesDir)) {
-  mkdirSync(fixturesDir, { recursive: true });
+const pdfNames = {
+  defaultShort: "test-pdf-default-template-short",
+  defaultLong: "test-pdf-default-template-long",
+  defaultAllOptionals: "test-pdf-default-template-all-optionals",
+  custom: "test-pdf-custom-template",
+  blank: "test-pdf-blank-template",
+} as const;
+
+const paths = {
+  temp: {
+    defaultShort: path.join(tempDir, "default-short.pdf"),
+    defaultLong: path.join(tempDir, "default-long.pdf"),
+    defaultAllOptionals: path.join(tempDir, "default-all-optionals.pdf"),
+    custom: path.join(tempDir, "custom.pdf"),
+    blank: path.join(tempDir, "blank.pdf"),
+  },
+  baseline: {
+    defaultShort: path.join(baselineDir, pdfNames.defaultShort + ".pdf"),
+    defaultLong: path.join(baselineDir, pdfNames.defaultLong + ".pdf"),
+    defaultAllOptionals: path.join(baselineDir, pdfNames.defaultAllOptionals + ".pdf"),
+    custom: path.join(baselineDir, pdfNames.custom + ".pdf"),
+    blank: path.join(baselineDir, pdfNames.blank + ".pdf"),
+  },
+} as const;
+
+if (!existsSync(tempDir)) {
+  mkdirSync(tempDir, { recursive: true });
 }
 
 // run inner describes in sequence
@@ -125,8 +151,7 @@ describe.sequential("Integration tests with testcontainers", () => {
         const text = await readPdfText({ data: new Uint8Array(buffer), options: { verbosity: 0 } });
         expect(text).toContain("This is a test PDF");
 
-        // Save the generated PDF as a fixture for visual tests
-        writeFileSync(DOWNLOADED_PDF_PATH_CUSTOM_TEMPLATE, buffer);
+        writeFileSync(paths.temp.custom, buffer); // Save the generated PDF as a fixture for visual tests
       },
     );
 
@@ -159,8 +184,7 @@ describe.sequential("Integration tests with testcontainers", () => {
         const text = await readPdfText({ data: new Uint8Array(buffer), options: { verbosity: 0 } });
         expect(text).toContain("This is a test PDF");
 
-        // Save the generated PDF as a fixture for visual tests
-        writeFileSync(DOWNLOADED_PDF_PATH_BLANK_TEMPLATE, buffer);
+        writeFileSync(paths.temp.blank, buffer); // Save the generated PDF as a fixture for visual tests
       },
     );
 
@@ -185,8 +209,7 @@ describe.sequential("Integration tests with testcontainers", () => {
         expect(text).toContain("2030/999");
         expect(text).toContain("12.24.2030");
 
-        // Save the generated PDF as a fixture for visual tests
-        writeFileSync(DOWNLOADED_PDF_PATH_DEFAULT_SHORT_TEMPLATE, buffer);
+        writeFileSync(paths.temp.defaultShort, buffer); // Save the generated PDF as a fixture for visual tests
       },
     );
 
@@ -210,8 +233,35 @@ describe.sequential("Integration tests with testcontainers", () => {
         });
         expect(text).toContain("Baz bazilikum");
 
-        // Save the generated PDF as a fixture for visual tests
-        writeFileSync(DOWNLOADED_PDF_PATH_DEFAULT_LONG_TEMPLATE, buffer);
+        writeFileSync(paths.temp.defaultLong, buffer); // Save the generated PDF as a fixture for visual tests
+      },
+    );
+
+    test(
+      "Can generate a PDF (default template, all optionals)",
+      {
+        timeout: 10_000,
+      },
+      async () => {
+        const response = await fetcher(genererBrevUrl, defaultTemplateAllOptionalsPayload);
+        if (!response.ok) {
+          console.error(await response.text());
+        }
+        expect(response.status).toBe(200);
+        const buffer = await parseResponse(response);
+        expect(buffer.length).toBeGreaterThan(0);
+
+        const text = await readPdfText({
+          data: new Uint8Array(buffer),
+          options: { verbosity: 0 },
+        });
+        expect(text).toContain("This is a test PDF");
+        expect(text).toContain("Tidlegare referanse: 2029/888");
+        expect(text).toContain("Dykkar dato: 11.11.2030");
+        expect(text).toContain("Dykkar referanse: 2030-1234-5678");
+        expect(text).toContain("Unntatt offentlegheit, jf. offl. § 14");
+
+        writeFileSync(paths.temp.defaultAllOptionals, buffer); // Save the generated PDF as a fixture for visual tests
       },
     );
 
@@ -254,13 +304,9 @@ describe.sequential("Integration tests with testcontainers", () => {
   });
 
   describe("Visual regression tests", () => {
-    // custom template fails because of font rendering difference from deployed Lambda API which is used as baseline
-    // will be fixed after switching to container
-    test.skip("pdf-visual-diff (custom template)", { timeout: 10_000 }, async () => {
-      const pdfName = "test-pdf-custom-template";
-      // const baselinePdfPath = path.join("baseline", `${pdfName}.pdf`);
-      // const pdf = readFileSync(path.resolve(__dirname, baselinePdfPath));
-      const pdf = readFileSync(DOWNLOADED_PDF_PATH_CUSTOM_TEMPLATE);
+    test("pdf-visual-diff (custom template)", { timeout: 10_000 }, async () => {
+      const pdfName = pdfNames.custom;
+      const pdf = readFileSync(paths.temp.custom);
 
       const matched = await comparePdfToSnapshot(pdf, __dirname, pdfName, {
         tolerance: 0.05,
@@ -269,10 +315,8 @@ describe.sequential("Integration tests with testcontainers", () => {
     });
 
     test("pdf-visual-diff (blank template)", { timeout: 10_000 }, async () => {
-      const pdfName = "test-pdf-blank-template";
-      // const baselinePdfPath = path.join("baseline", `${pdfName}.pdf`);
-      // const pdf = readFileSync(path.resolve(__dirname, baselinePdfPath));
-      const pdf = readFileSync(DOWNLOADED_PDF_PATH_BLANK_TEMPLATE);
+      const pdfName = pdfNames.blank;
+      const pdf = readFileSync(paths.temp.blank);
 
       const matched = await comparePdfToSnapshot(pdf, __dirname, pdfName, {
         tolerance: 0.05,
@@ -281,11 +325,8 @@ describe.sequential("Integration tests with testcontainers", () => {
     });
 
     test("pdf-visual-diff (default template, short)", { timeout: 10_000 }, async () => {
-      const pdfName = "test-pdf-default-template-short";
-      // const baselinePdfPath = path.join("baseline", `${pdfName}.pdf`);
-      // const baselinePdfPath = path.join("baseline", `${pdfName}-modified.pdf`);
-      // const pdf = readFileSync(path.resolve(__dirname, baselinePdfPath));
-      const pdf = readFileSync(DOWNLOADED_PDF_PATH_DEFAULT_SHORT_TEMPLATE);
+      const pdfName = pdfNames.defaultShort;
+      const pdf = readFileSync(paths.temp.defaultShort);
 
       const matched = await comparePdfToSnapshot(pdf, __dirname, pdfName, {
         tolerance: 0.05,
@@ -293,12 +334,19 @@ describe.sequential("Integration tests with testcontainers", () => {
       expect(matched).toBe(true);
     });
 
-    test("pdf-visual-diff (default template, long)", { timeout: 10_000 }, async () => {
-      const pdfName = "test-pdf-default-template-long";
-      const baselinePdfPath = path.join("baseline", `${pdfName}.pdf`);
-      // const baselinePdfPath = path.join("baseline", `${pdfName}-modified.pdf`);
-      const pdf = readFileSync(path.resolve(__dirname, baselinePdfPath));
-      // const pdf = readFileSync(DOWNLOADED_PDF_PATH_DEFAULT_LONG_TEMPLATE);
+    test("pdf-visual-diff (default template, long)", { timeout: 20_000 }, async () => {
+      const pdfName = pdfNames.defaultLong;
+      const pdf = readFileSync(paths.temp.defaultLong);
+
+      const matched = await comparePdfToSnapshot(pdf, __dirname, pdfName, {
+        tolerance: 0.05,
+      });
+      expect(matched).toBe(true);
+    });
+
+    test("pdf-visual-diff (default template, all optionals)", { timeout: 10_000 }, async () => {
+      const pdfName = pdfNames.defaultAllOptionals;
+      const pdf = readFileSync(paths.temp.defaultAllOptionals);
 
       const matched = await comparePdfToSnapshot(pdf, __dirname, pdfName, {
         tolerance: 0.05,

@@ -50,15 +50,21 @@ export function TemplateConfigDefaultForm({ state, dispatch }: Props) {
       />
 
       <Input
-        label="Dato"
+        label="Vår dato"
         value={state.fields.dato}
         onChange={(e) => handleFieldChange(e, "dato")}
       />
 
       <Input
-        label="Saksnummer"
+        label="Vår referanse"
         value={state.fields.saksnummer}
         onChange={(e) => handleFieldChange(e, "saksnummer")}
+      />
+
+      <Input
+        label="Tidligere referanse"
+        value={state.fields.tidligereReferanse ?? ""}
+        onChange={(e) => handleFieldChange(e, "tidligereReferanse")}
       />
 
       <Input
@@ -74,7 +80,7 @@ export function TemplateConfigDefaultForm({ state, dispatch }: Props) {
       />
 
       <Input
-        label="Saksbehandlernavn"
+        label="Vår saksbehandler"
         value={state.fields.saksbehandlerNavn}
         onChange={(e) => handleFieldChange(e, "saksbehandlerNavn")}
       />

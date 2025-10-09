@@ -1,5 +1,9 @@
 # Versjonslogg
 
+## 3.1.0 - 2025-10-09
+
+Lagt til støtte for `DefaultTemplateFields.TidligereReferanse`
+
 ## 3.0.0 - 2025-08-29
 
 Breaking changes:

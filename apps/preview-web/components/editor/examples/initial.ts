@@ -49,6 +49,7 @@ export const initialDefaultTemplateArgs = {
   fields: {
     dato: "13.09.2024",
     saksnummer: "2024/1234",
+    tidligereReferanse: "",
     deresDato: "",
     deresReferanse: "",
     saksbehandlerNavn: "Ola Nordmann",
