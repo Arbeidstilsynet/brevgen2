@@ -1,5 +1,9 @@
 # Versjonslogg
 
+## 3.1.1 - 2025-10-09
+
+Lagt til `AT.Brevgenerator.Klient.Model.BrevgeneratorSecret`
+
 ## 3.1.0 - 2025-10-09
 
 Lagt til støtte for `DefaultTemplateFields.TidligereReferanse`
