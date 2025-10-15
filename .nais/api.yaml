@@ -13,6 +13,8 @@ spec:
       value: "{{azure_tenant_id}}"
     - name: AZURE_APPLICATION_ID
       value: "{{azure_app_id}}"
+    - name: GIT_SHA
+      value: "{{git_sha}}"
   ingresses:
     - "{{api.ingress}}"
   accessPolicy:
@@ -32,9 +34,14 @@ spec:
     limits:
       memory: 1024Mi
   readiness:
-    failureThreshold: 10
-    initialDelay: 20
     path: /health
+    failureThreshold: 3
+    initialDelay: 20
     periodSeconds: 5
-    port: 4000
+    timeout: 1
+  liveness:
+    path: /health
+    failureThreshold: 3
+    initialDelay: 30
+    periodSeconds: 10
     timeout: 1

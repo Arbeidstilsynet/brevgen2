@@ -133,7 +133,7 @@ jobs:
         env:
           CLUSTER: dev
           RESOURCE: .nais/api.yaml
-          VAR: image=${{ needs.build_api.outputs.image }}
+          VAR: image=${{ needs.build_api.outputs.image }},git_sha=${{ github.sha }}
           VARS: .nais/vars-dev.yaml
           TELEMETRY: ${{ needs.build_api.outputs.telemetry }}
 
@@ -257,7 +257,7 @@ jobs:
         env:
           CLUSTER: prod
           RESOURCE: .nais/api.yaml
-          VAR: image=${{ needs.build_api.outputs.image }}
+          VAR: image=${{ needs.build_api.outputs.image }},git_sha=${{ github.sha }}
           VARS: .nais/vars-prod.yaml
           TELEMETRY: ${{ needs.build_api.outputs.telemetry }}
 

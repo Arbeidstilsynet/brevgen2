@@ -19,6 +19,21 @@ fastify.register(fastifyCors, {
   allowedHeaders: ["Content-Type", "Authorization"],
 });
 
+fastify.get("/", { logLevel: "warn" }, async (request, reply) => {
+  reply.status(200).send({
+    name: "Brevgenerator2 API",
+    version: process.env.GIT_SHA?.substring(0, 7) ?? "dev",
+    endpoints: {
+      health: { method: "GET", path: "/health", description: "Health check" },
+      genererbrev: {
+        method: "POST",
+        path: "/genererbrev",
+        description: "Generate document from markdown template",
+      },
+    },
+  });
+});
+
 fastify.get("/health", { logLevel: "warn" }, async (request, reply) => {
   reply.status(200).send();
 });

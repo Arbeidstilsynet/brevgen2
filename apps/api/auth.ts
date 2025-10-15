@@ -52,7 +52,7 @@ export function setupAuth(fastify: FastifyInstance) {
     });
 
     fastify.addHook("onRequest", async (request, reply) => {
-      if (request.routeOptions?.url === "/health") return;
+      if (request.routeOptions?.url === "/health" || request.routeOptions?.url === "/") return;
       try {
         await request.jwtVerify();
       } catch (err) {
