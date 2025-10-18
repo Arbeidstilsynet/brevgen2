@@ -80,8 +80,8 @@ importers:
         specifier: workspace:^
         version: link:../../packages/config-typescript
       '@types/aws-lambda':
-        specifier: 8.10.155
-        version: 8.10.155
+        specifier: 8.10.156
+        version: 8.10.156
       '@types/node':
         specifier: 24.7.2
         version: 24.7.2
@@ -1797,8 +1797,8 @@ packages:
   '@types/argparse@1.0.38':
     resolution: {integrity: sha512-ebDJ9b0e702Yr7pWgB0jzm+CX4Srzz8RcXtLJDJB+BSccqMa36uyH/zUsSYao5+BD1ytv3k3rPYCq4mAE1hsXA==}
 
-  '@types/aws-lambda@8.10.155':
-    resolution: {integrity: sha512-wd1XgoL0gy/ybo7WozUKQBd+IOgUkdfG6uUGI0fQOTEq06FBFdO7tmPDSxgjkFkl8GlfApvk5TvqZlAl0g+Lbg==}
+  '@types/aws-lambda@8.10.156':
+    resolution: {integrity: sha512-LElQP+QliVWykC7OF8dNr04z++HJCMO2lF7k9HuKoSDARqhcjHq8MzbrRwujCSDeBHIlvaimbuY/tVZL36KXFQ==}
 
   '@types/body-parser@1.19.6':
     resolution: {integrity: sha512-HLFeCYgz89uk22N5Qg3dvGvsv46B8GLvKKo1zKG4NybA8U2DiEO3w9lqGg29t/tfLRJpJ6iQxnVw4OnB7MoM9g==}
@@ -7045,7 +7045,7 @@ snapshots:
   '@types/argparse@1.0.38':
     optional: true
 
-  '@types/aws-lambda@8.10.155': {}
+  '@types/aws-lambda@8.10.156': {}
 
   '@types/body-parser@1.19.6':
     dependencies:
