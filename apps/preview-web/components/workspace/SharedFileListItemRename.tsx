@@ -14,7 +14,7 @@ export function SharedFileListItemRename({
   allFileKeys,
   onFinished,
 }: SharedFileListItemRenameProps) {
-  const { fileName, tags } = extractTags(fileKey);
+  const { fileName, tags, fullName } = extractTags(fileKey);
   const { addToast } = useToast();
 
   const [editFilename, setEditFilename] = useState(fileName);
@@ -27,7 +27,7 @@ export function SharedFileListItemRename({
 
   const handleRenameFile = async (oldKey: string) => {
     if (!editFilename.trim()) return;
-    const newKey = createKey(editFilename.trim(), editTags);
+    const newKey = createKey({ fileName: editFilename.trim(), tags: editTags });
     const file = await loadFile.mutateAsync(oldKey);
     await uploadFile.mutateAsync(
       { key: newKey, content: file.md },
@@ -47,6 +47,11 @@ export function SharedFileListItemRename({
     setCustomErrorMessage(error);
     setEditFilename(value);
   };
+
+  // hande old keys without fullName in addition to new format
+  const areFilenameAndTagsUnchanged =
+    fileKey === createKey({ fileName: editFilename, tags: editTags }) ||
+    fileKey === createKey({ fileName: editFilename, tags: editTags, fullName });
 
   return (
     <div className="space-y-3">
@@ -106,7 +111,7 @@ export function SharedFileListItemRename({
           data-ignore-outside
           className="rounded-sm bg-green-500 px-4 py-2 text-white hover:bg-green-600 shadow-sm disabled:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={() => handleRenameFile(fileKey)}
-          disabled={Boolean(customErrorMessage) || fileKey === createKey(editFilename, editTags)}
+          disabled={Boolean(customErrorMessage) || areFilenameAndTagsUnchanged}
         >
           Save Rename
         </button>

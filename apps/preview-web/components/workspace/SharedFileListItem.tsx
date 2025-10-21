@@ -2,6 +2,7 @@ import { use, useEffect, useRef, useState } from "react";
 import { useToast } from "../toast/provider";
 import { FileTag } from "./FileTag";
 import { useDeleteFile, useLoadFile, useUploadFile } from "./hooks";
+import { ProfileIcon } from "./ProfileIcon";
 import { WorkspaceContext } from "./provider";
 import { SharedFileListItemRename } from "./SharedFileListItemRename";
 import { extractTags, handleCopyUrlWorkspace } from "./utils";
@@ -69,26 +70,42 @@ export function SharedFileListItem({ fileKey, allFileKeys }: Readonly<SharedFile
     });
   };
 
-  const { fileName, tags } = extractTags(fileKey);
+  const { fileName, tags, fullName } = extractTags(fileKey);
   const disabled = uploadFile.isPending || deleteFile.isPending || loadFile.isPending;
 
+  // Build accessible label for list item
+  const tagsLabel = tags.size > 0 ? `, Tags: ${Array.from(tags).join(", ")}` : "";
+  const userLabel = fullName ? `, Last changed by ${fullName}` : "";
+  const listItemLabel = `${fileName}.md${tagsLabel}${userLabel}`;
+
   return (
-    <li key={fileKey} className="p-3 border border-gray-200 rounded-sm hover:shadow-md">
+    <li
+      key={fileKey}
+      className="p-3 border border-gray-200 rounded-sm hover:shadow-md"
+      aria-label={listItemLabel}
+    >
       {!isEditing && (
         <div className="flex justify-between items-center">
           <button
             className="p-2 mr-2 border border-gray-300 rounded-sm hover:bg-gray-200 w-full text-left"
             onClick={() => handleLoadFile(fileKey)}
             disabled={disabled}
+            aria-label={`Load ${fileName}`}
           >
-            <span className="font-medium">{fileName}</span>
-            <span className="text-gray-500 ml-1">.md</span>
+            <span className="font-medium" aria-hidden="true">
+              {fileName}
+            </span>
+            <span className="text-gray-500 ml-1" aria-hidden="true">
+              .md
+            </span>
             {Array.from(tags).map((tag) => (
-              <FileTag key={tag} tag={tag} />
+              <FileTag key={tag} tag={tag} aria-hidden={true} />
             ))}
           </button>
           {loadFile.error && <div className="text-red-500 text-m">{loadFile.error.message}</div>}
-          <div className="flex gap-2">
+
+          <div className="flex gap-2 items-center">
+            <ProfileIcon fullName={fullName} />
             <button
               onClick={async () => {
                 await handleCopyUrlWorkspace(fileKey);
@@ -113,6 +130,7 @@ export function SharedFileListItem({ fileKey, allFileKeys }: Readonly<SharedFile
                 />
               </svg>
             </button>
+
             <div className="relative" ref={menuRef}>
               <button
                 onClick={() => {
@@ -121,6 +139,7 @@ export function SharedFileListItem({ fileKey, allFileKeys }: Readonly<SharedFile
                 }}
                 className="p-2 rounded-sm hover:bg-gray-200 disabled:cursor-not-allowed"
                 disabled={disabled}
+                title="Show context menu"
               >
                 {/* Three dots icon */}
                 <svg

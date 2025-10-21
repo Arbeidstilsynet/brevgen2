@@ -8,7 +8,7 @@ import {
   UseQueryOptions,
 } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
-import { extractTags } from "./utils";
+import { createKey, extractTags } from "./utils";
 
 const QUERY_KEY_FILES = "workspace";
 
@@ -52,9 +52,21 @@ export function useLoadFile(
 
 export function useUploadFile(skipInvalidation = false) {
   const queryClient = useQueryClient();
+  const { data: session } = useSession();
+
   return useMutation({
     mutationKey: ["uploadFile"],
-    mutationFn: ({ key, content }: { key: string; content: string }) => uploadFile(key, content),
+    mutationFn: ({ key, content }: { key: string; content: string }) => {
+      const fileInfo = extractTags(key);
+
+      // always attribute saved changes to current user
+      const newKey = createKey({
+        ...fileInfo,
+        fullName: session?.user?.name ?? undefined,
+      });
+
+      return uploadFile(newKey, content);
+    },
     onSuccess: () => {
       if (!skipInvalidation) {
         return queryClient.invalidateQueries({ queryKey: [QUERY_KEY_FILES] });

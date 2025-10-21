@@ -18,7 +18,7 @@ export function SharedFileNew() {
 
   const handleSaveNewFile = () => {
     if (!newFilename.trim()) return;
-    const key = createKey(newFilename.trim(), newTags);
+    const key = createKey({ fileName: newFilename.trim(), tags: newTags });
     uploadFile.mutate(
       { key, content: currentMd },
       {
