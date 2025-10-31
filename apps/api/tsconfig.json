@@ -1,4 +1,4 @@
 {
   "extends": "@repo/typescript-config/base.json",
-  "include": ["lambda", "lib", "*.ts", "integration-tests", "load-tests"]
+  "include": ["lambda", "lib", "*.ts", "*.config.mjs", "integration-tests", "load-tests"]
 }

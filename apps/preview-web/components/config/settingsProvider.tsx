@@ -77,6 +77,8 @@ export function SettingsProvider({ children }: Readonly<{ children: React.ReactN
   const [settings, setSettings] = useState<AppSettings>(DEFAULT_SETTINGS);
 
   useEffect(() => {
+    // Load settings on mount to prevent hydration issues with useState initializer function
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSettings(getSettings());
   }, []);
 

@@ -1,7 +1,10 @@
+// @ts-check
+
 import pluginJs from "@eslint/js";
+import { defineConfig } from "eslint/config";
 import tseslint from "typescript-eslint";
 
-export default tseslint.config(
+export default defineConfig(
   { files: ["**/*.{js,mjs,cjs,ts}"] },
   { ignores: ["mediaToBase64.*"] },
   pluginJs.configs.recommended,

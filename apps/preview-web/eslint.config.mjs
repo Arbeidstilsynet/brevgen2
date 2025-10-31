@@ -1,23 +1,32 @@
 // @ts-check
 
-import { FlatCompat } from "@eslint/eslintrc";
 import js from "@eslint/js";
+// @ts-expect-error Could not find a declaration file
+import nextVitals from "eslint-config-next/core-web-vitals";
+// @ts-expect-error Could not find a declaration file
+import nextTs from "eslint-config-next/typescript";
 import reactCompiler from "eslint-plugin-react-compiler";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { defineConfig, globalIgnores } from "eslint/config";
 import tseslint from "typescript-eslint";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
-
-export default tseslint.config(
+export default defineConfig(
   js.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
   ...tseslint.configs.stylisticTypeChecked,
-  ...compat.extends("next/core-web-vitals"),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  ...nextVitals,
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  ...nextTs,
+
+  globalIgnores([
+    "coverage/**",
+    // Default ignores of eslint-config-next:
+    ".next/**",
+    "out/**",
+    "build/**",
+    "next-env.d.ts",
+  ]),
+
   {
     rules: {
       "@typescript-eslint/no-misused-promises": [

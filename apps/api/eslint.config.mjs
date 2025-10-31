@@ -1,8 +1,11 @@
+// @ts-check
+
 import pluginJs from "@eslint/js";
+import { defineConfig } from "eslint/config";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 
-export default tseslint.config(
+export default defineConfig(
   { files: ["**/*.{js,mjs,cjs,ts}"] },
   { ignores: ["dist", "coverage", ".aws-sam"] },
   { languageOptions: { globals: globals.node } },
