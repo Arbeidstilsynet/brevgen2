@@ -7,6 +7,7 @@ import type {
   DefaultTemplateArgs,
   DocumentTemplateOption,
   GenerateDocumentRequest,
+  PDFOptionsWithLimits,
 } from "@repo/shared-types";
 import { marked } from "marked";
 import { useEffect, useRef } from "react";
@@ -58,6 +59,7 @@ type Props = Readonly<{
   selectedTemplate: DocumentTemplateOption;
   defaultTemplateArgs: DefaultTemplateArgs;
   hasParseError: boolean;
+  pdfOptions: PDFOptionsWithLimits;
 }>;
 
 export function Preview({
@@ -68,6 +70,7 @@ export function Preview({
   selectedTemplate,
   defaultTemplateArgs,
   hasParseError,
+  pdfOptions,
 }: Props) {
   // refs for storing pevious request payloads and results
   // used for proper (re)request behavior on tab switching
@@ -76,6 +79,7 @@ export function Preview({
     mdVariables,
     selectedTemplate,
     defaultTemplateArgs,
+    pdfOptions,
   });
   const previousHtmlValues = useRef({
     md,
@@ -127,6 +131,7 @@ export function Preview({
       previousPdfValues.current.mdVariables === mdVariables &&
       previousPdfValues.current.selectedTemplate === selectedTemplate &&
       previousPdfValues.current.defaultTemplateArgs === defaultTemplateArgs &&
+      previousPdfValues.current.pdfOptions === pdfOptions &&
       pdfUrlRef.current // don't skip if this is first render
     ) {
       return;
@@ -137,6 +142,7 @@ export function Preview({
       mdVariables,
       selectedTemplate,
       defaultTemplateArgs,
+      pdfOptions,
     };
 
     const payload = {
@@ -149,6 +155,7 @@ export function Preview({
           template: selectedTemplate,
           defaultTemplateArgs: selectedTemplate === "default" ? defaultTemplateArgs : undefined,
         },
+        pdf_options: Object.keys(pdfOptions).length > 0 ? pdfOptions : undefined,
       },
     } satisfies GenerateDocumentRequest;
 
@@ -160,6 +167,7 @@ export function Preview({
     hasParseError,
     md,
     mdVariables,
+    pdfOptions,
     selectedTemplate,
   ]);
 
@@ -170,10 +178,10 @@ export function Preview({
 
     // Check if any of the payload values have changed since the last render
     if (
-      previousPdfValues.current.md === md &&
-      previousPdfValues.current.mdVariables === mdVariables &&
-      previousPdfValues.current.selectedTemplate === selectedTemplate &&
-      previousPdfValues.current.defaultTemplateArgs === defaultTemplateArgs &&
+      previousHtmlValues.current.md === md &&
+      previousHtmlValues.current.mdVariables === mdVariables &&
+      previousHtmlValues.current.selectedTemplate === selectedTemplate &&
+      previousHtmlValues.current.defaultTemplateArgs === defaultTemplateArgs &&
       remoteHtmlRef.current // don't skip if this is first render
     ) {
       return;

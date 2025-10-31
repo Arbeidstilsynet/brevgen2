@@ -4,7 +4,7 @@ import { fetchFileContentFromAzure } from "@/actions/azdo";
 import { useApertium } from "@/hooks/useApertium";
 import { findMdVariables } from "@at/dynamic-markdown";
 import { Editor, useMonaco } from "@monaco-editor/react";
-import { DocumentTemplateOption } from "@repo/shared-types";
+import { DocumentTemplateOption, PDFOptionsWithLimits } from "@repo/shared-types";
 import { useCallback, useReducer, useState } from "react";
 import { Overlay } from "../Overlay";
 import { Profile } from "../Profile";
@@ -15,6 +15,7 @@ import { Toast } from "../toast/Toast";
 import { ToastProvider, useToast } from "../toast/provider";
 import { Workspace } from "../workspace";
 import { WorkspaceContext } from "../workspace/provider";
+import { PdfOptionsTab } from "./PdfOptionsTab";
 import { Preview } from "./Preview";
 import { TemplateConfig } from "./TemplateConfig";
 import { VariablesTab } from "./VariablesTab";
@@ -23,7 +24,7 @@ import { initialDefaultTemplateArgs, initialMd, initialVars } from "./examples/i
 import { EditorHeader } from "./header";
 import { EditorControls } from "./header/EditorControls";
 import { ActivePreviewTab, PreviewControls } from "./header/PreviewControls";
-import { TopLeft } from "./header/TopLeft";
+import { type TabName, TopLeft } from "./header/TopLeft";
 import { defaultTemplateReducer } from "./templateConfigReducer";
 import { useDynamicMarkdown } from "./useDynamicMarkdown";
 import { useLoadPermanentUrl } from "./useLoadPermanentUrl";
@@ -35,13 +36,14 @@ export function DynamicMarkdownEditor() {
     useDynamicMarkdown(initialMd, initialVars);
 
   const [activePreviewTab, setActivePreviewTab] = useState<ActivePreviewTab>("md");
-  const [activeVarTab, setActiveVarTab] = useState<"variables" | "template">("variables");
+  const [activeVarTab, setActiveVarTab] = useState<TabName>("variables");
 
   const [selectedTemplate, setSelectedTemplate] = useState<DocumentTemplateOption>("default");
   const [defaultTemplateState, defaultTemplateDispatch] = useReducer(
     defaultTemplateReducer,
     initialDefaultTemplateArgs,
   );
+  const [pdfOptions, setPdfOptions] = useState<PDFOptionsWithLimits>({});
 
   const [currentModal, setCurrentModal] = useState<"explanation" | "config" | "workspace" | null>(
     null,
@@ -213,6 +215,9 @@ export function DynamicMarkdownEditor() {
               defaultTemplateDispatch={defaultTemplateDispatch}
             />
           )}
+          {activeVarTab === "pdfOptions" && (
+            <PdfOptionsTab pdfOptions={pdfOptions} setPdfOptions={setPdfOptions} />
+          )}
         </div>
 
         <div
@@ -251,6 +256,7 @@ export function DynamicMarkdownEditor() {
             selectedTemplate={selectedTemplate}
             defaultTemplateArgs={defaultTemplateState}
             hasParseError={Boolean(parseError)}
+            pdfOptions={pdfOptions}
           />
         </div>
       </main>

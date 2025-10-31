@@ -10,7 +10,7 @@ export default defineConfig({
   plugins: [
     VitePluginNode({
       adapter: "fastify",
-      appPath: "./server.ts",
+      appPath: "./server.dev.ts",
       exportName: "fastify",
       tsCompiler: "esbuild",
     }),
@@ -18,13 +18,6 @@ export default defineConfig({
   define: {
     __dirname: JSON.stringify(path.dirname(fileURLToPath(import.meta.url))),
     __filename: JSON.stringify(fileURLToPath(import.meta.url)),
-  },
-  build: {
-    rollupOptions: {
-      output: {
-        format: "cjs",
-      },
-    },
   },
   optimizeDeps: {
     include: ["puppeteer"],

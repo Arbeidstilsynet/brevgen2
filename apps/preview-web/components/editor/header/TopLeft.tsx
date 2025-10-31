@@ -1,12 +1,19 @@
+"use client";
+
 import { IconButton, TabButton } from "@/components/buttons";
+import { useSettings } from "@/components/config/settingsProvider";
+
+export type TabName = "variables" | "template" | "pdfOptions";
 
 type Props = Readonly<{
   setCurrentModal: (modal: "explanation" | "config" | "workspace" | null) => void;
-  activeVarTab: "variables" | "template";
-  setActiveVarTab: (tab: "variables" | "template") => void;
+  activeVarTab: TabName;
+  setActiveVarTab: (tab: TabName) => void;
 }>;
 
 export function TopLeft({ setCurrentModal, activeVarTab, setActiveVarTab }: Props) {
+  const { settings } = useSettings();
+
   return (
     <div className="flex items-center justify-between w-1/5">
       <div className="flex gap-2 ml-2">
@@ -41,6 +48,15 @@ export function TopLeft({ setCurrentModal, activeVarTab, setActiveVarTab }: Prop
         >
           Template
         </TabButton>
+
+        {settings.advancedFeatures.customizePdfOptions && (
+          <TabButton
+            isActive={activeVarTab === "pdfOptions"}
+            onClick={() => setActiveVarTab("pdfOptions")}
+          >
+            PDFOptions
+          </TabButton>
+        )}
       </div>
     </div>
   );

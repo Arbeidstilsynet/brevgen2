@@ -17,8 +17,6 @@ COPY .npmrc package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 # # copy packages and this app
 COPY packages/ ./packages
 COPY apps/preview-web ./apps/preview-web
-# copy api also for a relative imported type
-COPY apps/api ./apps/api
 
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 RUN pnpm --filter preview-web build
@@ -50,7 +48,7 @@ USER nextjs
 
 EXPOSE 3000
 ENV PORT=3000
-HEALTHCHECK CMD ["curl", "--fail", "http://localhost:3000/api/health", "||", "exit", "1"]
+HEALTHCHECK CMD curl --fail http://localhost:3000/api/health || exit 1
 
 # server.js is created by next build from the standalone output
 # https://nextjs.org/docs/pages/api-reference/next-config-js/output

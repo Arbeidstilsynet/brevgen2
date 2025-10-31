@@ -1,15 +1,5 @@
-import type { PDFOptions } from "puppeteer-core";
 import { z } from "zod";
-
-// Re-export types from puppeteer for convenience
-export type { PDFOptions } from "puppeteer-core";
-
-// Accept any valid PDFOptions structure
-export const pdfOptionsSchema = z
-  .custom<PDFOptions>((val) => {
-    return val !== null && typeof val === "object";
-  })
-  .optional();
+import { pdfOptionsSchema } from "./pdf-options";
 
 export const basicConfigSchema = z.object({
   css: z.string(),

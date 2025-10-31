@@ -1,4 +1,24 @@
-import { useSettings } from "./settingsProvider";
+import { type AppSettings, useSettings } from "./settingsProvider";
+
+function getTypedEntries<T extends object>(obj: T): [keyof T, T[keyof T]][] {
+  return Object.entries(obj) as [keyof T, T[keyof T]][];
+}
+
+type SettingsData = Record<
+  keyof AppSettings["advancedFeatures"],
+  { name: string; description: string }
+>;
+
+const settingsData = {
+  htmlRemoteTab: {
+    name: "HTML (Remote)",
+    description: "Aktiverer fanen for HTML-generering via API",
+  },
+  customizePdfOptions: {
+    name: "PDF options",
+    description: "Aktiverer muligheten til å tilpasse PDFOptions i payload",
+  },
+} as const satisfies SettingsData;
 
 export function Settings() {
   const { settings, setAdvancedFeature } = useSettings();
@@ -9,24 +29,23 @@ export function Settings() {
 
       <div className="bg-white border border-gray-200 rounded-lg p-4">
         <h3 className="text-lg font-medium mb-4">Avanserte funksjoner</h3>
-        <div className="space-y-3">
-          <label className="flex items-center space-x-3">
-            <input
-              type="checkbox"
-              checked={settings.advancedFeatures.htmlRemoteTab}
-              onChange={() =>
-                setAdvancedFeature("htmlRemoteTab", !settings.advancedFeatures.htmlRemoteTab)
-              }
-              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-            />
-            <div>
-              <div className="font-medium">HTML (Remote)</div>
-              <div className="text-sm text-gray-600">
-                Aktiverer fanen for HTML-generering via API
+
+        {getTypedEntries(settingsData).map(([key, data]) => (
+          <div key={key} className="space-y-3">
+            <label className="flex items-center space-x-3">
+              <input
+                type="checkbox"
+                checked={settings.advancedFeatures[key]}
+                onChange={() => setAdvancedFeature(key, !settings.advancedFeatures[key])}
+                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              <div>
+                <div className="font-medium">{data.name}</div>
+                <div className="text-sm text-gray-600">{data.description}</div>
               </div>
-            </div>
-          </label>
-        </div>
+            </label>
+          </div>
+        ))}
       </div>
     </>
   );

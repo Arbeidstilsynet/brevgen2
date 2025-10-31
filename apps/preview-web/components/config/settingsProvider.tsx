@@ -3,6 +3,7 @@ import { createContext, use, useEffect, useState } from "react";
 export interface AppSettings {
   advancedFeatures: {
     htmlRemoteTab: boolean;
+    customizePdfOptions: boolean;
   };
 }
 
@@ -15,6 +16,7 @@ interface AppSettingsContext {
 const DEFAULT_SETTINGS: AppSettings = {
   advancedFeatures: {
     htmlRemoteTab: false,
+    customizePdfOptions: false,
   },
 };
 

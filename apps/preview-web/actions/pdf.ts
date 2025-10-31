@@ -51,7 +51,11 @@ export async function sendGenerateDocument(payload: GenerateDocumentRequest) {
 
   if (!response.ok) {
     console.error(response);
-    throw new Error(`Error: ${response.statusText}`);
+    const errorBody = await response.text();
+    if (errorBody) {
+      throw new Error(`Error: ${response.status} ${response.statusText} - ${errorBody}`);
+    }
+    throw new Error(`Error: ${response.status} ${response.statusText}`);
   }
 
   const base64Pdf = await response.text();

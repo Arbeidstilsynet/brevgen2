@@ -2,6 +2,13 @@ import type { GenerateDocumentRequest } from "@repo/shared-types";
 import { Readable } from "stream";
 import { StartedDockerComposeEnvironment } from "testcontainers";
 
+export interface TestEnvironment {
+  environment: StartedDockerComposeEnvironment;
+  genererBrevUrl: string;
+  healthUrl: string;
+  logStream: Readable;
+}
+
 export async function fetcher(url: string, payload: GenerateDocumentRequest) {
   const headers: HeadersInit = {
     "Content-Type": "application/json",

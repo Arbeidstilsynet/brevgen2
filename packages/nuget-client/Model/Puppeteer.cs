@@ -133,12 +133,6 @@ public class PuppeteerPDFOptions
     public PDFMargin? Margin { get; set; }
 
     /// <summary>
-    /// The path to save the file to. Default: `undefined`.
-    /// </summary>
-    [JsonPropertyName("path")]
-    public string? Path { get; set; }
-
-    /// <summary>
     /// Hides default white background and allows generating PDFs with transparency. Default: `false`.
     /// </summary>
     [JsonPropertyName("omitBackground")]
@@ -155,16 +149,4 @@ public class PuppeteerPDFOptions
     /// </summary>
     [JsonPropertyName("outline")]
     public bool? Outline { get; set; }
-
-    /// <summary>
-    /// Timeout in milliseconds. Pass `0` to disable timeout. Default: `30_000`.
-    /// </summary>
-    [JsonPropertyName("timeout")]
-    public int? Timeout { get; set; }
-
-    /// <summary>
-    /// If true, waits for `document.fonts.ready` to resolve. Default: `true`.
-    /// </summary>
-    [JsonPropertyName("waitForFonts")]
-    public bool? WaitForFonts { get; set; }
 }

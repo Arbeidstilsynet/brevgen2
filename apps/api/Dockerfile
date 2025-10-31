@@ -1,4 +1,4 @@
-ARG CHROMIUM_VERSION="141.*"
+ARG CHROMIUM_VERSION="142.*"
 
 FROM node:24-slim@sha256:b8d2197aff9129d16c801a3e3e1b2a873c4946480f5a310f38056df2268c38d9 AS base
 FROM base AS builder
@@ -9,9 +9,11 @@ WORKDIR /app
 
 COPY .npmrc package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY packages ./packages
-COPY apps/api ./apps/api
-
+# don't copy api code for better caching
+COPY apps/api/package.json ./apps/api/
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+
+COPY apps/api ./apps/api
 # temp custom build script for docker, replace with normal build after removing lambda support
 RUN pnpm --filter api build:docker
 
@@ -49,13 +51,18 @@ ENV XDG_CACHE_HOME=/tmp/.chromium
 
 WORKDIR /app
 
-COPY --from=builder /app/apps/api/dist ./
+COPY --from=builder /app/apps/api/dist ./dist
+# for trivy scanning purposes (dependency-track)
 COPY --from=builder /app/apps/api/package.json ./
-# WORKAROUND: Copy packages to ensure workspace references work
-COPY --from=builder /app/packages ./packages
+COPY --from=builder /app/pnpm-lock.yaml ./
+
+# Copy static assets for @fastify/swagger-ui (which is external)
+COPY --from=builder /app/node_modules/@fastify/swagger-ui/static ./static
+COPY --from=builder /app/node_modules/@fastify/swagger-ui/static/logo.svg ./dist/static/logo.svg
+
 
 EXPOSE 4000
 
 HEALTHCHECK --interval=30s --timeout=10s CMD curl -f http://localhost:4000/health || exit 1
 
-CMD ["node", "server.cjs"]
+CMD ["node", "dist/server.cjs"]

@@ -110,7 +110,7 @@ function looksLikeJson(text: string): boolean {
 }
 
 // Accepts direct JSON or serialized/double-escaped JSON like '"{\"abc\":123}"' or '{...}' wrapped in single quotes
-function parsePossiblySerializedJson(raw: string): unknown {
+export function parsePossiblySerializedJson(raw: string): unknown {
   let text = raw.trim();
 
   // Strip one layer of full-string quotes
@@ -170,18 +170,69 @@ function applyTopLevelObjectToVars(obj: unknown, foundMdVars: Set<string>, setMd
   return matches;
 }
 
+/**
+ * Generic function to read text from clipboard with fallback to prompt
+ */
+export async function readTextFromClipboard(promptMessage: string): Promise<string | null> {
+  try {
+    return await navigator.clipboard.readText();
+  } catch {
+    return window.prompt(promptMessage, "") ?? null;
+  }
+}
+
+/**
+ * Generic function to parse JSON from clipboard and filter by allowed keys
+ */
+export async function parseJsonFromClipboard<T extends Record<string, unknown>>(
+  allowedKeys: Set<string>,
+  isAllowedKey: (key: string) => key is Extract<keyof T, string>,
+  promptMessage: string,
+  addToast: ReturnType<typeof useToast>["addToast"],
+): Promise<Partial<T> | null> {
+  const raw = await readTextFromClipboard(promptMessage);
+  if (!raw) {
+    addToast("error", "No text provided from clipboard or prompt");
+    return null;
+  }
+
+  const parsed = parsePossiblySerializedJson(raw);
+  if (parsed === undefined) {
+    addToast("error", "Failed to parse JSON");
+    return null;
+  }
+
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+    addToast("error", "Input JSON must be an object");
+    return null;
+  }
+
+  const filtered = {} as Record<string, unknown>;
+  let keyCount = 0;
+
+  for (const [key, value] of Object.entries(parsed as Record<string, unknown>)) {
+    if (allowedKeys.has(key) && isAllowedKey(key)) {
+      filtered[key] = value;
+      keyCount++;
+    }
+  }
+
+  if (keyCount === 0) {
+    addToast("warning", "No valid options found in provided JSON");
+    return null;
+  }
+
+  return filtered as Partial<T>;
+}
+
 export async function fillVarsFromClipboard(
   foundMdVars: Set<string>,
   setMdVar: SetVarFn,
   addToast: ReturnType<typeof useToast>["addToast"],
 ) {
-  let raw = "";
-  try {
-    raw = await navigator.clipboard.readText();
-  } catch {
-    raw =
-      window.prompt("Clipboard access unavailable. Paste JSON here to fill variables.", "") ?? "";
-  }
+  const raw = await readTextFromClipboard(
+    "Clipboard access unavailable. Paste JSON here to fill variables.",
+  );
   if (!raw) return addToast("error", "No text provided from clipboard or prompt");
 
   const parsed = parsePossiblySerializedJson(raw);

@@ -7,3 +7,6 @@ test-pdf-default-template*modified.pdf
 
 # load test
 results
+
+# pnpm deploy output
+deploy

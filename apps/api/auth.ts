@@ -1,6 +1,12 @@
 import fastifyJwt, { TokenOrHeader } from "@fastify/jwt";
-import { FastifyInstance, FastifyRequest } from "fastify";
+import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import jwksClient from "jwks-rsa";
+
+declare module "fastify" {
+  interface FastifyInstance {
+    authenticate: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
+  }
+}
 
 const isRecord = (r: unknown): r is Record<string, unknown> => {
   return typeof r === "object" && r !== null && !Array.isArray(r);
@@ -9,7 +15,7 @@ const isNonEmptyString = (s: unknown): s is string => {
   return typeof s === "string" && s.length > 0;
 };
 
-export function setupAuth(fastify: FastifyInstance) {
+export async function setupAuth(fastify: FastifyInstance) {
   const DANGEROUS_DISABLE_AUTH = process.env.DANGEROUS_DISABLE_AUTH === "true";
   const AZURE_TENANT_ID = process.env.AZURE_TENANT_ID ?? "da4bf886-a8a6-450d-a806-c347b8eb8d80";
   const AZURE_APPLICATION_ID = process.env.AZURE_APPLICATION_ID;
@@ -36,12 +42,15 @@ export function setupAuth(fastify: FastifyInstance) {
     fastify.log.warn(
       "Authentication is disabled. This is INSECURE and should not be used in production.",
     );
+    fastify.decorate("authenticate", async () => {
+      // No-op when auth is disabled
+    });
   } else {
     if (!AZURE_APPLICATION_ID) {
       throw new TypeError("Missing AZURE_APPLICATION_ID env var (required when auth enabled)");
     }
 
-    fastify.register(fastifyJwt, {
+    await fastify.register(fastifyJwt, {
       secret: getKey,
       decode: { complete: true },
       verify: {
@@ -51,8 +60,7 @@ export function setupAuth(fastify: FastifyInstance) {
       },
     });
 
-    fastify.addHook("onRequest", async (request, reply) => {
-      if (request.routeOptions?.url === "/health" || request.routeOptions?.url === "/") return;
+    fastify.decorate("authenticate", async (request: FastifyRequest, reply: FastifyReply) => {
       try {
         await request.jwtVerify();
       } catch (err) {
@@ -60,6 +68,4 @@ export function setupAuth(fastify: FastifyInstance) {
       }
     });
   }
-
-  return { DANGEROUS_DISABLE_AUTH };
 }

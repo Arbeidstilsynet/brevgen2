@@ -1,5 +1,6 @@
 import { parseDynamicMd } from "@at/dynamic-markdown";
 import { type GenerateDocumentRequest, generateDocumentRequestSchema } from "@repo/shared-types";
+import { ZodFastifySchemaValidationError } from "fastify-type-provider-zod";
 import pLimit from "p-limit";
 import { ZodError } from "zod";
 import { generateDocument } from "./generateDocument";
@@ -36,6 +37,30 @@ export class ValidationError extends Error {
       details,
     );
   }
+}
+
+export interface ValidationErrorResponse {
+  message: string;
+  error: string;
+  details: ValidationErrorDetail[];
+}
+
+export function formatZodFastifySchemaValidationError(
+  validation: ZodFastifySchemaValidationError[],
+): ValidationErrorResponse {
+  const details: ValidationErrorDetail[] = validation.map((error) => ({
+    path: error.instancePath.replace(/^\//, "").replace(/\//g, ".") || "body",
+    message: error.message!,
+    code: error.keyword,
+  }));
+
+  const errorMessage = details.map((detail) => `${detail.path}: ${detail.message}`).join("; ");
+
+  return {
+    message: "Validation error",
+    error: `Validation failed - ${errorMessage}`,
+    details,
+  };
 }
 
 /**

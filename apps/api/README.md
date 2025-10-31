@@ -15,6 +15,15 @@ $/: pnpm docker:api:run
 $/: http POST http://localhost:4000/genererbrev Content-Type:application/json md="## Sample Markdown"  mdVariables:='{"variable1": "value1", "variable2": "value2"}' options:='{"dynamic": {"template": "default", "defaultTemplateArgs": {"language": "bm", "signatureVariant": "elektroniskGodkjent", "fields": {"dato": "24.12.2025", "saksnummer": "2025/999", "saksbehandlerNavn": "Bob Bobson", "virksomhet": {"navn": "A", "adresse": "B", "postnr": "C", "poststed": "D"}}}}}'
 ```
 
+## OpenAPI/Swagger
+
+The API provides interactive documentation and machine-readable API specifications:
+
+- `GET /docs` - Interactive API documentation (Swagger UI) for exploring and testing endpoints
+- `GET /docs/json` - OpenAPI 3.0 schema in JSON format, useful for generating client SDKs, importing into API tools (Postman, Insomnia), or CI/CD validation
+
+When running locally with `DANGEROUS_DISABLE_AUTH=true`, you can test endpoints directly in Swagger UI without authentication.
+
 ## Integrasjonstester
 
 Starter API med [Testcontainers](https://testcontainers.com/) og gjør spørringer mot det.

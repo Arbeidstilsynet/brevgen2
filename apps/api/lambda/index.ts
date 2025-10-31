@@ -1,6 +1,6 @@
+import { DynamicMarkdownParseError } from "@at/dynamic-markdown";
 import type { GenerateDocumentRequest } from "@repo/shared-types";
 import type { APIGatewayProxyHandler } from "aws-lambda";
-import { DynamicMarkdownParseError } from "../../../packages/dynamic-markdown/lib/ast/error";
 import { logger } from "../app";
 import { handlerGenerateDocument, ValidationError } from "../lib/handler";
 

@@ -38,6 +38,10 @@ $/apps/preview-web: pnpm dev
 $/: docker compose up -d
 ```
 
+### OpenAPI/Swagger
+
+Etter du har startet `api` kan du bruke SwaggerUI på `http://localhost:4000/docs`
+
 ## Turborepo
 
 Dette monorepoet bruker Turborepo, som hjelper med å kjøre samme kommando parallelt for mange prosjekter og automatisk bruker cache for prosjekter som ikke er endret.
