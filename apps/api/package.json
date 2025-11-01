@@ -40,13 +40,13 @@
     "zod": "4.1.12"
   },
   "devDependencies": {
-    "@eslint/js": "9.38.0",
+    "@eslint/js": "9.39.0",
     "@repo/typescript-config": "workspace:^",
     "@types/aws-lambda": "8.10.157",
     "@types/node": "24.9.1",
     "@types/sanitize-html": "2.16.0",
     "del-cli": "7.0.0",
-    "eslint": "9.38.0",
+    "eslint": "9.39.0",
     "globals": "16.4.0",
     "pdf-text-reader": "5.1.0",
     "pdf-visual-diff": "0.14.0",
