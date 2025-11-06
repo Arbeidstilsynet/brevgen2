@@ -5,11 +5,19 @@ import js from "@eslint/js";
 import nextVitals from "eslint-config-next/core-web-vitals";
 // @ts-expect-error Could not find a declaration file
 import nextTs from "eslint-config-next/typescript";
-import reactCompiler from "eslint-plugin-react-compiler";
 import { defineConfig, globalIgnores } from "eslint/config";
 import tseslint from "typescript-eslint";
 
 export default defineConfig(
+  globalIgnores([
+    "coverage/",
+    // Default ignores of eslint-config-next:
+    ".next/",
+    "out/",
+    "build/",
+    "next-env.d.ts",
+  ]),
+
   js.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
   ...tseslint.configs.stylisticTypeChecked,
@@ -17,15 +25,6 @@ export default defineConfig(
   ...nextVitals,
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   ...nextTs,
-
-  globalIgnores([
-    "coverage/**",
-    // Default ignores of eslint-config-next:
-    ".next/**",
-    "out/**",
-    "build/**",
-    "next-env.d.ts",
-  ]),
 
   {
     rules: {
@@ -36,14 +35,6 @@ export default defineConfig(
           checksVoidReturn: false,
         },
       ],
-    },
-  },
-  {
-    plugins: {
-      "react-compiler": reactCompiler,
-    },
-    rules: {
-      "react-compiler/react-compiler": "error",
     },
   },
   {
