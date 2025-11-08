@@ -16,7 +16,7 @@ services:
       - DANGEROUS_DISABLE_AUTH=true
 
   s3mock:
-    image: adobe/s3mock:latest@sha256:8731a7690cdbbd87c72af683e087eea8a67d4989f4f677e4bdffebdea991eeb7
+    image: adobe/s3mock:latest@sha256:b3f846f27e029a14490bf1f3f480db6fae75563cf1d847c05290282c49a85221
     ports:
       - "9090:9090"
       - "9191:9191"
