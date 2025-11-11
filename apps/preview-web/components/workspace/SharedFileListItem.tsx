@@ -10,9 +10,14 @@ import { extractTags, handleCopyUrlWorkspace } from "./utils";
 interface SharedFileListItemProps {
   fileKey: string;
   allFileKeys: (string | undefined)[];
+  lastModified: Date | undefined;
 }
 
-export function SharedFileListItem({ fileKey, allFileKeys }: Readonly<SharedFileListItemProps>) {
+export function SharedFileListItem({
+  fileKey,
+  allFileKeys,
+  lastModified,
+}: Readonly<SharedFileListItemProps>) {
   const { currentMd, onLoadMd } = use(WorkspaceContext);
   const { addToast } = useToast();
 
@@ -105,7 +110,7 @@ export function SharedFileListItem({ fileKey, allFileKeys }: Readonly<SharedFile
           {loadFile.error && <div className="text-red-500 text-m">{loadFile.error.message}</div>}
 
           <div className="flex gap-2 items-center">
-            <ProfileIcon fullName={fullName} />
+            <ProfileIcon fullName={fullName} lastModified={lastModified} />
             <button
               onClick={async () => {
                 await handleCopyUrlWorkspace(fileKey);

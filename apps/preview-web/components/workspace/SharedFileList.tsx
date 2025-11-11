@@ -21,7 +21,11 @@ export function SharedFileList() {
                   Error: File key is empty
                 </li>
               ) : (
-                <SharedFileListItem fileKey={file.Key} allFileKeys={files.map((f) => f.Key)} />
+                <SharedFileListItem
+                  fileKey={file.Key}
+                  allFileKeys={files.map((f) => f.Key)}
+                  lastModified={file.LastModified}
+                />
               )}
             </Fragment>
           ))}

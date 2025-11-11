@@ -1,8 +1,9 @@
 interface ProfileIconProps {
-  fullName?: string;
+  fullName: string | undefined;
+  lastModified: Date | undefined;
 }
 
-export function ProfileIcon({ fullName }: Readonly<ProfileIconProps>) {
+export function ProfileIcon({ fullName, lastModified }: Readonly<ProfileIconProps>) {
   if (!fullName) {
     // Return placeholder with same width to maintain consistent layout
     return <span className="w-8 h-8 ml-2 inline-block" aria-hidden="true" />;
@@ -30,6 +31,11 @@ export function ProfileIcon({ fullName }: Readonly<ProfileIconProps>) {
         <span className="bg-gray-800 text-white text-sm rounded px-3 py-2 whitespace-nowrap block shadow-lg">
           <span className="text-gray-300 text-xs block">Last changed by</span>
           <span className="font-medium block">{fullName}</span>
+          {lastModified && (
+            <span className="text-gray-300 text-xs block">
+              {` ${lastModified.toLocaleDateString()} ${lastModified.toLocaleTimeString()}`}
+            </span>
+          )}
         </span>
       </span>
     </span>
