@@ -58,7 +58,7 @@ jobs:
             apps/api/
             packages
             pnpm-lock.yaml
-            .github/workflows/deploy.yml
+            .github/workflows/deploy.yaml
           exclude: |
             **/README.md
             packages/nuget-client
@@ -70,7 +70,7 @@ jobs:
           include: |
             .nais/api.yaml
             .nais/vars-*.yaml
-            .github/workflows/deploy.yml
+            .github/workflows/deploy.yaml
 
       - name: Web changed?
         uses: Arbeidstilsynet/action-check-changes@6e51077b178b819e4194f40e32bd562df0954f3f # v1
@@ -80,7 +80,7 @@ jobs:
             apps/preview-web/
             packages
             pnpm-lock.yaml
-            .github/workflows/deploy.yml
+            .github/workflows/deploy.yaml
           exclude: |
             **/README.md
             packages/nuget-client
@@ -92,7 +92,7 @@ jobs:
           include: |
             .nais/web.yaml
             .nais/vars-*.yaml
-            .github/workflows/deploy.yml
+            .github/workflows/deploy.yaml
 
   build_api:
     needs: check_changes
