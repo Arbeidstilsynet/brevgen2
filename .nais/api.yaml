@@ -22,7 +22,6 @@ spec:
       rules:
         - application: "{{web.name}}"
           namespace: "{{team}}"
-  image: "{{image}}"
   port: 4000
   replicas:
     max: 2

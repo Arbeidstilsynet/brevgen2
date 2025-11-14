@@ -40,7 +40,6 @@ spec:
         - host: spsprodweu1.vssps.visualstudio.com
         - host: spsprodweu2.vssps.visualstudio.com
         - host: spsprodweu3.vssps.visualstudio.com
-  image: "{{image}}"
   port: 3000
   replicas:
     max: 2

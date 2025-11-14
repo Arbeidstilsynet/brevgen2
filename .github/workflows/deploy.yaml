@@ -40,6 +40,8 @@ jobs:
     outputs:
       api: ${{ steps.api.outputs.changes_detected }}
       web: ${{ steps.web.outputs.changes_detected }}
+      naisapi: ${{ steps.naisapi.outputs.changes_detected }}
+      naisweb: ${{ steps.naisweb.outputs.changes_detected }}
     permissions:
       contents: read
       actions: read
@@ -56,12 +58,19 @@ jobs:
             apps/api/
             packages
             pnpm-lock.yaml
-            .nais/api.yaml
-            .nais/vars-*.yaml
             .github/workflows/deploy.yml
           exclude: |
             **/README.md
             packages/nuget-client
+
+      - name: Nais (api) changed?
+        uses: Arbeidstilsynet/action-check-changes@6e51077b178b819e4194f40e32bd562df0954f3f # v1
+        id: naisapi
+        with:
+          include: |
+            .nais/api.yaml
+            .nais/vars-*.yaml
+            .github/workflows/deploy.yml
 
       - name: Web changed?
         uses: Arbeidstilsynet/action-check-changes@6e51077b178b819e4194f40e32bd562df0954f3f # v1
@@ -71,12 +80,19 @@ jobs:
             apps/preview-web/
             packages
             pnpm-lock.yaml
-            .nais/web.yaml
-            .nais/vars-*.yaml
             .github/workflows/deploy.yml
           exclude: |
             **/README.md
             packages/nuget-client
+
+      - name: Nais (web) changed?
+        uses: Arbeidstilsynet/action-check-changes@6e51077b178b819e4194f40e32bd562df0954f3f # v1
+        id: naisweb
+        with:
+          include: |
+            .nais/web.yaml
+            .nais/vars-*.yaml
+            .github/workflows/deploy.yml
 
   build_api:
     needs: check_changes
@@ -121,7 +137,14 @@ jobs:
           dockerfile: "./apps/preview-web/Dockerfile"
 
   deploy_api_dev:
-    needs: build_api
+    needs: [check_changes, build_api]
+    # deploy using new image if built, or reuse previous deployed image if only nais config changed
+    # https://docs.atil.cloud.nais.io/workloads/explanations/workload-image/?h=workload_image#using-the-workload_image-environment-variable
+    if: |
+      always() &&
+      (needs.build_api.result == 'success' ||
+        (needs.build_api.result == 'skipped' && needs.check_changes.outputs.naisapi == 'true')
+      )
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -133,12 +156,20 @@ jobs:
         env:
           CLUSTER: dev
           RESOURCE: .nais/api.yaml
-          VAR: image=${{ needs.build_api.outputs.image }},git_sha=${{ github.sha }}
+          WORKLOAD_IMAGE: ${{ needs.build_api.outputs.image }}
+          VAR: git_sha=${{ github.sha }}
           VARS: .nais/vars-dev.yaml
           TELEMETRY: ${{ needs.build_api.outputs.telemetry }}
 
   deploy_web_dev:
-    needs: build_web
+    needs: [check_changes, build_web]
+    # deploy using new image if built, or reuse previous deployed image if only nais config changed
+    # https://docs.atil.cloud.nais.io/workloads/explanations/workload-image/?h=workload_image#using-the-workload_image-environment-variable
+    if: |
+      always() &&
+      (needs.build_web.result == 'success' ||
+        (needs.build_web.result == 'skipped' && needs.check_changes.outputs.naisweb == 'true')
+      )
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -150,7 +181,7 @@ jobs:
         env:
           CLUSTER: dev
           RESOURCE: .nais/web.yaml
-          VAR: image=${{ needs.build_web.outputs.image }}
+          WORKLOAD_IMAGE: ${{ needs.build_web.outputs.image }}
           VARS: .nais/vars-dev.yaml
           TELEMETRY: ${{ needs.build_web.outputs.telemetry }}
 
@@ -245,7 +276,11 @@ jobs:
           fi
 
   deploy_api_prod:
-    needs: [build_api, load_test_api]
+    needs: [build_api, load_test_api, deploy_api_dev]
+    if: |
+      always() &&
+      needs.load_test_api.result == 'success' &&
+      needs.deploy_api_dev.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -257,12 +292,16 @@ jobs:
         env:
           CLUSTER: prod
           RESOURCE: .nais/api.yaml
-          VAR: image=${{ needs.build_api.outputs.image }},git_sha=${{ github.sha }}
+          WORKLOAD_IMAGE: ${{ needs.build_api.outputs.image }}
+          VAR: git_sha=${{ github.sha }}
           VARS: .nais/vars-prod.yaml
           TELEMETRY: ${{ needs.build_api.outputs.telemetry }}
 
   deploy_web_prod:
     needs: [build_web, deploy_web_dev]
+    if: |
+      always() &&
+      needs.deploy_web_dev.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -274,6 +313,6 @@ jobs:
         env:
           CLUSTER: prod
           RESOURCE: .nais/web.yaml
-          VAR: image=${{ needs.build_web.outputs.image }}
+          WORKLOAD_IMAGE: ${{ needs.build_web.outputs.image }}
           VARS: .nais/vars-prod.yaml
           TELEMETRY: ${{ needs.build_web.outputs.telemetry }}
