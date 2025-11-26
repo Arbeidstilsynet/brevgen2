@@ -90,9 +90,5 @@ yarn-error.log*
 temp
 test*.html
 
-# SAM
 samconfig.toml
 .aws-sam
-
-# Large lambda layer zip
-chromium*layer*.zip

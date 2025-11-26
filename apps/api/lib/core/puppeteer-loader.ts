@@ -1,7 +1,7 @@
 import puppeteer from "puppeteer-core";
 
 /**
- * In container/Lambda we have to use puppeteer-core, but in dev we have to use puppeteer
+ * In container we have to use puppeteer-core, but in dev we have to use puppeteer
  */
 export async function loadPuppeteer() {
   const isLocal = process.env.NODE_ENV === "development";

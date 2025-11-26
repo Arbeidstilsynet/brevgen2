@@ -27,18 +27,9 @@ stages:
       - template: templates/brevgen2-deploy.yml
         parameters:
           env: dev
-          awsCredentialsApi: DevDeploy
           awsCredentialsWeb: DevPubDeploy
           region: eu-west-1
-          infraBucketApi: "infra-dev-deploy-bucket"
           infraBucketWeb: "infra-dev-deploy-pub-bucket"
-          chromiumLayerBucket: dev-brevgenerator2-lambda-layers
-          chromiumVersion: "138.0.2"
-          stackParametersApi: >-
-            Env=dev
-            DomainName=brevgenerator2-api-verifi.arbeidstilsynet.no
-            CrossAccountRoute53RoleArn=arn:aws:iam::250640723606:role/felles-cfn-extensions-prod-crossaccount-r53-role
-            DomainHostedZoneId=Z073533223SF44MXB039V
           stackParametersFargate: >-
             Env=dev
           tags: >-

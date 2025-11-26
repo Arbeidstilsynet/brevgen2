@@ -119,7 +119,7 @@ async function getBrowserInstance(): Promise<Browser> {
 
 async function initBrowser(): Promise<void> {
   try {
-    const options = await getBrowserLaunchOptions();
+    const options = getBrowserLaunchOptions();
     const puppeteer = await loadPuppeteer();
     browser = await puppeteer.launch(options);
     logger.info({ event: "browser.init.success" }, "Browser instance created");

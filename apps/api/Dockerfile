@@ -14,8 +14,7 @@ COPY apps/api/package.json ./apps/api/
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 COPY apps/api ./apps/api
-# temp custom build script for docker, replace with normal build after removing lambda support
-RUN pnpm --filter api build:docker
+RUN pnpm --filter api build
 
 
 FROM base AS runner

@@ -1,15 +1,8 @@
 parameters:
-  - name: initialJobsDependsOn
-    type: string
-    default: ""
-
   - name: env
     type: string
 
   - name: tags
-    type: string
-
-  - name: awsCredentialsApi
     type: string
 
   - name: awsCredentialsWeb
@@ -18,19 +11,7 @@ parameters:
   - name: region
     type: string
 
-  - name: infraBucketApi
-    type: string
-
   - name: infraBucketWeb
-    type: string
-
-  - name: chromiumLayerBucket
-    type: string
-
-  - name: chromiumVersion
-    type: string
-
-  - name: stackParametersApi
     type: string
 
   - name: stackParametersFargate
@@ -42,70 +23,7 @@ parameters:
     default: "CAPABILITY_IAM CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND"
 
 jobs:
-  - job: UploadLayer
-    dependsOn: ${{ parameters.initialJobsDependsOn }}
-    steps:
-      - script: python -m pip install -r requirements.txt
-        workingDirectory: "apps/api"
-        displayName: "Install script dependencies"
-
-      - task: AWSShellScript@1
-        displayName: "Run upload script"
-        inputs:
-          workingDirectory: "apps/api"
-          awsCredentials: ${{ parameters.awsCredentialsApi }}
-          regionName: ${{ parameters.region }}
-          scriptType: "inline"
-          disableAutoCwd: true
-          failOnStandardError: true
-          inlineScript: python upload-layer.py --bucket-name ${{ parameters.chromiumLayerBucket }} --chromium-version ${{ parameters.chromiumVersion }} --skip-confirmation
-
-  - job: DeployApi
-    dependsOn: UploadLayer
-    steps:
-      - template: pnpm/setup-pnpm.yaml@Templates
-
-      - script: pnpm typecheck
-        displayName: "Type check"
-        workingDirectory: "apps/api"
-
-      - script: pnpm lint
-        displayName: "Lint"
-
-      - script: pnpm circular
-        displayName: "Circular dependencies check"
-
-      - script: pnpm test
-        displayName: "Test"
-        workingDirectory: "apps/api"
-
-      - script: pnpm build
-        displayName: "Build code"
-        workingDirectory: "apps/api"
-
-      - script: sam build
-        displayName: "Build infrastructure"
-        workingDirectory: "apps/api"
-
-      - task: AWSShellScript@1
-        displayName: Deploy
-        inputs:
-          workingDirectory: "apps/api"
-          awsCredentials: ${{ parameters.awsCredentialsApi }}
-          regionName: ${{ parameters.region }}
-          scriptType: "inline"
-          disableAutoCwd: true
-          inlineScript: >-
-            sam deploy --force-upload
-            --no-fail-on-empty-changeset
-            --capabilities ${{ parameters.samCapabilities }}
-            --stack-name brevgenerator2-api-${{ parameters.env }}
-            --s3-prefix brevgenerator2-api-${{ parameters.env }}
-            --s3-bucket ${{ parameters.infraBucketApi }}
-            --parameter-overrides ${{ parameters.stackParametersApi }} ChromiumVersion=${{ parameters.chromiumVersion }} ChromiumLayerBucket=${{ parameters.chromiumLayerBucket }}
-            --tags ${{ parameters.tags }}
-
-  - job: DeployFargate
+  - job: DeployBucket
     steps:
       - script: sam build
         displayName: "Build infrastructure"

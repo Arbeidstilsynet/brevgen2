@@ -32,8 +32,6 @@ Starter API med [Testcontainers](https://testcontainers.com/) og gjør spørring
 
 ## Auth
 
-### Container/Fastify
-
 API-et forventer et Azure Entra ID (Azure AD) access token hentet via OAuth2 Client Credentials flow.
 
 Se applikasjonene `Brevgenerator2 <DEV/PROD>` i EntraId.
@@ -41,7 +39,7 @@ Se applikasjonene `Brevgenerator2 <DEV/PROD>` i EntraId.
 [jwks-rsa](https://www.npmjs.com/package/jwks-rsa) brukes for caching og henting av public keys.
 [@fastify/jwt](https://www.npmjs.com/package/@fastify/jwt) brukes for validering av token.
 
-#### Konfigurasjon av app i Entra
+### Konfigurasjon av app i Entra
 
 Oppskrift:
 
@@ -74,10 +72,6 @@ Description: Allows users to access the Brevgenerator web platform and all integ
 - Gå til Enterprise Application
   - -> Manage -> Properties og sett `Assignment required? = Yes`
 
-### AWS Lambda
-
-API-et bruker AWS Gateway API Key ved deploy til lambda.
-
 ## Miljøvariabler
 
 ```sh
@@ -87,41 +81,6 @@ AZURE_APPLICATION_ID # Brevgenerator2 DEV: 079a726c-1419-4907-9aeb-e230f700e22a
 
 # ONLY to be used in tests/locally to not require authorization header
 # DANGEROUS_DISABLE_AUTH=true
-```
-
-### samconfig.toml
-
-Bytt ut {env} med ditt navn. Ikke bruk dev/test o.l. for din egen stack.
-
-```toml
-version = 0.1
-[default.deploy.parameters]
-stack_name = "brevgenerator2-api-{env}"
-s3_prefix = "brevgenerator2-api-{env}"
-region = "eu-west-1"
-resolve_s3 = true
-capabilities = ["CAPABILITY_IAM", "CAPABILITY_NAMED_IAM"]
-parameter_overrides = [
-    "Env=\"{env}\"",
-    "DomainName=\"brevgenerator2-api-{env}.arbeidstilsynet.no\"",
-    "ChromiumLayerBucket=\"{env}-brevgenerator2-lambda-layers\"",
-    "ChromiumVersion=\"138.0.2\"",
-
-    # rolle fra felles-cfn-extensions for å opprette Route53 records i SharedServices
-    "CrossAccountRoute53RoleArn=\"arn:aws:iam::250640723606:role/felles-cfn-extensions-prod-crossaccount-r53-role\"",
-    # arbeidstilsynet.no
-    "DomainHostedZoneId=\"Z073533223SF44MXB039V\"",
-]
-image_repositories = []
-```
-
-### Deploy
-
-Før deploy må du kjøre script som forbereder S3-bøtte med lambda layer
-
-```sh
-$/apps/api: py upload-layer.py --bucket-name {dittnavn}-brevgenerator2-lambda-layers --chromium-version "138.0.2" --profile {CLI-profil, gjerne for ATDEV01}
-$/apps/api: pnpm build && sam build && sam deploy
 ```
 
 ## md-to-pdf (lib)
@@ -138,12 +97,6 @@ Tilpasninger:
 - Fjernet mye irellevant kode/funksjonalitet, som kjøring via CLI
 
 NB: puppeteer-core sin versjon må passe med versjonen av chromium, se tabell: <https://pptr.dev/supported-browsers#supported-browser-version-list>
-
-## Policy
-
-Det er laget en policy for å gi aksess apikey-ssm-parameter og til api-gateway. Legg inn følgende i lambdaene som skal bruke brevgeneratoren:
-
-`- !Sub arn:aws:iam::${AWS::AccountId}:policy/at/felles/brevgenerator/${Env}-brevgenerator-consumer-policy`
 
 ## Generering av brev
 

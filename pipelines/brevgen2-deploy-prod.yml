@@ -21,18 +21,9 @@ stages:
       - template: templates/brevgen2-deploy.yml
         parameters:
           env: test
-          awsCredentialsApi: TestDeploy
           awsCredentialsWeb: TestPubDeploy
           region: eu-west-1
-          infraBucketApi: "infra-test-deploy-bucket"
           infraBucketWeb: "infra-test-deploy-pub-bucket"
-          chromiumLayerBucket: test-brevgenerator2-lambda-layers
-          chromiumVersion: "138.0.2"
-          stackParametersApi: >-
-            Env=test
-            DomainName=brevgenerator2-api-valid.arbeidstilsynet.no
-            CrossAccountRoute53RoleArn=arn:aws:iam::250640723606:role/felles-cfn-extensions-prod-crossaccount-r53-role
-            DomainHostedZoneId=Z073533223SF44MXB039V
           stackParametersFargate: >-
             Env=test
           tags: >-
@@ -108,18 +99,9 @@ stages:
       - template: templates/brevgen2-deploy.yml
         parameters:
           env: prod
-          awsCredentialsApi: ProdDeployCD
           awsCredentialsWeb: ProdPubDeployCD
           region: eu-west-1
-          infraBucketApi: "infra-prod-deploy-bucket"
           infraBucketWeb: "infra-prod-deploy-pub-bucket"
-          chromiumLayerBucket: prod-brevgenerator2-lambda-layers
-          chromiumVersion: "138.0.2"
-          stackParametersApi: >-
-            Env=prod
-            DomainName=brevgenerator2-api.arbeidstilsynet.no
-            CrossAccountRoute53RoleArn=arn:aws:iam::250640723606:role/felles-cfn-extensions-prod-crossaccount-r53-role
-            DomainHostedZoneId=Z073533223SF44MXB039V
           stackParametersFargate: >-
             Env=prod
           tags: >-

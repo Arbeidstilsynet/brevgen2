@@ -11,7 +11,6 @@ export default defineConfig({
   splitting: false,
   dts: false,
   external: [
-    "@sparticuz/chromium",
     "@fastify/swagger-ui", // Must be external - needs static assets for Swagger UI
   ],
   noExternal: [/.*/], // Bundle everything except what's in external
