@@ -3,3 +3,6 @@ packages:
   - packages/*
 
 injectWorkspacePackages: true
+
+minimumReleaseAge: 4320 # 3 days
+trustPolicy: no-downgrade
