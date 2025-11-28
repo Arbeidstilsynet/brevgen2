@@ -34,7 +34,6 @@ services:
     environment:
       - NODE_ENV=production
       - PDF_API_URL=http://api:4000
-      - PDF_API_KEY=foobar
     env_file:
       - path: apps/preview-web/.env
         required: false

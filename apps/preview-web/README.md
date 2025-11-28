@@ -33,10 +33,8 @@ AUTH_SECRET=my-local-development-secret-that-is-long-enough-12345
 # For å kunne bruke API for PDF-generering
 PDF_API_URL=http://localhost:4000
 
-# Velg hvilken auth å bruke for spørringer til PDF-API: bearer | apikey | none
-PDF_AUTH_MODE=apikey
-# brukes hvis PDF_AUTH_MODE=apikey og api ikke er localhost
-PDF_API_KEY=apiKeyDuFinnerIAWS
+# Velg hvilken auth å bruke for spørringer til PDF-API: bearer | none
+PDF_AUTH_MODE=bearer
 
 # Client credentials for bearer-modus (f.eks. NAIS / Entra ID)
 AZURE_TENANT_ID=da4bf886-a8a6-450d-a806-c347b8eb8d80 # default, Arbeidstilsynet
@@ -49,6 +47,7 @@ AZURE_CLIENT_SECRET=... # Ligger i Keeper
 AZURE_DEVOPS_PAT=yourPAT # trenger Code:Read
 
 # For bruk av Workspace-overlay og maler i S3
+GCP_BUCKET_NAME=dev-at-brevgenerator2-workspace
 AWS_BUCKET_NAME={env}-at-brevgenerator2-workspace
 # Vanlige miljøvariabler for default credentials, kan bruke AWS_ACCESS_KEY_ID og AWS_SECRET_ACCESS_KEY
 AWS_PROFILE=ssoProfile

@@ -5,8 +5,7 @@ import { getApiAccessToken } from "@/utils/api-token";
 import type { GenerateDocumentRequest } from "@repo/shared-types";
 
 const PDF_API_URL = process.env.PDF_API_URL;
-const PDF_AUTH_MODE = (process.env.PDF_AUTH_MODE ?? "").toLowerCase(); //  bearer | apikey | none
-const PDF_API_KEY = process.env.PDF_API_KEY;
+const PDF_AUTH_MODE = (process.env.PDF_AUTH_MODE ?? "").toLowerCase(); //  bearer | none
 
 const PDF_API_ENDPOINTS = {
   GENERATE: new URL("genererbrev", PDF_API_URL).toString(),
@@ -15,11 +14,7 @@ const PDF_API_ENDPOINTS = {
 function validateEnvVars() {
   if (!PDF_API_URL) throw new Error("Missing PDF_API_URL environment variable");
 
-  if (PDF_AUTH_MODE === "apikey") {
-    if (!PDF_API_URL.includes("localhost") && !PDF_API_KEY) {
-      throw new Error("Missing PDF_API_KEY environment variable for apikey mode");
-    }
-  } else if (PDF_AUTH_MODE !== "bearer" && PDF_AUTH_MODE !== "none") {
+  if (PDF_AUTH_MODE !== "bearer" && PDF_AUTH_MODE !== "none") {
     throw new Error(`Unsupported PDF_AUTH_MODE: ${PDF_AUTH_MODE}`);
   }
 }
@@ -38,9 +33,6 @@ export async function sendGenerateDocument(payload: GenerateDocumentRequest) {
   if (PDF_AUTH_MODE === "bearer") {
     const token = await getApiAccessToken();
     headers.Authorization = `Bearer ${token}`;
-  }
-  if (PDF_AUTH_MODE === "apikey") {
-    headers["x-api-key"] = PDF_API_KEY ?? "";
   }
 
   const response = await fetch(url, {

@@ -2,6 +2,8 @@ team: plattform
 azure_tenant_id: da4bf886-a8a6-450d-a806-c347b8eb8d80
 azure_app_id: 079a726c-1419-4907-9aeb-e230f700e22a # Entra: Brevgenerator2 DEV
 s3bucket: dev-at-brevgenerator2-workspace
+bucket:
+  name: at-brevenerator2-workspace-dev
 api:
   name: brevgen2-api
   ingress: https://brevgen2-api.dev.arbeidstilsynet.no
