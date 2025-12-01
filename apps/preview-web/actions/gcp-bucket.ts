@@ -3,7 +3,15 @@
 import { requireSession } from "@/auth";
 import { Storage } from "@google-cloud/storage";
 
+export interface BucketFile {
+  Key: string;
+  Size?: string;
+  LastModified?: Date;
+}
+
 const BUCKET_NAME = process.env.GCP_BUCKET_NAME!;
+const GCS_MOCK_API_ENDPOINT = process.env.GCS_MOCK_API_ENDPOINT;
+const isEmulator = Boolean(GCS_MOCK_API_ENDPOINT);
 
 let bucket: ReturnType<Storage["bucket"]> | null = null;
 
@@ -12,8 +20,9 @@ function getBucket() {
     throw new Error("GCP_BUCKET_NAME is not set");
   }
   if (!bucket) {
-    // Uses Application Default Credentials (ADC)
-    const storage = new Storage();
+    const storage = new Storage({
+      apiEndpoint: isEmulator ? GCS_MOCK_API_ENDPOINT : undefined,
+    });
     bucket = storage.bucket(BUCKET_NAME);
   }
   return bucket;
@@ -22,10 +31,10 @@ function getBucket() {
 export async function listFiles() {
   await requireSession();
 
-  const files: { Key: string; Size?: string; Updated?: string }[] = [];
-  let pageToken: string | undefined = undefined;
   const bucket = getBucket();
+  const files: BucketFile[] = [];
 
+  let pageToken: string | undefined = undefined;
   do {
     const [pageFiles, , response] = await bucket.getFiles({ pageToken });
 
@@ -33,7 +42,7 @@ export async function listFiles() {
       ...pageFiles.map((f) => ({
         Key: f.name,
         Size: String(f.metadata.size ?? ""),
-        Updated: f.metadata.updated,
+        LastModified: f.metadata.updated ? new Date(f.metadata.updated) : undefined,
       })),
     );
 
@@ -60,6 +69,7 @@ export async function uploadFile(key: string, body: string) {
   const file = bucket.file(key);
   await file.save(body, {
     contentType: "text/plain; charset=utf-8",
+    resumable: isEmulator ? false : undefined,
   });
 }
 

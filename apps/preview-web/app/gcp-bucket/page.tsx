@@ -14,6 +14,7 @@ export default async function GcpFilesDebugPage() {
     <main style={{ padding: "1rem", fontFamily: "system-ui" }}>
       <h1>GCP Bucket Files</h1>
       <p>Bucket: {process.env.GCP_BUCKET_NAME}</p>
+      <br />
       <ul>
         {files.map((f) => (
           <li key={f.Key}>{f.Key}</li>
@@ -22,7 +23,9 @@ export default async function GcpFilesDebugPage() {
       {example && (
         <>
           <br />
-          <h2>Example file content ({files[0].Key})</h2>
+          <h2>
+            Example file:({files[0].Key}) date:{files[0].LastModified?.toISOString()}
+          </h2>
           <pre>{example}</pre>
         </>
       )}

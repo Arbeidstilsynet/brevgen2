@@ -14,11 +14,12 @@ ENV PATH="$PNPM_HOME:$PATH"
 WORKDIR /app
 # # copy root workspace and lockfile
 COPY .npmrc package.json pnpm-workspace.yaml pnpm-lock.yaml ./
-# # copy packages and this app
 COPY packages/ ./packages
-COPY apps/preview-web ./apps/preview-web
-
+# don't copy code for better caching
+COPY apps/preview-web/package.json ./apps/preview-web/
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+
+COPY apps/preview-web ./apps/preview-web
 RUN pnpm --filter preview-web build
 
 

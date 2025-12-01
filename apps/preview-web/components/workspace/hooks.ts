@@ -1,5 +1,4 @@
-import { deleteFile, getFile, listFiles, uploadFile } from "@/actions/s3";
-import { _Object } from "@aws-sdk/client-s3";
+import { deleteFile, getFile, listFiles, uploadFile, type BucketFile } from "@/actions/gcp-bucket";
 import {
   useMutation,
   UseMutationOptions,
@@ -13,7 +12,7 @@ import { createKey, extractTags } from "./utils";
 const QUERY_KEY_FILES = "workspace";
 
 export function useQueryWorkspaceFiles(
-  options?: Omit<UseQueryOptions<_Object[] | undefined>, "queryKey" | "queryFn">,
+  options?: Omit<UseQueryOptions<BucketFile[] | undefined>, "queryKey" | "queryFn">,
 ) {
   const { status } = useSession();
   return useQuery({

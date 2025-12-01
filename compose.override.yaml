@@ -1,30 +1,28 @@
 services:
+  api:
+    environment:
+      - DANGEROUS_DISABLE_AUTH=true
+
   web:
     environment:
       - PDF_AUTH_MODE=none
       - AUTH_SECRET=foobar
       - NEXTAUTH_URL=http://localhost:3000/api/auth
-      - AWS_ACCESS_KEY_ID=foo
-      - AWS_SECRET_ACCESS_KEY=bar
-      - AWS_BUCKET_NAME=test-bucket
-      - AWS_REGION=eu-west-1
-      - AWS_ENDPOINT_URL_S3=http://s3mock:9090
-      - AWS_S3_FORCE_PATH_STYLE=true
+      - GCP_BUCKET_NAME=test-bucket
+      - GCS_MOCK_API_ENDPOINT=http://gcs_mock:9023
+    depends_on:
+      gcs_mock:
+        condition: service_started
 
-  api:
+  gcs_mock:
+    image: oittaa/gcp-storage-emulator:latest
     environment:
-      - DANGEROUS_DISABLE_AUTH=true
-
-  s3mock:
-    image: adobe/s3mock:latest@sha256:b3f846f27e029a14490bf1f3f480db6fae75563cf1d847c05290282c49a85221
+      - PORT=9023
     ports:
-      - "9090:9090"
-      - "9191:9191"
-    environment:
-      - initialBuckets=test-bucket
-      - root=/data
+      - "9023:9023"
     volumes:
-      - s3data:/data
+      - gcs_data:/storage
+    command: ["start", "--default-bucket", "test-bucket"]
 
 volumes:
-  s3data:
+  gcs_data:

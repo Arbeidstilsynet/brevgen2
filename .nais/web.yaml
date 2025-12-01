@@ -18,14 +18,9 @@ spec:
       value: "http://{{api.name}}"
     - name: PDF_AUTH_MODE
       value: bearer
-    - name: AWS_REGION
-      value: eu-west-1
-    - name: AWS_BUCKET_NAME
-      value: "{{s3bucket}}"
     - name: GCP_BUCKET_NAME
       value: "{{bucket.name}}"
   envFrom:
-    - secret: nais-test-aws-sdk # AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
     - secret: azure-devops-pat-code-read # AZURE_DEVOPS_PAT
     - secret: brevgen2-azure-app-client-secret # AZURE_CLIENT_SECRET
     - secret: brevgen2-authjs-secret # AUTH_SECRET
@@ -36,7 +31,6 @@ spec:
       rules:
         - application: "{{api.name}}"
       external:
-        - host: "{{s3bucket}}.s3.eu-west-1.amazonaws.com"
         # Azure DevOps REST API
         - host: dev.azure.com
         - host: spsprodweu1.vssps.visualstudio.com

@@ -32,7 +32,7 @@ $/apps/preview-web: pnpm dev
 
 ### Docker Compose (isolert miljø)
 
-`compose.override.yaml` inkluderer [mock av S3](https://github.com/adobe/S3Mock)
+`compose.override.yaml` inkluderer [mock av Google Cloud Storage](https://github.com/oittaa/gcp-storage-emulator)
 
 ```sh
 $/: docker compose up -d

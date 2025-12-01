@@ -117,7 +117,7 @@ export function useLoadPermanentUrl(
       });
       if (!file) return addToast("error", `File ${decodedWorkspaceParam} not found in workspace`);
 
-      getWorkspaceFile(file.Key!);
+      getWorkspaceFile(file.Key);
     };
     loadFromAppropriateSource();
   }, [

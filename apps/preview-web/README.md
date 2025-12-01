@@ -11,13 +11,12 @@ Se [api readme for oppsett i Entra](../api/README.md#konfigurasjon-av-app-i-entr
 
 ## Integrasjoner
 
-| Integrasjon              | Auth                           | Formål                        |
-| ------------------------ | ------------------------------ | ----------------------------- |
-| Brevgenerator2 API       | Bearer JWT / API Key (AWS)     | Generering av PDF             |
-| Azure DevOps REST API    | PAT Code:Read                  | Henting av brevmaler fra repo |
-| GCP Cloud Storage (TODO) |                                | Lagring av WIP brevmaler      |
-| AWS SDK S3               | Default credentials (dev: SSO) | Lagring av WIP brevmaler      |
-| Apertium API             | Ingen                          | Tekstoversetting              |
+| Integrasjon           | Auth                            | Formål                        |
+| --------------------- | ------------------------------- | ----------------------------- |
+| Brevgenerator2 API    | Bearer JWT                      | Generering av PDF             |
+| Azure DevOps REST API | PAT Code:Read                   | Henting av brevmaler fra repo |
+| GCP Cloud Storage     | Application Default Credentials | Lagring av WIP brevmaler      |
+| Apertium API          | Ingen                           | Tekstoversetting              |
 
 ## Miljøvariabler
 
@@ -46,12 +45,8 @@ AZURE_CLIENT_SECRET=... # Ligger i Keeper
 # For å kunne hente maler fra repo
 AZURE_DEVOPS_PAT=yourPAT # trenger Code:Read
 
-# For bruk av Workspace-overlay og maler i S3
+# For bruk av Workspace med WIP-maler
 GCP_BUCKET_NAME=dev-at-brevgenerator2-workspace
-AWS_BUCKET_NAME={env}-at-brevgenerator2-workspace
-# Vanlige miljøvariabler for default credentials, kan bruke AWS_ACCESS_KEY_ID og AWS_SECRET_ACCESS_KEY
-AWS_PROFILE=ssoProfile
-AWS_REGION=eu-west-1
 ```
 
 ## Docker

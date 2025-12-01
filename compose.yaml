@@ -8,8 +8,8 @@ services:
       - "4000:4000"
     environment:
       - NODE_ENV=production
-      - TESTCONTAINERS=${TESTCONTAINERS}
-      - DANGEROUS_DISABLE_AUTH=${DANGEROUS_DISABLE_AUTH}
+      - TESTCONTAINERS=${TESTCONTAINERS:-}
+      - DANGEROUS_DISABLE_AUTH=${DANGEROUS_DISABLE_AUTH:-}
     read_only: true
     tmpfs:
       - /tmp
