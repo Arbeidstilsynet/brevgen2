@@ -3,6 +3,11 @@ packages:
   - packages/*
 
 injectWorkspacePackages: true
+autoInstallPeers: false
 
 minimumReleaseAge: 4320 # 3 days
 trustPolicy: no-downgrade
+trustPolicyExclude:
+  - chokidar@4.0.3
+  - jose@4.15.9
+  - semver@6.3.1
