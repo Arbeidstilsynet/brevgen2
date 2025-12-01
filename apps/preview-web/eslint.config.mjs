@@ -1,9 +1,7 @@
 // @ts-check
 
 import js from "@eslint/js";
-// @ts-expect-error Could not find a declaration file
 import nextVitals from "eslint-config-next/core-web-vitals";
-// @ts-expect-error Could not find a declaration file
 import nextTs from "eslint-config-next/typescript";
 import { defineConfig, globalIgnores } from "eslint/config";
 import tseslint from "typescript-eslint";
