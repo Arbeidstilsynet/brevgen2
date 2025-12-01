@@ -47,7 +47,7 @@
     "pdf-text-reader": "5.1.0",
     "pdf-visual-diff": "0.14.0",
     "puppeteer": "24.27.0",
-    "testcontainers": "11.7.2",
+    "testcontainers": "11.9.0",
     "tsup": "8.5.1",
     "typescript": "5.9.3",
     "typescript-eslint": "8.48.0",
