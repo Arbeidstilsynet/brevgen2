@@ -21,7 +21,7 @@
     "@at/dynamic-markdown": "workspace:*",
     "@fastify/cors": "11.1.0",
     "@fastify/jwt": "10.0.0",
-    "@fastify/swagger": "9.5.2",
+    "@fastify/swagger": "9.6.1",
     "@fastify/swagger-ui": "5.2.3",
     "@repo/shared-types": "workspace:^",
     "dotenv": "17.2.3",
