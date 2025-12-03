@@ -89,6 +89,3 @@ yarn-error.log*
 # test output
 temp
 test*.html
-
-samconfig.toml
-.aws-sam
