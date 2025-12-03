@@ -36,7 +36,7 @@ public enum PaperFormat
     A5,
 
     [EnumMember(Value = "a6")]
-    A6
+    A6,
 }
 
 public class PDFMargin

@@ -108,7 +108,7 @@ public enum TemplateType
     Custom,
 
     [EnumMember(Value = "blank")]
-    Blank
+    Blank,
 }
 
 public class PdfConfig : BasicConfig
