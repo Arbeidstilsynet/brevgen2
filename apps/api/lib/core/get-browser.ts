@@ -168,8 +168,8 @@ export async function useBrowserWithRetry<T>(fn: (browser: Browser) => Promise<T
   let lastError: unknown;
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    const instance = await getBrowserInstance();
     try {
+      const instance = await getBrowserInstance();
       return await fn(instance);
     } catch (error) {
       lastError = error;
