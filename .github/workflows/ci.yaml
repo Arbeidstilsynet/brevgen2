@@ -130,6 +130,7 @@ jobs:
         if: needs.changes.outputs.brevgen2 == 'true' && (steps.test.outcome == 'success' || steps.test.outcome == 'failure')
         with:
           files: "junit.xml"
+          check_name: "Brevgen2 Unit Test Results"
 
       - run: pnpm build --filter=!nuget-client
         if: needs.changes.outputs.brevgen2 == 'true'
@@ -160,6 +161,7 @@ jobs:
         if: needs.changes.outputs.brevgen2 == 'true' && (steps.test.outcome == 'success' || steps.test.outcome == 'failure')
         with:
           files: "**/junit.xml"
+          check_name: "Integration Test Results"
 
       - uses: actions/upload-artifact@v4
         if: needs.changes.outputs.brevgen2 == 'true' && steps.test.outcome == 'failure'
