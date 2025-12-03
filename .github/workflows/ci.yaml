@@ -52,6 +52,7 @@ jobs:
         with:
           base-ref: ${{ github.event_name == 'pull_request' && 'origin/main' || github.event.before }}
           include: |
+            .github/workflows/ci.yml
             packages/nuget-client/
             adhoc/BrevgeneratorKlientLocalTest
 
