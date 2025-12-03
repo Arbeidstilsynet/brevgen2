@@ -16,7 +16,7 @@ export async function mdToPdf<T extends Partial<Config>>(
     ...config,
     pdf_options: { ...defaultConfig.pdf_options, ...config.pdf_options },
   };
-  logger.info({ mergedConfig, path: import.meta.url, function: "mdToPdf" });
+  logger.debug({ mergedConfig, path: import.meta.url, function: "mdToPdf" });
 
   return await useBrowserWithRetry(async (browser) => {
     const result = await convertMdToPdf(md, mergedConfig, browser);

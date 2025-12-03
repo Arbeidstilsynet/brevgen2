@@ -116,7 +116,7 @@ export async function initializeServer() {
         request.log.debug({ user });
       }
       try {
-        request.log.info(request.body);
+        request.log.debug({ body: request.body });
         const result = await handlerGenerateDocument(request.body);
         reply.send(result);
       } catch (err) {

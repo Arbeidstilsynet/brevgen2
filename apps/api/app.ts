@@ -7,6 +7,7 @@ export const fastify = Fastify({
   logger:
     environment === "development"
       ? {
+          level: "debug",
           transport: {
             target: "pino-pretty",
             options: {
