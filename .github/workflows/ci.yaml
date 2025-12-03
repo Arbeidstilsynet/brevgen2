@@ -13,7 +13,7 @@ jobs:
     outputs:
       nais: ${{ steps.nais.outputs.changes_detected }}
       brevgen2: ${{ steps.brevgen2.outputs.changes_detected }}
-      nuget-client: ${{ steps.nuget.outputs.changes_detected}}
+      nuget-client: ${{ steps.nuget-client.outputs.changes_detected}}
     steps:
       - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
         with:
