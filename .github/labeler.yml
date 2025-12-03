@@ -1,0 +1,66 @@
+api:
+  - changed-files:
+      - all-globs-to-any-file:
+          - "apps/api/**"
+          - "!apps/api/package.json"
+
+preview-web:
+  - changed-files:
+      - all-globs-to-any-file:
+          - "apps/preview-web/**"
+          - "!apps/preview-web/package.json"
+
+config-typescript:
+  - changed-files:
+      - all-globs-to-any-file:
+          - "packages/config-typescript/**"
+          - "!packages/config-typescript/package.json"
+
+document-templates:
+  - changed-files:
+      - all-globs-to-any-file:
+          - "packages/document-templates/**"
+          - "!packages/document-templates/package.json"
+
+dynamic-markdown:
+  - changed-files:
+      - all-globs-to-any-file:
+          - "packages/dynamic-markdown/**"
+          - "!packages/dynamic-markdown/package.json"
+
+nuget-client:
+  - changed-files:
+      - all-globs-to-any-file:
+          - "packages/nuget-client/**"
+
+shared-types:
+  - changed-files:
+      - all-globs-to-any-file:
+          - "packages/shared-types/**"
+          - "!packages/shared-types/package.json"
+
+documentation:
+  - changed-files:
+      - all-globs-to-any-file:
+          - "**/*.md"
+          - "!**/CHANGELOG.md"
+          - "!apps/preview-web/examples/*.md"
+
+dependencies:
+  - changed-files:
+      - any-glob-to-any-file: "pnpm-lock.yaml"
+
+ci:
+  - changed-files:
+      - any-glob-to-any-file: ".github/**"
+
+config:
+  - changed-files:
+      - all-globs-to-any-file:
+          - "**/.*"
+          - "!.github/**"
+  - changed-files:
+      - any-glob-to-any-file:
+          - "**/*.config.*"
+          - "**/tsconfig.json"
+          - "**/pnpm-workspace.yaml"
