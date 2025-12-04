@@ -2,7 +2,6 @@ name: Publish Nuget-client
 
 on:
   push:
-    branches: ["fix/gh-publish-nuget"]
     tags:
       - "nuget-client-v*"
 
@@ -31,12 +30,12 @@ jobs:
           version: ${{ steps.get_metadata_from_csprojectfile.outputs.version }}
           source-feed: ${{ env.source-feed}}
 
-      # - name: Publish package if not already published
-      #   if: steps.nuget_version_check.outputs.published == 'false'
-      #   uses: Arbeidstilsynet/action-dotnet-publish@1f0a759b152f5e6024fec0025db31ff4f5a0192d # v2
-      #   with:
-      #     working-directory: ./packages/nuget-client
-      #     nuget-auth-token: ${{ secrets.AZURE_DEVOPS_PACKAGING_WRITE_PAT }}
+      - name: Publish package if not already published
+        if: steps.nuget_version_check.outputs.published == 'false'
+        uses: Arbeidstilsynet/action-dotnet-publish@1f0a759b152f5e6024fec0025db31ff4f5a0192d # v2
+        with:
+          working-directory: ./packages/nuget-client
+          nuget-auth-token: ${{ secrets.AZURE_DEVOPS_PACKAGING_WRITE_PAT }}
 
       - name: Extract changelog section for current version
         id: changelog
@@ -58,19 +57,12 @@ jobs:
             echo 'changelog=No changelog found.' >> $GITHUB_OUTPUT
           fi
 
-      - name: DEBUG
-        run: |
-          echo "Version: ${{ steps.get_metadata_from_csprojectfile.outputs.version }}"
-          echo "Published: ${{ steps.nuget_version_check.outputs.published }}"
-          echo "Changelog:"
-          echo "${{ steps.changelog.outputs.changelog}}"
-
-      # - name: Create GitHub Release
-      #   if: steps.nuget_version_check.outputs.published == 'false'
-      #   uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2
-      #   with:
-      #     tag_name: "${{ steps.get_metadata_from_csprojectfile.outputs.name }}@${{ steps.get_metadata_from_csprojectfile.outputs.version }}"
-      #     name: "${{ steps.get_metadata_from_csprojectfile.outputs.name }} v${{ steps.get_metadata_from_csprojectfile.outputs.version }}"
-      #     body: ${{ steps.changelog.outputs.changelog }}
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create GitHub Release
+        if: steps.nuget_version_check.outputs.published == 'false'
+        uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2
+        with:
+          tag_name: "${{ steps.get_metadata_from_csprojectfile.outputs.name }}@${{ steps.get_metadata_from_csprojectfile.outputs.version }}"
+          name: "${{ steps.get_metadata_from_csprojectfile.outputs.name }} v${{ steps.get_metadata_from_csprojectfile.outputs.version }}"
+          body: ${{ steps.changelog.outputs.changelog }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
