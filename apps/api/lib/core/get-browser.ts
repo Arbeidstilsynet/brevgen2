@@ -168,10 +168,8 @@ export async function useBrowserWithRetry<T>(fn: (browser: Browser) => Promise<T
   let lastError: unknown;
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    let acquired = false;
+    const instance = await getBrowserInstance();
     try {
-      const instance = await getBrowserInstance();
-      acquired = true;
       return await fn(instance);
     } catch (error) {
       lastError = error;
@@ -200,9 +198,7 @@ export async function useBrowserWithRetry<T>(fn: (browser: Browser) => Promise<T
         "Retrying with new browser after failure",
       );
     } finally {
-      if (acquired) {
-        releaseUser();
-      }
+      releaseUser();
     }
   }
 
