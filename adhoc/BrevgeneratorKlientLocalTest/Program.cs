@@ -21,14 +21,11 @@ static class Program
         // ---------- Klient 1 via DI ----------
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddSingleton(new BrevgeneratorConfig(apiUrl));
-        serviceCollection.AddSingleton<IBrevgeneratorKlient>(
-            sp =>
-                new BrevgeneratorKlient(
-                    sp.GetRequiredService<BrevgeneratorConfig>(),
-                    BrevgeneratorKlient.AuthMode.ApiKey,
-                    apiKeyFactory: async () => "foo"
-                )
-        );
+        serviceCollection.AddSingleton<IBrevgeneratorKlient>(sp => new BrevgeneratorKlient(
+            sp.GetRequiredService<BrevgeneratorConfig>(),
+            BrevgeneratorKlient.AuthMode.ApiKey,
+            apiKeyFactory: async () => "foo"
+        ));
         var serviceProvider = serviceCollection.BuildServiceProvider();
         var client1 = serviceProvider.GetRequiredService<IBrevgeneratorKlient>();
 
@@ -67,7 +64,7 @@ static class Program
                 new()
                 {
                     AsHtml = true,
-                    PdfOptions = new() { DisplayHeaderFooter = true }
+                    PdfOptions = new() { DisplayHeaderFooter = true },
                 }
             )
             .Build();

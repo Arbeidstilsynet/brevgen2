@@ -1,6 +1,8 @@
-# felles-brevgenerator
+# Brevgenerator2
 
-Den nye brevgeneratoren er konfigurert som et integrert monorepo med sentralisert konfigurasjon og mulighet til å importere mellom prosjektene.
+Brevgenerator2 standardiserer og forenkler PDF-generering ved å definere dokumentmaler sentralt men brevmal hos konsument i form av Markdown.
+
+Dette er konfigurert som et integrert monorepo med sentralisert konfigurasjon og mulighet til å importere mellom prosjektene.
 
 ## Prosjekter
 
@@ -63,7 +65,3 @@ $ pnpm build
 # kjør tester for alle prosjekter
 $ pnpm test
 ```
-
-## Gammel løsning
-
-[Legacy brevgenerator](src/README.md)

@@ -34,7 +34,7 @@ public enum Language
     Bokmål,
 
     [EnumMember(Value = "nn")]
-    Nynorsk
+    Nynorsk,
 }
 
 /// <summary>
@@ -49,7 +49,7 @@ public enum SignatureVariant
     AutomatiskBehandlet,
 
     [EnumMember(Value = "usignert")]
-    Usignert
+    Usignert,
 }
 
 /// <summary>

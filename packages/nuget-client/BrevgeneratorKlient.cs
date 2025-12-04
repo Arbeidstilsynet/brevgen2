@@ -1,7 +1,7 @@
 using System.Text;
 using System.Text.Json;
-using AT.Brevgenerator.Klient.Model;
 using System.Text.Json.Serialization;
+using AT.Brevgenerator.Klient.Model;
 
 namespace AT.Brevgenerator.Klient;
 
@@ -20,7 +20,7 @@ public class BrevgeneratorKlient : IBrevgeneratorKlient
         /// <summary>
         /// Bruk API key i headeren "x-api-key". Konsumenten må selv levere nøkkelen.
         /// </summary>
-        ApiKey
+        ApiKey,
     }
 
     /// <summary>
@@ -29,12 +29,11 @@ public class BrevgeneratorKlient : IBrevgeneratorKlient
     public const string ApiKeyHeader = "x-api-key";
 
     private readonly HttpClient _httpClient;
-    private readonly JsonSerializerOptions _jsonOptions =
-        new()
-        {
-            Converters = { new EnumMemberJsonConverter() },
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-        };
+    private readonly JsonSerializerOptions _jsonOptions = new()
+    {
+        Converters = { new EnumMemberJsonConverter() },
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+    };
 
     private readonly AuthMode _authMode;
     private readonly Func<Task<string>>? _bearerTokenFactory;

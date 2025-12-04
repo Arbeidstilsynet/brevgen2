@@ -153,7 +153,7 @@ internal class BuilderSteps : IAddMarkdownStep, IChooseTemplateStep, IDefaultTem
         {
             Dynamic = options.Dynamic,
             Author = options.Author,
-            DocumentTitle = options.DocumentTitle
+            DocumentTitle = options.DocumentTitle,
         };
         options = mergedOptions;
         return this;
@@ -171,7 +171,7 @@ internal class BuilderSteps : IAddMarkdownStep, IChooseTemplateStep, IDefaultTem
         {
             Md = Md!,
             MdVariables = MdVariables,
-            Options = options
+            Options = options,
         };
     }
 }

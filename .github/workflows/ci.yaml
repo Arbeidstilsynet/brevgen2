@@ -1,0 +1,183 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      nais: ${{ steps.nais.outputs.changes_detected }}
+      brevgen2: ${{ steps.brevgen2.outputs.changes_detected }}
+      nuget-client: ${{ steps.nuget-client.outputs.changes_detected}}
+    steps:
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
+        with:
+          fetch-depth: 0
+
+      - name: Nais config changed?
+        uses: Arbeidstilsynet/action-check-changes@6e51077b178b819e4194f40e32bd562df0954f3f # v1
+        id: nais
+        with:
+          # correctly handle both push and pr events to get the right base ref
+          base-ref: ${{ github.event_name == 'pull_request' && 'origin/main' || github.event.before }}
+          include: |
+            .github/workflows/ci.yaml
+            .nais
+
+      - name: Brevgen2 changed?
+        uses: Arbeidstilsynet/action-check-changes@6e51077b178b819e4194f40e32bd562df0954f3f # v1
+        id: brevgen2
+        with:
+          base-ref: ${{ github.event_name == 'pull_request' && 'origin/main' || github.event.before }}
+          include: |
+            .github/workflows/ci.yaml
+            apps/
+            packages/
+            .prettier*
+            package.json
+            pnpm*.yaml
+          exclude: |
+            **/*.md
+            **/.gitignore
+            packages/nuget-client/
+
+      - name: Nuget-client changed?
+        uses: Arbeidstilsynet/action-check-changes@6e51077b178b819e4194f40e32bd562df0954f3f # v1
+        id: nuget-client
+        with:
+          base-ref: ${{ github.event_name == 'pull_request' && 'origin/main' || github.event.before }}
+          include: |
+            .github/workflows/ci.yaml
+            packages/nuget-client/
+            adhoc/BrevgeneratorKlientLocalTest
+
+  validate-nais:
+    needs: changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: .nais
+    steps:
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
+        if: needs.changes.outputs.nais == 'true'
+      - name: Install nais-cli
+        if: needs.changes.outputs.nais == 'true'
+        run: |
+          NAIS_GPG_KEY="/etc/apt/keyrings/nav_nais_gar.asc"
+          curl -sfSL "https://europe-north1-apt.pkg.dev/doc/repo-signing-key.gpg" | sudo dd of="$NAIS_GPG_KEY"
+          echo "deb [arch=amd64 signed-by=$NAIS_GPG_KEY] https://europe-north1-apt.pkg.dev/projects/nais-io nais-ppa main" | sudo tee /etc/apt/sources.list.d/nav_nais_gar.list
+          sudo apt update
+          sudo apt install nais
+      - run: nais --version
+        if: needs.changes.outputs.nais == 'true'
+      - run: nais validate --vars-file vars-dev.yaml api.yaml web.yaml
+        if: needs.changes.outputs.nais == 'true'
+      - run: nais validate --vars-file vars-prod.yaml api.yaml web.yaml
+        if: needs.changes.outputs.nais == 'true'
+
+  build:
+    needs: changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: read
+      checks: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
+        if: needs.changes.outputs.brevgen2 == 'true'
+      - uses: Arbeidstilsynet/action-pnpm-setup@f85980486b86b35f3ad337b60b3b03c36d16e343 # v1
+        if: needs.changes.outputs.brevgen2 == 'true'
+
+      - run: pnpm typecheck
+        if: needs.changes.outputs.brevgen2 == 'true'
+        name: "Type check"
+
+      - run: pnpm lint
+        if: needs.changes.outputs.brevgen2 == 'true'
+        name: "Lint"
+
+      - run: pnpm format:check
+        if: needs.changes.outputs.brevgen2 == 'true'
+        name: "Formatting check"
+
+      - run: pnpm circular
+        if: needs.changes.outputs.brevgen2 == 'true'
+        name: "Circular dependencies check"
+
+      # filtrer ut nuget-client så denne pipeline ikke trenger håndtere dotnet
+      - run: pnpm test --filter=!nuget-client
+        if: needs.changes.outputs.brevgen2 == 'true'
+        name: "Test"
+        id: test
+
+      # - name: "Report Coverage"
+      #   if: needs.changes.outputs.brevgen2 == 'true' && (steps.test.outcome == 'success' || steps.test.outcome == 'failure')
+      #   uses: davelosert/vitest-coverage-report-action@8ab049ff5a2c6e78f78af446329379b318544a1a # v2
+
+      # known issue: status check will be attached to the wrong workflow
+      # https://github.com/orgs/community/discussions/24616
+      # https://github.com/EnricoMi/publish-unit-test-result-action/issues/12
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@34d7c956a59aed1bfebf31df77b8de55db9bbaaf # v2
+        if: needs.changes.outputs.brevgen2 == 'true' && (steps.test.outcome == 'success' || steps.test.outcome == 'failure')
+        with:
+          files: "**/junit.xml"
+          check_name: "Brevgen2 Unit Test Results"
+
+      - run: pnpm build --filter=!nuget-client
+        if: needs.changes.outputs.brevgen2 == 'true'
+        name: "Build"
+
+  testcontainer:
+    needs: changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: read
+      checks: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
+        if: needs.changes.outputs.brevgen2 == 'true'
+      - uses: Arbeidstilsynet/action-pnpm-setup@f85980486b86b35f3ad337b60b3b03c36d16e343 # v1
+        if: needs.changes.outputs.brevgen2 == 'true'
+
+      - run: "pnpm test:integration"
+        if: needs.changes.outputs.brevgen2 == 'true'
+        id: test
+        working-directory: "apps/api"
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@34d7c956a59aed1bfebf31df77b8de55db9bbaaf # v2
+        if: needs.changes.outputs.brevgen2 == 'true' && (steps.test.outcome == 'success' || steps.test.outcome == 'failure')
+        with:
+          files: "**/junit.xml"
+          check_name: "Integration Test Results"
+
+      - uses: actions/upload-artifact@v4
+        if: needs.changes.outputs.brevgen2 == 'true' && steps.test.outcome == 'failure'
+        with:
+          name: integration-test-snapshots
+          path: apps/api/integration-tests/__snapshots__/
+
+  nuget-client:
+    needs: changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
+        if: needs.changes.outputs.nuget-client == 'true'
+      - name: Build and Test .NET solution
+        if: needs.changes.outputs.nuget-client == 'true'
+        uses: Arbeidstilsynet/action-dotnet-build@d5fc49a03caa254f019fff4fd06eab4e99d877e7 # v2
+        with:
+          working-directory: "."
