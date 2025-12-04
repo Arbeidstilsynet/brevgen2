@@ -30,13 +30,13 @@ jobs:
         with:
           name: ${{ steps.get_metadata_from_csprojectfile.outputs.name }}
           version: ${{ steps.get_metadata_from_csprojectfile.outputs.version }}
-          source-feed: ${{ env.source-feed}}
+          source-feed: ${{ env.source-feed }}
 
       - name: Publish package if not already published
         if: steps.nuget_version_check.outputs.published == 'false'
         uses: Arbeidstilsynet/action-dotnet-publish@1f0a759b152f5e6024fec0025db31ff4f5a0192d # v2
         with:
-          working-directory: ./packages/nuget-client
+          working-directory: ${{env.working-directory }}
           nuget-auth-token: ${{ secrets.AZURE_DEVOPS_PACKAGING_WRITE_PAT }}
 
       - name: Extract changelog section for current version
