@@ -6,19 +6,20 @@ Modeller for payload ligger i `AT.Brevgenerator.Klient.Model`
 
 Autentisering må angis eksplisitt av konsumenten. Klienten støtter to moduser:
 
-- BearerToken – async factory som returnerer et gyldig bearer token (f.eks. Entra ID client credentials). Anbefalt.
-- ApiKey – async factory som returnerer ApiKey, som sendes i headeren `x-api-key`.
+- BearerToken – async factory som returnerer et gyldig bearer token (f.eks. Entra ID client credentials). Eneste støttet av nåværende deployet API.
+- ApiKey – async factory som returnerer ApiKey, som sendes i headeren `x-api-key`. Ble brukt før.
 
 ## Hvordan publisere ny versjon av NuGet-pakken
 
-1. Skriv inn dine endringer i [CHANGELOG.md](CHANGELOG.md) med passende nytt [semantisk versjonsnummer](https://semver.org/)
-2. PR og commit til main-branch i repo
-3. Opprett git tag `nuget-x.y.z` i Azure DevOps
-4. En ny pakke blir bygget og publisert i Azure Artifacts, klar til bruk
+1. Oppdater `Version` i [nuget-client.csproj](nuget-client.csproj) med passende nytt [semantisk versjonsnummer](https://semver.org/)
+2. Skriv inn dine endringer i [CHANGELOG.md](CHANGELOG.md)
+3. PR og merge til main-branch
+4. Lag Git tag `nuget-x.y.z`
+5. En ny pakke blir bygget og publisert i Azure Artifacts public feed, klar til bruk
 
 ## Hvordan installere NuGet-pakken
 
-Legg til organisasjonens feed "Atil-utvikling" i konsumerende prosjekt sin `nuget.config`
+Legg til organisasjonens public feed "AT.Public.NuGet" i konsumerende prosjekt sin `nuget.config`
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -26,12 +27,16 @@ Legg til organisasjonens feed "Atil-utvikling" i konsumerende prosjekt sin `nuge
   <packageSources>
     <clear />
     <add key="nuget.org" value="https://api.nuget.org/v3/index.json" protocolVersion="3" />
-    <add key="Atil-utvikling" value="https://pkgs.dev.azure.com/Atil-utvikling/_packaging/Atil-utvikling/nuget/v3/index.json" />
+    <add
+      key="AT.Public.NuGet"
+      value="https://pkgs.dev.azure.com/Atil-utvikling/Public/_packaging/AT.Public.NuGet/nuget/v3/index.json"
+      protocolVersion="3"
+    />
   </packageSources>
 </configuration>
 ```
 
-## Eksempel
+## Eksempel på bruk
 
 ```csharp
 var brevGenConfig = new BrevgeneratorConfig(Environment.GetEnvironmentVariable("BREVGENERATOR_API_URL")!);

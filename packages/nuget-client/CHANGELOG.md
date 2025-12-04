@@ -1,5 +1,9 @@
 # Versjonslogg
 
+## 3.1.4
+
+- Publiserer fra GitHub til public feed `AT.Public.NuGet`
+
 ## 3.1.3 - 2025-10-31
 
 Fjernet `Path,Timeout,WaitForFonts` fra PuppeteerPDFOptions. Dette er en breaking change, men disse egenskapene var ikke ment å være tilgjengelige. API schema har blitt oppdatert og forsøk på å bruke disse vil bli stoppet av schema validation.
