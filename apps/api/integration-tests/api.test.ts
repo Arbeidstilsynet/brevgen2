@@ -71,7 +71,7 @@ describe.sequential("Integration tests with testcontainers", () => {
       healthUrl,
       logStream,
     };
-  }, 180_000); // Increase timeout to 3 minutes since building containers can take time
+  }, 240_000); // Increase timeout to 4 minutes since building containers can take time
 
   afterAll(async () => {
     console.log("Tearing down Docker Compose environment...");
