@@ -16,6 +16,8 @@ minimumReleaseAgeExclude:
   - "eslint-config-next@16.0.7"
   - "@next/eslint-plugin-next@16.0.7"
   - "@next/env@16.0.7"
+  - "jws@4.0.1"
+  - "jsonwebtoken@9.0.3"
 trustPolicy: no-downgrade
 trustPolicyExclude:
   - chokidar@4.0.3
