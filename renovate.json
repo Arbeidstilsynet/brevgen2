@@ -1,6 +1,17 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "local>Arbeidstilsynet/renovate-config"
+  "extends": ["local>Arbeidstilsynet/renovate-config"],
+  "reviewersFromCodeOwners": true,
+  "packageRules": [
+    {
+      "matchFileNames": ["apps/preview-web/package.json", "apps/api/package.json"],
+      "extends": ["config:js-app"]
+    },
+    {
+      "matchPackageNames": ["puppeteer", "puppeteer-core"],
+      "matchManagers": ["npm"],
+      "automerge": false,
+      "description": "Avoid automerging puuppeteer patches to preserve compatibility with specific Chromium versions"
+    }
   ]
 }
