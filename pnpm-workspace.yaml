@@ -5,6 +5,9 @@ packages:
 injectWorkspacePackages: true
 autoInstallPeers: false
 
+onlyBuiltDependencies:
+  - "puppeteer"
+
 minimumReleaseAge: 4320 # 3 days
 minimumReleaseAgeExclude:
   - "react@19.2.1"
