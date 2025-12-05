@@ -1,4 +1,6 @@
-ARG CHROMIUM_VERSION="142.*"
+# For available Chromium versions in the distro, see https://repology.org/project/chromium/versions
+# Chromium versions changes should be matched with Puppeteer version from https://pptr.dev/supported-browsers
+ARG CHROMIUM_VERSION="143.*"
 
 FROM node:24-slim@sha256:0afb7822fac7bf9d7c1bf3b6e6c496dee6b2b64d8dfa365501a3c68e8eba94b2 AS base
 FROM base AS builder
