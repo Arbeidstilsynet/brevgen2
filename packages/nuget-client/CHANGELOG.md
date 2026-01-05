@@ -1,5 +1,9 @@
 # Versjonslogg
 
+## 3.1.5
+
+- Fjern logging av payload og forenklet feilhåndtering
+
 ## 3.1.4
 
 - Publiserer fra GitHub til public feed `AT.Public.NuGet`

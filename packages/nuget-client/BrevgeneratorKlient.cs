@@ -77,20 +77,9 @@ public class BrevgeneratorKlient : IBrevgeneratorKlient
         await EnsureAuthHeader();
 
         var jsonPayload = JsonSerializer.Serialize(payload, _jsonOptions);
-        Console.WriteLine($"BrevgeneratorKlient.GenererBrev payload: {jsonPayload}");
         var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
         var response = await _httpClient.PostAsync("genererbrev", content);
-        try
-        {
-            response.EnsureSuccessStatusCode();
-        }
-        catch (HttpRequestException)
-        {
-            var responseBody = await response.Content.ReadAsStringAsync();
-            Console.WriteLine($"Request failed with status code {response.StatusCode}. Response body: {responseBody}");
-            throw;
-        }
-
+        response.EnsureSuccessStatusCode();
         return await response.Content.ReadAsStringAsync();
     }
 
