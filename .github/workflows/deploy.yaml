@@ -105,6 +105,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
+      packages: write
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
       - uses: nais/docker-build-push@791ebb6f74b82849c742a9bc9c97abe44c6c111f # v0
@@ -114,6 +115,15 @@ jobs:
           image_suffix: api
           docker_context: "."
           dockerfile: "./apps/api/Dockerfile"
+      - name: Push image to ghcr.io
+        run: |
+          # Log in to the GitHub Container Registry
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          # Tag the image
+          docker buildx imagetools create \
+            -t ghcr.io/${{ github.repository }}:latest \
+            -t ghcr.io/${{ github.repository }}:${{ github.sha}} \
+            ${{ steps.docker.outputs.image }}
 
   build_web:
     needs: check_changes
