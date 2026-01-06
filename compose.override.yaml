@@ -15,7 +15,7 @@ services:
         condition: service_started
 
   gcs_mock:
-    image: oittaa/gcp-storage-emulator:latest
+    image: oittaa/gcp-storage-emulator:latest@sha256:a93c3fc7ec65bb5980b3d684103fbfc5aff093e7e04b2e001365e30835e07c20
     environment:
       - PORT=9023
     ports:
