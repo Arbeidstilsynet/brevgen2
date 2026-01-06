@@ -59,7 +59,7 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
 
   const handleRepoSelected = (repo: AzDoRepoWithName) => {
     setSelectedRepo(repo);
-    if (!selectedRepo || selectedRepo[0].id !== repo[0].id) {
+    if (selectedRepo?.[0].id !== repo[0].id) {
       setSelectedBranch(null);
     }
   };
