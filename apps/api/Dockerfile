@@ -2,7 +2,7 @@
 # Chromium versions changes should be matched with Puppeteer version from https://pptr.dev/supported-browsers
 ARG CHROMIUM_VERSION="143.*"
 
-FROM node:24-slim@sha256:b83af04d005d8e3716f542469a28ad2947ba382f6b4a76ddca0827a21446a540 AS base
+FROM node:24-slim@sha256:732887b2c52d7251840a19d203afc68a61532b1ff8b5bf3b76efd49ded39e908 AS base
 FROM base AS builder
 
 RUN npm i -g corepack@latest && corepack enable
