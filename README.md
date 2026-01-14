@@ -15,9 +15,9 @@ Dette er konfigurert som et integrert monorepo med sentralisert konfigurasjon og
   - [config-typescript](packages/config-typescript/) - felles tsconfigs
   - [shared-types](packages/shared-types/) - felles typer, inkludert schema for API
 - nuget-client
-  - [BrevgeneratorKlient](packages/BrevgeneratorKlient) - C#-klient for å bruke API - publisert som `AT.Brevgenerator.Klient`
-  - [BrevgeneratorKlient.Tests](packages/BrevgeneratorKlient) - Tester for `AT.Brevgenerator.Klient`
-  - [BrevgeneratorKlientAdhocTest](adhoc/BrevgeneratorKlientLocalTest) - CLI for ad hoc testing
+  - [BrevgeneratorKlient](nuget-client/BrevgeneratorKlient) - C#-klient for å bruke API - publisert som `AT.Brevgenerator.Klient`
+  - [BrevgeneratorKlient.Tests](nuget-client/BrevgeneratorKlient.Tests) - Tester for `AT.Brevgenerator.Klient`
+  - [BrevgeneratorKlientAdhocTest](nuget-client/BrevgeneratorKlientLocalTest) - CLI for ad hoc testing
 
 ## Lokal kjøring
 
