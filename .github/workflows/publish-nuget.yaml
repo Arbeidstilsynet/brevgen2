@@ -6,7 +6,7 @@ on:
       - "nuget-client-v*"
 
 env:
-  working-directory: ./packages/nuget-client
+  working-directory: ./nuget-client/BrevgeneratorKlient
   source-feed: AT.Public.NuGet
 
 jobs:

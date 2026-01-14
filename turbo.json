@@ -10,6 +10,10 @@
     "nuget-client#build": {
       "outputs": ["bin/**", "obj/**"]
     },
+    "nuget-client#tests": {
+      "outputs": ["bin/**", "obj/**"],
+      "dependsOn": ["nuget-client#build"]
+    },
     "dev": {
       "cache": false,
       "persistent": true

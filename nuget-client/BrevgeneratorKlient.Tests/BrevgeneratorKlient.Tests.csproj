@@ -20,6 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\nuget-client\nuget-client.csproj" />
+    <ProjectReference Include="..\BrevgeneratorKlient\BrevgeneratorKlient.csproj" />
   </ItemGroup>
 </Project>
