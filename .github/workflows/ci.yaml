@@ -53,8 +53,7 @@ jobs:
           base-ref: ${{ github.event_name == 'pull_request' && 'origin/main' || github.event.before }}
           include: |
             .github/workflows/ci.yaml
-            packages/nuget-client/
-            adhoc/BrevgeneratorKlientLocalTest
+            nuget-client/
 
   validate-nais:
     needs: changes
@@ -112,8 +111,7 @@ jobs:
         if: needs.changes.outputs.brevgen2 == 'true'
         name: "Circular dependencies check"
 
-      # filtrer ut nuget-client så denne pipeline ikke trenger håndtere dotnet
-      - run: pnpm test --filter=!nuget-client
+      - run: pnpm test --filter=!nuget-client --filter=!nuget-client-tests
         if: needs.changes.outputs.brevgen2 == 'true'
         name: "Test"
         id: test
@@ -132,7 +130,7 @@ jobs:
           files: "**/junit.xml"
           check_name: "Brevgen2 Unit Test Results"
 
-      - run: pnpm build --filter=!nuget-client
+      - run: pnpm build --filter=!nuget-client --filter=!nuget-client-tests
         if: needs.changes.outputs.brevgen2 == 'true'
         name: "Build"
 

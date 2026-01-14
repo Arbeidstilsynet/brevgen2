@@ -74,46 +74,41 @@ public class BrevgeneratorKlient : IBrevgeneratorKlient
     /// <inheritdoc/>
     public async Task<string> GenererBrev(GenererBrevArgs payload)
     {
-        await EnsureAuthHeader();
-
         var jsonPayload = JsonSerializer.Serialize(payload, _jsonOptions);
-        var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
-        var response = await _httpClient.PostAsync("genererbrev", content);
+        var request = new HttpRequestMessage(HttpMethod.Post, "genererbrev")
+        {
+            Content = new StringContent(jsonPayload, Encoding.UTF8, "application/json"),
+        };
+        await AddAuthHeader(request);
+        var response = await _httpClient.SendAsync(request);
         response.EnsureSuccessStatusCode();
         return await response.Content.ReadAsStringAsync();
     }
 
-    private async Task EnsureAuthHeader()
+    private async Task AddAuthHeader(HttpRequestMessage request)
     {
         switch (_authMode)
         {
             case AuthMode.BearerToken:
-                if (_httpClient.DefaultRequestHeaders.Authorization == null)
+                if (_bearerTokenFactory == null)
                 {
-                    if (_bearerTokenFactory == null)
-                    {
-                        throw new InvalidOperationException(
-                            "AuthMode.BearerToken valgt men bearerTokenFactory er ikke satt."
-                        );
-                    }
-                    var token = await _bearerTokenFactory();
-                    _httpClient.DefaultRequestHeaders.Authorization =
-                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                    throw new InvalidOperationException(
+                        "AuthMode.BearerToken valgt men bearerTokenFactory er ikke satt."
+                    );
                 }
+                var token = await _bearerTokenFactory();
+                request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
                 break;
             case AuthMode.ApiKey:
-                if (!_httpClient.DefaultRequestHeaders.Contains(ApiKeyHeader))
+                if (_apiKeyFactory == null)
                 {
-                    if (_apiKeyFactory == null)
-                    {
-                        throw new InvalidOperationException("AuthMode.ApiKey valgt men apiKeyFactory er ikke satt.");
-                    }
-                    var key = await _apiKeyFactory();
-                    _httpClient.DefaultRequestHeaders.Add(ApiKeyHeader, key);
+                    throw new InvalidOperationException("AuthMode.ApiKey valgt men apiKeyFactory er ikke satt.");
                 }
+                var key = await _apiKeyFactory();
+                request.Headers.Add(ApiKeyHeader, key);
                 break;
             default:
-                throw new ArgumentOutOfRangeException(nameof(_authMode), _authMode, null);
+                throw new InvalidOperationException($"Ukjent autentiseringsmodus: {_authMode}");
         }
     }
 }

@@ -1,5 +1,11 @@
 # Versjonslogg
 
+## 3.1.6
+
+- Fiks så `bearerTokenFactory` alltid kalles ved gjenbruk av samme httpClient
+- Sett headers på selve request i stedet for å mutere `httpClient.DefaultRequestHeaders`
+- Refactor av intern mappestruktur
+
 ## 3.1.5
 
 - Fjern logging av payload og forenklet feilhåndtering

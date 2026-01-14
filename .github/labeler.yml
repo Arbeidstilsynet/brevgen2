@@ -31,7 +31,7 @@ dynamic-markdown:
 nuget-client:
   - changed-files:
       - all-globs-to-any-file:
-          - "packages/nuget-client/**"
+          - "nuget-client/**"
 
 shared-types:
   - changed-files:
