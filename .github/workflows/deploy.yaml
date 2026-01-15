@@ -106,7 +106,7 @@ jobs:
       packages: write
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
-      - uses: nais/docker-build-push@791ebb6f74b82849c742a9bc9c97abe44c6c111f # v0
+      - uses: nais/docker-build-push@3909895eaba1e9312b99a7f23c087f980a421506 # v0
         id: docker
         with:
           team: plattform
@@ -136,7 +136,7 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
-      - uses: nais/docker-build-push@791ebb6f74b82849c742a9bc9c97abe44c6c111f # v0
+      - uses: nais/docker-build-push@3909895eaba1e9312b99a7f23c087f980a421506 # v0
         id: docker
         with:
           team: plattform
