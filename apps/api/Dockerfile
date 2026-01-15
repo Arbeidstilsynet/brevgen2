@@ -1,6 +1,6 @@
 # For available Chromium versions in the distro, see https://repology.org/project/chromium/versions
 # Chromium versions changes should be matched with Puppeteer version from https://pptr.dev/supported-browsers
-ARG CHROMIUM_VERSION="143.*"
+ARG CHROMIUM_VERSION="144.*"
 
 FROM node:24-slim@sha256:732887b2c52d7251840a19d203afc68a61532b1ff8b5bf3b76efd49ded39e908 AS base
 FROM base AS builder
@@ -27,7 +27,7 @@ ARG CHROMIUM_VERSION
 # renovate: datasource=repology depName=debian_12/fontconfig versioning=loose
 ENV FONTCONFIG_VERSION="2.14.1-4"
 # renovate: datasource=repology depName=debian_12_backports/curl versioning=loose
-ENV CURL_VERSION="8.14.1-2~bpo12+1"
+ENV CURL_VERSION="8.14.1-2+deb13u2~bpo13+1"
 
 # Install specific Chromium version and other dependencies
 RUN echo "deb http://security.debian.org/debian-security bookworm-security main" > /etc/apt/sources.list.d/security.list \
