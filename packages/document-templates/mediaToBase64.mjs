@@ -1,7 +1,7 @@
-import fs from "fs";
-import path from "path";
-import { argv } from "process";
-import { fileURLToPath } from "url";
+import fs from "node:fs";
+import path from "node:path";
+import { argv } from "node:process";
+import { fileURLToPath } from "node:url";
 
 // Get the directory name of the current module
 const __filename = fileURLToPath(import.meta.url);

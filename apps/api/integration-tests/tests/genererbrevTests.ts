@@ -1,5 +1,5 @@
 import { GenerateDocumentRequest } from "@repo/shared-types";
-import { writeFileSync } from "fs";
+import { writeFileSync } from "node:fs";
 import { readPdfText } from "pdf-text-reader";
 import { afterEach, beforeAll, expect, test } from "vitest";
 import { paths } from "../paths";
