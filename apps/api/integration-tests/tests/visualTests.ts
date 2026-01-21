@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { comparePdfToSnapshot } from "pdf-visual-diff";
 import { expect, test } from "vitest";
 import { paths, pdfNames } from "../paths";
@@ -8,7 +9,7 @@ export function visualTests() {
     const pdfName = pdfNames.custom;
     const pdf = readFileSync(paths.temp.custom);
 
-    const matched = await comparePdfToSnapshot(pdf, __dirname, pdfName, {
+    const matched = await comparePdfToSnapshot(pdf, join(__dirname, ".."), pdfName, {
       tolerance: 0.05,
     });
     expect(matched).toBe(true);
@@ -18,7 +19,7 @@ export function visualTests() {
     const pdfName = pdfNames.blank;
     const pdf = readFileSync(paths.temp.blank);
 
-    const matched = await comparePdfToSnapshot(pdf, __dirname, pdfName, {
+    const matched = await comparePdfToSnapshot(pdf, join(__dirname, ".."), pdfName, {
       tolerance: 0.05,
     });
     expect(matched).toBe(true);
@@ -28,7 +29,7 @@ export function visualTests() {
     const pdfName = pdfNames.defaultShort;
     const pdf = readFileSync(paths.temp.defaultShort);
 
-    const matched = await comparePdfToSnapshot(pdf, __dirname, pdfName, {
+    const matched = await comparePdfToSnapshot(pdf, join(__dirname, ".."), pdfName, {
       tolerance: 0.05,
     });
     expect(matched).toBe(true);
@@ -38,7 +39,7 @@ export function visualTests() {
     const pdfName = pdfNames.defaultLong;
     const pdf = readFileSync(paths.temp.defaultLong);
 
-    const matched = await comparePdfToSnapshot(pdf, __dirname, pdfName, {
+    const matched = await comparePdfToSnapshot(pdf, join(__dirname, ".."), pdfName, {
       tolerance: 0.05,
     });
     expect(matched).toBe(true);
@@ -48,7 +49,7 @@ export function visualTests() {
     const pdfName = pdfNames.defaultAllOptionals;
     const pdf = readFileSync(paths.temp.defaultAllOptionals);
 
-    const matched = await comparePdfToSnapshot(pdf, __dirname, pdfName, {
+    const matched = await comparePdfToSnapshot(pdf, join(__dirname, ".."), pdfName, {
       tolerance: 0.05,
     });
     expect(matched).toBe(true);
