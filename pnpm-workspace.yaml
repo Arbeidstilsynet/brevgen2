@@ -9,6 +9,9 @@ injectWorkspacePackages: true
 
 minimumReleaseAge: 4320
 
+minimumReleaseAgeExclude:
+  - pdf-text-reader@5.1.1
+
 onlyBuiltDependencies:
   - puppeteer
 
