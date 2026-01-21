@@ -39,7 +39,7 @@
   "devDependencies": {
     "@eslint/js": "9.39.2",
     "@repo/typescript-config": "workspace:^",
-    "@types/node": "24.10.8",
+    "@types/node": "24.10.9",
     "@types/sanitize-html": "2.16.0",
     "del-cli": "7.0.0",
     "eslint": "9.39.2",
