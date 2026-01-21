@@ -19,7 +19,7 @@
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
     "prettier": "3.7.4",
-    "turbo": "2.7.4",
+    "turbo": "2.7.5",
     "typescript": "5.9.3"
   },
   "engines": {
