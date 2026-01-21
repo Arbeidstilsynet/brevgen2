@@ -1,4 +1,4 @@
-import { readFileSync } from "fs";
+import { readFileSync } from "node:fs";
 import { comparePdfToSnapshot } from "pdf-visual-diff";
 import { expect, test } from "vitest";
 import { paths, pdfNames } from "../paths";

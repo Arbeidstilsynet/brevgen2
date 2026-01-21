@@ -1,6 +1,6 @@
 import type { GenerateDocumentRequest } from "@repo/shared-types";
-import fs from "fs";
-import path from "path";
+import fs from "node:fs";
+import path from "node:path";
 import { readPdfText } from "pdf-text-reader";
 import { BatchResult, LoadTestConfig, LoadTestResult, RequestResult } from "./types";
 

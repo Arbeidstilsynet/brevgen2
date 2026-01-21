@@ -1,5 +1,5 @@
-import fs from "fs";
-import path from "path";
+import fs from "node:fs";
+import path from "node:path";
 import { runLoadTest } from "./requests";
 import { LoadTestConfig, ResultData } from "./types";
 import { deleteOldPdfs } from "./utils";

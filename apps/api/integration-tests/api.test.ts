@@ -1,5 +1,5 @@
-import { existsSync } from "fs";
-import path from "path";
+import { existsSync } from "node:fs";
+import path from "node:path";
 import { Readable } from "stream";
 import { DockerComposeEnvironment, StartedDockerComposeEnvironment } from "testcontainers";
 import { afterAll, beforeAll, describe } from "vitest";
