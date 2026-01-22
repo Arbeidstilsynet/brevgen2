@@ -7,12 +7,13 @@
     ".": "./lib/index.ts"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsgo --noEmit"
   },
   "dependencies": {
     "zod": "4.3.5"
   },
   "devDependencies": {
+    "@typescript/native-preview": "7.0.0-dev.20260119.1",
     "typescript": "5.9.3"
   }
 }

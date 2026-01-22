@@ -1,5 +1,6 @@
 {
   "[csharp]": {
     "editor.defaultFormatter": "csharpier.csharpier-vscode"
-  }
+  },
+  "typescript.experimental.useTsgo": true
 }
