@@ -7,6 +7,8 @@ import {
   defaultTemplateAllOptionalsPayload,
   defaultTemplateLongPayload,
   defaultTemplateShortPayload,
+  direktoratTemplateShortPayload,
+  direktoratTemplateWithSignaturesPayload,
 } from "../testdata";
 import { fetcher, parseResponse, TestEnvironment } from "../utils";
 
@@ -205,6 +207,95 @@ export function genererBrevTests(getTestEnv: () => TestEnvironment) {
       expect(htmlContent).toContain("<strong>bold</strong>");
       expect(htmlContent).toContain("<em>italic</em>");
       expect(htmlContent).not.toContain("%PDF-"); // Verify it doesn't contain PDF-specific markers
+    },
+  );
+
+  test(
+    "Can generate a PDF (direktorat template, short)",
+    {
+      timeout: 10_000,
+    },
+    async () => {
+      const response = await fetcher(testEnv.genererBrevUrl, direktoratTemplateShortPayload);
+      if (!response.ok) {
+        console.error(await response.text());
+      }
+      expect(response.status).toBe(200);
+      const buffer = await parseResponse(response);
+      expect(buffer.length).toBeGreaterThan(0);
+
+      const text = await readPdfText({ data: new Uint8Array(buffer), options: { verbosity: 0 } });
+      expect(text).toContain("This is a direktorat test PDF");
+      expect(text).toContain("Mottaker AS");
+      expect(text).toContain("Direktør Direktoratsen");
+      expect(text).toContain("2026/1234");
+      expect(text).toContain("22.01.2026");
+
+      writeFileSync(paths.temp.direktoratShort, buffer);
+    },
+  );
+
+  test(
+    "Can generate a PDF (direktorat template, with signatures)",
+    {
+      timeout: 10_000,
+    },
+    async () => {
+      const response = await fetcher(
+        testEnv.genererBrevUrl,
+        direktoratTemplateWithSignaturesPayload,
+      );
+      if (!response.ok) {
+        console.error(await response.text());
+      }
+      expect(response.status).toBe(200);
+      const buffer = await parseResponse(response);
+      expect(buffer.length).toBeGreaterThan(0);
+
+      const text = await readPdfText({ data: new Uint8Array(buffer), options: { verbosity: 0 } });
+      expect(text).toContain("This is a signed direktorat PDF");
+      expect(text).toContain("Bedrift AS");
+      expect(text).toContain("Kari Nordmann");
+      expect(text).toContain("2026/5678");
+      expect(text).toContain("Ola Nordmann");
+      expect(text).toContain("Avdelingsdirektør");
+
+      writeFileSync(paths.temp.direktoratWithSignatures, buffer);
+    },
+  );
+
+  test(
+    "Can generate a PDF (direktorat template, minimal fields)",
+    {
+      timeout: 10_000,
+    },
+    async () => {
+      const payload: GenerateDocumentRequest = {
+        md: "# Minimal Direktorat\n\nThis is a minimal direktorat PDF",
+        options: {
+          dynamic: {
+            template: "direktorat",
+            direktoratTemplateArgs: {
+              language: "bm",
+              signatureVariant: "usignert",
+              fields: {},
+            },
+          },
+        },
+      };
+
+      const response = await fetcher(testEnv.genererBrevUrl, payload);
+      if (!response.ok) {
+        console.error(await response.text());
+      }
+      expect(response.status).toBe(200);
+      const buffer = await parseResponse(response);
+      expect(buffer.length).toBeGreaterThan(0);
+
+      const text = await readPdfText({ data: new Uint8Array(buffer), options: { verbosity: 0 } });
+      expect(text).toContain("This is a minimal direktorat PDF");
+
+      writeFileSync(paths.temp.direktoratMinimal, buffer);
     },
   );
 }
