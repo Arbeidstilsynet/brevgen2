@@ -10,12 +10,13 @@ RUN npm i -g corepack@latest && corepack enable
 WORKDIR /app
 
 COPY .npmrc package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY packages ./packages
-# don't copy api code for better caching
+# don't copy code yet for better caching
 COPY apps/api/package.json ./apps/api/
+COPY --parents packages/*/package.json ./
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 COPY apps/api ./apps/api
+COPY packages ./packages
 RUN pnpm --filter api build
 
 
