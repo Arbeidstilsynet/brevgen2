@@ -12,7 +12,9 @@ WORKDIR /app
 COPY .npmrc package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 # don't copy code yet for better caching
 COPY apps/api/package.json ./apps/api/
-COPY --parents packages/*/package.json ./
+COPY packages/dynamic-markdown/package.json ./packages/dynamic-markdown/
+COPY packages/document-templates/package.json ./packages/document-templates/
+COPY packages/shared-types/package.json ./packages/shared-types/
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 COPY apps/api ./apps/api
