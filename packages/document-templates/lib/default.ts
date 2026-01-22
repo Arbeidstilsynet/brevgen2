@@ -1,10 +1,11 @@
 import type {
   DefaultTemplateArgs,
   DefaultTemplateFields,
-  DefaultTemplateLanguage as Language,
-  DefaultTemplateSignatureVariant as SignatureVariant,
+  TemplateLanguage,
+  DefaultTemplateSignatureVariant,
 } from "@repo/shared-types";
 import { logoBase64 } from "./default-logo";
+import { globalCss } from "./css";
 
 const text = {
   tidligereReferanse: {
@@ -39,43 +40,14 @@ const text = {
     bm: "Dette er automatisk behandlet, og brevet er derfor ikke signert.",
     nn: "Dette er automatisk behandla, og brevet er derfor ikkje signert.",
   },
-} satisfies Record<string, Record<Language, string>>;
+} satisfies Record<string, Record<TemplateLanguage, string>>;
 
-export function getMd(md: string, args: DefaultTemplateArgs): string {
+function getMd(md: string, args: DefaultTemplateArgs): string {
   const letterhead = getLetterhead(args.fields, args.language);
   return `${letterhead}\n\n${md}\n\n${getSignature(args.signatureVariant, args.language)}`;
 }
 
-export const globalCss = `
-body {
-  font-family: 'Aptos', 'Helvetica Neue', Arial, sans-serif;
-  font-size: 11.5pt;
-  }
-h1 {
-  font-size: 22pt;
-  font-weight: normal;
-}
-h2 {
-  font-size: 16pt;
-  font-weight: normal;
-}
-h3 {
-  font-size: 14pt;
-  font-weight: normal;
-}
-h4 {
-  font-size: 11.5pt;
-  font-weight: bold;
-}
-p {
-  break-inside: avoid;
-}
-a {
-  color: #3C4C7D;
-}
-`;
-
-function getLetterhead(fields: DefaultTemplateFields, language: Language) {
+function getLetterhead(fields: DefaultTemplateFields, language: TemplateLanguage) {
   // Use joined array to avoid extra whitespace from nested template string.
   // Certain whitespace can cause Marked's HTML conversion to insert elements as string literals in <code> tags.
   const lines = [
@@ -85,15 +57,12 @@ function getLetterhead(fields: DefaultTemplateFields, language: Language) {
     `<div style="text-align: right; font-size: 10pt;">`,
     `<p style="margin: 0;">Vår dato: ${fields.dato}</p>`,
     `<p style="margin: 0;${fields.tidligereReferanse ? "font-weight: bold;" : ""}">Vår referanse: ${fields.saksnummer}</p>`,
-    fields.tidligereReferanse
-      ? `<p style="margin: 0;">${text.tidligereReferanse[language]}: ${fields.tidligereReferanse}</p>`
-      : "",
-    fields.deresDato
-      ? `<p style="margin: 0;">${text.deresDato[language]}: ${fields.deresDato}</p>`
-      : "",
-    fields.deresReferanse
-      ? `<p style="margin: 0;">${text.deresReferanse[language]}: ${fields.deresReferanse}</p>`
-      : "",
+    fields.tidligereReferanse &&
+      `<p style="margin: 0;">${text.tidligereReferanse[language]}: ${fields.tidligereReferanse}</p>`,
+    fields.deresDato &&
+      `<p style="margin: 0;">${text.deresDato[language]}: ${fields.deresDato}</p>`,
+    fields.deresReferanse &&
+      `<p style="margin: 0;">${text.deresReferanse[language]}: ${fields.deresReferanse}</p>`,
     `<p style="margin: 0;">Vår ${text.saksbehandler[language]}: ${fields.saksbehandlerNavn}</p>`,
     fields.erUnntattOffentlighet
       ? `<p style='margin: 0;font-weight: bold;'>${text.unntattOffentlighet[language]}${fields.unntattOffentlighetHjemmel?.trim()}</p>`
@@ -104,11 +73,11 @@ function getLetterhead(fields: DefaultTemplateFields, language: Language) {
     `<span style="display: block;">${fields.virksomhet.adresse}</span>`,
     `<span style="display: block;">${fields.virksomhet.postnr} ${fields.virksomhet.poststed}</span>`,
     `</p>`,
-  ];
+  ].filter(Boolean);
   return lines.join("\n");
 }
 
-function getSignature(variant: SignatureVariant, language: Language) {
+function getSignature(variant: DefaultTemplateSignatureVariant, language: TemplateLanguage) {
   if (variant === "usignert") {
     return "";
   }
@@ -126,7 +95,7 @@ function getSignature(variant: SignatureVariant, language: Language) {
   `;
 }
 
-export function getFooter(fields: DefaultTemplateFields): string {
+function getFooter(fields: DefaultTemplateFields): string {
   // nodene med class pageNumber og totalPages blir injected av Puppeteer
   // se PDFOptions.footerTemplate https://github.com/puppeteer/puppeteer/blob/main/docs/api/puppeteer.pdfoptions.md
   return `
@@ -135,3 +104,9 @@ export function getFooter(fields: DefaultTemplateFields): string {
       <div>Side <span class="pageNumber"></span> av <span class="totalPages"></span></div>
     </div>`;
 }
+
+export const defaultTemplate = {
+  globalCss,
+  getMd,
+  getFooter,
+};

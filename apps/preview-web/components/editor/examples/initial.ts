@@ -1,4 +1,9 @@
-import type { DefaultTemplateArgs, DefaultTemplateFields } from "@repo/shared-types";
+import type {
+  DefaultTemplateArgs,
+  DefaultTemplateFields,
+  DirektoratTemplateArgs,
+  DirektoratTemplateFields,
+} from "@repo/shared-types";
 
 export const initialMd = `# H1 - Overskrift/Tittel
 Normal tekst
@@ -64,3 +69,28 @@ export const initialDefaultTemplateArgs = {
   },
   signatureVariant: "elektroniskGodkjent",
 } as const satisfies DefaultTemplateArgs satisfies InitialDefaultTemplateArgs;
+
+// make fields required for the sake of the controlled inputs
+interface InitialDirektoratTemplateArgs {
+  language: DirektoratTemplateArgs["language"];
+  fields: Required<DirektoratTemplateFields>;
+  signatureVariant: DirektoratTemplateArgs["signatureVariant"];
+  signatureLines: DirektoratTemplateArgs["signatureLines"];
+}
+
+export const initialDirektoratTemplateArgs = {
+  language: "bm",
+  fields: {
+    dato: "13.09.2024",
+    saksnummer: "2024/1234",
+    saksbehandlerNavn: "Ola Nordmann",
+    mottaker: {
+      navn: "Asgeir Ansattesen",
+      adresse: "Olav Tryggvasons gt. 42",
+      postnr: "7011",
+      poststed: "Trondheim",
+    },
+  },
+  signatureVariant: "elektroniskGodkjent",
+  signatureLines: ["Jan Jansen", "Turnipsdirektør"],
+} as const satisfies DirektoratTemplateArgs satisfies InitialDirektoratTemplateArgs;

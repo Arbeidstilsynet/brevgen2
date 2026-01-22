@@ -1,14 +1,21 @@
-import type { DefaultTemplateArgs, DocumentTemplateOption } from "@repo/shared-types";
+import type {
+  DefaultTemplateArgs,
+  DirektoratTemplateArgs,
+  DocumentTemplateOption,
+} from "@repo/shared-types";
 import type { Dispatch } from "react";
 import { Select } from "../Select";
 import { TemplateConfigDefaultForm } from "./TemplateConfigDefaultForm";
-import { DefaultTemplateArgsAction } from "./templateConfigReducer";
+import { DefaultTemplateArgsAction, DirektoratTemplateArgsAction } from "./templateConfigReducer";
+import { TemplateConfigDirektoratForm } from "./TemplateConfigDirektoratForm";
 
 type Props = Readonly<{
   selectedTemplate: DocumentTemplateOption;
   setSelectedTemplate: (template: DocumentTemplateOption) => void;
   defaultTemplateState: DefaultTemplateArgs;
   defaultTemplateDispatch: Dispatch<DefaultTemplateArgsAction>;
+  direktoratTemplateState: DirektoratTemplateArgs;
+  direktoratTemplateDispatch: Dispatch<DirektoratTemplateArgsAction>;
 }>;
 
 export function TemplateConfig({
@@ -16,6 +23,8 @@ export function TemplateConfig({
   setSelectedTemplate,
   defaultTemplateState,
   defaultTemplateDispatch,
+  direktoratTemplateState,
+  direktoratTemplateDispatch,
 }: Props) {
   return (
     <>
@@ -24,7 +33,12 @@ export function TemplateConfig({
           className="flex items-center gap-2"
           label="Template"
           value={selectedTemplate}
-          options={{ default: "Default", blank: "Blank", custom: "Custom" }}
+          options={{
+            default: "Default",
+            direktorat: "Direktorat",
+            blank: "Blank",
+            custom: "Custom",
+          }}
           onChange={setSelectedTemplate}
         />
 
@@ -40,12 +54,16 @@ export function TemplateConfig({
             bunntekst.
             <br />
             <br />
-            Alternativer for standardmalen vises nedenfor når den er valgt. Disse valgene vil settes
-            av fagsystemet når den benytter brevgeneratoren, men du kan endre på eksempelverdiene
-            her for å se ulike varianter av det genererte brevet.
+            Alternativer for malen vises nedenfor når den er valgt. Disse valgene vil settes av
+            fagsystemet når den benytter brevgeneratoren, men du kan endre på eksempelverdiene her
+            for å se ulike varianter av det genererte brevet.
             <br />
             <br />
-            Ytterligere maler:
+            <b>Maler:</b>
+            <br />
+            Default - standardmal for brev fra Arbeidstilsynet.
+            <br />
+            Direktorat - mal for brev fra direktoratet med tilsvarende felt som standardmalen.
             <br />
             Blank - ingen innhold, men standard styling.
             <br />
@@ -57,6 +75,12 @@ export function TemplateConfig({
         <TemplateConfigDefaultForm
           state={defaultTemplateState}
           dispatch={defaultTemplateDispatch}
+        />
+      )}
+      {selectedTemplate === "direktorat" && (
+        <TemplateConfigDirektoratForm
+          state={direktoratTemplateState}
+          dispatch={direktoratTemplateDispatch}
         />
       )}
     </>

@@ -15,9 +15,13 @@ public class DefaultTemplateArgs
     public DefaultTemplateFields Fields { get; set; }
 
     [JsonPropertyName("signatureVariant")]
-    public SignatureVariant SignatureVariant { get; set; }
+    public DefaultTemplateSignatureVariant SignatureVariant { get; set; }
 
-    public DefaultTemplateArgs(Language language, SignatureVariant signatureVariant, DefaultTemplateFields fields)
+    public DefaultTemplateArgs(
+        Language language,
+        DefaultTemplateSignatureVariant signatureVariant,
+        DefaultTemplateFields fields
+    )
     {
         Language = language;
         Fields = fields;
@@ -40,7 +44,7 @@ public enum Language
 /// <summary>
 /// Siganturvariant i default template
 /// </summary>
-public enum SignatureVariant
+public enum DefaultTemplateSignatureVariant
 {
     [EnumMember(Value = "elektroniskGodkjent")]
     ElektroniskGodkjent,

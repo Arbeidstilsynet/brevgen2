@@ -20,7 +20,7 @@ public interface IChooseTemplateStep
     /// <summary>
     /// Velg default template. Må legge til argumenter senere med WithDefaultTemplateFields.
     /// </summary>
-    IDefaultTemplateFieldsStep WithDefaultTemplate(Language language, SignatureVariant signatureVariant);
+    IDefaultTemplateFieldsStep WithDefaultTemplate(Language language, DefaultTemplateSignatureVariant signatureVariant);
 
     /// <summary>
     /// Velg custom template. Dette har i praksis minimalt med styling og layout.
@@ -90,7 +90,7 @@ internal class BuilderSteps : IAddMarkdownStep, IChooseTemplateStep, IDefaultTem
     private Dictionary<string, object?>? MdVariables { get; set; }
     private GeneratePdfOptions options = new();
     private Language? defaultTemplateLanguage;
-    private SignatureVariant? defaultTemplateSignatureVariant;
+    private DefaultTemplateSignatureVariant? defaultTemplateSignatureVariant;
 
     /// <inheritdoc/>
     public IChooseTemplateStep AddMarkdown(string md, Dictionary<string, object?>? mdVariables)
@@ -101,7 +101,10 @@ internal class BuilderSteps : IAddMarkdownStep, IChooseTemplateStep, IDefaultTem
     }
 
     /// <inheritdoc/>
-    public IDefaultTemplateFieldsStep WithDefaultTemplate(Language language, SignatureVariant signatureVariant)
+    public IDefaultTemplateFieldsStep WithDefaultTemplate(
+        Language language,
+        DefaultTemplateSignatureVariant signatureVariant
+    )
     {
         options.Dynamic.Template = TemplateType.Default;
         defaultTemplateLanguage = language;
@@ -128,7 +131,7 @@ internal class BuilderSteps : IAddMarkdownStep, IChooseTemplateStep, IDefaultTem
     {
         if (
             defaultTemplateLanguage is Language language
-            && defaultTemplateSignatureVariant is SignatureVariant signatureVariant
+            && defaultTemplateSignatureVariant is DefaultTemplateSignatureVariant signatureVariant
         )
         {
             options.Dynamic.DefaultTemplateArgs = new(language, signatureVariant, fields);
