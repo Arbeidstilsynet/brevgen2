@@ -23,6 +23,15 @@ public interface IChooseTemplateStep
     IDefaultTemplateFieldsStep WithDefaultTemplate(Language language, DefaultTemplateSignatureVariant signatureVariant);
 
     /// <summary>
+    /// Velg direktorat template. Må legge til argumenter senere med WithDirektoratTemplateFields.
+    /// </summary>
+    IDirektoratTemplateFieldsStep WithDirektoratTemplate(
+        Language language,
+        DirektoratTemplateSignatureVariant signatureVariant,
+        List<string>? signatureLines = null
+    );
+
+    /// <summary>
     /// Velg custom template. Dette har i praksis minimalt med styling og layout.
     /// Du må selv mate inn ønsket konfigurasjon via WithConversionOptions.
     /// <br /><br/>
@@ -45,6 +54,15 @@ public interface IDefaultTemplateFieldsStep
     /// </summary>
     /// <param name="fields"></param>
     IBuildStep WithDefaultTemplateFields(DefaultTemplateFields fields);
+}
+
+public interface IDirektoratTemplateFieldsStep
+{
+    /// <summary>
+    /// Legg til flettefelt-verdier for direktorat template. Saksnummer, Mottakeradresse o.l.
+    /// </summary>
+    /// <param name="fields"></param>
+    IBuildStep WithDirektoratTemplateFields(DirektoratTemplateFields fields);
 }
 
 public interface IBuildStep
@@ -84,13 +102,21 @@ public class GenererBrevArgsBuilder
     public static IAddMarkdownStep Create() => new BuilderSteps();
 }
 
-internal class BuilderSteps : IAddMarkdownStep, IChooseTemplateStep, IDefaultTemplateFieldsStep, IBuildStep
+internal class BuilderSteps
+    : IAddMarkdownStep,
+        IChooseTemplateStep,
+        IDefaultTemplateFieldsStep,
+        IDirektoratTemplateFieldsStep,
+        IBuildStep
 {
     private string? Md { get; set; }
     private Dictionary<string, object?>? MdVariables { get; set; }
     private GeneratePdfOptions options = new();
     private Language? defaultTemplateLanguage;
     private DefaultTemplateSignatureVariant? defaultTemplateSignatureVariant;
+    private Language? direktoratTemplateLanguage;
+    private DirektoratTemplateSignatureVariant? direktoratTemplateSignatureVariant;
+    private List<string>? direktoratTemplateSignatureLines;
 
     /// <inheritdoc/>
     public IChooseTemplateStep AddMarkdown(string md, Dictionary<string, object?>? mdVariables)
@@ -109,6 +135,20 @@ internal class BuilderSteps : IAddMarkdownStep, IChooseTemplateStep, IDefaultTem
         options.Dynamic.Template = TemplateType.Default;
         defaultTemplateLanguage = language;
         defaultTemplateSignatureVariant = signatureVariant;
+        return this;
+    }
+
+    /// <inheritdoc/>
+    public IDirektoratTemplateFieldsStep WithDirektoratTemplate(
+        Language language,
+        DirektoratTemplateSignatureVariant signatureVariant,
+        List<string>? signatureLines = null
+    )
+    {
+        options.Dynamic.Template = TemplateType.Direktorat;
+        direktoratTemplateLanguage = language;
+        direktoratTemplateSignatureVariant = signatureVariant;
+        direktoratTemplateSignatureLines = signatureLines;
         return this;
     }
 
@@ -142,6 +182,26 @@ internal class BuilderSteps : IAddMarkdownStep, IChooseTemplateStep, IDefaultTem
     }
 
     /// <inheritdoc/>
+    public IBuildStep WithDirektoratTemplateFields(DirektoratTemplateFields fields)
+    {
+        if (
+            direktoratTemplateLanguage is Language language
+            && direktoratTemplateSignatureVariant is DirektoratTemplateSignatureVariant signatureVariant
+        )
+        {
+            options.Dynamic.DirektoratTemplateArgs = new(
+                language,
+                signatureVariant,
+                fields,
+                direktoratTemplateSignatureLines
+            );
+            return this;
+        }
+
+        throw new InvalidOperationException("Must call WithDirektoratTemplate before WithDirektoratTemplateFields");
+    }
+
+    /// <inheritdoc/>
     public IBuildStep WithMetadata(string documentTitle, string author)
     {
         options.DocumentTitle = documentTitle;
@@ -168,6 +228,11 @@ internal class BuilderSteps : IAddMarkdownStep, IChooseTemplateStep, IDefaultTem
         if (options.Dynamic.Template == TemplateType.Default && options.Dynamic.DefaultTemplateArgs is null)
         {
             throw new ArgumentException("DefaultTemplateArgs are required when using the default template");
+        }
+
+        if (options.Dynamic.Template == TemplateType.Direktorat && options.Dynamic.DirektoratTemplateArgs is null)
+        {
+            throw new ArgumentException("DirektoratTemplateArgs are required when using the direktorat template");
         }
 
         return new GenererBrevArgs

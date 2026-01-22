@@ -30,18 +30,6 @@ public class DefaultTemplateArgs
 }
 
 /// <summary>
-/// Språkvalg for default template. Påvirker noen linjer tekst i letterhead og signatur.
-/// </summary>
-public enum Language
-{
-    [EnumMember(Value = "bm")]
-    Bokmål,
-
-    [EnumMember(Value = "nn")]
-    Nynorsk,
-}
-
-/// <summary>
 /// Siganturvariant i default template
 /// </summary>
 public enum DefaultTemplateSignatureVariant

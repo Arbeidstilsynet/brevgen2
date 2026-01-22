@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using AT.Brevgenerator.Klient;
+using AT.Brevgenerator.Klient.Model;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BrevgeneratorClientCli;
@@ -30,11 +31,11 @@ static class Program
         var client1 = serviceProvider.GetRequiredService<IBrevgeneratorKlient>();
 
         // ---------- Klient 2 direkte konstruksjon ----------
-        var client2 = new BrevgeneratorKlient(
-            new BrevgeneratorConfig(apiUrl),
-            BrevgeneratorKlient.AuthMode.ApiKey,
-            apiKeyFactory: async () => "foo"
-        );
+        // var client2 = new BrevgeneratorKlient(
+        //     new BrevgeneratorConfig(apiUrl),
+        //     BrevgeneratorKlient.AuthMode.ApiKey,
+        //     apiKeyFactory: async () => "foo"
+        // );
 
         var payload = GenererBrevArgsBuilder
             .Create()
@@ -42,7 +43,7 @@ static class Program
                 "# Sample Markdown content\n## {{ exampleVariable }}",
                 new() { { "exampleVariable", "value" }, { "nully", null } }
             )
-            .WithBlankTemplate()
+            // .WithBlankTemplate()
             // .WithDefaultTemplate(Language.Nynorsk, SignatureVariant.ElektroniskGodkjent)
             // .WithDefaultTemplateFields(
             //     new()
@@ -59,7 +60,27 @@ static class Program
             //         }
             //     }
             // )
-            .WithMetadata(documentTitle: "My document", author: "Look at me, I am the author now")
+            .WithDirektoratTemplate(
+                Language.Bokmål,
+                DirektoratTemplateSignatureVariant.ElektroniskGodkjent,
+                ["Ola Nordmann", "Direktør"]
+            )
+            .WithDirektoratTemplateFields(
+                new()
+                {
+                    // Dato = "2026-10-01",
+                    // Saksnummer = "2026/1234",
+                    // SaksbehandlerNavn = "Kari Nordmann",
+                    // Mottaker = new()
+                    // {
+                    //     Navn = "Bedrift AS",
+                    //     Adresse = "Gateveien 1",
+                    //     Postnr = "0123",
+                    //     Poststed = "Oslo",
+                    // },
+                }
+            )
+            .WithMetadata(documentTitle: "My document", author: "The Author")
             .WithConversionOptions(
                 new()
                 {
@@ -73,8 +94,18 @@ static class Program
         Console.WriteLine("Sending request with client1");
         var result1 = await client1.GenererBrev(payload);
         Console.WriteLine($"Response:\n{result1}");
-        Console.WriteLine("Sending request with client2");
-        var result2 = await client2.GenererBrev(payload);
-        Console.WriteLine($"Response:\n{result2}");
+        // Console.WriteLine("Sending request with client2");
+        // var result2 = await client2.GenererBrev(payload);
+        // Console.WriteLine($"Response:\n{result2}");
+
+        if (payload.Options.AsHtml == true)
+        {
+            await File.WriteAllTextAsync("output.html", result1);
+        }
+        else
+        {
+            var pdfBytes = Convert.FromBase64String(result1);
+            await File.WriteAllBytesAsync("output.pdf", pdfBytes);
+        }
     }
 }

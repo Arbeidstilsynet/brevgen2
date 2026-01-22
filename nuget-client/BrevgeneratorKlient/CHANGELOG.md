@@ -1,5 +1,11 @@
 # Versjonslogg
 
+## 3.2.0
+
+Støtte for ny dokument-mal "direktorat" med egen logo og andre felter. Konfigurer med nye metoder i builder `WithDirektoratTemplate` og `WithDirektoratTemplateFields`.
+
+Til forskjell fra "default" template er ingen felter i `DirektoratTemplateFields` påkrevd.
+
 ## 3.1.6
 
 - Fiks så `bearerTokenFactory` alltid kalles ved gjenbruk av samme httpClient
