@@ -68,7 +68,7 @@ export function visualTests() {
 
     const matched = await comparePdfToSnapshot(pdf, join(__dirname, ".."), pdfName, {
       tolerance: 0.05,
-      failOnMissingSnapshot: false,
+      failOnMissingSnapshot,
     });
     expect(matched).toBe(true);
   });
@@ -79,7 +79,7 @@ export function visualTests() {
 
     const matched = await comparePdfToSnapshot(pdf, join(__dirname, ".."), pdfName, {
       tolerance: 0.05,
-      failOnMissingSnapshot: false,
+      failOnMissingSnapshot,
     });
     expect(matched).toBe(true);
   });
@@ -90,7 +90,7 @@ export function visualTests() {
 
     const matched = await comparePdfToSnapshot(pdf, join(__dirname, ".."), pdfName, {
       tolerance: 0.05,
-      failOnMissingSnapshot: false,
+      failOnMissingSnapshot,
     });
     expect(matched).toBe(true);
   });
