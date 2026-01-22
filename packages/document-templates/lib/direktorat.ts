@@ -59,8 +59,6 @@ function getSignature(
     return "";
   }
 
-  console.log({ variant, signatureLines });
-
   if (variant === "elektroniskGodkjent") {
     // NB: bruk av <br/> er viktig for avstand mellom innhold og signatur, samt formattering av signatur.
     // Ved endringer av signaturen, test nøye.
