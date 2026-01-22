@@ -20,7 +20,7 @@
     "strict": true,
     "noEmit": true,
     "strictNullChecks": true,
-    "target": "es2024"
+    "target": "esnext"
   },
   "exclude": ["node_modules"]
 }
