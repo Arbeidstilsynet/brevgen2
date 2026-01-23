@@ -20,13 +20,20 @@ Se [api readme for oppsett i Entra](../api/README.md#konfigurasjon-av-app-i-entr
 
 ## Miljøvariabler
 
-For å kjøre lokalt, opprett ny fil `.env` med følgende miljøvariabler:
+Se [Next.js environment variable load order](https://nextjs.org/docs/app/guides/environment-variables#environment-variable-load-order.)
+
+For å kjøre lokalt uten autentisering er det nok med medfølgende `.env.development` fil.
+
+For å kjøre lokalt med autentisering mot integrasjoner, opprett ny fil `.env.local` med følgende miljøvariabler:
 
 ```sh
+# Aktivrer next-auth
+DANGEROUS_DISABLE_AUTH=false
+
 # next-auth config
 NEXTAUTH_URL=http://localhost:3000/api/auth
 # can generate with `openssl rand -base64 32`
-AUTH_SECRET=my-local-development-secret-that-is-long-enough-12345
+AUTH_SECRET=local-dev-secret
 
 
 # For å kunne bruke API for PDF-generering
