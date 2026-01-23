@@ -2,9 +2,10 @@
 
 import { sendGenerateDocument } from "@/actions/pdf";
 import { useDebouncedMutation } from "@/hooks/useDebouncedMutation";
-import { defaultTemplate } from "@at/document-templates";
+import { defaultTemplate, direktoratTemplate } from "@at/document-templates";
 import type {
   DefaultTemplateArgs,
+  DirektoratTemplateArgs,
   DocumentTemplateOption,
   GenerateDocumentRequest,
   PDFOptionsWithLimits,
@@ -41,13 +42,19 @@ function renderHtml(
   md: string,
   selectedTemplate: DocumentTemplateOption,
   defaultTemplateArgs: DefaultTemplateArgs,
+  direktoratTemplateArgs: DirektoratTemplateArgs,
 ) {
   if (selectedTemplate === "default") {
     md = defaultTemplate.getMd(md, defaultTemplateArgs);
   }
 
-  const css =
-    selectedTemplate === "default" || selectedTemplate === "blank" ? defaultTemplate.globalCss : "";
+  if (selectedTemplate === "direktorat") {
+    md = direktoratTemplate.getMd(md, direktoratTemplateArgs);
+  }
+
+  const css = ["default", "blank", "direktorat"].includes(selectedTemplate)
+    ? defaultTemplate.globalCss
+    : "";
   return getHtml(md, css);
 }
 
@@ -58,6 +65,7 @@ type Props = Readonly<{
   mdVariables: Record<string, string | boolean>;
   selectedTemplate: DocumentTemplateOption;
   defaultTemplateArgs: DefaultTemplateArgs;
+  direktoratTemplateArgs: DirektoratTemplateArgs;
   hasParseError: boolean;
   pdfOptions: PDFOptionsWithLimits;
 }>;
@@ -69,16 +77,13 @@ export function Preview({
   mdVariables,
   selectedTemplate,
   defaultTemplateArgs,
+  direktoratTemplateArgs,
   hasParseError,
   pdfOptions,
 }: Props) {
   // refs for storing pevious request payloads and results
   // used for proper (re)request behavior on tab switching
   const previousPdfValues = useRef({
-    md,
-    mdVariables,
-    selectedTemplate,
-    defaultTemplateArgs,
     pdfOptions,
   });
   const previousHtmlValues = useRef({
@@ -86,6 +91,7 @@ export function Preview({
     mdVariables,
     selectedTemplate,
     defaultTemplateArgs,
+    direktoratTemplateArgs,
   });
   const pdfUrlRef = useRef<string | null>(null);
   const remoteHtmlRef = useRef<string | null>(null);
@@ -120,6 +126,10 @@ export function Preview({
     },
   });
 
+  // These effects are a hack to handle debounced mutations with changing payloads.
+  // e.g. when switching tabs it should only re-render if the payload has changed since last render..
+  // To ditch the effects requires a major refactor of state handling
+  // so the queries trigger in the tab/payload-changing event handlers.
   useEffect(() => {
     if (activePreviewTab !== "pdf" || hasParseError) {
       return;
@@ -127,10 +137,11 @@ export function Preview({
 
     // Check if any of the payload values have changed since the last render
     if (
-      previousPdfValues.current.md === md &&
-      previousPdfValues.current.mdVariables === mdVariables &&
-      previousPdfValues.current.selectedTemplate === selectedTemplate &&
-      previousPdfValues.current.defaultTemplateArgs === defaultTemplateArgs &&
+      previousHtmlValues.current.md === md &&
+      previousHtmlValues.current.mdVariables === mdVariables &&
+      previousHtmlValues.current.selectedTemplate === selectedTemplate &&
+      previousHtmlValues.current.defaultTemplateArgs === defaultTemplateArgs &&
+      previousHtmlValues.current.direktoratTemplateArgs === direktoratTemplateArgs &&
       previousPdfValues.current.pdfOptions === pdfOptions &&
       pdfUrlRef.current // don't skip if this is first render
     ) {
@@ -138,11 +149,14 @@ export function Preview({
     }
 
     previousPdfValues.current = {
+      pdfOptions,
+    };
+    previousHtmlValues.current = {
       md,
       mdVariables,
       selectedTemplate,
       defaultTemplateArgs,
-      pdfOptions,
+      direktoratTemplateArgs,
     };
 
     const payload = {
@@ -154,6 +168,8 @@ export function Preview({
         dynamic: {
           template: selectedTemplate,
           defaultTemplateArgs: selectedTemplate === "default" ? defaultTemplateArgs : undefined,
+          direktoratTemplateArgs:
+            selectedTemplate === "direktorat" ? direktoratTemplateArgs : undefined,
         },
         pdf_options: Object.keys(pdfOptions).length > 0 ? pdfOptions : undefined,
       },
@@ -164,6 +180,7 @@ export function Preview({
     activePreviewTab,
     debouncedMutatePdf,
     defaultTemplateArgs,
+    direktoratTemplateArgs,
     hasParseError,
     md,
     mdVariables,
@@ -182,6 +199,7 @@ export function Preview({
       previousHtmlValues.current.mdVariables === mdVariables &&
       previousHtmlValues.current.selectedTemplate === selectedTemplate &&
       previousHtmlValues.current.defaultTemplateArgs === defaultTemplateArgs &&
+      previousHtmlValues.current.direktoratTemplateArgs === direktoratTemplateArgs &&
       remoteHtmlRef.current // don't skip if this is first render
     ) {
       return;
@@ -192,6 +210,7 @@ export function Preview({
       mdVariables,
       selectedTemplate,
       defaultTemplateArgs,
+      direktoratTemplateArgs,
     };
 
     const payload = {
@@ -202,6 +221,8 @@ export function Preview({
         dynamic: {
           template: selectedTemplate,
           defaultTemplateArgs: selectedTemplate === "default" ? defaultTemplateArgs : undefined,
+          direktoratTemplateArgs:
+            selectedTemplate === "direktorat" ? direktoratTemplateArgs : undefined,
         },
         as_html: true,
       },
@@ -212,6 +233,7 @@ export function Preview({
     activePreviewTab,
     debouncedMutateHtml,
     defaultTemplateArgs,
+    direktoratTemplateArgs,
     hasParseError,
     md,
     mdVariables,
@@ -223,7 +245,12 @@ export function Preview({
   }
 
   if (activePreviewTab === "html") {
-    const localHtml = renderHtml(parsedMd, selectedTemplate, defaultTemplateArgs);
+    const localHtml = renderHtml(
+      parsedMd,
+      selectedTemplate,
+      defaultTemplateArgs,
+      direktoratTemplateArgs,
+    );
     return (
       <iframe
         title="HTML preview"
@@ -284,7 +311,7 @@ function ErrorOverlay({ error }: Readonly<{ error: Error | null }>) {
   if (!error) return null;
   console.error(error);
   return (
-    <div className="fixed top-12 right-2 max-w-[calc(40%-20px)] bg-red-800 text-white p-2 rounded-sm z-50 break-words">
+    <div className="fixed top-12 right-2 max-w-[calc(40%-20px)] bg-red-800 text-white p-2 rounded-sm z-50 wrap-break-word">
       {error.message}
     </div>
   );

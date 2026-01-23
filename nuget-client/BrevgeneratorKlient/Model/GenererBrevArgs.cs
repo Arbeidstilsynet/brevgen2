@@ -86,6 +86,12 @@ public class DynamicMdPdfConfig
     [JsonPropertyName("defaultTemplateArgs")]
     public DefaultTemplateArgs? DefaultTemplateArgs { get; set; }
 
+    /// <summary>
+    /// Required if template is "direktorat"
+    /// </summary>
+    [JsonPropertyName("direktoratTemplateArgs")]
+    public DirektoratTemplateArgs? DirektoratTemplateArgs { get; set; }
+
     public DynamicMdPdfConfig() { }
 
     public DynamicMdPdfConfig(TemplateType templateType, DefaultTemplateArgs? defaultTemplateArgs)
@@ -109,6 +115,9 @@ public enum TemplateType
 
     [EnumMember(Value = "blank")]
     Blank,
+
+    [EnumMember(Value = "direktorat")]
+    Direktorat,
 }
 
 public class PdfConfig : BasicConfig

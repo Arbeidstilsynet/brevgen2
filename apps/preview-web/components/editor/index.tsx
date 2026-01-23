@@ -20,12 +20,17 @@ import { Preview } from "./Preview";
 import { TemplateConfig } from "./TemplateConfig";
 import { VariablesTab } from "./VariablesTab";
 import { advancedMd, advancedVars } from "./examples/advanced";
-import { initialDefaultTemplateArgs, initialMd, initialVars } from "./examples/initial";
+import {
+  initialDefaultTemplateArgs,
+  initialDirektoratTemplateArgs,
+  initialMd,
+  initialVars,
+} from "./examples/initial";
 import { EditorHeader } from "./header";
 import { EditorControls } from "./header/EditorControls";
 import { ActivePreviewTab, PreviewControls } from "./header/PreviewControls";
 import { type TabName, TopLeft } from "./header/TopLeft";
-import { defaultTemplateReducer } from "./templateConfigReducer";
+import { defaultTemplateReducer, direktoratTemplateReducer } from "./templateConfigReducer";
 import { useDynamicMarkdown } from "./useDynamicMarkdown";
 import { useLoadPermanentUrl } from "./useLoadPermanentUrl";
 import { getLoadedRepoFileName, getLoadedWorkspaceName, LastLoadedFile, saveLocal } from "./utils";
@@ -42,6 +47,10 @@ export function DynamicMarkdownEditor() {
   const [defaultTemplateState, defaultTemplateDispatch] = useReducer(
     defaultTemplateReducer,
     initialDefaultTemplateArgs,
+  );
+  const [direktoratTemplateState, direktoratTemplateDispatch] = useReducer(
+    direktoratTemplateReducer,
+    initialDirektoratTemplateArgs,
   );
   const [pdfOptions, setPdfOptions] = useState<PDFOptionsWithLimits>({});
 
@@ -213,6 +222,8 @@ export function DynamicMarkdownEditor() {
               setSelectedTemplate={setSelectedTemplate}
               defaultTemplateState={defaultTemplateState}
               defaultTemplateDispatch={defaultTemplateDispatch}
+              direktoratTemplateState={direktoratTemplateState}
+              direktoratTemplateDispatch={direktoratTemplateDispatch}
             />
           )}
           {activeVarTab === "pdfOptions" && (
@@ -255,6 +266,7 @@ export function DynamicMarkdownEditor() {
             mdVariables={mdVars}
             selectedTemplate={selectedTemplate}
             defaultTemplateArgs={defaultTemplateState}
+            direktoratTemplateArgs={direktoratTemplateState}
             hasParseError={Boolean(parseError)}
             pdfOptions={pdfOptions}
           />

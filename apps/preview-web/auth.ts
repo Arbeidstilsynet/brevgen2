@@ -1,6 +1,7 @@
 import { AuthOptions, getServerSession } from "next-auth";
 import AzureAdProvider from "next-auth/providers/azure-ad";
 
+const authDisabled = process.env.DANGEROUS_DISABLE_AUTH === "true";
 export const tenantId = process.env.AZURE_TENANT_ID ?? "da4bf886-a8a6-450d-a806-c347b8eb8d80";
 const MAX_PICTURE_SIZE = 4 * 1024;
 
@@ -37,7 +38,8 @@ export const authOptions = {
 } as const satisfies AuthOptions;
 
 export async function requireSession() {
+  if (authDisabled) return;
+
   const session = await getServerSession(authOptions);
   if (!session) throw new Error("Failed to obtain session");
-  return session;
 }

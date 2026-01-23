@@ -61,4 +61,37 @@ export function visualTests() {
     });
     expect(matched).toBe(true);
   });
+
+  test("pdf-visual-diff (direktorat template, short)", { timeout: 10_000 }, async () => {
+    const pdfName = pdfNames.direktoratShort;
+    const pdf = readFileSync(paths.temp.direktoratShort);
+
+    const matched = await comparePdfToSnapshot(pdf, join(__dirname, ".."), pdfName, {
+      tolerance: 0.05,
+      failOnMissingSnapshot,
+    });
+    expect(matched).toBe(true);
+  });
+
+  test("pdf-visual-diff (direktorat template, with signatures)", { timeout: 10_000 }, async () => {
+    const pdfName = pdfNames.direktoratWithSignatures;
+    const pdf = readFileSync(paths.temp.direktoratWithSignatures);
+
+    const matched = await comparePdfToSnapshot(pdf, join(__dirname, ".."), pdfName, {
+      tolerance: 0.05,
+      failOnMissingSnapshot,
+    });
+    expect(matched).toBe(true);
+  });
+
+  test("pdf-visual-diff (direktorat template, minimal)", { timeout: 10_000 }, async () => {
+    const pdfName = pdfNames.direktoratMinimal;
+    const pdf = readFileSync(paths.temp.direktoratMinimal);
+
+    const matched = await comparePdfToSnapshot(pdf, join(__dirname, ".."), pdfName, {
+      tolerance: 0.05,
+      failOnMissingSnapshot,
+    });
+    expect(matched).toBe(true);
+  });
 }

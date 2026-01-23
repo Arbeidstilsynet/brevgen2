@@ -27,6 +27,8 @@ yarn-error.log*
 
 # env files (can opt-in for commiting if needed)
 .env*
+# except for default development env file
+!.env.development
 
 # vercel
 .vercel

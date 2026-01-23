@@ -14,7 +14,7 @@
     "test:load": "npx --yes tsx load-tests/run.ts",
     "test:load:analyze": "npx --yes tsx load-tests/analyze.ts",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsgo --noEmit"
   },
   "dependencies": {
     "@at/document-templates": "workspace:*",
@@ -41,6 +41,7 @@
     "@repo/typescript-config": "workspace:^",
     "@types/node": "24.10.9",
     "@types/sanitize-html": "2.16.0",
+    "@typescript/native-preview": "7.0.0-dev.20260119.1",
     "del-cli": "7.0.0",
     "eslint": "9.39.2",
     "globals": "17.0.0",

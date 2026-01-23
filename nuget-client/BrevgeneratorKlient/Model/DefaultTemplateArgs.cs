@@ -15,9 +15,13 @@ public class DefaultTemplateArgs
     public DefaultTemplateFields Fields { get; set; }
 
     [JsonPropertyName("signatureVariant")]
-    public SignatureVariant SignatureVariant { get; set; }
+    public DefaultTemplateSignatureVariant SignatureVariant { get; set; }
 
-    public DefaultTemplateArgs(Language language, SignatureVariant signatureVariant, DefaultTemplateFields fields)
+    public DefaultTemplateArgs(
+        Language language,
+        DefaultTemplateSignatureVariant signatureVariant,
+        DefaultTemplateFields fields
+    )
     {
         Language = language;
         Fields = fields;
@@ -26,21 +30,9 @@ public class DefaultTemplateArgs
 }
 
 /// <summary>
-/// Språkvalg for default template. Påvirker noen linjer tekst i letterhead og signatur.
-/// </summary>
-public enum Language
-{
-    [EnumMember(Value = "bm")]
-    Bokmål,
-
-    [EnumMember(Value = "nn")]
-    Nynorsk,
-}
-
-/// <summary>
 /// Siganturvariant i default template
 /// </summary>
-public enum SignatureVariant
+public enum DefaultTemplateSignatureVariant
 {
     [EnumMember(Value = "elektroniskGodkjent")]
     ElektroniskGodkjent,

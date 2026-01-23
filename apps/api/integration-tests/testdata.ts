@@ -127,3 +127,58 @@ export const defaultTemplateAllOptionalsPayload: GenerateDocumentRequest = {
     },
   },
 };
+
+export const direktoratTemplateShortPayload: GenerateDocumentRequest = {
+  md: "# Direktorat Test\n\nThis is a {{var}}",
+  mdVariables: {
+    var: "direktorat test PDF",
+  },
+  options: {
+    dynamic: {
+      template: "direktorat",
+      direktoratTemplateArgs: {
+        language: "bm",
+        signatureVariant: "usignert",
+        fields: {
+          dato: "22.01.2026",
+          saksnummer: "2026/1234",
+          saksbehandlerNavn: "Direktør Direktoratsen",
+          mottaker: {
+            navn: "Mottaker AS",
+            adresse: "Mottakerveien 1",
+            postnr: "0123",
+            poststed: "Oslo",
+          },
+        },
+      },
+    },
+  },
+};
+
+export const direktoratTemplateWithSignaturesPayload: GenerateDocumentRequest = {
+  md: "# Direktorat Signert\n\nThis is a {{var}}",
+  mdVariables: {
+    var: "signed direktorat PDF",
+  },
+  options: {
+    dynamic: {
+      template: "direktorat",
+      direktoratTemplateArgs: {
+        language: "nn",
+        signatureVariant: "elektroniskGodkjent",
+        signatureLines: ["Ola Nordmann", "Avdelingsdirektør"],
+        fields: {
+          dato: "22.01.2026",
+          saksnummer: "2026/5678",
+          saksbehandlerNavn: "Kari Nordmann",
+          mottaker: {
+            navn: "Bedrift AS",
+            adresse: "Bedriftsveien 42",
+            postnr: "5000",
+            poststed: "Bergen",
+          },
+        },
+      },
+    },
+  },
+};

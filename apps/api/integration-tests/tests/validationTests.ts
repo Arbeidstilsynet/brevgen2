@@ -215,5 +215,60 @@ export function validationTests(getTestEnv: () => TestEnvironment) {
         ]),
       );
     });
+
+    test("direktorat template without direktoratTemplateArgs returns 400", async () => {
+      const payload = {
+        md: "# Test",
+        options: {
+          dynamic: {
+            template: "direktorat",
+          },
+        },
+      } as unknown as GenerateDocumentRequest;
+
+      const response = await fetcher(testEnv.genererBrevUrl, payload);
+      expect(response.status).toBe(400);
+
+      const error = (await response.json()) as ValidationErrorResponse;
+      expect(error.message).toBe("Validation error");
+      expect(error.details).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            path: "options.dynamic",
+            message: expect.stringContaining("direktoratTemplateArgs") as string,
+          }),
+        ]),
+      );
+    });
+
+    test("direktorat template with invalid signatureVariant returns 400", async () => {
+      const payload = {
+        md: "# Test",
+        options: {
+          dynamic: {
+            template: "direktorat",
+            direktoratTemplateArgs: {
+              language: "bm",
+              signatureVariant: "invalid",
+              fields: {},
+            },
+          },
+        },
+      } as unknown as GenerateDocumentRequest;
+
+      const response = await fetcher(testEnv.genererBrevUrl, payload);
+      expect(response.status).toBe(400);
+
+      const error = (await response.json()) as ValidationErrorResponse;
+      expect(error.message).toBe("Validation error");
+      expect(error.details).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            path: expect.stringContaining("signatureVariant") as string,
+            code: "invalid_value",
+          }),
+        ]),
+      );
+    });
   });
 }
