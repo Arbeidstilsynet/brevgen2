@@ -16,7 +16,7 @@
     "@typescript/native-preview": "7.0.0-dev.20260119.1",
     "eslint": "9.39.2",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.53.0"
+    "typescript-eslint": "8.53.1"
   },
   "dependencies": {
     "@repo/shared-types": "workspace:^"
