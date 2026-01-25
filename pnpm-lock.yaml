@@ -60,7 +60,7 @@ importers:
         version: 5.7.1
       fastify-type-provider-zod:
         specifier: 6.1.0
-        version: 6.1.0(@fastify/swagger@9.6.1)(fastify@5.7.1)(openapi-types@12.1.3)(zod@4.3.5)
+        version: 6.1.0(@fastify/swagger@9.6.1)(fastify@5.7.1)(openapi-types@12.1.3)(zod@4.3.6)
       jwks-rsa:
         specifier: 3.2.1
         version: 3.2.1
@@ -83,8 +83,8 @@ importers:
         specifier: 2.17.0
         version: 2.17.0
       zod:
-        specifier: 4.3.5
-        version: 4.3.5
+        specifier: 4.3.6
+        version: 4.3.6
     devDependencies:
       '@eslint/js':
         specifier: 9.39.2
@@ -299,8 +299,8 @@ importers:
   packages/shared-types:
     dependencies:
       zod:
-        specifier: 4.3.5
-        version: 4.3.5
+        specifier: 4.3.6
+        version: 4.3.6
     devDependencies:
       '@typescript/native-preview':
         specifier: 7.0.0-dev.20260122.4
@@ -4579,8 +4579,8 @@ packages:
   zod@3.25.76:
     resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
 
-  zod@4.3.5:
-    resolution: {integrity: sha512-k7Nwx6vuWx1IJ9Bjuf4Zt1PEllcwe7cls3VNzm4CQ1/hgtFUK2bRNG3rvnpPUhFjmqJKAKtjV576KnUkHocg/g==}
+  zod@4.3.6:
+    resolution: {integrity: sha512-rftlrkhHZOcjDwkGlnUtZZkvaPHCsDATp4pGpuOOMDaTdDDXF91wuVDJoWoPsKX/3YPQ5fHuF3STjcYyKr+Qhg==}
 
 snapshots:
 
@@ -6760,8 +6760,8 @@ snapshots:
       '@babel/parser': 7.28.5
       eslint: 9.39.2(jiti@2.6.1)
       hermes-parser: 0.25.1
-      zod: 4.3.5
-      zod-validation-error: 4.0.2(zod@4.3.5)
+      zod: 4.3.6
+      zod-validation-error: 4.0.2(zod@4.3.6)
     transitivePeerDependencies:
       - supports-color
 
@@ -6945,13 +6945,13 @@ snapshots:
 
   fastify-plugin@5.1.0: {}
 
-  fastify-type-provider-zod@6.1.0(@fastify/swagger@9.6.1)(fastify@5.7.1)(openapi-types@12.1.3)(zod@4.3.5):
+  fastify-type-provider-zod@6.1.0(@fastify/swagger@9.6.1)(fastify@5.7.1)(openapi-types@12.1.3)(zod@4.3.6):
     dependencies:
       '@fastify/error': 4.2.0
       '@fastify/swagger': 9.6.1
       fastify: 5.7.1
       openapi-types: 12.1.3
-      zod: 4.3.5
+      zod: 4.3.6
 
   fastify@5.7.1:
     dependencies:
@@ -9248,10 +9248,10 @@ snapshots:
       compress-commons: 6.0.2
       readable-stream: 4.7.0
 
-  zod-validation-error@4.0.2(zod@4.3.5):
+  zod-validation-error@4.0.2(zod@4.3.6):
     dependencies:
-      zod: 4.3.5
+      zod: 4.3.6
 
   zod@3.25.76: {}
 
-  zod@4.3.5: {}
+  zod@4.3.6: {}
