@@ -176,6 +176,6 @@ jobs:
         if: needs.changes.outputs.nuget-client == 'true'
       - name: Build and Test .NET solution
         if: needs.changes.outputs.nuget-client == 'true'
-        uses: Arbeidstilsynet/action-dotnet-build@a1f3f50f263efb55f38a48fa615e2cf77c4297fa # v3
+        uses: Arbeidstilsynet/action-dotnet-build@15ae7705f61363abe7797d87644105a3814f77d0 # v4
         with:
           working-directory: "."
