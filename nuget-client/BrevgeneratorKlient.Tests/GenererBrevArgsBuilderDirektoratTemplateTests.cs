@@ -126,4 +126,17 @@ public class GenererBrevArgsBuilderDirektoratTemplateTests
 
         Assert.Equal(signatureLines, args.Options.Dynamic.DirektoratTemplateArgs?.SignatureLines);
     }
+
+    [Fact]
+    public void WithDirektoratTemplate_MissingUnntattOffentlighetHjemmel_Throws()
+    {
+        var builder = GenererBrevArgsBuilder
+            .Create()
+            .AddMarkdown("# Test", null)
+            .WithDirektoratTemplate(Language.Bokmål, DirektoratTemplateSignatureVariant.Usignert)
+            .WithDirektoratTemplateFields(new() { ErUnntattOffentlighet = true });
+
+        var exception = Assert.Throws<ArgumentException>(builder.Build);
+        Assert.Contains("UnntattOffentlighetHjemmel", exception.Message);
+    }
 }

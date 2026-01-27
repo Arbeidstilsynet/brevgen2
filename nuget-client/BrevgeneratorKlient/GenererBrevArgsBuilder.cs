@@ -235,6 +235,28 @@ internal class BuilderSteps
             throw new ArgumentException("DirektoratTemplateArgs are required when using the direktorat template");
         }
 
+        if (
+            options.Dynamic.Template == TemplateType.Default
+            && options.Dynamic.DefaultTemplateArgs?.Fields.ErUnntattOffentlighet == true
+            && string.IsNullOrEmpty(options.Dynamic.DefaultTemplateArgs.Fields.UnntattOffentlighetHjemmel)
+        )
+        {
+            throw new ArgumentException(
+                "UnntattOffentlighetHjemmel must be set when ErUnntattOffentlighet is true in DefaultTemplateFields"
+            );
+        }
+
+        if (
+            options.Dynamic.Template == TemplateType.Direktorat
+            && options.Dynamic.DirektoratTemplateArgs?.Fields.ErUnntattOffentlighet == true
+            && string.IsNullOrEmpty(options.Dynamic.DirektoratTemplateArgs.Fields.UnntattOffentlighetHjemmel)
+        )
+        {
+            throw new ArgumentException(
+                "UnntattOffentlighetHjemmel must be set when ErUnntattOffentlighet is true in DirektoratTemplateFields"
+            );
+        }
+
         return new GenererBrevArgs
         {
             Md = Md!,

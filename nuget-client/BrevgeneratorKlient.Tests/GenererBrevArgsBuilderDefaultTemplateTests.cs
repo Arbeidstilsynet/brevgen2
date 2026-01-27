@@ -107,6 +107,34 @@ public class GenererBrevArgsBuilderDefaultTemplateTests
         }
     }
 
+    [Fact]
+    public void WithDefaultTemplate_MissingUnntattOffentlighetHjemmel_Throws()
+    {
+        var builder = GenererBrevArgsBuilder
+            .Create()
+            .AddMarkdown("# Test", null)
+            .WithDefaultTemplate(Language.Bokmål, DefaultTemplateSignatureVariant.Usignert)
+            .WithDefaultTemplateFields(
+                new()
+                {
+                    Dato = "01.01.2026",
+                    Saksnummer = "2026/0001",
+                    SaksbehandlerNavn = "Test",
+                    Virksomhet = new Virksomhet
+                    {
+                        Navn = "Test AS",
+                        Adresse = "Testveien 1",
+                        Postnr = "0000",
+                        Poststed = "Test",
+                    },
+                    ErUnntattOffentlighet = true,
+                }
+            );
+
+        var exception = Assert.Throws<ArgumentException>(builder.Build);
+        Assert.Contains("UnntattOffentlighetHjemmel", exception.Message);
+    }
+
     private static DefaultTemplateFields CreateMinimalDefaultFields() =>
         new()
         {

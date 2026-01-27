@@ -6,19 +6,33 @@ export type DirektoratTemplateSignatureVariant = z.infer<
   typeof direktoratTemplateSignatureVariantSchema
 >;
 
-export const direktoratTemplateFieldsSchema = z.object({
-  dato: z.string().nullish(), // "Vår dato"
-  saksnummer: z.union([z.string(), z.number()]).nullish(), // "Vår referanse"
-  saksbehandlerNavn: z.string().nullish(), // "Vår saksbehandler"
-  mottaker: z
-    .object({
-      navn: z.string(),
-      adresse: z.string(),
-      postnr: z.union([z.string(), z.number()]),
-      poststed: z.string(),
-    })
-    .nullish(),
-});
+export const direktoratTemplateFieldsSchema = z
+  .object({
+    dato: z.string().nullish(), // "Vår dato"
+    saksnummer: z.union([z.string(), z.number()]).nullish(), // "Vår referanse"
+    saksbehandlerNavn: z.string().nullish(), // "Vår saksbehandler"
+    erUnntattOffentlighet: z.boolean().nullish(),
+    unntattOffentlighetHjemmel: z.string().nullish(),
+    mottaker: z
+      .object({
+        navn: z.string(),
+        adresse: z.string(),
+        postnr: z.union([z.string(), z.number()]),
+        poststed: z.string(),
+      })
+      .nullish(),
+  })
+  .refine(
+    (data) => {
+      if (data.erUnntattOffentlighet && !data.unntattOffentlighetHjemmel) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "unntattOffentlighetHjemmel is required when erUnntattOffentlighet is true",
+    },
+  );
 export type DirektoratTemplateFields = z.infer<typeof direktoratTemplateFieldsSchema>;
 
 export const direktoratTemplateArgsSchema = z.object({

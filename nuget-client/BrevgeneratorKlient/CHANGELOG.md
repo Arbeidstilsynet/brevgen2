@@ -1,5 +1,10 @@
 # Versjonslogg
 
+## 3.3.0
+
+- Lagt til støtte for `ErUnntattOffentlighet` og `UnntattOffentlighetHjemmel` i direktorat-template
+- GenererBrevArgsBuilder sjekker nå at `UnntattOffentlighetHjemmel` er definert når `ErUnntattOffentlighet` er `true`
+
 ## 3.2.0
 
 Støtte for ny dokument-mal "direktorat" med egen logo og andre felter. Konfigurer med nye metoder i builder `WithDirektoratTemplate` og `WithDirektoratTemplateFields`.

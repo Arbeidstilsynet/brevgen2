@@ -84,6 +84,8 @@ export const initialDirektoratTemplateArgs = {
     dato: "13.09.2024",
     saksnummer: "2024/1234",
     saksbehandlerNavn: "Ola Nordmann",
+    erUnntattOffentlighet: false,
+    unntattOffentlighetHjemmel: "jf. offl. § 14",
     mottaker: {
       navn: "Asgeir Ansattesen",
       adresse: "Olav Tryggvasons gt. 42",

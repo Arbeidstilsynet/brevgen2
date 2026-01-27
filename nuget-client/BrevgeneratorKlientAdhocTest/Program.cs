@@ -71,6 +71,8 @@ static class Program
                     // Dato = "2026-10-01",
                     // Saksnummer = "2026/1234",
                     // SaksbehandlerNavn = "Kari Nordmann",
+                    // ErUnntattOffentlighet = true,
+                    // UnntattOffentlighetHjemmel = "jf. offl. § 14",
                     // Mottaker = new()
                     // {
                     //     Navn = "Bedrift AS",
