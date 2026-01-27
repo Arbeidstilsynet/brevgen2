@@ -15,6 +15,11 @@ export function TemplateConfigDirektoratForm({ state, dispatch }: Props) {
     field: keyof DirektoratTemplateFields,
   ) => dispatch({ type: "UPDATE_FIELD", field, value: e.target.value });
 
+  const handleBooleanFieldChange = (
+    e: ChangeEvent<HTMLInputElement>,
+    field: Extract<keyof DirektoratTemplateFields, "erUnntattOffentlighet">,
+  ) => dispatch({ type: "TOGGLE_FIELD", field, value: e.target.checked });
+
   const handleMottakerChange = (
     e: ChangeEvent<HTMLInputElement>,
     field: keyof Required<NonNullable<DirektoratTemplateFields["mottaker"]>>,
@@ -60,6 +65,21 @@ export function TemplateConfigDirektoratForm({ state, dispatch }: Props) {
         value={state.fields.saksbehandlerNavn ?? ""}
         onChange={(e) => handleFieldChange(e, "saksbehandlerNavn")}
       />
+
+      <div className="flex flex-row">
+        <Input
+          type="checkbox"
+          label="Unntatt offentlighet"
+          checked={state.fields.erUnntattOffentlighet ?? false}
+          onChange={(e) => handleBooleanFieldChange(e, "erUnntattOffentlighet")}
+        />
+
+        <Input
+          label="Hjemmel"
+          value={state.fields.unntattOffentlighetHjemmel ?? ""}
+          onChange={(e) => handleFieldChange(e, "unntattOffentlighetHjemmel")}
+        />
+      </div>
 
       <div className="mb-4 p-4 bg-white border border-gray-200 rounded-lg">
         <h3 className="font-semibold text-gray-700 mb-4">Mottaker</h3>

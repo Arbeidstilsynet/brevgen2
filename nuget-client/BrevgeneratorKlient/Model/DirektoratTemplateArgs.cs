@@ -74,6 +74,18 @@ public class DirektoratTemplateFields
     public string? SaksbehandlerNavn { get; init; }
 
     /// <summary>
+    /// Valgfritt felt. Må også sette UnntattOffentlighetHjemmel. False eller null gjør at tekst om unntatt offentlighet ikke vises i letterhead.
+    /// </summary>
+    [JsonPropertyName("erUnntattOffentlighet")]
+    public bool? ErUnntattOffentlighet { get; init; }
+
+    /// <summary>
+    /// Må settes når "erUnntattOffentlighet" er true. Settes etter "Unntatt offentlighet, " i letterhead. Eksempelvis "jf. offl. § 14".
+    /// </summary>
+    [JsonPropertyName("unntattOffentlighetHjemmel")]
+    public string? UnntattOffentlighetHjemmel { get; init; }
+
+    /// <summary>
     /// Mottaker-adresse. Valgfritt felt.
     /// </summary>
     [JsonPropertyName("mottaker")]

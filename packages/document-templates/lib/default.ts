@@ -64,9 +64,8 @@ function getLetterhead(fields: DefaultTemplateFields, language: TemplateLanguage
     fields.deresReferanse &&
       `<p style="margin: 0;">${text.deresReferanse[language]}: ${fields.deresReferanse}</p>`,
     `<p style="margin: 0;">Vår ${text.saksbehandler[language]}: ${fields.saksbehandlerNavn}</p>`,
-    fields.erUnntattOffentlighet
-      ? `<p style='margin: 0;font-weight: bold;'>${text.unntattOffentlighet[language]}${fields.unntattOffentlighetHjemmel?.trim()}</p>`
-      : "",
+    fields.erUnntattOffentlighet &&
+      `<p style='margin: 0;font-weight: bold;'>${text.unntattOffentlighet[language]}${fields.unntattOffentlighetHjemmel?.trim()}</p>`,
     `</div>`,
     `<p style="margin-bottom: 66px; font-style: normal;">`,
     `<span style="display: block;">${fields.virksomhet.navn}</span>`,

@@ -12,6 +12,10 @@ const text = {
     bm: "saksbehandler",
     nn: "saksbehandlar",
   },
+  unntattOffentlighet: {
+    bm: "Unntatt offentlighet, ",
+    nn: "Unntatt offentlegheit, ",
+  },
   hilsen: {
     bm: "Med vennlig hilsen",
     nn: "Med vennleg helsing",
@@ -39,6 +43,8 @@ function getLetterhead(fields: DirektoratTemplateFields, language: TemplateLangu
     fields.saksnummer && `<p style="margin: 0;">Vår referanse: ${fields.saksnummer}</p>`,
     fields.saksbehandlerNavn &&
       `<p style="margin: 0;">Vår ${text.saksbehandler[language]}: ${fields.saksbehandlerNavn}</p>`,
+    fields.erUnntattOffentlighet &&
+      `<p style='margin: 0;font-weight: bold;'>${text.unntattOffentlighet[language]}${fields.unntattOffentlighetHjemmel?.trim()}</p>`,
     `</div>`,
     `<p style="margin-bottom: 66px; font-style: normal;">`,
     fields.mottaker && `<span style="display: block;">${fields.mottaker.navn}</span>`,

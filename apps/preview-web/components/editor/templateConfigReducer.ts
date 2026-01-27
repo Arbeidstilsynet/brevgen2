@@ -42,6 +42,12 @@ interface DirektoratFieldsAction {
   value: string | number;
 }
 
+interface DirektoratBooleanFieldsAction {
+  type: "TOGGLE_FIELD";
+  field: Extract<keyof DirektoratTemplateFields, "erUnntattOffentlighet">;
+  value: boolean;
+}
+
 interface DirektoratMottakerAction {
   type: "UPDATE_MOTTAKER";
   field: keyof Required<NonNullable<DirektoratTemplateFields["mottaker"]>>;
@@ -109,6 +115,7 @@ type WithRequiredMottaker<T extends { fields: unknown }> = Omit<T, "fields"> & {
 export type DirektoratTemplateArgsAction =
   | LanguageAction
   | DirektoratFieldsAction
+  | DirektoratBooleanFieldsAction
   | DirektoratMottakerAction
   | DirektoratTemplateSignatureVariantAction;
 
@@ -118,6 +125,7 @@ export function direktoratTemplateReducer(
 ): WithRequiredMottaker<DirektoratTemplateArgs> {
   switch (action.type) {
     case "UPDATE_FIELD":
+    case "TOGGLE_FIELD":
       return {
         ...state,
         fields: {
