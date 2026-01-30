@@ -12,6 +12,8 @@ minimumReleaseAge: 4320
 minimumReleaseAgeExclude:
   - pdf-text-reader@5.1.1
   - lodash@4.17.23
+  # Renovate security update: next@16.1.5
+  - next@16.1.5
 
 onlyBuiltDependencies:
   - puppeteer
