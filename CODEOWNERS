@@ -4,4 +4,5 @@
 # Allow Renovate to auto-merge package files
 **/package.json
 pnpm-lock.yaml
+pnpm-workspace.yaml
 **/*.csproj
