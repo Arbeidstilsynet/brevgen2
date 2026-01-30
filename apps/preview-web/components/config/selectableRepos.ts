@@ -48,7 +48,7 @@ export const allowedRepos: RepoInfo[] = [
     id: "a0c5d4c8-d5a3-46f2-9d59-54ecebddb62a",
     repoName: "yrkeskvalifikasjon-monorepo",
     prettyName: "Yrkeskvalifikasjon",
-    onlyPaths: ["backend/AutomatiskVedtak/Infrastructure/Adapters/dokumentmaler"],
+    onlyPaths: ["dokumentmaler"],
   },
 ].toSorted((a, b) => a.prettyName.localeCompare(b.prettyName));
 
