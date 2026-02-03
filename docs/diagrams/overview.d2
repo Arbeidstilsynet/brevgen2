@@ -1,0 +1,90 @@
+# Brevgenerator2 Architecture
+
+# Actors
+designer: {
+  shape: person
+  label: "Designer/fagperson"
+  label.near: outside-top-center
+  near: top-center
+  width: 100
+  height: 100
+}
+
+utvikler: {
+  shape: person
+  label: "Utvikler"
+  label.near: outside-top-center
+  width: 100
+  height: 100
+}
+
+fagsystem: {
+  label: "Fagsystem"
+  label.near: top-center
+  direction: down
+
+  brevmaler: {
+    label: "Brevmaler\nDynamic Markdown"
+  }
+
+  nuget: {
+    label: "AT.Brevgenerator.Klient\n(NuGet-pakke)"
+    shape: package
+    style.stroke-dash: 3
+  }
+}
+
+# NAIS apps
+preview-web: {
+  label: "Brevgen2 preview-web\nbrevgenerator.arbeidstilsynet.no"
+  shape: page
+}
+
+api: {
+  label: "Brevgen2 API"
+  label.near: top-center
+  document-templates: "Document templates\nHTML+CSS"
+  chromium: "Chromium (Puppeteer)"
+}
+
+# external services
+external: {
+  label: "Eksterne integrasjoner"
+  label.near: bottom-right
+
+  entra-id: {
+    label: "Azure Entra ID"
+    shape: rectangle
+  }
+
+  repos: {
+    label: "Repos"
+    shape: cylinder
+  }
+
+  gcp-storage: {
+    label: "GCP Storage"
+    shape: cylinder
+  }
+
+  apertium: {
+    label: "Apertium"
+  }
+}
+
+# Main flows
+designer -> preview-web: "utformer brevmal"
+designer -> utvikler: "Sender link til brevmal"
+utvikler -> fagsystem: "legger til brevmal i repo"
+fagsystem.nuget -> api: "brevmal + variabler"
+api -> fagsystem.nuget: "PDF" {
+  style.stroke-dash: 3
+}
+
+preview-web -> api: "Generer PDF"
+preview-web -> external.entra-id: "OIDC"
+preview-web -> external.repos: "henter eksisterende maler"
+preview-web -> external.gcp-storage: "WIP"
+preview-web -> external.apertium: "oversett"
+
+api -> external.entra-id: "JWKS"

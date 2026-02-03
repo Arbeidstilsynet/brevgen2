@@ -45,6 +45,10 @@ $/: docker compose up -d
 
 Etter du har startet `api` kan du bruke SwaggerUI på `http://localhost:4000/docs`
 
+## Arkitektur
+
+![diagram](./docs/diagrams/overview.svg)
+
 ## Turborepo
 
 Dette monorepoet bruker Turborepo, som hjelper med å kjøre samme kommando parallelt for mange prosjekter og automatisk bruker cache for prosjekter som ikke er endret.
