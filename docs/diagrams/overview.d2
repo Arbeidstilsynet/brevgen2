@@ -39,7 +39,7 @@ fagsystem: {
 
 # NAIS apps
 preview-web: {
-  label: "Brevgen2 preview-web\nbrevgenerator.arbeidstilsynet.no"
+  label: "Brevgen2 editor\nbrevgenerator.arbeidstilsynet.no"
   shape: page
 }
 
@@ -84,10 +84,10 @@ api -> fagsystem.nuget: "PDF" {
   style.stroke-dash: 3
 }
 
-preview-web -> api: "Generer PDF"
+preview-web -> api: "forhåndsvisning"
 preview-web -> external.entra-id: "OIDC"
 preview-web -> external.repos: "henter eksisterende maler"
-preview-web -> external.gcp-storage: "WIP"
+preview-web -> external.gcp-storage: "lagre/hent WIP"
 preview-web -> external.apertium: "oversett"
 
 api -> external.entra-id: "JWKS"
