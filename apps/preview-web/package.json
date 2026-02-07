@@ -33,7 +33,7 @@
     "@repo/shared-types": "workspace:^",
     "@tailwindcss/postcss": "4.1.18",
     "@types/node": "24.10.10",
-    "@types/react": "19.2.10",
+    "@types/react": "19.2.11",
     "@types/react-dom": "19.2.3",
     "@types/sanitize-html": "2.16.0",
     "@types/wicg-file-system-access": "2023.10.7",
