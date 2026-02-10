@@ -3,11 +3,12 @@
 import { fetchFileContentFromAzure } from "@/actions/azdo";
 import { useMutation } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useEffectEvent } from "react";
 import { allowedRepos } from "../config/selectableRepos";
 import { useToast } from "../toast/provider";
 import { useLoadFile, useQueryWorkspaceFiles } from "../workspace/hooks";
 import { extractTags, URL_SEARCH_PARAM_WORKSPACE } from "../workspace/utils";
+import type { BucketFile } from "@/actions/gcp-bucket";
 import { getLoadedRepoFileName, getLoadedWorkspaceName, LastLoadedFile } from "./utils";
 
 export const GIT_PARAMS = {
@@ -66,11 +67,7 @@ export function useLoadPermanentUrl(
     },
   });
 
-  const {
-    data: workspaceList,
-    isSuccess: isSuccessWorkspaceList,
-    isPending: isPendingWorkspaceList,
-  } = useQueryWorkspaceFiles({
+  const { data: workspaceList } = useQueryWorkspaceFiles({
     enabled: Boolean(workspaceParam),
   });
 
@@ -94,15 +91,27 @@ export function useLoadPermanentUrl(
     },
   });
 
-  useEffect(() => {
-    if (!isEditorReady || !isIdleGit || !isIdleWorkspaceFile) return;
+  const loadFromAppropriateSource = useEffectEvent(
+    ({
+      isEditorReady,
+      isIdleGit,
+      isIdleWorkspaceFile,
+      gitParam,
+      workspaceParam,
+      workspaceList,
+    }: {
+      isEditorReady: boolean;
+      isIdleGit: boolean;
+      isIdleWorkspaceFile: boolean;
+      gitParam: string | null;
+      workspaceParam: string;
+      workspaceList: BucketFile[] | undefined;
+    }) => {
+      if (!isEditorReady || !isIdleGit || !isIdleWorkspaceFile) return;
 
-    const loadFromAppropriateSource = () => {
       if (gitParam) return getGit();
 
-      if (!workspaceParam || !isSuccessWorkspaceList || !workspaceList || isPendingWorkspaceList) {
-        return;
-      }
+      if (!workspaceParam || !workspaceList) return;
 
       const file = workspaceList.find((f) => {
         if (!f.Key) return false;
@@ -112,21 +121,19 @@ export function useLoadPermanentUrl(
       if (!file) return addToast("error", `File ${workspaceParam} not found in workspace`);
 
       getWorkspaceFile(file.Key);
-    };
-    loadFromAppropriateSource();
-  }, [
-    addToast,
-    getGit,
-    getWorkspaceFile,
-    gitParam,
-    isEditorReady,
-    isIdleGit,
-    isIdleWorkspaceFile,
-    isPendingWorkspaceList,
-    isSuccessWorkspaceList,
-    workspaceList,
-    workspaceParam,
-  ]);
+    },
+  );
+
+  useEffect(() => {
+    loadFromAppropriateSource({
+      isEditorReady,
+      isIdleGit,
+      isIdleWorkspaceFile,
+      gitParam,
+      workspaceParam,
+      workspaceList,
+    });
+  }, [gitParam, isEditorReady, isIdleGit, isIdleWorkspaceFile, workspaceList, workspaceParam]);
 
   return isPendingGit || isPendingWorkspaceFile;
 }
