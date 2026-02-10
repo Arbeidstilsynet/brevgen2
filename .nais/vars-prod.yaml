@@ -1,7 +1,6 @@
 team: plattform
 azure_tenant_id: da4bf886-a8a6-450d-a806-c347b8eb8d80
 azure_app_id: 7be865bf-4e3d-4b55-a924-5a0d926ac6d5 # Entra: Brevgenerator2 PROD
-s3bucket: prod-at-brevgenerator2-workspace
 bucket:
   name: at-brevgenerator2-workspace-prod
 api:

@@ -53,7 +53,7 @@ AZURE_CLIENT_SECRET=... # Ligger i Keeper
 AZURE_DEVOPS_PAT=yourPAT # trenger Code:Read
 
 # For bruk av Workspace med WIP-maler
-GCP_BUCKET_NAME=dev-at-brevgenerator2-workspace
+GCP_BUCKET_NAME=at-brevgenerator2-workspace-dev
 ```
 
 ## Docker
