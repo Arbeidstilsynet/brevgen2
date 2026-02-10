@@ -32,8 +32,8 @@ export function useLoadPermanentUrl(
   const fileParam = decodeURIComponent(params.get(GIT_PARAMS.file) ?? "");
 
   // If git parameters are provided, they take precedence.
-  const workspaceParam = gitParam ? null : params.get(URL_SEARCH_PARAM_WORKSPACE);
-  const decodedWorkspaceParam = decodeURIComponent(workspaceParam ?? "");
+  const workspaceParamRaw = gitParam ? null : params.get(URL_SEARCH_PARAM_WORKSPACE);
+  const workspaceParam = decodeURIComponent(workspaceParamRaw ?? "");
 
   const {
     mutate: getGit,
@@ -71,7 +71,7 @@ export function useLoadPermanentUrl(
     isSuccess: isSuccessWorkspaceList,
     isPending: isPendingWorkspaceList,
   } = useQueryWorkspaceFiles({
-    enabled: Boolean(decodedWorkspaceParam),
+    enabled: Boolean(workspaceParam),
   });
 
   const {
@@ -84,7 +84,7 @@ export function useLoadPermanentUrl(
       const { md, fileName, tags } = value;
       onLoad(md);
       setLastLoadedFile({ fileName: getLoadedWorkspaceName(fileName), tags });
-      addToast("info", `Loaded ${decodedWorkspaceParam} from workspace`);
+      addToast("info", `Loaded ${workspaceParam} from workspace`);
     },
     onError: (error) => {
       console.error("Error loading file from workspace:", error);
@@ -100,28 +100,22 @@ export function useLoadPermanentUrl(
     const loadFromAppropriateSource = () => {
       if (gitParam) return getGit();
 
-      if (
-        !decodedWorkspaceParam ||
-        !isSuccessWorkspaceList ||
-        !workspaceList ||
-        isPendingWorkspaceList
-      ) {
+      if (!workspaceParam || !isSuccessWorkspaceList || !workspaceList || isPendingWorkspaceList) {
         return;
       }
 
       const file = workspaceList.find((f) => {
         if (!f.Key) return false;
         const { fileName } = extractTags(f.Key);
-        return fileName === decodedWorkspaceParam;
+        return fileName === workspaceParam;
       });
-      if (!file) return addToast("error", `File ${decodedWorkspaceParam} not found in workspace`);
+      if (!file) return addToast("error", `File ${workspaceParam} not found in workspace`);
 
       getWorkspaceFile(file.Key);
     };
     loadFromAppropriateSource();
   }, [
     addToast,
-    decodedWorkspaceParam,
     getGit,
     getWorkspaceFile,
     gitParam,
@@ -131,6 +125,7 @@ export function useLoadPermanentUrl(
     isPendingWorkspaceList,
     isSuccessWorkspaceList,
     workspaceList,
+    workspaceParam,
   ]);
 
   return isPendingGit || isPendingWorkspaceFile;
