@@ -28,12 +28,11 @@ export function useLoadPermanentUrl(
   const { addToast } = useToast();
 
   const gitParam = params.get(GIT_PARAMS.git);
-  const branchParam = params.get(GIT_PARAMS.branch);
-  const fileParam = params.get(GIT_PARAMS.file);
-  const decodedFileParam = decodeURIComponent(fileParam ?? "");
+  const branchParam = decodeURIComponent(params.get(GIT_PARAMS.branch) ?? "");
+  const fileParam = decodeURIComponent(params.get(GIT_PARAMS.file) ?? "");
 
   // If git parameters are provided, they take precedence.
-  const workspaceParam = !gitParam ? params.get(URL_SEARCH_PARAM_WORKSPACE) : null;
+  const workspaceParam = gitParam ? null : params.get(URL_SEARCH_PARAM_WORKSPACE);
   const decodedWorkspaceParam = decodeURIComponent(workspaceParam ?? "");
 
   const {
@@ -43,13 +42,13 @@ export function useLoadPermanentUrl(
   } = useMutation({
     mutationFn: async () => {
       if (!gitParam || !branchParam || !fileParam) throw new TypeError("Missing Git parameters");
-      return fetchFileContentFromAzure(gitParam, branchParam, decodedFileParam);
+      return fetchFileContentFromAzure(gitParam, branchParam, fileParam);
     },
     onSuccess: (md) => {
-      const fileName = decodedFileParam.split("/").at(-1)!;
+      const fileName = fileParam.split("/").at(-1)!;
       const systemName =
         allowedRepos.find(
-          (r) => r.id === gitParam && r.onlyPaths.some((p) => decodedFileParam.includes(p)),
+          (r) => r.id === gitParam && r.onlyPaths.some((p) => fileParam.includes(p)),
         )?.prettyName ?? "unknown";
 
       onLoad(md);
