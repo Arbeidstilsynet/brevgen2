@@ -73,7 +73,7 @@ var payload = GenererBrevArgsBuilder
             }
         }
     )
-    .WithMetadata(documentTitle: "My document", author: "Look at me, I am the author now")
+    .WithMetadata(documentTitle: "My document", author: "A. U. Thor")
     .Build();
 
 var result = await client.GenererBrev(payload);
