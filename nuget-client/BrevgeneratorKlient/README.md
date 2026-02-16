@@ -9,32 +9,9 @@ Autentisering må angis eksplisitt av konsumenten. Klienten støtter to moduser:
 - BearerToken – async factory som returnerer et gyldig bearer token (f.eks. Entra ID client credentials). Eneste støttet av nåværende deployet API.
 - ApiKey – async factory som returnerer ApiKey, som sendes i headeren `x-api-key`. Ble brukt før.
 
-## Hvordan publisere ny versjon av NuGet-pakken
+## Hvordan installere
 
-1. Oppdater `Version` i [nuget-client.csproj](nuget-client.csproj) med passende nytt [semantisk versjonsnummer](https://semver.org/)
-2. Skriv inn dine endringer i [CHANGELOG.md](CHANGELOG.md)
-3. PR og merge til main-branch
-4. Lag Git tag `nuget-x.y.z`
-5. En ny pakke blir bygget og publisert i nuget.org, klar til bruk
-
-## Hvordan installere NuGet-pakken
-
-Legg til organisasjonens public feed "AT.Public.NuGet" i konsumerende prosjekt sin `nuget.config`
-
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<configuration>
-  <packageSources>
-    <clear />
-    <add key="nuget.org" value="https://api.nuget.org/v3/index.json" protocolVersion="3" />
-    <add
-      key="AT.Public.NuGet"
-      value="https://pkgs.dev.azure.com/Atil-utvikling/Public/_packaging/AT.Public.NuGet/nuget/v3/index.json"
-      protocolVersion="3"
-    />
-  </packageSources>
-</configuration>
-```
+`dotnet add package Arbeidstilsynet.Brevgenerator.Klient`
 
 ## Eksempel på bruk
 
@@ -78,3 +55,11 @@ var payload = GenererBrevArgsBuilder
 
 var result = await client.GenererBrev(payload);
 ```
+
+## Hvordan publisere ny versjon
+
+1. Oppdater `Version` i [nuget-client.csproj](nuget-client.csproj) med passende nytt [semantisk versjonsnummer](https://semver.org/)
+2. Skriv inn dine endringer i [CHANGELOG.md](CHANGELOG.md)
+3. PR og merge til main-branch
+4. Lag Git tag `nuget-x.y.z`
+5. En ny pakke blir bygget og publisert i nuget.org, klar til bruk
