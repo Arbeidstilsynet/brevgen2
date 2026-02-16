@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/nuget-client/">
+    <Project Path="nuget-client/BrevgeneratorClient.Tests/BrevgeneratorClient.Tests.csproj" />
+    <Project Path="nuget-client/BrevgeneratorClient/BrevgeneratorClient.csproj" />
+    <Project Path="nuget-client/BrevgeneratorClientAdhocTest/BrevgeneratorClientAdhocTest.csproj" />
+  </Folder>
+</Solution>
