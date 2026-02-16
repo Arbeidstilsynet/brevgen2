@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
-using AT.Brevgenerator.Klient;
-using AT.Brevgenerator.Klient.Model;
+using Arbeidstilsynet.Brevgenerator.Client;
+using Arbeidstilsynet.Brevgenerator.Client.Models;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BrevgeneratorClientCli;
@@ -22,18 +22,18 @@ static class Program
         // ---------- Klient 1 via DI ----------
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddSingleton(new BrevgeneratorConfig(apiUrl));
-        serviceCollection.AddSingleton<IBrevgeneratorKlient>(sp => new BrevgeneratorKlient(
+        serviceCollection.AddSingleton<IBrevgeneratorClient>(sp => new BrevgeneratorClient(
             sp.GetRequiredService<BrevgeneratorConfig>(),
-            BrevgeneratorKlient.AuthMode.ApiKey,
+            BrevgeneratorClient.AuthMode.ApiKey,
             apiKeyFactory: async () => "foo"
         ));
         var serviceProvider = serviceCollection.BuildServiceProvider();
-        var client1 = serviceProvider.GetRequiredService<IBrevgeneratorKlient>();
+        var client1 = serviceProvider.GetRequiredService<IBrevgeneratorClient>();
 
         // ---------- Klient 2 direkte konstruksjon ----------
-        // var client2 = new BrevgeneratorKlient(
+        // var client2 = new BrevgeneratorClient(
         //     new BrevgeneratorConfig(apiUrl),
-        //     BrevgeneratorKlient.AuthMode.ApiKey,
+        //     BrevgeneratorClient.AuthMode.ApiKey,
         //     apiKeyFactory: async () => "foo"
         // );
 

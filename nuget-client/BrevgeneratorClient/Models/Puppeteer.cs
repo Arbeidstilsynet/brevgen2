@@ -1,7 +1,7 @@
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
-namespace AT.Brevgenerator.Klient.Model;
+namespace Arbeidstilsynet.Brevgenerator.Client.Models;
 
 public enum PaperFormat
 {

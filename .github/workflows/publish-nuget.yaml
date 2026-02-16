@@ -6,14 +6,15 @@ on:
       - "nuget-client-v*"
 
 env:
-  working-directory: ./nuget-client/BrevgeneratorKlient
-  source-feed: AT.Public.NuGet
+  working-directory: ./nuget-client/BrevgeneratorClient
+  source-feed: nuget.org
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
+      id-token: write
       contents: write
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -34,10 +35,10 @@ jobs:
 
       - name: Publish package if not already published
         if: steps.nuget_version_check.outputs.published == 'false'
-        uses: Arbeidstilsynet/action-dotnet-publish@8d282653fd85f9a26e80d4f6a4c660eb5d6c8896 # v2
+        uses: Arbeidstilsynet/action-dotnet-publish@v3
         with:
           working-directory: ${{ env.working-directory }}
-          nuget-auth-token: ${{ secrets.AZURE_DEVOPS_PACKAGING_WRITE_PAT }}
+          nuget-username: ${{ vars.NUGET_BOT_USERNAME }}
 
       - name: Extract changelog section for current version
         id: changelog

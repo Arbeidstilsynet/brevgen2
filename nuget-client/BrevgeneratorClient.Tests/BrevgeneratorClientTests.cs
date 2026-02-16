@@ -1,10 +1,10 @@
 using System.Net;
-using AT.Brevgenerator.Klient.Model;
+using Arbeidstilsynet.Brevgenerator.Client.Models;
 using Xunit;
 
-namespace AT.Brevgenerator.Klient.Tests;
+namespace Arbeidstilsynet.Brevgenerator.Client.Tests;
 
-public class BrevgeneratorKlientTests
+public class BrevgeneratorClientTests
 {
     private const string TestApiUrl = "https://api.example.com/";
 
@@ -15,7 +15,7 @@ public class BrevgeneratorKlientTests
     {
         var config = CreateConfig();
         var exception = Assert.Throws<ArgumentException>(() =>
-            new BrevgeneratorKlient(config, BrevgeneratorKlient.AuthMode.BearerToken)
+            new BrevgeneratorClient(config, BrevgeneratorClient.AuthMode.BearerToken)
         );
         Assert.Contains("bearerTokenFactory", exception.Message);
     }
@@ -25,7 +25,7 @@ public class BrevgeneratorKlientTests
     {
         var config = CreateConfig();
         var exception = Assert.Throws<ArgumentException>(() =>
-            new BrevgeneratorKlient(config, BrevgeneratorKlient.AuthMode.ApiKey)
+            new BrevgeneratorClient(config, BrevgeneratorClient.AuthMode.ApiKey)
         );
         Assert.Contains("apiKeyFactory", exception.Message);
     }
@@ -34,9 +34,9 @@ public class BrevgeneratorKlientTests
     public void Constructor_WithBearerTokenMode_AndFactory_Succeeds()
     {
         var config = CreateConfig();
-        var client = new BrevgeneratorKlient(
+        var client = new BrevgeneratorClient(
             config,
-            BrevgeneratorKlient.AuthMode.BearerToken,
+            BrevgeneratorClient.AuthMode.BearerToken,
             bearerTokenFactory: () => Task.FromResult("token")
         );
         Assert.NotNull(client);
@@ -46,9 +46,9 @@ public class BrevgeneratorKlientTests
     public void Constructor_WithApiKeyMode_AndFactory_Succeeds()
     {
         var config = CreateConfig();
-        var client = new BrevgeneratorKlient(
+        var client = new BrevgeneratorClient(
             config,
-            BrevgeneratorKlient.AuthMode.ApiKey,
+            BrevgeneratorClient.AuthMode.ApiKey,
             apiKeyFactory: () => Task.FromResult("key")
         );
         Assert.NotNull(client);
@@ -75,9 +75,9 @@ public class BrevgeneratorKlientTests
         );
 
         var httpClient = new HttpClient(handler) { BaseAddress = new Uri(TestApiUrl) };
-        var client = new BrevgeneratorKlient(
+        var client = new BrevgeneratorClient(
             config,
-            BrevgeneratorKlient.AuthMode.BearerToken,
+            BrevgeneratorClient.AuthMode.BearerToken,
             bearerTokenFactory: () =>
             {
                 callCount++;
@@ -102,8 +102,8 @@ public class BrevgeneratorKlientTests
         var handler = new TestHttpMessageHandler(
             (req, ct) =>
             {
-                Assert.True(req.Headers.Contains(BrevgeneratorKlient.ApiKeyHeader));
-                capturedApiKey = req.Headers.GetValues(BrevgeneratorKlient.ApiKeyHeader).First();
+                Assert.True(req.Headers.Contains(BrevgeneratorClient.ApiKeyHeader));
+                capturedApiKey = req.Headers.GetValues(BrevgeneratorClient.ApiKeyHeader).First();
                 return Task.FromResult(
                     new HttpResponseMessage
                     {
@@ -115,9 +115,9 @@ public class BrevgeneratorKlientTests
         );
 
         var httpClient = new HttpClient(handler) { BaseAddress = new Uri(TestApiUrl) };
-        var client = new BrevgeneratorKlient(
+        var client = new BrevgeneratorClient(
             config,
-            BrevgeneratorKlient.AuthMode.ApiKey,
+            BrevgeneratorClient.AuthMode.ApiKey,
             apiKeyFactory: () => Task.FromResult("test-api-key"),
             httpClientFactory: new TestHttpClientFactory(httpClient)
         );
@@ -137,9 +137,9 @@ public class BrevgeneratorKlientTests
         );
 
         var httpClient = new HttpClient(handler) { BaseAddress = new Uri(TestApiUrl) };
-        var client = new BrevgeneratorKlient(
+        var client = new BrevgeneratorClient(
             config,
-            BrevgeneratorKlient.AuthMode.BearerToken,
+            BrevgeneratorClient.AuthMode.BearerToken,
             bearerTokenFactory: () => Task.FromResult("token"),
             httpClientFactory: new TestHttpClientFactory(httpClient)
         );

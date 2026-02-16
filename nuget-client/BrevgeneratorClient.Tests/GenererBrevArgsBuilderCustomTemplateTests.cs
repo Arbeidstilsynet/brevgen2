@@ -1,7 +1,7 @@
-using AT.Brevgenerator.Klient.Model;
+using Arbeidstilsynet.Brevgenerator.Client.Models;
 using Xunit;
 
-namespace AT.Brevgenerator.Klient.Tests;
+namespace Arbeidstilsynet.Brevgenerator.Client.Tests;
 
 public class GenererBrevArgsBuilderCustomTemplateTests
 {

@@ -1,6 +1,6 @@
-using AT.Brevgenerator.Klient.Model;
+using Arbeidstilsynet.Brevgenerator.Client.Models;
 
-namespace AT.Brevgenerator.Klient;
+namespace Arbeidstilsynet.Brevgenerator.Client;
 
 public interface IAddMarkdownStep
 {
