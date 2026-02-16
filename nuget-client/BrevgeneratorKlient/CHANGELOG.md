@@ -1,5 +1,10 @@
 # Versjonslogg
 
+## 4.0.0
+
+- Publiserer nå til `nuget.org` i stedet for Azure DevOps
+- Omdøpt pakke- og namespace-fiks fra `AT.Brevgenerator` til `Arbeidstilsynet.Brevgenerator`
+
 ## 3.3.0
 
 - Lagt til støtte for `ErUnntattOffentlighet` og `UnntattOffentlighetHjemmel` i direktorat-template

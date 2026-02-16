@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
-using AT.Brevgenerator.Klient;
-using AT.Brevgenerator.Klient.Model;
+using Arbeidstilsynet.Brevgenerator.Klient;
+using Arbeidstilsynet.Brevgenerator.Klient.Model;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BrevgeneratorClientCli;

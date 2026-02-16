@@ -1,4 +1,4 @@
-namespace AT.Brevgenerator.Klient;
+namespace Arbeidstilsynet.Brevgenerator.Klient;
 
 /// <summary>
 /// Konfigurasjon av brevgenerator.

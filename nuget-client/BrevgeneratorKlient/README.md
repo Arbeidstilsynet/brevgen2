@@ -1,8 +1,8 @@
-# `AT.Brevgenerator.Klient`
+# `Arbeidstilsynet.Brevgenerator.Klient`
 
 NuGet-pakke i C# for å konsumere Brevgenerator-API.
 
-Modeller for payload ligger i `AT.Brevgenerator.Klient.Model`
+Modeller for payload ligger i `Arbeidstilsynet.Brevgenerator.Klient.Model`
 
 Autentisering må angis eksplisitt av konsumenten. Klienten støtter to moduser:
 
