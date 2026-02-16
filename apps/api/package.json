@@ -25,7 +25,7 @@
     "@fastify/swagger-ui": "5.2.5",
     "@repo/shared-types": "workspace:^",
     "dotenv": "17.2.4",
-    "fastify": "5.7.2",
+    "fastify": "5.7.4",
     "fastify-type-provider-zod": "6.1.0",
     "jwks-rsa": "3.2.2",
     "marked": "16.4.2",
