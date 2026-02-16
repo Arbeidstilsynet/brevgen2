@@ -2,7 +2,7 @@
 
 namespace Arbeidstilsynet.Brevgenerator.Client
 {
-    public interface IBrevgeneratorKlient
+    public interface IBrevgeneratorClient
     {
         /// <summary>
         /// Generer et brev ut i fra dynamisk markdown, variabler (flettefelt) og diverse konfigurasjon.<br />

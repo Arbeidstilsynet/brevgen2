@@ -1,12 +1,11 @@
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Arbeidstilsynet.Brevgenerator.Client;
 using Arbeidstilsynet.Brevgenerator.Client.Models;
 
 namespace Arbeidstilsynet.Brevgenerator.Client;
 
-public class BrevgeneratorKlient : IBrevgeneratorKlient
+public class BrevgeneratorClient : IBrevgeneratorClient
 {
     /// <summary>
     /// Hvilken autentisering som skal benyttes mot API.
@@ -48,7 +47,7 @@ public class BrevgeneratorKlient : IBrevgeneratorKlient
     /// <param name="bearerTokenFactory">Factory som returnerer bearer token dersom authMode=BearerToken</param>
     /// <param name="apiKeyFactory">Factory som returnerer API key dersom authMode=ApiKey</param>
     /// <param name="httpClientFactory">Valgfri HttpClientFactory</param>
-    public BrevgeneratorKlient(
+    public BrevgeneratorClient(
         BrevgeneratorConfig config,
         AuthMode authMode,
         Func<Task<string>>? bearerTokenFactory = null,

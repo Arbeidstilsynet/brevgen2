@@ -5,7 +5,7 @@
 - Publiserer nå til `nuget.org` i stedet for Azure DevOps
 - Omdøpt pakke fra `AT.Brevgenerator.Klient` til `Arbeidstilsynet.Brevgenerator.Client`
 - Omdøpt namespace fra `AT.Brevgenerator.Klient` / `AT.Brevgenerator.Klient.Model` til `Arbeidstilsynet.Brevgenerator.Client` / `Arbeidstilsynet.Brevgenerator.Client.Models`
-- Omdøpt `BrevgeneratorKlient` til `BrevgeneratorClient`
+- Omdøpt `BrevgeneratorKlient` / `IBrevgeneratorKlient` til `BrevgeneratorClient` / `IBrevgeneratorClient`
 
 ## 3.3.0
 
