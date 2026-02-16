@@ -2,7 +2,7 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
-namespace Arbeidstilsynet.Brevgenerator.Klient.Model;
+namespace Arbeidstilsynet.Brevgenerator.Client.Model;
 
 /// <summary>
 /// Parametre for å opprette brev via brevgenerator2.

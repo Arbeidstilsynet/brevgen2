@@ -1,7 +1,7 @@
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
-namespace Arbeidstilsynet.Brevgenerator.Klient.Model;
+namespace Arbeidstilsynet.Brevgenerator.Client.Model;
 
 /// <summary>
 /// Flettefelter og valg for direktorat template

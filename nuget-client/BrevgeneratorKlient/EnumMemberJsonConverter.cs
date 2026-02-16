@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Arbeidstilsynet.Brevgenerator.Klient;
+namespace Arbeidstilsynet.Brevgenerator.Client;
 
 internal class EnumMemberJsonConverter : JsonConverterFactory
 {

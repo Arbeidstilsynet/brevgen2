@@ -1,6 +1,6 @@
-﻿using Arbeidstilsynet.Brevgenerator.Klient.Model;
+﻿using Arbeidstilsynet.Brevgenerator.Client.Model;
 
-namespace Arbeidstilsynet.Brevgenerator.Klient
+namespace Arbeidstilsynet.Brevgenerator.Client
 {
     public interface IBrevgeneratorKlient
     {

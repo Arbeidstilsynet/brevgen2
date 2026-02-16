@@ -1,9 +1,10 @@
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Arbeidstilsynet.Brevgenerator.Klient.Model;
+using Arbeidstilsynet.Brevgenerator.Client;
+using Arbeidstilsynet.Brevgenerator.Client.Model;
 
-namespace Arbeidstilsynet.Brevgenerator.Klient;
+namespace Arbeidstilsynet.Brevgenerator.Client;
 
 public class BrevgeneratorKlient : IBrevgeneratorKlient
 {
