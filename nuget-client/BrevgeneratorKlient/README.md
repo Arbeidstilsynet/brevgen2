@@ -15,7 +15,7 @@ Autentisering må angis eksplisitt av konsumenten. Klienten støtter to moduser:
 2. Skriv inn dine endringer i [CHANGELOG.md](CHANGELOG.md)
 3. PR og merge til main-branch
 4. Lag Git tag `nuget-x.y.z`
-5. En ny pakke blir bygget og publisert i Azure Artifacts public feed, klar til bruk
+5. En ny pakke blir bygget og publisert i nuget.org, klar til bruk
 
 ## Hvordan installere NuGet-pakken
 
