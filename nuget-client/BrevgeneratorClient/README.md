@@ -2,7 +2,7 @@
 
 NuGet-pakke i C# for å konsumere Brevgenerator-API.
 
-Modeller for payload ligger i `Arbeidstilsynet.Brevgenerator.Client.Model`
+Modeller for payload ligger i `Arbeidstilsynet.Brevgenerator.Client.Models`
 
 Autentisering må angis eksplisitt av konsumenten. Klienten støtter to moduser:
 
@@ -17,7 +17,7 @@ Autentisering må angis eksplisitt av konsumenten. Klienten støtter to moduser:
 
 ```csharp
 using Arbeidstilsynet.Brevgenerator.Client;
-using Arbeidstilsynet.Brevgenerator.Client.Model;
+using Arbeidstilsynet.Brevgenerator.Client.Models;
 
 var brevGenConfig = new BrevgeneratorConfig(Environment.GetEnvironmentVariable("BREVGENERATOR_API_URL")!);
 

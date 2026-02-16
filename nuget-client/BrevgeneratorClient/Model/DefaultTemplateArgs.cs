@@ -1,7 +1,7 @@
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
-namespace Arbeidstilsynet.Brevgenerator.Client.Model;
+namespace Arbeidstilsynet.Brevgenerator.Client.Models;
 
 /// <summary>
 /// Flettefelter og valg for default template

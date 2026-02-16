@@ -1,5 +1,5 @@
 using System.Net;
-using Arbeidstilsynet.Brevgenerator.Client.Model;
+using Arbeidstilsynet.Brevgenerator.Client.Models;
 using Xunit;
 
 namespace Arbeidstilsynet.Brevgenerator.Client.Tests;

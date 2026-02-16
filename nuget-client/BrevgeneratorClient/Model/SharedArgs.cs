@@ -1,6 +1,6 @@
 using System.Runtime.Serialization;
 
-namespace Arbeidstilsynet.Brevgenerator.Client.Model;
+namespace Arbeidstilsynet.Brevgenerator.Client.Models;
 
 /// <summary>
 /// Språkvalg for templates. Påvirker noen linjer tekst i letterhead og signatur.

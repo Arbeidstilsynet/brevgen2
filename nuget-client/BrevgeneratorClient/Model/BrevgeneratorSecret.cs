@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Arbeidstilsynet.Brevgenerator.Client.Model;
+namespace Arbeidstilsynet.Brevgenerator.Client.Models;
 
 /// <summary>
 /// Representerer strukturen til OAuth2 client credentials secret.

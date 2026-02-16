@@ -2,7 +2,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Arbeidstilsynet.Brevgenerator.Client;
-using Arbeidstilsynet.Brevgenerator.Client.Model;
+using Arbeidstilsynet.Brevgenerator.Client.Models;
 
 namespace Arbeidstilsynet.Brevgenerator.Client;
 
