@@ -1,6 +1,6 @@
 # For available Chromium versions in the distro, see https://repology.org/project/chromium/versions
 # Chromium versions changes should be matched with Puppeteer version from https://pptr.dev/supported-browsers
-ARG CHROMIUM_VERSION="144.*"
+ARG CHROMIUM_VERSION="145.*"
 
 FROM node:24-slim@sha256:4660b1ca8b28d6d1906fd644abe34b2ed81d15434d26d845ef0aced307cf4b6f AS base
 FROM base AS builder
