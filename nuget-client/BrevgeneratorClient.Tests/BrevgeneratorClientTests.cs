@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Arbeidstilsynet.Brevgenerator.Client.Tests;
 
-public class BrevgeneratorKlientTests
+public class BrevgeneratorClientTests
 {
     private const string TestApiUrl = "https://api.example.com/";
 

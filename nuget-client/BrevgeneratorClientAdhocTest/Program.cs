@@ -31,9 +31,9 @@ static class Program
         var client1 = serviceProvider.GetRequiredService<IBrevgeneratorClient>();
 
         // ---------- Klient 2 direkte konstruksjon ----------
-        // var client2 = new BrevgeneratorKlient(
+        // var client2 = new BrevgeneratorClient(
         //     new BrevgeneratorConfig(apiUrl),
-        //     BrevgeneratorKlient.AuthMode.ApiKey,
+        //     BrevgeneratorClient.AuthMode.ApiKey,
         //     apiKeyFactory: async () => "foo"
         // );
 

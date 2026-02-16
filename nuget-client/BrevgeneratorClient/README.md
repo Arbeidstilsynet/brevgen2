@@ -22,9 +22,9 @@ using Arbeidstilsynet.Brevgenerator.Client.Models;
 var brevGenConfig = new BrevgeneratorConfig(Environment.GetEnvironmentVariable("BREVGENERATOR_API_URL")!);
 
 // Bearer token-modus (f.eks. Entra ID client credentials)
-var client = new BrevgeneratorKlient(
+var client = new BrevgeneratorClient(
     brevGenConfig,
-    BrevgeneratorKlient.AuthMode.BearerToken,
+    BrevgeneratorClient.AuthMode.BearerToken,
     bearerTokenFactory: async () => await HentAzureTokenAsync()
 );
 
