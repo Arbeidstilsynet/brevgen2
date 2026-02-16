@@ -39,6 +39,9 @@ Legg til organisasjonens public feed "AT.Public.NuGet" i konsumerende prosjekt s
 ## Eksempel på bruk
 
 ```csharp
+using Arbeidstilsynet.Brevgenerator.Klient;
+using Arbeidstilsynet.Brevgenerator.Klient.Model;
+
 var brevGenConfig = new BrevgeneratorConfig(Environment.GetEnvironmentVariable("BREVGENERATOR_API_URL")!);
 
 // Bearer token-modus (f.eks. Entra ID client credentials)
@@ -46,13 +49,6 @@ var client = new BrevgeneratorKlient(
     brevGenConfig,
     BrevgeneratorKlient.AuthMode.BearerToken,
     bearerTokenFactory: async () => await HentAzureTokenAsync()
-);
-
-// ApiKey-modus (for AWS)
-var client = new BrevgeneratorKlient(
-    brevGenConfig,
-    BrevgeneratorKlient.AuthMode.ApiKey,
-    apiKeyFactory: () => Task.FromResult(Environment.GetEnvironmentVariable("BREVGENERATOR_API_KEY")!)
 );
 
 var payload = GenererBrevArgsBuilder
