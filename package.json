@@ -20,7 +20,7 @@
     "@repo/typescript-config": "workspace:*",
     "@typescript/native-preview": "7.0.0-dev.20260213.1",
     "prettier": "3.8.1",
-    "turbo": "2.8.6",
+    "turbo": "2.8.7",
     "typescript": "5.9.3"
   },
   "engines": {
