@@ -17,7 +17,7 @@ Dette er konfigurert som et integrert monorepo med sentralisert konfigurasjon og
 - nuget-client
   - [BrevgeneratorClient](nuget-client/BrevgeneratorClient) - C#-klient for å bruke API - publisert som `Arbeidstilsynet.Brevgenerator.Client`
   - [BrevgeneratorClient.Tests](nuget-client/BrevgeneratorClient.Tests) - Tester for `Arbeidstilsynet.Brevgenerator.Client`
-  - [BrevgeneratorClientAdhocTest](nuget-client/BrevgeneratorClientLocalTest) - CLI for ad hoc testing
+  - [BrevgeneratorClientAdhocTest](nuget-client/BrevgeneratorClientAdhocTest) - CLI for ad hoc testing
 
 ## Lokal kjøring
 
