@@ -19,9 +19,7 @@ export default defineConfig(
   js.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
   ...tseslint.configs.stylisticTypeChecked,
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   ...nextVitals,
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   ...nextTs,
 
   {
