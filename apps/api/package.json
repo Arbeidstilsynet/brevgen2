@@ -27,7 +27,7 @@
     "dotenv": "17.3.1",
     "fastify": "5.7.4",
     "fastify-type-provider-zod": "6.1.0",
-    "jwks-rsa": "3.2.2",
+    "jwks-rsa": "4.0.1",
     "marked": "16.4.2",
     "p-limit": "7.3.0",
     "pdf-lib": "1.17.1",
