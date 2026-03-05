@@ -11,10 +11,12 @@
     "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md,css,scss}\"",
     "circular": "npx --yes madge --circular --extensions \"js,jsx,ts,tsx\" --exclude \".next|dist\" .",
     "docker:api:build": "docker build -f apps/api/Dockerfile -t brevgenerator2-api:test .",
-    "docker:api:run": "docker run --rm -p 4000:4000 -e DANGEROUS_DISABLE_AUTH=true brevgenerator2-api:test",
-    "docker:api:run:auth": "docker run --rm -p 4000:4000 -e AZURE_APPLICATION_ID=079a726c-1419-4907-9aeb-e230f700e22a brevgenerator2-api:test",
+    "docker:api:run": "docker run --rm --name brevgenerator2-api -p 4000:4000 -e DANGEROUS_DISABLE_AUTH=true brevgenerator2-api:test",
+    "docker:api:run:auth": "docker run --rm --name brevgenerator2-api -p 4000:4000 -e AZURE_APPLICATION_ID=079a726c-1419-4907-9aeb-e230f700e22a brevgenerator2-api:test",
+    "docker:api:stop": "docker stop brevgenerator2-api",
     "docker:web:build": "docker build -f apps/preview-web/Dockerfile -t brevgenerator2-web:test .",
-    "docker:web:run": "docker run --rm -p 3000:3000 brevgenerator2-web:test"
+    "docker:web:run": "docker run --rm --name brevgenerator2-web -p 3000:3000 brevgenerator2-web:test",
+    "docker:web:stop": "docker stop brevgenerator2-web"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
