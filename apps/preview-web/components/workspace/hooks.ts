@@ -49,13 +49,19 @@ export function useLoadFile(
   });
 }
 
+interface UploadFileParams {
+  key: string;
+  content: string;
+  cleanOld?: boolean;
+}
+
 export function useUploadFile(skipInvalidation = false) {
   const queryClient = useQueryClient();
   const { data: session } = useSession();
 
   return useMutation({
     mutationKey: ["uploadFile"],
-    mutationFn: async ({ key, content }: { key: string; content: string }) => {
+    mutationFn: async ({ key, content, cleanOld = false }: UploadFileParams) => {
       const fileInfo = extractTags(key);
 
       // always attribute saved changes to current user
@@ -66,7 +72,7 @@ export function useUploadFile(skipInvalidation = false) {
 
       await uploadFile(newKey, content);
 
-      if (newKey !== key) {
+      if (cleanOld && newKey !== key) {
         // If the key has changed (because of a different user), delete the old file to prevent duplicates
         await deleteFile(key);
       }

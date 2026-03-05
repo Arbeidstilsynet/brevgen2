@@ -60,7 +60,7 @@ export function SharedFileListItem({
     };
 
     if (confirmAction === "overwrite") {
-      uploadFile.mutate({ key: fileKey, content: currentMd }, { onSuccess });
+      uploadFile.mutate({ key: fileKey, content: currentMd, cleanOld: true }, { onSuccess });
     } else if (confirmAction === "delete") {
       deleteFile.mutate(fileKey, { onSuccess });
     }
