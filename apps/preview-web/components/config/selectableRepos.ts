@@ -60,7 +60,7 @@ export const allowedRepos: RepoInfo[] = [
     id: "5a6eba39-5583-47b0-8c07-0f40b71c38c3",
     repoName: "asbest-saksbehandling",
     prettyName: "Asbest",
-    onlyPaths: ["/src/RegistrerSøknad/SendKvittering/Brevmaler"],
+    onlyPaths: ["src/RegistrerSøknad/SendKvittering/Brevmaler"],
   },
 ].toSorted((a, b) => a.prettyName.localeCompare(b.prettyName));
 
