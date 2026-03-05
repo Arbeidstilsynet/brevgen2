@@ -56,6 +56,12 @@ export const allowedRepos: RepoInfo[] = [
     prettyName: "Asbest melding",
     onlyPaths: ["BrevTjeneste/Brevmaler"],
   },
+  {
+    id: "5a6eba39-5583-47b0-8c07-0f40b71c38c3",
+    repoName: "asbest-saksbehandling",
+    prettyName: "Asbest",
+    onlyPaths: ["/src/RegistrerSøknad/SendKvittering/Brevmaler"],
+  },
 ].toSorted((a, b) => a.prettyName.localeCompare(b.prettyName));
 
 export const allowedRepoNames = new Set(allowedRepos.map((r) => r.repoName));
