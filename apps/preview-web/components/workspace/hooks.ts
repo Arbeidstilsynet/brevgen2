@@ -72,8 +72,8 @@ export function useUploadFile(skipInvalidation = false) {
 
       await uploadFile(newKey, content);
 
+      // If the key has changed (because of a different user), delete the old file to prevent duplicates
       if (cleanOld && newKey !== key) {
-        // If the key has changed (because of a different user), delete the old file to prevent duplicates
         await deleteFile(key);
       }
     },
