@@ -171,13 +171,15 @@ export function SharedFileListItem({
                       <div className="flex justify-between gap-2">
                         <button
                           onClick={handleConfirmYes}
-                          className="text-green-600 hover:text-green-800 text-m"
+                          className="text-green-600 hover:text-green-800 text-m disabled:text-gray-400 disabled:hover:text-gray-400 disabled:cursor-not-allowed"
+                          disabled={disabled}
                         >
                           Yes
                         </button>
                         <button
                           onClick={() => setConfirmAction(null)}
-                          className="text-red-600 hover:text-red-800 text-m"
+                          className="text-red-600 hover:text-red-800 text-m disabled:text-gray-400 disabled:hover:text-gray-400 disabled:cursor-not-allowed"
+                          disabled={disabled}
                         >
                           No
                         </button>
