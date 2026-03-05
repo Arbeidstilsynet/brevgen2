@@ -24,7 +24,7 @@ export function SharedFileListItem({
   const menuRef = useRef<HTMLDivElement>(null);
   const [showMenu, setShowMenu] = useState(false);
   const [confirmAction, setConfirmAction] = useState<null | "overwrite" | "delete">(null);
-  const [isEditing, setIsRenaming] = useState(false);
+  const [isRenaming, setIsRenaming] = useState(false);
 
   const loadFile = useLoadFile();
   const uploadFile = useUploadFile();
@@ -89,7 +89,7 @@ export function SharedFileListItem({
       className="p-3 border border-gray-200 rounded-sm hover:shadow-md"
       aria-label={listItemLabel}
     >
-      {!isEditing && (
+      {!isRenaming && (
         <div className="flex justify-between items-center">
           <button
             className="p-2 mr-2 border border-gray-300 rounded-sm hover:bg-gray-200 w-full text-left"
@@ -224,7 +224,7 @@ export function SharedFileListItem({
         </div>
       )}
 
-      {isEditing && (
+      {isRenaming && (
         <SharedFileListItemRename
           fileKey={fileKey}
           allFileKeys={allFileKeys}
