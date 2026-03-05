@@ -5,6 +5,11 @@ packages:
 
 autoInstallPeers: false
 
+auditConfig:
+  ignoreGhsas:
+    # no fix yet for DOMpurify https://github.com/cure53/DOMPurify/issues/1202#issuecomment-4002854767
+    - GHSA-v2wj-7wpq-c8vv
+
 injectWorkspacePackages: true
 
 minimumReleaseAge: 4320
@@ -18,8 +23,9 @@ onlyBuiltDependencies:
   - puppeteer
 
 overrides:
-  minimatch@<3.1.4: "3.1.4"
-  minimatch@>=5.0.0 <5.1.8: "5.1.8"
+  "@tootallnate/once@<3.0.1": ">=3.0.1"
+  minimatch@<3.1.4: 3.1.4
+  minimatch@>=5.0.0 <5.1.8: 5.1.8
   minimatch@>=8.0.0 <10.2.4: ">=10.2.4"
 
 trustPolicy: no-downgrade
