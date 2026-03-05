@@ -55,7 +55,7 @@ export function useUploadFile(skipInvalidation = false) {
 
   return useMutation({
     mutationKey: ["uploadFile"],
-    mutationFn: ({ key, content }: { key: string; content: string }) => {
+    mutationFn: async ({ key, content }: { key: string; content: string }) => {
       const fileInfo = extractTags(key);
 
       // always attribute saved changes to current user
@@ -64,7 +64,12 @@ export function useUploadFile(skipInvalidation = false) {
         fullName: session?.user?.name ?? undefined,
       });
 
-      return uploadFile(newKey, content);
+      await uploadFile(newKey, content);
+
+      if (newKey !== key) {
+        // If the key has changed (because of a different user), delete the old file to prevent duplicates
+        await deleteFile(key);
+      }
     },
     onSuccess: () => {
       if (!skipInvalidation) {
