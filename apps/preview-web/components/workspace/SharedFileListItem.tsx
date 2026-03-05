@@ -24,7 +24,7 @@ export function SharedFileListItem({
   const menuRef = useRef<HTMLDivElement>(null);
   const [showMenu, setShowMenu] = useState(false);
   const [confirmAction, setConfirmAction] = useState<null | "overwrite" | "delete">(null);
-  const [isEditing, setIsRenaming] = useState(false);
+  const [isRenaming, setIsRenaming] = useState(false);
 
   const loadFile = useLoadFile();
   const uploadFile = useUploadFile();
@@ -60,7 +60,7 @@ export function SharedFileListItem({
     };
 
     if (confirmAction === "overwrite") {
-      uploadFile.mutate({ key: fileKey, content: currentMd }, { onSuccess });
+      uploadFile.mutate({ key: fileKey, content: currentMd, cleanOld: true }, { onSuccess });
     } else if (confirmAction === "delete") {
       deleteFile.mutate(fileKey, { onSuccess });
     }
@@ -89,7 +89,7 @@ export function SharedFileListItem({
       className="p-3 border border-gray-200 rounded-sm hover:shadow-md"
       aria-label={listItemLabel}
     >
-      {!isEditing && (
+      {!isRenaming && (
         <div className="flex justify-between items-center">
           <button
             className="p-2 mr-2 border border-gray-300 rounded-sm hover:bg-gray-200 w-full text-left"
@@ -171,13 +171,15 @@ export function SharedFileListItem({
                       <div className="flex justify-between gap-2">
                         <button
                           onClick={handleConfirmYes}
-                          className="text-green-600 hover:text-green-800 text-m"
+                          className="text-green-600 hover:text-green-800 text-m disabled:text-gray-400 disabled:hover:text-gray-400 disabled:cursor-not-allowed"
+                          disabled={disabled}
                         >
                           Yes
                         </button>
                         <button
                           onClick={() => setConfirmAction(null)}
-                          className="text-red-600 hover:text-red-800 text-m"
+                          className="text-red-600 hover:text-red-800 text-m disabled:text-gray-400 disabled:hover:text-gray-400 disabled:cursor-not-allowed"
+                          disabled={disabled}
                         >
                           No
                         </button>
@@ -224,7 +226,7 @@ export function SharedFileListItem({
         </div>
       )}
 
-      {isEditing && (
+      {isRenaming && (
         <SharedFileListItemRename
           fileKey={fileKey}
           allFileKeys={allFileKeys}
