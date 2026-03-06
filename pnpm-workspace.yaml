@@ -20,6 +20,7 @@ minimumReleaseAgeExclude:
   - fast-xml-builder@1.0.0
   # Renovate security update: fastify@5.8.1
   - fastify@5.8.1
+  - dompurify@3.3.2
 
 onlyBuiltDependencies:
   - puppeteer
@@ -29,6 +30,7 @@ overrides:
   minimatch@<3.1.4: 3.1.4
   minimatch@>=5.0.0 <5.1.8: 5.1.8
   minimatch@>=8.0.0 <10.2.4: ">=10.2.4"
+  dompurify@<3.3.2: 3.3.2
 
 trustPolicy: no-downgrade
 
