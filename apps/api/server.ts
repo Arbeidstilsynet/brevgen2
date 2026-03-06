@@ -1,5 +1,6 @@
 import { DynamicMarkdownParseError } from "@at/dynamic-markdown";
 import fastifyCors from "@fastify/cors";
+import { FastifyOtelInstrumentation } from "@fastify/otel";
 import { generateDocumentRequestSchema } from "@repo/shared-types";
 import { configDotenv } from "dotenv";
 import {
@@ -25,6 +26,8 @@ const port = process.env.PORT ? Number(process.env.PORT) : 4000;
 const isDev = process.env.NODE_ENV === "development";
 
 export async function initializeServer() {
+  const fastifyOtelInstrumentation = new FastifyOtelInstrumentation();
+  await fastify.register(fastifyOtelInstrumentation.plugin());
   await setupAuth(fastify);
   await registerSwagger(fastify);
 

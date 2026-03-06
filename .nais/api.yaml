@@ -44,3 +44,7 @@ spec:
     initialDelay: 30
     periodSeconds: 10
     timeout: 1
+  observability:
+    autoInstrumentation:
+      enabled: true
+      runtime: nodejs
