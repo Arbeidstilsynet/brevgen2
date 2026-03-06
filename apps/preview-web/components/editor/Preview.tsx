@@ -163,8 +163,8 @@ export function Preview({
       md,
       mdVariables,
       options: {
-        document_title: "Brev fra Arbeidstilsynet",
-        author: "Arbeidstilsynet",
+        document_title: "Preview",
+        author: "Brevgen2 Editor",
         dynamic: {
           template: selectedTemplate,
           defaultTemplateArgs: selectedTemplate === "default" ? defaultTemplateArgs : undefined,
@@ -217,7 +217,7 @@ export function Preview({
       md,
       mdVariables,
       options: {
-        document_title: "Brev fra Arbeidstilsynet",
+        document_title: "Preview",
         dynamic: {
           template: selectedTemplate,
           defaultTemplateArgs: selectedTemplate === "default" ? defaultTemplateArgs : undefined,

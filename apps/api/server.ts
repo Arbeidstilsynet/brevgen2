@@ -16,6 +16,7 @@ import {
   handlerGenerateDocument,
   ValidationError,
 } from "./lib/handler";
+import { buildGenerateDocumentRequestContext } from "./lib/requestContext";
 import { registerSwagger } from "./swagger";
 
 configDotenv();
@@ -112,11 +113,11 @@ export async function initializeServer() {
     },
     async (request, reply) => {
       const user = request.user;
-      if (user) {
-        request.log.debug({ user });
-      }
       try {
-        request.log.debug({ body: request.body });
+        request.log.info(
+          { requestContext: buildGenerateDocumentRequestContext(request.body, user) },
+          "genererbrev.request",
+        );
         const result = await handlerGenerateDocument(request.body);
         reply.send(result);
       } catch (err) {
