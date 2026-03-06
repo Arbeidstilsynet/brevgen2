@@ -19,8 +19,8 @@ export async function mdToPdf<T extends Partial<Config>>(
   };
   logger.debug({ mergedConfig, path: import.meta.url, function: "mdToPdf" });
 
-  return await useBrowserWithRetry(async (browser) => {
-    const result = await withActiveSpan("browser.generate_output", async () =>
+  return await withActiveSpan("browser.generate_output", async () => {
+    const result = await useBrowserWithRetry(async (browser) =>
       convertMdToPdf(md, mergedConfig, browser),
     );
     return result as InferOutputType<T>;

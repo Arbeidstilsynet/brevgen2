@@ -177,7 +177,10 @@ export async function useBrowserWithRetry<T>(fn: (browser: Browser) => Promise<T
       "browser.recycle_requested": recycleRequested,
     });
     try {
-      return await fn(instance);
+      return await withActiveSpan("browser.render_attempt", async () => fn(instance), {
+        "browser.render_attempt.attempt": attempt,
+        "browser.render_attempt.max_attempts": maxAttempts,
+      });
     } catch (error) {
       lastError = error;
       markBrowserUnhealthy(error);
