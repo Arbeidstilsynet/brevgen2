@@ -55,6 +55,9 @@ importers:
       '@fastify/swagger-ui':
         specifier: 5.2.5
         version: 5.2.5
+      '@opentelemetry/api':
+        specifier: 1.9.0
+        version: 1.9.0
       '@repo/shared-types':
         specifier: workspace:^
         version: link:../../packages/shared-types

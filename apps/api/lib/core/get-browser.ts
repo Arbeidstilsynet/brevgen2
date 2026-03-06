@@ -1,5 +1,6 @@
 import type { Browser } from "puppeteer-core";
 import { logger } from "../../app";
+import { withActiveSpan } from "../otel";
 import { getBrowserLaunchOptions } from "./get-puppeteer-options";
 import { loadPuppeteer } from "./puppeteer-loader";
 
@@ -168,9 +169,18 @@ export async function useBrowserWithRetry<T>(fn: (browser: Browser) => Promise<T
   let lastError: unknown;
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    const instance = await getBrowserInstance();
+    const instance = await withActiveSpan("browser.acquire", async () => getBrowserInstance(), {
+      "browser.acquire.attempt": attempt,
+      "browser.acquire.max_attempts": maxAttempts,
+      "browser.active_users": activeUsers,
+      "browser.page_count": pageCount,
+      "browser.recycle_requested": recycleRequested,
+    });
     try {
-      return await fn(instance);
+      return await withActiveSpan("browser.render_attempt", async () => fn(instance), {
+        "browser.render_attempt.attempt": attempt,
+        "browser.render_attempt.max_attempts": maxAttempts,
+      });
     } catch (error) {
       lastError = error;
       markBrowserUnhealthy(error);
