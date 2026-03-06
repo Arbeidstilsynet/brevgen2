@@ -217,7 +217,7 @@ export function Preview({
       md,
       mdVariables,
       options: {
-        document_title: "Brev fra Arbeidstilsynet",
+        document_title: "Preview",
         dynamic: {
           template: selectedTemplate,
           defaultTemplateArgs: selectedTemplate === "default" ? defaultTemplateArgs : undefined,
