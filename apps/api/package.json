@@ -41,7 +41,7 @@
     "@repo/typescript-config": "workspace:^",
     "@types/node": "24.11.0",
     "@types/sanitize-html": "2.16.0",
-    "@typescript/native-preview": "7.0.0-dev.20260302.1",
+    "@typescript/native-preview": "7.0.0-dev.20260303.1",
     "del-cli": "7.0.0",
     "eslint": "9.39.3",
     "globals": "17.4.0",
