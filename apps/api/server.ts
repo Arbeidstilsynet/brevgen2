@@ -78,7 +78,7 @@ export async function initializeServer() {
     });
   });
 
-  fastify.get("/health", { logLevel: "warn" }, async (request, reply) => {
+  fastify.get("/health", { logLevel: "warn", config: { otel: false } }, async (request, reply) => {
     reply.status(200).send();
   });
 
