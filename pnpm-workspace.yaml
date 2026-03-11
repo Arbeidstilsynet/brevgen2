@@ -7,20 +7,12 @@ autoInstallPeers: false
 
 auditConfig:
   ignoreGhsas:
-    # no fix yet for DOMpurify https://github.com/cure53/DOMPurify/issues/1202#issuecomment-4002854767
-    - GHSA-v2wj-7wpq-c8vv
+    # used by pdf-visual-diff, need patch in intermediate transient dependency jimp https://github.com/jimp-dev/jimp/issues/1399
+    - GHSA-5v7r-6r5c-r473
 
 injectWorkspacePackages: true
 
 minimumReleaseAge: 4320
-
-minimumReleaseAgeExclude:
-  - minimatch
-  - fast-xml-parser@5.4.1
-  - fast-xml-builder@1.0.0
-  # Renovate security update: fastify@5.8.1
-  - fastify@5.8.1
-  - dompurify@3.3.2
 
 onlyBuiltDependencies:
   - puppeteer
