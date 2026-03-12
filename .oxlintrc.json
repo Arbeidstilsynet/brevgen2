@@ -10,6 +10,15 @@
     "node",
     "vitest"
   ],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "off",
+    "pedantic": "off",
+    "perf": "off",
+    "style": "off",
+    "restriction": "off",
+    "nursery": "off"
+  },
   "jsPlugins": [
     {
       "name": "react-hooks-extra",
@@ -43,7 +52,9 @@
       "attributes": {}
     },
     "next": {
-      "rootDir": ["./apps"]
+      "rootDir": [
+        "./apps"
+      ]
     },
     "react": {
       "formComponents": [],
