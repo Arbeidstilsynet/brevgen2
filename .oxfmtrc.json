@@ -1,0 +1,13 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "printWidth": 100,
+  "experimentalSortPackageJson": false,
+  "ignorePatterns": [
+    "src/",
+    "packages/dynamic-markdown/README.md",
+    ".mypy_cache",
+    ".nais",
+    "pnpm-*.yaml",
+    "apps/api/results"
+  ]
+}

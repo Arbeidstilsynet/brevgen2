@@ -1,0 +1,84 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": [
+    "eslint",
+    "typescript",
+    "react",
+    "react-perf",
+    "nextjs",
+    "jsx-a11y",
+    "node",
+    "vitest"
+  ],
+  "jsPlugins": [
+    {
+      "name": "react-hooks-extra",
+      "specifier": "eslint-plugin-react-hooks"
+    }
+  ],
+  "rules": {
+    "react-hooks-extra/set-state-in-effect": "error",
+    "react-hooks-extra/refs": "error",
+    "react/rules-of-hooks": "error",
+    "eslint/func-style": "off",
+    "react/react-in-jsx-scope": "off",
+    "react/jsx-filename-extension": "off",
+    "eslint/no-undef": "off",
+    "typescript/no-misused-promises": "off",
+    "typescript/prefer-nullish-coalescing": "off",
+    "typescript/strict-void-return": "off",
+    "typescript/prefer-readonly-parameter-types": "off",
+    "typescript/strict-boolean-expressions": "off",
+    "typescript/explicit-module-boundary-types": "off",
+    "typescript/explicit-function-return-type": "off",
+    "eslint/no-console": "off",
+    "eslint/no-use-before-define": "off",
+    "eslint/no-inline-comments": "off",
+    "eslint/unicode-bom": "off"
+  },
+  "settings": {
+    "jsx-a11y": {
+      "polymorphicPropName": null,
+      "components": {},
+      "attributes": {}
+    },
+    "next": {
+      "rootDir": [
+        "./apps"
+      ]
+    },
+    "react": {
+      "formComponents": [],
+      "linkComponents": [],
+      "version": null,
+      "componentWrapperFunctions": []
+    },
+    "jsdoc": {
+      "ignorePrivate": false,
+      "ignoreInternal": false,
+      "ignoreReplacesDocs": true,
+      "overrideReplacesDocs": true,
+      "augmentsExtendsReplacesDocs": false,
+      "implementsReplacesDocs": false,
+      "exemptDestructuredRootsFromChecks": false,
+      "tagNamePreference": {}
+    },
+    "vitest": {
+      "typecheck": false
+    }
+  },
+  "env": {
+    "builtin": true
+  },
+  "globals": {},
+  "ignorePatterns": [
+    "coverage/",
+    ".next/",
+    "out/",
+    "build/",
+    "next-env.d.ts",
+    ".next/**",
+    "out/**",
+    "build/**"
+  ]
+}

@@ -21,7 +21,10 @@
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
     "@typescript/native-preview": "7.0.0-dev.20260307.1",
-    "prettier": "3.8.1",
+    "eslint-plugin-react-hooks": "7.0.1",
+    "oxlint": "^1.50.0",
+    "oxlint-tsgolint": "0.16.0",
+    "oxfmt": "^0.36.0",
     "turbo": "2.8.14",
     "typescript": "5.9.3"
   },
