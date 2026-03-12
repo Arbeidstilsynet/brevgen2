@@ -43,7 +43,8 @@
     "eslint/no-console": "off",
     "eslint/no-use-before-define": "off",
     "eslint/no-inline-comments": "off",
-    "eslint/unicode-bom": "off"
+    "eslint/unicode-bom": "off",
+    "jest/no-disabled-tests": "off"
   },
   "settings": {
     "jsx-a11y": {
@@ -52,9 +53,7 @@
       "attributes": {}
     },
     "next": {
-      "rootDir": [
-        "./apps"
-      ]
+      "rootDir": ["./apps"]
     },
     "react": {
       "formComponents": [],
