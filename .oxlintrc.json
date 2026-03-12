@@ -43,9 +43,7 @@
       "attributes": {}
     },
     "next": {
-      "rootDir": [
-        "./apps"
-      ]
+      "rootDir": ["./apps"]
     },
     "react": {
       "formComponents": [],
