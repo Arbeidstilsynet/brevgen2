@@ -53,7 +53,7 @@
       "attributes": {}
     },
     "next": {
-      "rootDir": ["./apps"]
+      "rootDir": ["./apps/preview-web"]
     },
     "react": {
       "formComponents": [],
