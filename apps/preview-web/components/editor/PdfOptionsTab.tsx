@@ -279,7 +279,7 @@ export function PdfOptionsTab({ pdfOptions, setPdfOptions }: PdfOptionsTabProps)
                     right: "",
                     bottom: "",
                     left: "",
-                    ...(pdfOptions.margin ?? {}),
+                    ...pdfOptions.margin,
                     [side]: e.target.value,
                   };
                   updateOption("margin", newMargin);
