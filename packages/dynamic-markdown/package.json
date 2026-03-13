@@ -14,7 +14,7 @@
   },
   "scripts": {
     "test": "vitest run --coverage",
-    "lint": "oxlint check .",
+    "lint": "oxlint",
     "typecheck": "tsgo --noEmit"
   },
   "devDependencies": {

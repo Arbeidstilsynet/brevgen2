@@ -13,7 +13,7 @@
     "test:integration": "vitest run integration-tests",
     "test:load": "npx --yes tsx load-tests/run.ts",
     "test:load:analyze": "npx --yes tsx load-tests/analyze.ts",
-    "lint": "oxlint check .",
+    "lint": "oxlint",
     "typecheck": "tsgo --noEmit"
   },
   "dependencies": {
