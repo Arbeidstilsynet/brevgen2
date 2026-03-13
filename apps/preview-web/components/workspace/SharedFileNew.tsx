@@ -1,4 +1,4 @@
-import { use, useState } from "react";
+import { use, useId, useState } from "react";
 import { useToast } from "../toast/provider";
 import { useQueryWorkspaceFiles, useUploadFile } from "./hooks";
 import { WorkspaceContext } from "./provider";
@@ -13,6 +13,9 @@ export function SharedFileNew() {
   const [newFilename, setNewFilename] = useState("");
   const [newTags, setNewTags] = useState(new Set<string>());
   const [customErrorMessage, setCustomErrorMessage] = useState("");
+
+  const filenameId = useId();
+  const tagsId = useId();
 
   const { data: files = [] } = useQueryWorkspaceFiles();
 
@@ -52,10 +55,13 @@ export function SharedFileNew() {
       <div className="space-y-3">
         {/* Filename Row */}
         <div className="flex items-center gap-2">
-          <label className="w-14 text-sm font-medium text-gray-700">Filename</label>
+          <label htmlFor={filenameId} className="w-14 text-sm font-medium text-gray-700">
+            Filename
+          </label>
           <div className="flex items-center gap-2">
             <div className="relative flex">
               <input
+                id={filenameId}
                 type="text"
                 value={newFilename}
                 onChange={(e) => handleSetFilename(e.currentTarget.value)}
@@ -83,10 +89,13 @@ export function SharedFileNew() {
 
         {/* Tags Row */}
         <div className="flex items-center gap-2 w-full">
-          <label className="w-14 text-sm font-medium text-gray-700">Tags</label>
+          <label htmlFor={tagsId} className="w-14 text-sm font-medium text-gray-700">
+            Tags
+          </label>
           <div className="flex items-center gap-2 flex-1">
             {/* Fixed width input */}
             <input
+              id={tagsId}
               type="text"
               placeholder="Add tag"
               onBlur={(e) => {
@@ -104,7 +113,7 @@ export function SharedFileNew() {
             <div className="flex items-center gap-2 flex-1 flex-wrap">
               {Array.from(newTags).map((tag, index) => (
                 <button
-                  key={index}
+                  key={tag}
                   data-ignore-outside
                   title="Remove tag"
                   onClick={() =>

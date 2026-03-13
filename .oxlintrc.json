@@ -21,7 +21,7 @@
     "react-hooks-extra/refs": "error",
     "react/rules-of-hooks": "error", // pedantic
     "react/react-in-jsx-scope": "off", // suspicious
-    "react-perf/jsx-no-new-function-as-prop": "off", // perf, many false positives, handled by compiler
+    "react/jsx-no-constructed-context-values": "off", //perf --- handled by compiler
     "typescript/no-misused-promises": "off", // pedantic, type-aware
     "typescript/prefer-nullish-coalescing": "off",
     "typescript/strict-void-return": "off",

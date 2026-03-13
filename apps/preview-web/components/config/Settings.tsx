@@ -32,6 +32,7 @@ export function Settings() {
 
         {getTypedEntries(settingsData).map(([key, data]) => (
           <div key={key} className="space-y-3">
+            {/* oxlint-disable-next-line jsx_a11y/label-has-associated-control */}
             <label className="flex items-center space-x-3">
               <input
                 type="checkbox"

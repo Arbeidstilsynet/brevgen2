@@ -84,8 +84,8 @@ export function EditorControls({
                 </div>
                 {tags && tags.size > 0 && (
                   <div className="flex mr-4">
-                    {Array.from(tags).map((tag, index) => (
-                      <FileTag key={index} tag={tag} />
+                    {Array.from(tags).map((tag) => (
+                      <FileTag key={tag} tag={tag} />
                     ))}
                   </div>
                 )}
