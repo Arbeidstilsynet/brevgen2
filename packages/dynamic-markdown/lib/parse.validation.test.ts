@@ -265,6 +265,18 @@ test("unfinished logic throws (nested)", () => {
   );
 });
 
+test("logic children throws with correct line number", () => {
+  const input = `Lorem \n{{ if VARIABLE == value :: # #Foo\n#Bar\n{{ missingVar}} }}`;
+  const options: ParseDynamicMdOptions = {
+    variables: {
+      VARIABLE: "value",
+    },
+  };
+  expect(() => parseDynamicMd(input, options)).toThrow(
+    new DynamicMarkdownParseError("Undefined variable at line 4: missingVar"),
+  );
+});
+
 test.each(["=", "!!", "+", "++", "===", "!==", "-", "--", "?????"])(
   "invalid logic operator throws (%s)",
   (invalidOperator) => {
