@@ -20,11 +20,6 @@ minimumReleaseAgeExclude:
   - oxfmt
   - "@oxfmt/*"
   - minimatch
-  - fast-xml-parser@5.4.1
-  - fast-xml-builder@1.0.0
-  # Renovate security update: fastify@5.8.1
-  - fastify@5.8.1
-  - dompurify@3.3.2
 
 onlyBuiltDependencies:
   - puppeteer
