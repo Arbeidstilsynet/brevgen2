@@ -23,8 +23,8 @@
     "react/react-in-jsx-scope": "off", // suspicious
     "react/jsx-no-constructed-context-values": "off", //perf --- handled by compiler
     "typescript/no-misused-promises": "off", // pedantic, type-aware
-    "typescript/prefer-nullish-coalescing": "off",
-    "typescript/strict-void-return": "off",
+    "typescript/prefer-nullish-coalescing": "off", // pedantic, type-aware
+    "typescript/strict-void-return": "off", // nusery, type-aware
     "eslint/no-await-in-loop": "off" // perf
   },
   "settings": {
