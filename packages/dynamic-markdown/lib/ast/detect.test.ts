@@ -58,6 +58,7 @@ describe("findVariables", () => {
   });
 
   // not likely to ever be supported
+  // oxlint-disable-next-line jest/no-disabled-tests
   test.skip("should handle unclosed logic braces", () => {
     const input = "{{ if isParsingFun == true :: Hello, {{ userName }}";
     const variables = findMdVariables(input);

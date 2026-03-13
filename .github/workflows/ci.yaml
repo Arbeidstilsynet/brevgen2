@@ -38,9 +38,9 @@ jobs:
             .github/workflows/ci.yaml
             apps/
             packages/
-            .prettier*
             package.json
             pnpm*.yaml
+            .ox*rc.json
           exclude: |
             **/*.md
             **/.gitignore

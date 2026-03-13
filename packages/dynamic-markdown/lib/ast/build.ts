@@ -62,9 +62,9 @@ function tokenizeAndAdjustLines(output: string, startLine: number): Token[] {
   let currentLine = startLine;
 
   return childTokens.map((childToken) => {
-    const adjustedToken = { ...childToken, line: currentLine };
+    childToken.line = currentLine;
     currentLine += countNewLines(childToken.value);
-    return adjustedToken;
+    return childToken;
   });
 }
 

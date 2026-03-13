@@ -7,16 +7,13 @@
     ".": "./lib/index.ts"
   },
   "scripts": {
-    "lint": "eslint .",
+    "lint": "oxlint check .",
     "typecheck": "tsgo --noEmit"
   },
   "devDependencies": {
-    "@eslint/js": "9.39.4",
     "@repo/typescript-config": "workspace:^",
     "@typescript/native-preview": "7.0.0-dev.20260307.1",
-    "eslint": "9.39.4",
-    "typescript": "5.9.3",
-    "typescript-eslint": "8.56.1"
+    "typescript": "5.9.3"
   },
   "dependencies": {
     "@repo/shared-types": "workspace:^"

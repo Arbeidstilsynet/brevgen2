@@ -1,0 +1,38 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["oxc", "eslint", "typescript", "node", "vitest"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "off",
+    "pedantic": "off",
+    "perf": "error",
+    "style": "off",
+    "restriction": "off",
+    "nursery": "off"
+  },
+  "jsPlugins": [
+    {
+      "name": "react-hooks-extra",
+      "specifier": "eslint-plugin-react-hooks"
+    }
+  ],
+  "rules": {
+    "react-hooks-extra/set-state-in-effect": "error",
+    "react-hooks-extra/refs": "error",
+    "react/rules-of-hooks": "error", // pedantic
+    "react/react-in-jsx-scope": "off", // suspicious
+    "react/jsx-no-constructed-context-values": "off", //perf --- handled by compiler
+    "typescript/no-misused-promises": "off", // pedantic, type-aware
+    "typescript/prefer-nullish-coalescing": "off", // pedantic, type-aware
+    "typescript/strict-void-return": "off", // nusery, type-aware
+    "eslint/no-await-in-loop": "off" // perf
+  },
+  "settings": {
+    "vitest": {
+      "typecheck": false
+    }
+  },
+  "env": {
+    "builtin": true
+  }
+}

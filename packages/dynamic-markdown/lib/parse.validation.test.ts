@@ -64,12 +64,14 @@ test("empty logic content throws (with whitespace)", () => {
 
 // determining if it's a string or missing variable is hard to do while supporting nesting
 // for now it will just fail silently and not insert the logic block value
+// oxlint-disable-next-line jest/no-disabled-tests
 test.skip("undefined variable throws (logic condition, left operand)", () => {
   const input = `{{ if myVar == true :: Hello, world! }}`;
   expect(() => parseDynamicMd(input)).toThrow(
     new DynamicMarkdownParseError("Undefined variable: myVar"),
   );
 });
+// oxlint-disable-next-line jest/no-disabled-tests
 test.skip("undefined variable throws (logic condition, right operand)", () => {
   const input = `{{ if true == myVar :: Hello, world! }}`;
   expect(() => parseDynamicMd(input)).toThrow(
@@ -260,6 +262,18 @@ test("unfinished logic throws (nested)", () => {
   };
   expect(() => parseDynamicMd(input, options)).toThrow(
     new DynamicMarkdownParseError("Unclosed dynamic section at line 1"),
+  );
+});
+
+test("logic children throws with correct line number", () => {
+  const input = `Lorem \n{{ if VARIABLE == value :: # #Foo\n#Bar\n{{ missingVar}} }}`;
+  const options: ParseDynamicMdOptions = {
+    variables: {
+      VARIABLE: "value",
+    },
+  };
+  expect(() => parseDynamicMd(input, options)).toThrow(
+    new DynamicMarkdownParseError("Undefined variable at line 4: missingVar"),
   );
 });
 
