@@ -15,6 +15,10 @@ injectWorkspacePackages: true
 minimumReleaseAge: 4320
 
 minimumReleaseAgeExclude:
+  - oxlint
+  - "@oxlint/*"
+  - oxfmt
+  - "@oxfmt/*"
   - minimatch
   - fast-xml-parser@5.4.1
   - fast-xml-builder@1.0.0
