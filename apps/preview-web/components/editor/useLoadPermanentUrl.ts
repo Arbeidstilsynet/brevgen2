@@ -1,6 +1,9 @@
+// oxlint-disable no-shadow
+
 "use client";
 
 import { fetchFileContentFromAzure } from "@/actions/azdo";
+import type { BucketFile } from "@/actions/gcp-bucket";
 import { useMutation } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useEffectEvent } from "react";
@@ -8,7 +11,6 @@ import { allowedRepos } from "../config/selectableRepos";
 import { useToast } from "../toast/provider";
 import { useLoadFile, useQueryWorkspaceFiles } from "../workspace/hooks";
 import { extractTags, URL_SEARCH_PARAM_WORKSPACE } from "../workspace/utils";
-import type { BucketFile } from "@/actions/gcp-bucket";
 import { getLoadedRepoFileName, getLoadedWorkspaceName, LastLoadedFile } from "./utils";
 
 export const GIT_PARAMS = {

@@ -95,8 +95,8 @@ export function VariablesTab({
           variable={variable}
           varType={mdVarsTypes[variable]}
           value={mdVars[variable]}
-          handleVarInputChange={(variable, value) => {
-            setMdVar(variable, value);
+          handleVarInputChange={(name, value) => {
+            setMdVar(name, value);
           }}
         />
       ))}

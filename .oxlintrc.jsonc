@@ -3,7 +3,7 @@
   "plugins": ["oxc", "eslint", "typescript", "unicorn", "vitest"],
   "categories": {
     "correctness": "error",
-    "suspicious": "off",
+    "suspicious": "error",
     "pedantic": "off",
     "perf": "error",
     "style": "off",
@@ -33,6 +33,7 @@
     "typescript/no-misused-promises": "off", // pedantic, type-aware
     "typescript/prefer-nullish-coalescing": "off", // pedantic, type-aware
     "typescript/strict-void-return": "off", // nusery, type-aware
+    "typescript/no-unsafe-type-assertion": "off", // suspicious, type-aware --- many semi-false positives that need refactor
     "eslint/no-await-in-loop": "off", // perf
   },
   "settings": {

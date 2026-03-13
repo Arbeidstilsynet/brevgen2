@@ -35,5 +35,5 @@ export const advancedVars = {
   event: "Good",
   meaning: "7",
   isParsingFun: true,
-  variableWithDynamicMarkdown: "*I was nested*\n" + "Hello again, {{ userName }}\n",
+  variableWithDynamicMarkdown: "*I was nested*\nHello again, {{ userName }}\n",
 } as const;

@@ -78,7 +78,8 @@ export async function runLoadTest(config: LoadTestConfig): Promise<LoadTestResul
   const failedRequests = batches.reduce((sum, batch) => sum + batch.failureCount, 0);
   const averageRequestTimeMs =
     batches.reduce(
-      (sum, batch) => sum + batch.requests.reduce((sum, req) => sum + req.timeMs, 0),
+      (sumBatches, batch) =>
+        sumBatches + batch.requests.reduce((sumRequests, req) => sumRequests + req.timeMs, 0),
       0,
     ) / totalRequests;
 

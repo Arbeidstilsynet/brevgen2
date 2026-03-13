@@ -13,19 +13,19 @@ const BUCKET_NAME = process.env.GCP_BUCKET_NAME!;
 const GCS_MOCK_API_ENDPOINT = process.env.GCS_MOCK_API_ENDPOINT;
 const isEmulator = Boolean(GCS_MOCK_API_ENDPOINT);
 
-let bucket: ReturnType<Storage["bucket"]> | null = null;
+let storageSingleton: ReturnType<Storage["bucket"]> | null = null;
 
 function getBucket() {
   if (!BUCKET_NAME) {
     throw new Error("GCP_BUCKET_NAME is not set");
   }
-  if (!bucket) {
+  if (!storageSingleton) {
     const storage = new Storage({
       apiEndpoint: isEmulator ? GCS_MOCK_API_ENDPOINT : undefined,
     });
-    bucket = storage.bucket(BUCKET_NAME);
+    storageSingleton = storage.bucket(BUCKET_NAME);
   }
-  return bucket;
+  return storageSingleton;
 }
 
 export async function listFiles() {
