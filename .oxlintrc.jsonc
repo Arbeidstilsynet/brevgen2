@@ -8,31 +8,39 @@
     "perf": "error",
     "style": "off",
     "restriction": "off",
-    "nursery": "off"
+    "nursery": "off",
   },
   "jsPlugins": [
     {
       "name": "react-hooks-extra",
-      "specifier": "eslint-plugin-react-hooks"
-    }
+      "specifier": "eslint-plugin-react-hooks",
+    },
   ],
   "rules": {
-    "react-hooks-extra/set-state-in-effect": "error",
+    // https://react.dev/reference/eslint-plugin-react-hooks
+    "react-hooks-extra/error-boundaries": "error",
+    "react-hooks-extra/immutability": "error",
+    "react-hooks-extra/purity": "error",
     "react-hooks-extra/refs": "error",
+    "react-hooks-extra/set-state-in-effect": "error",
+    "react-hooks-extra/set-state-in-render": "error",
+    "react-hooks-extra/static-components": "error",
+    "react-hooks-extra/use-memo": "error",
+
     "react/rules-of-hooks": "error", // pedantic
     "react/react-in-jsx-scope": "off", // suspicious
     "react/jsx-no-constructed-context-values": "off", //perf --- handled by compiler
     "typescript/no-misused-promises": "off", // pedantic, type-aware
     "typescript/prefer-nullish-coalescing": "off", // pedantic, type-aware
     "typescript/strict-void-return": "off", // nusery, type-aware
-    "eslint/no-await-in-loop": "off" // perf
+    "eslint/no-await-in-loop": "off", // perf
   },
   "settings": {
     "vitest": {
-      "typecheck": false
-    }
+      "typecheck": false,
+    },
   },
   "env": {
-    "builtin": true
-  }
+    "builtin": true,
+  },
 }

@@ -21,7 +21,7 @@
     "test": {},
     "lint": {
       "dependsOn": ["^lint"],
-      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/.oxlintrc.json", "**/.oxlintrc.json"]
+      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/.oxlintrc.jsonc", "**/.oxlintrc.jsonc"]
     },
     "typecheck": {
       "dependsOn": ["^typecheck"]

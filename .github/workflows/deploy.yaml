@@ -82,6 +82,7 @@ jobs:
             .github/workflows/deploy.yaml
           exclude: |
             **/README.md
+            **/.oxlintrc.jsonc
 
       - name: Nais (web) changed?
         uses: Arbeidstilsynet/action-check-changes@6e51077b178b819e4194f40e32bd562df0954f3f # v1
