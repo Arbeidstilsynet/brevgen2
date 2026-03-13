@@ -29,9 +29,9 @@ export function Select<T extends TValue>({
         onChange={(e) => onChange(e.target.value as T)}
         className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-xs focus:ring-indigo-500 focus:border-indigo-500"
       >
-        {(Object.entries(options) as [T, string][]).map(([value, label]) => (
-          <option key={value} value={value}>
-            {label}
+        {(Object.entries(options) as [T, string][]).map(([optionValue, optionLabel]) => (
+          <option key={optionValue} value={optionValue}>
+            {optionLabel}
           </option>
         ))}
       </select>

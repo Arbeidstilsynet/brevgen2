@@ -7,7 +7,7 @@
     "test": "turbo test",
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
-    "format": "oxfmt .",
+    "format": "oxfmt",
     "format:check": "oxfmt --check",
     "circular": "npx --yes madge --circular --extensions \"js,jsx,ts,tsx\" --exclude \".next|dist\" .",
     "docker:api:build": "docker build -f apps/api/Dockerfile -t brevgenerator2-api:test .",

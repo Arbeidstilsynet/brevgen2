@@ -258,6 +258,7 @@ export function Preview({
     );
     return (
       <iframe
+        sandbox=""
         title="HTML preview"
         srcDoc={localHtml ?? ""}
         style={{ width: "100%", height: "100%", border: "none" }}
@@ -279,6 +280,7 @@ export function Preview({
     }
     return (
       <iframe
+        sandbox=""
         title="HTML preview"
         srcDoc={renderedRemoteHtml ?? ""}
         style={{ width: "100%", height: "100%", border: "none" }}
@@ -301,7 +303,9 @@ export function Preview({
     return (
       <>
         {pdfError && <ErrorOverlay error={pdfError} />}
+        {/* oxlint-disable-next-line react/iframe-missing-sandbox */}
         <iframe
+          // don't sandbox to allow PDF to render
           title="PDF preview"
           src={pdfUrl}
           style={{ width: "100%", height: "100%", border: "none" }}

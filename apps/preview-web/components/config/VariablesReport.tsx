@@ -28,7 +28,7 @@ export function VariablesReport({ repoWithName, branch }: Props) {
         console.warn("No files found", { repo: repo.id, branch, filePaths, files });
       }
 
-      const report: Record<string, Set<string>> = files.reduce(
+      return files.reduce(
         (report, content) => {
           try {
             report[content.filePath] = findMdVariables(content.content);
@@ -39,7 +39,6 @@ export function VariablesReport({ repoWithName, branch }: Props) {
         },
         {} as Record<string, Set<string>>,
       );
-      return report;
     },
     enabled: data && data.length > 0,
   });

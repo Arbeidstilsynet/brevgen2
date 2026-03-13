@@ -67,16 +67,16 @@ export function DynamicMarkdownEditor() {
   const { message, variant, clearToast } = useToast();
 
   const updateEditor = useCallback(
-    (md: string, vars: typeof mdVars) => {
+    (markdown: string, vars: typeof mdVars) => {
       if (!monaco) {
         throw new TypeError("Expected Monaco to be instantiated");
       }
       const editor = monaco.editor.getEditors()[0];
       if (editor) {
-        editor.setValue(md);
+        editor.setValue(markdown);
         editor.focus();
       }
-      parse(md, vars);
+      parse(markdown, vars);
     },
     [monaco, parse],
   );
@@ -100,12 +100,12 @@ export function DynamicMarkdownEditor() {
   };
 
   const loadMdWithEmptyVars = useCallback(
-    (md: string) => {
-      const foundVariables = findMdVariables(md);
+    (markdown: string) => {
+      const foundVariables = findMdVariables(markdown);
       const vars: Record<string, string> = {};
       // set empty string defaults for all variables to avoid parsing error on load
       foundVariables.forEach((v) => (vars[v] = ""));
-      updateEditor(md, vars);
+      updateEditor(markdown, vars);
     },
     [updateEditor],
   );
@@ -116,16 +116,16 @@ export function DynamicMarkdownEditor() {
     filePath: string,
     systemName: string,
   ) => {
-    const md = await fetchFileContentFromAzure(repoId, branch, filePath);
-    loadMdWithEmptyVars(md);
+    const markdown = await fetchFileContentFromAzure(repoId, branch, filePath);
+    loadMdWithEmptyVars(markdown);
     setCurrentModal(null);
     const fileName = filePath.split("/").at(-1)!;
     setLastLoadedFile({ fileName: getLoadedRepoFileName({ systemName, fileName }), tags: null });
   };
 
   const handleLoadFromWorkspace = useCallback(
-    (md: string, fileName: string, tags: Set<string>) => {
-      loadMdWithEmptyVars(md);
+    (markdown: string, fileName: string, tags: Set<string>) => {
+      loadMdWithEmptyVars(markdown);
       setCurrentModal(null);
       setLastLoadedFile({ fileName: getLoadedWorkspaceName(fileName), tags });
     },

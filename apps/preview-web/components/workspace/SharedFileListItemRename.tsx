@@ -38,8 +38,8 @@ export function SharedFileListItemRename({
         onSuccess: async () => {
           await deleteFile.mutateAsync(oldKey);
           onFinished();
-          const { fileName } = extractTags(oldKey);
-          addToast("success", `File ${fileName} renamed to ${editFilename}`);
+          const { fileName: oldFileName } = extractTags(oldKey);
+          addToast("success", `File ${oldFileName} renamed to ${editFilename}`);
         },
       },
     );

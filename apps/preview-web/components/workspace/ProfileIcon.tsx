@@ -1,3 +1,10 @@
+const getInitials = (name: string): string => {
+  const parts = name.split(" ").filter(Boolean);
+  if (parts.length === 0) return "?";
+  if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+  return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+};
+
 interface ProfileIconProps {
   fullName: string | undefined;
   lastModified: Date | undefined;
@@ -8,13 +15,6 @@ export function ProfileIcon({ fullName, lastModified }: Readonly<ProfileIconProp
     // Return placeholder with same width to maintain consistent layout
     return <span className="w-8 h-8 ml-2 inline-block" aria-hidden="true" />;
   }
-
-  const getInitials = (name: string): string => {
-    const parts = name.split(" ").filter(Boolean);
-    if (parts.length === 0) return "?";
-    if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
-    return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
-  };
 
   const initials = getInitials(fullName);
 
