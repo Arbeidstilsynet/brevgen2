@@ -139,7 +139,7 @@ export function genererBrevTests(getTestEnv: () => TestEnvironment) {
         data: new Uint8Array(buffer),
         options: { verbosity: 0 },
       });
-      expect(text).toContain("Baz bazilikum");
+      expect(text).toContain("Qux bazilikum");
 
       writeFileSync(paths.temp.defaultLong, buffer); // Save the generated PDF as a fixture for visual tests
     },
