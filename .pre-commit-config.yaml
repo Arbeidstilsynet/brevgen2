@@ -14,6 +14,12 @@ repos:
       - id: check-case-conflict
       - id: end-of-file-fixer
 
+  - repo: https://github.com/oxc-project/mirrors-oxlint
+    rev: v1.55.0
+    hooks:
+      - id: oxlint
+        verbose: true
+
   - repo: local
     hooks:
       - id: dotnet-tool-restore

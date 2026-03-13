@@ -16,6 +16,9 @@
       "specifier": "eslint-plugin-react-hooks",
     },
   ],
+  "options": {
+    "typeAware": true,
+  },
   "rules": {
     // https://react.dev/reference/eslint-plugin-react-hooks
     "react-hooks-extra/error-boundaries": "error",
