@@ -40,6 +40,8 @@ export function visualTests() {
     expect(matched).toBe(true);
   });
 
+  // also tests that break-after: avoid-page is correct for headings
+  // without the CSS, h2 "Baz" at the start of page 3 ends up at end of page 2
   test("pdf-visual-diff (default template, long)", { timeout: 20_000 }, async () => {
     const pdfName = pdfNames.defaultLong;
     const pdf = readFileSync(paths.temp.defaultLong);

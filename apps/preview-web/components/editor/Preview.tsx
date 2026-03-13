@@ -2,7 +2,7 @@
 
 import { sendGenerateDocument } from "@/actions/pdf";
 import { useDebouncedMutation } from "@/hooks/useDebouncedMutation";
-import { defaultTemplate, direktoratTemplate } from "@at/document-templates";
+import { blankTemplate, defaultTemplate, direktoratTemplate } from "@at/document-templates";
 import type {
   DefaultTemplateArgs,
   DirektoratTemplateArgs,
@@ -44,17 +44,22 @@ function renderHtml(
   defaultTemplateArgs: DefaultTemplateArgs,
   direktoratTemplateArgs: DirektoratTemplateArgs,
 ) {
+  let css = "";
+
   if (selectedTemplate === "default") {
     md = defaultTemplate.getMd(md, defaultTemplateArgs);
+    css = defaultTemplate.globalCss;
   }
 
   if (selectedTemplate === "direktorat") {
     md = direktoratTemplate.getMd(md, direktoratTemplateArgs);
+    css = direktoratTemplate.globalCss;
   }
 
-  const css = ["default", "blank", "direktorat"].includes(selectedTemplate)
-    ? defaultTemplate.globalCss
-    : "";
+  if (selectedTemplate === "blank") {
+    css = blankTemplate.globalCss;
+  }
+
   return getHtml(md, css);
 }
 

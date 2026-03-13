@@ -1,8 +1,8 @@
-import { defaultTemplate, direktoratTemplate } from "@at/document-templates";
+import { blankTemplate, defaultTemplate, direktoratTemplate } from "@at/document-templates";
 import type {
   DefaultTemplateFields,
-  GenerateDocumentRequestOptions,
   DirektoratTemplateFields,
+  GenerateDocumentRequestOptions,
 } from "@repo/shared-types";
 import { mdToPdf } from "./core";
 import { HtmlConfig, PdfConfig } from "./core/config";
@@ -41,7 +41,7 @@ function getDirektoratTemplatePdfConfig(fields: DirektoratTemplateFields): Parti
 
 function getBlankTemplatePdfConfig(): Partial<PdfConfig> {
   return {
-    css: defaultTemplate.globalCss,
+    css: blankTemplate.globalCss,
     pdf_options: {
       margin,
     },
