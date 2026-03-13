@@ -9,6 +9,7 @@
     "typecheck": "turbo typecheck",
     "format": "oxfmt",
     "format:check": "oxfmt --check",
+    "prek": "prek run --all-files",
     "circular": "npx --yes madge --circular --extensions \"js,jsx,ts,tsx\" --exclude \".next|dist\" .",
     "docker:api:build": "docker build -f apps/api/Dockerfile -t brevgenerator2-api:test .",
     "docker:api:run": "docker run --rm --name brevgenerator2-api -p 4000:4000 -e DANGEROUS_DISABLE_AUTH=true brevgenerator2-api:test",
