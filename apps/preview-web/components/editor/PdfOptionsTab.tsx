@@ -156,7 +156,7 @@ export function PdfOptionsTab({ pdfOptions, setPdfOptions }: PdfOptionsTabProps)
               max="2"
               step="0.1"
               value={pdfOptions.scale ?? 1}
-              onChange={(e) => updateOption("scale", parseFloat(e.target.value))}
+              onChange={(e) => updateOption("scale", Number.parseFloat(e.target.value))}
               className="mt-1 block w-full"
             />
           </label>

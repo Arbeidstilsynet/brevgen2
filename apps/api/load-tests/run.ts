@@ -64,16 +64,18 @@ async function main() {
   // Parse config from arguments with defaults
   const config: LoadTestConfig = {
     apiUrl: argMap.apiUrl ?? process.env.API_URL ?? DEFAULT_API_URL,
-    parallelRequests: parseInt(
+    parallelRequests: Number.parseInt(
       argMap.parallelRequests ?? process.env.PARALLEL_REQUESTS ?? String(DEFAULT_PARALLEL_REQUESTS),
     ),
-    batchCount: parseInt(
+    batchCount: Number.parseInt(
       argMap.batchCount ?? process.env.BATCH_COUNT ?? String(DEFAULT_BATCH_COUNT),
     ),
-    batchDelayMs: parseInt(
+    batchDelayMs: Number.parseInt(
       argMap.batchDelayMs ?? process.env.BATCH_DELAY_MS ?? String(DEFAULT_BATCH_DELAY_MS),
     ),
-    timeoutMs: parseInt(argMap.timeoutMs ?? process.env.TIMEOUT_MS ?? String(DEFAULT_TIMEOUT_MS)),
+    timeoutMs: Number.parseInt(
+      argMap.timeoutMs ?? process.env.TIMEOUT_MS ?? String(DEFAULT_TIMEOUT_MS),
+    ),
     apiKey: argMap.apiKey ?? process.env.API_KEY,
     jwt: argMap.jwt ?? process.env.JWT,
     outputFile: argMap.outputFile ?? process.env.OUTPUT_FILE,
