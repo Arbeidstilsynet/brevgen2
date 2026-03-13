@@ -49,6 +49,21 @@ Etter du har startet `api` kan du bruke SwaggerUI på `http://localhost:4000/doc
 
 ![diagram](./docs/diagrams/overview.svg)
 
+## Pre-commit hooks
+
+This repo uses [prek](https://prek.j178.dev/) for pre-commit hooks.
+Hooks are configured in [.pre-commit-config.yaml](./.pre-commit-config.yaml).
+
+To use prek, first [install Mise](https://mise.jdx.dev/getting-started.html#installing-mise-cli) and [activate Mise](https://mise.jdx.dev/getting-started.html#activate-mise).
+
+```sh
+# install git hooks in this repo
+prek install
+
+# optional: run hooks manually
+prek run --all-files
+```
+
 ## Turborepo
 
 Dette monorepoet bruker Turborepo, som hjelper med å kjøre samme kommando parallelt for mange prosjekter og automatisk bruker cache for prosjekter som ikke er endret.

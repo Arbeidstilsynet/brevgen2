@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using Arbeidstilsynet.Brevgenerator.Client;
 using Arbeidstilsynet.Brevgenerator.Client.Models;
 using Microsoft.Extensions.DependencyInjection;

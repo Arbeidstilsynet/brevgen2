@@ -28,11 +28,12 @@
     "react-hooks-extra/use-memo": "error",
 
     "react/rules-of-hooks": "error", // pedantic
+
     "react/react-in-jsx-scope": "off", // suspicious
     "react/jsx-no-constructed-context-values": "off", //perf --- handled by compiler
     "typescript/no-misused-promises": "off", // pedantic, type-aware
     "typescript/prefer-nullish-coalescing": "off", // pedantic, type-aware
-    "typescript/strict-void-return": "off", // nusery, type-aware
+    "typescript/strict-void-return": "off", // nursery, type-aware
     "typescript/no-unsafe-type-assertion": "off", // suspicious, type-aware --- many semi-false positives that need refactor
     "eslint/no-await-in-loop": "off", // perf
   },
