@@ -1,20 +1,11 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": [
-    "eslint",
-    "typescript",
-    "react",
-    "react-perf",
-    "nextjs",
-    "jsx-a11y",
-    "node",
-    "vitest"
-  ],
+  "plugins": ["oxc", "eslint", "typescript", "node", "vitest"],
   "categories": {
     "correctness": "error",
     "suspicious": "off",
     "pedantic": "off",
-    "perf": "off",
+    "perf": "error",
     "style": "off",
     "restriction": "off",
     "nursery": "off"
@@ -28,65 +19,20 @@
   "rules": {
     "react-hooks-extra/set-state-in-effect": "error",
     "react-hooks-extra/refs": "error",
-    "react/rules-of-hooks": "error",
-    "eslint/func-style": "off",
-    "react/react-in-jsx-scope": "off",
-    "react/jsx-filename-extension": "off",
-    "eslint/no-undef": "off",
-    "typescript/no-misused-promises": "off",
+    "react/rules-of-hooks": "error", // pedantic
+    "react/react-in-jsx-scope": "off", // suspicious
+    "react-perf/jsx-no-new-function-as-prop": "off", // perf, many false positives, handled by compiler
+    "typescript/no-misused-promises": "off", // pedantic, type-aware
     "typescript/prefer-nullish-coalescing": "off",
     "typescript/strict-void-return": "off",
-    "typescript/prefer-readonly-parameter-types": "off",
-    "typescript/strict-boolean-expressions": "off",
-    "typescript/explicit-module-boundary-types": "off",
-    "typescript/explicit-function-return-type": "off",
-    "eslint/no-console": "off",
-    "eslint/no-use-before-define": "off",
-    "eslint/no-inline-comments": "off",
-    "eslint/unicode-bom": "off",
-    "jest/no-disabled-tests": "off"
+    "eslint/no-await-in-loop": "off" // perf
   },
   "settings": {
-    "jsx-a11y": {
-      "polymorphicPropName": null,
-      "components": {},
-      "attributes": {}
-    },
-    "next": {
-      "rootDir": ["./apps/preview-web"]
-    },
-    "react": {
-      "formComponents": [],
-      "linkComponents": [],
-      "version": null,
-      "componentWrapperFunctions": []
-    },
-    "jsdoc": {
-      "ignorePrivate": false,
-      "ignoreInternal": false,
-      "ignoreReplacesDocs": true,
-      "overrideReplacesDocs": true,
-      "augmentsExtendsReplacesDocs": false,
-      "implementsReplacesDocs": false,
-      "exemptDestructuredRootsFromChecks": false,
-      "tagNamePreference": {}
-    },
     "vitest": {
       "typecheck": false
     }
   },
   "env": {
     "builtin": true
-  },
-  "globals": {},
-  "ignorePatterns": [
-    "coverage/",
-    ".next/",
-    "out/",
-    "build/",
-    "next-env.d.ts",
-    ".next/**",
-    "out/**",
-    "build/**"
-  ]
+  }
 }
