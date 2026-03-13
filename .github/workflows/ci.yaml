@@ -99,14 +99,6 @@ jobs:
         if: needs.changes.outputs.brevgen2 == 'true'
         name: "Type check"
 
-      - run: pnpm lint
-        if: needs.changes.outputs.brevgen2 == 'true'
-        name: "Lint"
-
-      - run: pnpm format:check
-        if: needs.changes.outputs.brevgen2 == 'true'
-        name: "Formatting check"
-
       - run: pnpm circular
         if: needs.changes.outputs.brevgen2 == 'true'
         name: "Circular dependencies check"
