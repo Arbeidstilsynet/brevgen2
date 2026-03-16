@@ -1,6 +1,5 @@
 {
   "$schema": "./node_modules/oxfmt/configuration_schema.json",
   "printWidth": 100,
-  "experimentalSortPackageJson": false,
   "ignorePatterns": [".nais", "pnpm-*.yaml", "apps/api/results"]
 }
