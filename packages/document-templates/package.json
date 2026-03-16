@@ -10,12 +10,12 @@
     "lint": "oxlint",
     "typecheck": "tsgo --noEmit"
   },
+  "dependencies": {
+    "@repo/shared-types": "workspace:^"
+  },
   "devDependencies": {
     "@repo/typescript-config": "workspace:^",
     "@typescript/native-preview": "7.0.0-dev.20260307.1",
     "typescript": "5.9.3"
-  },
-  "dependencies": {
-    "@repo/shared-types": "workspace:^"
   }
 }

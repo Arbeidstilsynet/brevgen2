@@ -2,10 +2,10 @@
   "name": "api",
   "version": "0.0.0",
   "private": true,
-  "type": "module",
   "files": [
     "dist"
   ],
+  "type": "module",
   "scripts": {
     "dev": "vite --config vite.dev.config.ts",
     "build": "del-cli ./dist && tsup server.ts",

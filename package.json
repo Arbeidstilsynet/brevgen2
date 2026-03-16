@@ -23,9 +23,9 @@
     "@repo/typescript-config": "workspace:*",
     "@typescript/native-preview": "7.0.0-dev.20260307.1",
     "eslint-plugin-react-hooks": "7.0.1",
+    "oxfmt": "0.40.0",
     "oxlint": "1.55.0",
     "oxlint-tsgolint": "0.16.0",
-    "oxfmt": "0.40.0",
     "turbo": "2.8.15",
     "typescript": "5.9.3"
   },

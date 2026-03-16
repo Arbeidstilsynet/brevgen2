@@ -29,7 +29,7 @@ repos:
         name: format with oxfmt
         entry: pnpx oxfmt@0.40.0
         language: node
-        "types_or": [javascript, jsx, ts, tsx]
+        "types_or": [javascript, jsx, ts, tsx, json]
 
       - id: dotnet-tool-restore
         name: install .NET tools
