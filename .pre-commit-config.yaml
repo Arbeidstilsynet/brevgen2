@@ -27,8 +27,7 @@ repos:
       # official mirrors-oxfmt has no tags yet https://github.com/oxc-project/mirrors-oxfmt/issues/1
       - id: oxfmt
         name: format with oxfmt
-        # npx oxfmt should be faster than installing all dependencies with pnpm
-        entry: npx --yes oxfmt@0.40.0
+        entry: pnpx oxfmt@0.40.0
         language: node
         "types_or": [javascript, jsx, ts, tsx]
 
