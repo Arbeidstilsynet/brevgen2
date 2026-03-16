@@ -1,4 +1,4 @@
-﻿using Arbeidstilsynet.Brevgenerator.Client.Models;
+using Arbeidstilsynet.Brevgenerator.Client.Models;
 
 namespace Arbeidstilsynet.Brevgenerator.Client
 {

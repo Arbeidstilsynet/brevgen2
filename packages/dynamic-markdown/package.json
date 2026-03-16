@@ -1,13 +1,13 @@
 {
   "name": "@at/dynamic-markdown",
-  "private": true,
   "version": "0.0.0",
+  "private": true,
   "description": "Markdown with logic and dynamic fields",
+  "author": "Arbeidstilsynet",
   "repository": {
     "type": "git",
     "url": "https://Atil-utvikling@dev.azure.com/Atil-utvikling/Produkter%20og%20tjenester/_git/felles-brevgenerator"
   },
-  "author": "Arbeidstilsynet",
   "type": "module",
   "exports": {
     ".": "./lib/index.ts"

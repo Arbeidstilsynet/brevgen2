@@ -99,14 +99,6 @@ jobs:
         if: needs.changes.outputs.brevgen2 == 'true'
         name: "Type check"
 
-      - run: pnpm lint
-        if: needs.changes.outputs.brevgen2 == 'true'
-        name: "Lint"
-
-      - run: pnpm format:check
-        if: needs.changes.outputs.brevgen2 == 'true'
-        name: "Formatting check"
-
       - run: pnpm circular
         if: needs.changes.outputs.brevgen2 == 'true'
         name: "Circular dependencies check"
@@ -133,6 +125,17 @@ jobs:
       - run: pnpm build --filter=!nuget-client --filter=!nuget-client-tests
         if: needs.changes.outputs.brevgen2 == 'true'
         name: "Build"
+
+  prek:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5
+      - uses: pnpm/action-setup@v4
+        with:
+          cache: true
+      - uses: j178/prek-action@0bb87d7f00b0c99306c8bcb8b8beba1eb581c037 # v1
 
   testcontainer:
     needs: changes
@@ -176,6 +179,8 @@ jobs:
         if: needs.changes.outputs.nuget-client == 'true'
       - name: Build and Test .NET solution
         if: needs.changes.outputs.nuget-client == 'true'
-        uses: Arbeidstilsynet/action-dotnet-build@8cb079e748e29beb63abf1ecc79c0a4e384e18f8 # v4
+        uses: Arbeidstilsynet/action-dotnet-build@9c35ccb4022ccc93ca72b67538da77615eb74af9 # v4
         with:
           working-directory: "."
+          skip-csharpier: true
+          skip-style-analyzers: true

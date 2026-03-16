@@ -1,0 +1,51 @@
+repos:
+  - repo: builtin
+    hooks:
+      - id: trailing-whitespace
+      - id: check-added-large-files
+      - id: check-merge-conflict
+      - id: check-symlinks
+      - id: detect-private-key
+      - id: mixed-line-ending
+      - id: check-json
+      - id: check-yaml
+        exclude: ^.nais/.*
+      - id: fix-byte-order-marker
+      - id: check-case-conflict
+      - id: end-of-file-fixer
+
+  - repo: https://github.com/oxc-project/mirrors-oxlint
+    # memory issue in windows with newer vesion and jsplugins
+    # https://github.com/oxc-project/oxc/issues/19395#issuecomment-3994051418
+    rev: v1.46.0
+    hooks:
+      - id: oxlint
+        verbose: true
+
+  - repo: local
+    hooks:
+      # official mirrors-oxfmt has no tags yet https://github.com/oxc-project/mirrors-oxfmt/issues/1
+      - id: oxfmt
+        name: format with oxfmt
+        entry: pnpx oxfmt@0.40.0
+        language: node
+        "types_or": [javascript, jsx, ts, tsx, json]
+
+      - id: dotnet-tool-restore
+        name: install .NET tools
+        entry: dotnet tool restore
+        language: unsupported
+        always_run: true
+        pass_filenames: false
+        stages:
+          - commit
+          - push
+          - post-checkout
+          - post-rewrite
+      - id: csharpier
+        name: format with CSharpier
+        entry: dotnet csharpier format .
+        language: system
+        types:
+          - c#
+        files: ^.*\.(cs|csproj|sln|slnx)$
