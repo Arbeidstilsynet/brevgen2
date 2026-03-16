@@ -10,6 +10,13 @@ auditConfig:
 
 autoInstallPeers: false
 
+ignoredBuiltDependencies:
+  - cpu-features
+  - esbuild
+  - protobufjs
+  - sharp
+  - ssh2
+
 injectWorkspacePackages: true
 
 minimumReleaseAge: 4320
@@ -20,6 +27,8 @@ minimumReleaseAgeExclude:
   - oxfmt
   - "@oxfmt/*"
   - minimatch
+  - tsdown@0.21.3
+  - tinyexec@1.0.4
 
 onlyBuiltDependencies:
   - puppeteer

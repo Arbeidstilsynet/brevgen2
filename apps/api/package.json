@@ -8,7 +8,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --config vite.dev.config.ts",
-    "build": "del-cli ./dist && tsup server.ts",
+    "build": "tsdown server.ts",
     "test": "vitest run --coverage lib",
     "test:integration": "vitest run integration-tests",
     "test:load": "npx --yes tsx load-tests/run.ts",
@@ -43,16 +43,18 @@
     "@types/node": "24.12.0",
     "@types/sanitize-html": "2.16.1",
     "@typescript/native-preview": "7.0.0-dev.20260307.1",
-    "del-cli": "7.0.0",
     "globals": "17.4.0",
     "pdf-text-reader": "5.1.1",
     "pdf-visual-diff": "0.15.2",
     "puppeteer": "24.38.0",
     "testcontainers": "11.12.0",
-    "tsup": "8.5.1",
+    "tsdown": "0.21.3",
     "typescript": "5.9.3",
-    "vite": "7.3.1",
+    "vite": "8.0.0",
     "vite-plugin-node": "7.0.0",
     "vitest": "4.1.0"
+  },
+  "engines": {
+    "node": "24"
   }
 }
