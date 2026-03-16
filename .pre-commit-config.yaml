@@ -29,9 +29,8 @@ repos:
         name: format with oxfmt
         # npx oxfmt should be faster than installing all dependencies with pnpm
         entry: npx --yes oxfmt@0.40.0
-        language: unsupported
-        always_run: true
-        pass_filenames: false
+        language: node
+        "types_or": [javascript, jsx, ts, tsx]
 
       - id: dotnet-tool-restore
         name: install .NET tools
