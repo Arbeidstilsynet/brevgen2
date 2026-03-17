@@ -29,6 +29,8 @@ minimumReleaseAgeExclude:
   - minimatch
   - tsdown@0.21.3
   - tinyexec@1.0.4
+  # Renovate security update: next@16.1.7
+  - next@16.1.7
 
 onlyBuiltDependencies:
   - puppeteer
