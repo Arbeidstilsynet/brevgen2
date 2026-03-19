@@ -10,13 +10,13 @@ using Xunit.Microsoft.DependencyInjection.Abstracts;
 
 namespace Arbeidstilsynet.Common.BrevgeneratorClient.Tests.Fixture;
 
-public class BrevgenBearerTokenFixture : TestBedFixture
+public class BrevgenAppFixture : TestBedFixture
 {
     private readonly WireMockServer _server;
 
     internal WireMockServer Server => _server;
 
-    public BrevgenBearerTokenFixture()
+    public BrevgenAppFixture()
     {
         _server = WireMockServer.Start();
     }

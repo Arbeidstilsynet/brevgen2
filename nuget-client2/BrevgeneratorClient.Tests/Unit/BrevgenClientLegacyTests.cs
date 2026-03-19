@@ -1,9 +1,7 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using Arbeidstilsynet.Common.BrevgeneratorClient.Implementation;
-using Arbeidstilsynet.Common.BrevgeneratorClient.Model;
+using Arbeidstilsynet.Common.BrevgeneratorClient.DependencyInjection;
 using Arbeidstilsynet.Common.BrevgeneratorClient.Ports;
 using Arbeidstilsynet.Common.BrevgeneratorClient.Tests.Fixture;
+using Microsoft.Extensions.Hosting.Internal;
 using Shouldly;
 using WireMock.Matchers;
 using Xunit;
@@ -11,51 +9,19 @@ using Xunit.Microsoft.DependencyInjection.Abstracts;
 
 namespace Arbeidstilsynet.Common.BrevgeneratorClient.Tests;
 
-public class BrevgenClientTests : TestBed<BrevgenAppFixture>
+public class BrevgenClientLegacyTests : TestBed<BrevgenAppFixture>
 {
     private readonly IBrevgeneratorClient _sut;
 
-    public BrevgenClientTests(ITestOutputHelper testOutputHelper, BrevgenAppFixture fixture)
+    public BrevgenClientLegacyTests(ITestOutputHelper testOutputHelper, BrevgenAppFixture fixture)
         : base(testOutputHelper, fixture)
     {
-        _sut = fixture.GetService<IBrevgeneratorClient>(testOutputHelper)!;
+        _sut = DependencyInjectionExtensions.CreateBrevgeneratorClient(
+            new HostingEnvironment { EnvironmentName = "Test" },
+            () => Task.FromResult(DummyBearerTokenProvider.DummyToken),
+            new BrevgeneratorConfig { AuthMode = AuthMode.BearerToken, BaseUrl = _fixture.GetBaseUri() }
+        );
     }
-
-    internal static GenererBrevArgs SampleRequest = new Model.GenererBrevArgs()
-    {
-        Md = "# Test {test}",
-        MdVariables = new Dictionary<string, object?> { { "test", "test-var" } },
-        Options = new Model.GeneratePdfOptions()
-        {
-            Author = "Arbeidstilsynet",
-            Css = ".test { color: blue }",
-            Dynamic = new DynamicMdPdfConfig
-            {
-                Template = TemplateType.Default,
-                DefaultTemplateArgs = new DefaultTemplateArgs(
-                    Language.Bokmål,
-                    DefaultTemplateSignatureVariant.ElektroniskGodkjent,
-                    new DefaultTemplateFields
-                    {
-                        Dato = new DateTime(2026, 01, 01).ToString("o"),
-                        Saksnummer = "2026/0001",
-                        SaksbehandlerNavn = "Tester",
-                        Virksomhet = new Virksomhet
-                        {
-                            Navn = "Test AS",
-                            Adresse = "Gate 1",
-                            Postnr = "1234",
-                            Poststed = "Et Sted",
-                        },
-                    }
-                ),
-                DirektoratTemplateArgs = new DirektoratTemplateArgs(Language.Nynorsk, new(), new(), null),
-            },
-            DocumentTitle = "test",
-            AsHtml = true,
-            PdfOptions = new Model.PuppeteerPDFOptions { Format = PaperFormat.A4 },
-        },
-    };
 
     [Fact]
     public async Task GenererBrev_WhenCalledWithBearerTokenProvider_ReturnsOk()
@@ -116,7 +82,7 @@ public class BrevgenClientTests : TestBed<BrevgenAppFixture>
             .ThenRespondWith(r => r.WithStatusCode(System.Net.HttpStatusCode.OK).WithBody("generertBrevString"));
 
         //act
-        var result = await _sut.GenererBrev(SampleRequest);
+        var result = await _sut.GenererBrev(BrevgenClientTests.SampleRequest);
 
         //assert
         result.ShouldBeEquivalentTo("generertBrevString");

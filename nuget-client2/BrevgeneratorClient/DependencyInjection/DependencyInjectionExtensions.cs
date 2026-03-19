@@ -1,4 +1,5 @@
 using Arbeidstilsynet.Common.BrevgeneratorClient.Extensions;
+using Arbeidstilsynet.Common.BrevgeneratorClient.Implementation;
 using Arbeidstilsynet.Common.BrevgeneratorClient.Ports;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -26,10 +27,20 @@ public static class DependencyInjectionExtensions
     )
         where T : class, ITokenProvider
     {
+        services.AddSingleton<ITokenProvider, T>();
+        services.AddInternalServices(hostEnvironment, brevgeneratorConfig);
+        return services;
+    }
+
+    private static IServiceCollection AddInternalServices(
+        this IServiceCollection services,
+        IHostEnvironment hostEnvironment,
+        BrevgeneratorConfig? brevgeneratorConfig = null
+    )
+    {
         brevgeneratorConfig ??= new BrevgeneratorConfig { AuthMode = AuthMode.BearerToken, BaseUrl = null };
         services.AddSingleton(brevgeneratorConfig);
         services.AddSingleton<IBrevgeneratorClient, Implementation.BrevgeneratorClient>();
-        services.AddSingleton<ITokenProvider, T>();
         services.AddHttpClient(
             BrevgeneratorHttpClientKey,
             configureClient =>
@@ -40,5 +51,18 @@ public static class DependencyInjectionExtensions
                 )
         );
         return services;
+    }
+
+    public static IBrevgeneratorClient CreateBrevgeneratorClient(
+        IHostEnvironment hostEnvironment,
+        Func<Task<string>> tokenFunc,
+        BrevgeneratorConfig? brevgeneratorConfig = null
+    )
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton<ITokenProvider>(new InternalTokenProvider(tokenFunc));
+        services.AddInternalServices(hostEnvironment, brevgeneratorConfig);
+        var serviceProvider = services.BuildServiceProvider();
+        return serviceProvider.GetRequiredService<IBrevgeneratorClient>();
     }
 }
