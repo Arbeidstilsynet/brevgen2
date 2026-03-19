@@ -29,7 +29,7 @@ public static class DependencyInjectionExtensions
         brevgeneratorConfig ??= new BrevgeneratorConfig { AuthMode = AuthMode.BearerToken, BaseUrl = null };
         services.AddSingleton(brevgeneratorConfig);
         services.AddSingleton<IBrevgeneratorClient, Implementation.BrevgeneratorClient>();
-        services.AddScoped<ITokenProvider, T>();
+        services.AddSingleton<ITokenProvider, T>();
         services.AddHttpClient(
             BrevgeneratorHttpClientKey,
             configureClient =>
