@@ -1,5 +1,10 @@
 # Versjonslogg
 
+## 4.1.0
+
+- Oppdatert pakkestruktur for å få en bedre forståelse om hva som er `internal` og hva som burde være `public`
+- Lagt til støtte for å bruke nuget pakken via en DI extension metode
+
 ## 4.0.0
 
 - Publiserer nå til `nuget.org` i stedet for Azure DevOps

@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="nuget-client/BrevgeneratorClient.Tests.ArchUnit/BrevgeneratorClient.Tests.ArchUnit.csproj" />
+  <Project Path="nuget-client/BrevgeneratorClient.Tests/BrevgeneratorClient.Tests.csproj" />
+  <Project Path="nuget-client/BrevgeneratorClient/BrevgeneratorClient.csproj" />
+</Solution>

@@ -1,5 +1,0 @@
-<Solution>
-  <Project Path="BrevgeneratorClient.Tests.ArchUnit/BrevgeneratorClient.Tests.ArchUnit.csproj" />
-  <Project Path="BrevgeneratorClient.Tests/BrevgeneratorClient.Tests.csproj" />
-  <Project Path="BrevgeneratorClient/BrevgeneratorClient.csproj" />
-</Solution>
