@@ -33,9 +33,11 @@ public static class DependencyInjectionExtensions
         services.AddHttpClient(
             BrevgeneratorHttpClientKey,
             configureClient =>
-                configureClient.BaseAddress = string.IsNullOrEmpty(brevgeneratorConfig.BaseUrl)
-                    ? hostEnvironment.GetBrevgenBaseUri()
-                    : new Uri(brevgeneratorConfig.BaseUrl)
+                configureClient.BaseAddress = new Uri(
+                    string.IsNullOrEmpty(brevgeneratorConfig.BaseUrl)
+                        ? hostEnvironment.GetBrevgenBaseUri()
+                        : brevgeneratorConfig.BaseUrl
+                )
         );
         return services;
     }

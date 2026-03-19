@@ -12,12 +12,19 @@ public static class BrevgeneratorClientExtensions
     /// </summary>
     /// <param name="env">The current environment</param>
     /// <returns>Returns a base url matching the current environment</returns>
-    public static Uri GetBrevgenBaseUri(this IHostEnvironment env)
+    public static string GetBrevgenBaseUri(this IHostEnvironment env)
     {
-        if (env.IsProduction())
+        if (env.IsDevelopment())
         {
-            return new Uri("https://brevgenerator.arbeidstilsynet.no/", UriKind.Absolute);
+            return "http://localhost:4000";
         }
-        return new Uri("https://brevgenerator.dev.arbeidstilsynet.no/", UriKind.Absolute);
+        else if (env.IsProduction())
+        {
+            return "https://brevgen2-api.arbeidstilsynet.no/";
+        }
+        else
+        {
+            return "https://brevgen2-api.dev.arbeidstilsynet.no/";
+        }
     }
 }
