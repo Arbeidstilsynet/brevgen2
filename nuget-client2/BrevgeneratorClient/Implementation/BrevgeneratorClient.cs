@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Arbeidstilsynet.Common.BrevgeneratorClient.DependencyInjection;
+using Arbeidstilsynet.Common.BrevgeneratorClient.Extensions;
 using Arbeidstilsynet.Common.BrevgeneratorClient.Model;
 using Arbeidstilsynet.Common.BrevgeneratorClient.Ports;
 
@@ -23,7 +24,7 @@ internal class BrevgeneratorClient(
     );
     private readonly JsonSerializerOptions _jsonOptions = new()
     {
-        Converters = { new JsonStringEnumConverter() },
+        Converters = { new EnumMemberJsonConverter() },
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
     };
 
