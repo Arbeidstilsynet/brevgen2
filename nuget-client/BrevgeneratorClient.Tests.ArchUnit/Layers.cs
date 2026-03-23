@@ -6,6 +6,8 @@ namespace Arbeidstilsynet.Brevgenerator.Client.Test.ArchUnit
     internal static class Constants
     {
         internal static string NameSpacePrefix = @"Arbeidstilsynet\.Brevgenerator\.Client";
+        internal static string OwnedBrevgeneratorClientFullName =
+            "Arbeidstilsynet.Brevgenerator.Client.DependencyInjection.OwnedBrevgeneratorClient";
 
         internal static string CoverageCollectorNamespace = "Microsoft.CodeCoverage.Instrumentation.Static.Tracker";
         internal static string RootNamespace = $"^({NameSpacePrefix}|{NameSpacePrefix}\\..*)$";
@@ -47,6 +49,8 @@ namespace Arbeidstilsynet.Brevgenerator.Client.Test.ArchUnit
             .AreAssignableTo(PublicInterfaces)
             .And()
             .AreNot(PublicInterfaces)
+            .And()
+            .DoNotHaveFullName(Constants.OwnedBrevgeneratorClientFullName)
             .As("interface implementations");
 
         internal static readonly IObjectProvider<IType> PublicAbstractClasses = Classes()
