@@ -11,7 +11,7 @@ namespace Arbeidstilsynet.Brevgenerator.Client.Test.ArchUnit
         internal static string RootNamespace = $"^({NameSpacePrefix}|{NameSpacePrefix}\\..*)$";
         internal static string ExtensionsNamespace = CreateNamespaceRegex("Extensions");
         internal static string DependencyInjectionNamespace = CreateNamespaceRegex("DependencyInjection");
-        internal static string ModelNamespace = CreateNamespaceRegex("Model");
+        internal static string ModelsNamespace = CreateNamespaceRegex("Models");
 
         private static string CreateNamespaceRegex(string namespaceSection)
         {
@@ -64,7 +64,7 @@ namespace Arbeidstilsynet.Brevgenerator.Client.Test.ArchUnit
             .Or()
             .ResideInNamespaceMatching(Constants.DependencyInjectionNamespace)
             .Or()
-            .ResideInNamespaceMatching(Constants.ModelNamespace)
+            .ResideInNamespaceMatching(Constants.ModelsNamespace)
             .As("inside exportable namespaces");
 
         internal static readonly IObjectProvider<IType> TypesInInternalNamespaces = Types()
