@@ -1,10 +1,8 @@
 using Arbeidstilsynet.Brevgenerator.Client.DependencyInjection;
-using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting.Internal;
 using WireMock.Server;
-using WireMock.Settings;
 using Xunit.Microsoft.DependencyInjection;
 using Xunit.Microsoft.DependencyInjection.Abstracts;
 
