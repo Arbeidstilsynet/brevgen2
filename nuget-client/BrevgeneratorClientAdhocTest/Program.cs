@@ -1,5 +1,4 @@
 using System.Text.Json;
-using Arbeidstilsynet.Brevgenerator.Client;
 using Arbeidstilsynet.Brevgenerator.Client.DependencyInjection;
 using Arbeidstilsynet.Brevgenerator.Client.Models;
 using Arbeidstilsynet.Brevgenerator.Client.Ports;
