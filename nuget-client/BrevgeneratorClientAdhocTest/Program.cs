@@ -44,11 +44,12 @@ static class Program
         var client1 = serviceProvider.GetRequiredService<IBrevgeneratorClient>();
 
         // ---------- Klient 2 direkte konstruksjon ----------
-        // var client2 = new BrevgeneratorClient(
-        //     new BrevgeneratorConfig(apiUrl),
-        //     BrevgeneratorClient.AuthMode.ApiKey,
-        //     apiKeyFactory: async () => "foo"
-        // );
+        var baseUrlClient2 = args.Length > 0 ? args[0] : null;
+        var client2 = DependencyInjectionExtensions.CreateBrevgeneratorClient(
+            hostEnvironment,
+            tokenFunc: async () => "my-token",
+            new BrevgeneratorConfig { AuthMode = AuthMode.BearerToken, BaseUrl = baseUrlClient2 }
+        );
 
         var payload = IGenererBrevArgsBuilder
             .Create()
