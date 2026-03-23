@@ -10,7 +10,7 @@
     "nuget-client#build": {
       "outputs": ["**/bin/**", "**/obj/**"]
     },
-    "nuget-client#tests": {
+    "nuget-client#test": {
       "outputs": ["**/bin/**", "**/obj/**"]
     },
     "dev": {
