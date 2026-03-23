@@ -55,7 +55,7 @@ public class MyService(IBrevgeneratorClient brevClient)
 
 ### Alternativ 2: Opprett klient direkte med en token-funksjon
 
-Bruk `CreateBrevgeneratorClient` for å opprette klienten uten å sette opp en egen `ITokenProvider`-klasse. Nyttig i enklere oppsett eller legacy-kode:
+Bruk `CreateBrevgeneratorClient` for å opprette klienten uten å sette opp en egen `ITokenProvider`-klasse eller ServiceCollection. Nyttig i enklere oppsett eller legacy-kode:
 
 ```csharp
 using Arbeidstilsynet.Brevgenerator.Client.DependencyInjection;

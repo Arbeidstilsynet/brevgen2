@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageId>Arbeidstilsynet.Brevgenerator.Client</PackageId>
-    <Version>4.1.0-alpha</Version>
+    <Version>5.0.0</Version>
     <Authors>Arbeidstilsynet</Authors>
     <Company>Arbeidstilsynet</Company>
     <Product>Brevgenerator</Product>
