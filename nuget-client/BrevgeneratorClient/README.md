@@ -72,7 +72,8 @@ var result = await client.GenererBrev(payload);
 ### Bygge payload
 
 ```csharp
-using Arbeidstilsynet.Brevgenerator.Client.Model;
+using Arbeidstilsynet.Brevgenerator.Client.Models;
+using Arbeidstilsynet.Brevgenerator.Client.Ports;
 
 var payload = GenererBrevArgsBuilder
     .Create()

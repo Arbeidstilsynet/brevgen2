@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Arbeidstilsynet.Brevgenerator.Client;
 using Arbeidstilsynet.Brevgenerator.Client.Models;
+using Arbeidstilsynet.Brevgenerator.Client.Ports;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BrevgeneratorClientCli;
@@ -37,7 +38,7 @@ static class Program
         //     apiKeyFactory: async () => "foo"
         // );
 
-        var payload = GenererBrevArgsBuilder
+        var payload = IGenererBrevArgsBuilder
             .Create()
             .AddMarkdown(
                 "# Sample Markdown content\n## {{ exampleVariable }}",
