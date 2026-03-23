@@ -111,11 +111,21 @@ export function genererBrevTests(getTestEnv: () => TestEnvironment) {
       expect(buffer.length).toBeGreaterThan(0);
 
       const text = await readPdfText({ data: new Uint8Array(buffer), options: { verbosity: 0 } });
-      expect(text).toContain("This is a test PDF");
-      expect(text).toContain("Test Containers");
-      expect(text).toContain("Test Testesen");
-      expect(text).toContain("2030/999");
-      expect(text).toContain("12.24.2030");
+
+      const expectedTexts = [
+        "This is a test PDF",
+        "THeader 1",
+        "Cell 6",
+        "Nested list item 1b",
+        "Test Containers",
+        "Test Testesen",
+        "2030/999",
+        "12.24.2030",
+      ];
+
+      for (const expectedText of expectedTexts) {
+        expect(text).toContain(expectedText);
+      }
 
       writeFileSync(paths.temp.defaultShort, buffer); // Save the generated PDF as a fixture for visual tests
     },

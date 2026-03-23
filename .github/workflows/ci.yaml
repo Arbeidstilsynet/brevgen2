@@ -132,7 +132,7 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
       - uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5
-      - uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v4
+      - uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5
         with:
           cache: true
       - uses: j178/prek-action@0bb87d7f00b0c99306c8bcb8b8beba1eb581c037 # v1
@@ -179,7 +179,7 @@ jobs:
         if: needs.changes.outputs.nuget-client == 'true'
       - name: Build and Test .NET solution
         if: needs.changes.outputs.nuget-client == 'true'
-        uses: Arbeidstilsynet/action-dotnet-build@9c35ccb4022ccc93ca72b67538da77615eb74af9 # v4
+        uses: Arbeidstilsynet/action-dotnet-build@7ae1e7bc33ebd805bcd4d039065e86b3eb2cdbbf # v4
         with:
           working-directory: "."
           skip-csharpier: true

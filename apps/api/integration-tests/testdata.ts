@@ -1,7 +1,28 @@
 import { GenerateDocumentRequest } from "@repo/shared-types";
 
+const defaultTemplateShortMd = `# Test PDF
+
+This is a {{var}}
+
+| THeader 1       | THeader 2       | THeader 3 |
+|:----------------|:----------------|:----------|
+| Cell 1          | Cell 2          | Cell 3    |
+| *Italic cell 4* | **Bold cell 5** | Cell 6    |
+
+## Heading 2
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam et nisi fermentum, sodales nisi non, sagittis nulla. Cras a convallis orci, fermentum maximus enim. Pellentesque ac gravida orci, sed convallis ante. In placerat vehicula justo nec tempor.
+
+- List item 1
+  - Nested list item 1a
+  - Nested list item 1b
+- List item 2
+
+We also support [links](https://www.example.com)
+`;
+
 export const defaultTemplateShortPayload: GenerateDocumentRequest = {
-  md: "# Test PDF\n\nThis is a {{var}}",
+  md: defaultTemplateShortMd,
   mdVariables: {
     var: "test PDF",
   },
