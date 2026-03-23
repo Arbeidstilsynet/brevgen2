@@ -14,7 +14,7 @@ public static class Extensions
     internal const string BrevgeneratorHttpClientKey = "BrevgeneratorHttpClient";
 
     /// <summary>
-    /// Registers an implementation av <see cref="IBrevgeneratorClient"/> in <paramref name="services"/>.
+    /// Registers an implementation of <see cref="IBrevgeneratorClient"/> in <paramref name="services"/>.
     /// </summary>
     /// <param name="services"><see cref="IServiceCollection"/> to register the service in.</param>
     /// <param name="hostEnvironment">the current host environment</param>
