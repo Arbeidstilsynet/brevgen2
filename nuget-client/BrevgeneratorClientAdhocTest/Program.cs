@@ -1,10 +1,21 @@
 using System.Text.Json;
 using Arbeidstilsynet.Brevgenerator.Client;
+using Arbeidstilsynet.Brevgenerator.Client.DependencyInjection;
 using Arbeidstilsynet.Brevgenerator.Client.Models;
 using Arbeidstilsynet.Brevgenerator.Client.Ports;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace BrevgeneratorClientCli;
+
+public class MyTokenProvider : ITokenProvider
+{
+    public async Task<string> GetToken()
+    {
+        // Hent token fra f.eks. Entra ID
+        return await Task.FromResult("my-token");
+    }
+}
 
 static class Program
 {
@@ -12,23 +23,24 @@ static class Program
     {
         // dotnet run "http://localhost:4000"
 
-        if (args.Length < 1)
-        {
-            Console.WriteLine("Usage: BrevgeneratorClientCli <API_URL>]");
-            return;
-        }
-
-        var apiUrl = args[0];
+        var builder = Host.CreateApplicationBuilder(
+            new HostApplicationBuilderSettings
+            {
+                Args = args,
+                EnvironmentName = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? Environments.Development,
+            }
+        );
+        var hostEnvironment = builder.Environment;
+        Console.WriteLine($"Environment: {hostEnvironment.EnvironmentName}");
 
         // ---------- Klient 1 via DI ----------
-        var serviceCollection = new ServiceCollection();
-        serviceCollection.AddSingleton(new BrevgeneratorConfig(apiUrl));
-        serviceCollection.AddSingleton<IBrevgeneratorClient>(sp => new BrevgeneratorClient(
-            sp.GetRequiredService<BrevgeneratorConfig>(),
-            BrevgeneratorClient.AuthMode.ApiKey,
-            apiKeyFactory: async () => "foo"
-        ));
-        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var services = new ServiceCollection();
+        services.AddBrevgeneratorClient<MyTokenProvider>(
+            hostEnvironment,
+            new BrevgeneratorConfig { AuthMode = AuthMode.BearerToken }
+        );
+
+        var serviceProvider = services.BuildServiceProvider();
         var client1 = serviceProvider.GetRequiredService<IBrevgeneratorClient>();
 
         // ---------- Klient 2 direkte konstruksjon ----------
