@@ -11,21 +11,18 @@ namespace Arbeidstilsynet.Brevgenerator.Client.Tests;
 
 public class BrevgenClientLegacyTests : TestBed<BrevgenAppFixture>
 {
-    private readonly IBrevgeneratorClient _sut;
-
     public BrevgenClientLegacyTests(ITestOutputHelper testOutputHelper, BrevgenAppFixture fixture)
-        : base(testOutputHelper, fixture)
-    {
-        _sut = DependencyInjection.Extensions.CreateBrevgeneratorClient(
-            new HostingEnvironment { EnvironmentName = "Test" },
-            () => Task.FromResult(DummyBearerTokenProvider.DummyToken),
-            new BrevgeneratorConfig { AuthMode = AuthMode.BearerToken, BaseUrl = _fixture.GetBaseUri() }
-        );
-    }
+        : base(testOutputHelper, fixture) { }
 
     [Fact]
     public async Task GenererBrev_WhenCalledWithBearerTokenProvider_ReturnsOk()
     {
+        using var sut = DependencyInjection.Extensions.CreateBrevgeneratorClient(
+            new HostingEnvironment { EnvironmentName = "Test" },
+            () => Task.FromResult(DummyBearerTokenProvider.DummyToken),
+            new BrevgeneratorConfig { AuthMode = AuthMode.BearerToken, BaseUrl = _fixture.GetBaseUri() }
+        );
+
         //arrange
 
         _fixture
@@ -82,7 +79,7 @@ public class BrevgenClientLegacyTests : TestBed<BrevgenAppFixture>
             .ThenRespondWith(r => r.WithStatusCode(System.Net.HttpStatusCode.OK).WithBody("generertBrevString"));
 
         //act
-        var result = await _sut.GenererBrev(BrevgenClientTests.SampleRequest);
+        var result = await sut.GenererBrev(BrevgenClientTests.SampleRequest);
 
         //assert
         result.ShouldBeEquivalentTo("generertBrevString");

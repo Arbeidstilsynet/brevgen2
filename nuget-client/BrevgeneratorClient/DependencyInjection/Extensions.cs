@@ -53,7 +53,7 @@ public static class Extensions
         return services;
     }
 
-    public static IBrevgeneratorClient CreateBrevgeneratorClient(
+    public static OwnedBrevgeneratorClient CreateBrevgeneratorClient(
         IHostEnvironment hostEnvironment,
         Func<Task<string>> tokenFunc,
         BrevgeneratorConfig? brevgeneratorConfig = null
@@ -63,6 +63,6 @@ public static class Extensions
         services.AddSingleton<ITokenProvider>(new InternalTokenProvider(tokenFunc));
         services.AddInternalServices(hostEnvironment, brevgeneratorConfig);
         var serviceProvider = services.BuildServiceProvider();
-        return serviceProvider.GetRequiredService<IBrevgeneratorClient>();
+        return new OwnedBrevgeneratorClient(serviceProvider);
     }
 }

@@ -44,7 +44,7 @@ static class Program
 
         // ---------- Klient 2 direkte konstruksjon ----------
         var baseUrlClient2 = args.Length > 0 ? args[0] : null;
-        var client2 = Extensions.CreateBrevgeneratorClient(
+        using var client2 = Extensions.CreateBrevgeneratorClient(
             hostEnvironment,
             tokenFunc: async () => "my-token",
             new BrevgeneratorConfig { AuthMode = AuthMode.BearerToken, BaseUrl = baseUrlClient2 }
@@ -106,21 +106,21 @@ static class Program
             .Build();
 
         Console.WriteLine($"Payload:\n{JsonSerializer.Serialize(payload)}");
-        Console.WriteLine("Sending request with client1");
-        var result1 = await client1.GenererBrev(payload);
-        Console.WriteLine($"Response:\n{result1}");
-        // Console.WriteLine("Sending request with client2");
-        // var result2 = await client2.GenererBrev(payload);
-        // Console.WriteLine($"Response:\n{result2}");
+        // Console.WriteLine("Sending request with client1");
+        // var result1 = await client1.GenererBrev(payload);
+        // Console.WriteLine($"Response:\n{result1}");
+        Console.WriteLine("Sending request with client2");
+        var result2 = await client2.GenererBrev(payload);
+        Console.WriteLine($"Response:\n{result2}");
 
-        if (payload.Options.AsHtml == true)
-        {
-            await File.WriteAllTextAsync("output.html", result1);
-        }
-        else
-        {
-            var pdfBytes = Convert.FromBase64String(result1);
-            await File.WriteAllBytesAsync("output.pdf", pdfBytes);
-        }
+        // if (payload.Options.AsHtml == true)
+        // {
+        //     await File.WriteAllTextAsync("output.html", result1);
+        // }
+        // else
+        // {
+        //     var pdfBytes = Convert.FromBase64String(result1);
+        //     await File.WriteAllBytesAsync("output.pdf", pdfBytes);
+        // }
     }
 }

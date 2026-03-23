@@ -60,7 +60,7 @@ Bruk `CreateBrevgeneratorClient` for å opprette klienten uten å sette opp en e
 ```csharp
 using Arbeidstilsynet.Brevgenerator.Client.DependencyInjection;
 
-var client = Extensions.CreateBrevgeneratorClient(
+using var client = Extensions.CreateBrevgeneratorClient(
     hostEnvironment,
     tokenFunc: async () => await HentAzureTokenAsync(),
     new BrevgeneratorConfig { AuthMode = AuthMode.BearerToken, BaseUrl = "https://brevgenerator.example.com" }
