@@ -42,4 +42,7 @@ p {
 a {
   color: #3C4C7D;
 }
+table {
+  width: 100%;
+}
 `;
