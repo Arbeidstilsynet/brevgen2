@@ -1,0 +1,9 @@
+{
+  "name": "nuget-client",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "dotnet build --no-restore ..",
+    "test": "dotnet test --no-restore --solution .."
+  }
+}

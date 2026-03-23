@@ -8,11 +8,10 @@
       "outputs": [".next/**", "!.next/cache/**", "dist"]
     },
     "nuget-client#build": {
-      "outputs": ["bin/**", "obj/**"]
+      "outputs": ["**/bin/**", "**/obj/**"]
     },
     "nuget-client#tests": {
-      "outputs": ["bin/**", "obj/**"],
-      "dependsOn": ["nuget-client#build"]
+      "outputs": ["**/bin/**", "**/obj/**"]
     },
     "dev": {
       "cache": false,
