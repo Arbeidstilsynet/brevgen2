@@ -10,17 +10,14 @@ internal class EnumMemberJsonConverter : JsonConverterFactory
 {
     public override bool CanConvert(Type typeToConvert) => typeToConvert.IsEnum;
 
-    public override System.Text.Json.Serialization.JsonConverter CreateConverter(
-        Type typeToConvert,
-        JsonSerializerOptions options
-    )
+    public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
     {
         // Create a generic instance of the converter for the specific enum type
         var converterType = typeof(EnumMemberConverter<>).MakeGenericType(typeToConvert);
-        return (System.Text.Json.Serialization.JsonConverter)Activator.CreateInstance(converterType)!;
+        return (JsonConverter)Activator.CreateInstance(converterType)!;
     }
 
-    private class EnumMemberConverter<T> : JsonConverter<T>
+    private sealed class EnumMemberConverter<T> : JsonConverter<T>
         where T : struct, Enum
     {
         private readonly Dictionary<T, string> _enumToString = new();
