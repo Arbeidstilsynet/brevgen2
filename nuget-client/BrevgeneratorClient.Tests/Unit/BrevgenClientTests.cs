@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Arbeidstilsynet.Brevgenerator.Client.Implementation;
-using Arbeidstilsynet.Brevgenerator.Client.Model;
+using Arbeidstilsynet.Brevgenerator.Client.Models;
 using Arbeidstilsynet.Brevgenerator.Client.Ports;
 using Arbeidstilsynet.Brevgenerator.Client.Tests.Fixture;
 using Shouldly;
