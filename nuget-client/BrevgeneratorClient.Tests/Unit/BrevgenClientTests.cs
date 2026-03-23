@@ -1,6 +1,3 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using Arbeidstilsynet.Brevgenerator.Client.Implementation;
 using Arbeidstilsynet.Brevgenerator.Client.Models;
 using Arbeidstilsynet.Brevgenerator.Client.Ports;
 using Arbeidstilsynet.Brevgenerator.Client.Tests.Fixture;
@@ -21,11 +18,11 @@ public class BrevgenClientTests : TestBed<BrevgenAppFixture>
         _sut = fixture.GetService<IBrevgeneratorClient>(testOutputHelper)!;
     }
 
-    internal static GenererBrevArgs SampleRequest = new Model.GenererBrevArgs()
+    internal static GenererBrevArgs SampleRequest = new Models.GenererBrevArgs()
     {
         Md = "# Test {test}",
         MdVariables = new Dictionary<string, object?> { { "test", "test-var" } },
-        Options = new Model.GeneratePdfOptions()
+        Options = new Models.GeneratePdfOptions()
         {
             Author = "Arbeidstilsynet",
             Css = ".test { color: blue }",
@@ -53,7 +50,7 @@ public class BrevgenClientTests : TestBed<BrevgenAppFixture>
             },
             DocumentTitle = "test",
             AsHtml = true,
-            PdfOptions = new Model.PuppeteerPDFOptions { Format = PaperFormat.A4 },
+            PdfOptions = new Models.PuppeteerPDFOptions { Format = PaperFormat.A4 },
         },
     };
 
