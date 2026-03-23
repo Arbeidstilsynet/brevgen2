@@ -16,7 +16,7 @@ public class BrevgenClientLegacyTests : TestBed<BrevgenAppFixture>
     public BrevgenClientLegacyTests(ITestOutputHelper testOutputHelper, BrevgenAppFixture fixture)
         : base(testOutputHelper, fixture)
     {
-        _sut = DependencyInjectionExtensions.CreateBrevgeneratorClient(
+        _sut = DependencyInjection.Extensions.CreateBrevgeneratorClient(
             new HostingEnvironment { EnvironmentName = "Test" },
             () => Task.FromResult(DummyBearerTokenProvider.DummyToken),
             new BrevgeneratorConfig { AuthMode = AuthMode.BearerToken, BaseUrl = _fixture.GetBaseUri() }

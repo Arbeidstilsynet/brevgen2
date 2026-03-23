@@ -20,7 +20,7 @@ internal class BrevgeneratorClient(
     public const string ApiKeyHeader = "x-api-key";
 
     private readonly HttpClient _httpClient = httpClientFactory.CreateClient(
-        DependencyInjectionExtensions.BrevgeneratorHttpClientKey
+        DependencyInjection.Extensions.BrevgeneratorHttpClientKey
     );
     private readonly JsonSerializerOptions _jsonOptions = new()
     {

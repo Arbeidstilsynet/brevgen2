@@ -44,7 +44,7 @@ static class Program
 
         // ---------- Klient 2 direkte konstruksjon ----------
         var baseUrlClient2 = args.Length > 0 ? args[0] : null;
-        var client2 = DependencyInjectionExtensions.CreateBrevgeneratorClient(
+        var client2 = Extensions.CreateBrevgeneratorClient(
             hostEnvironment,
             tokenFunc: async () => "my-token",
             new BrevgeneratorConfig { AuthMode = AuthMode.BearerToken, BaseUrl = baseUrlClient2 }

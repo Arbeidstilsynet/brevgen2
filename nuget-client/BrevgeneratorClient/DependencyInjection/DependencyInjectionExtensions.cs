@@ -9,7 +9,7 @@ namespace Arbeidstilsynet.Brevgenerator.Client.DependencyInjection;
 /// <summary>
 /// Extensions for Dependency Injection.
 /// </summary>
-public static class DependencyInjectionExtensions
+public static class Extensions
 {
     internal const string BrevgeneratorHttpClientKey = "BrevgeneratorHttpClient";
 
