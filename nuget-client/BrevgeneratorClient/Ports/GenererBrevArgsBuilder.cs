@@ -92,7 +92,7 @@ public interface IBuildStep
 
     /// <summary>
     /// Sett avanserte parametre for konverteringen. Dette er vanligvis ikke nødvendig.
-    /// Den kan overstyre Author og DocumentTitle, men bruk heller AddMetadata for det.
+    /// Den kan overstyre Author og DocumentTitle, men bruk heller WithMetadata for det.
     /// <br/><br/>
     /// Hvis du ønsker HTML i stedet for PDF kan du sette AsHtml=true
     /// </summary>
