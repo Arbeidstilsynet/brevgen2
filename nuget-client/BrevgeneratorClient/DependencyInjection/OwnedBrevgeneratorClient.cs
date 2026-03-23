@@ -12,7 +12,7 @@ public sealed class OwnedBrevgeneratorClient : IBrevgeneratorClient, IDisposable
     private readonly ServiceProvider _serviceProvider;
     private readonly IBrevgeneratorClient _inner;
 
-    public OwnedBrevgeneratorClient(ServiceProvider serviceProvider)
+    internal OwnedBrevgeneratorClient(ServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
         _inner = serviceProvider.GetRequiredService<IBrevgeneratorClient>();
