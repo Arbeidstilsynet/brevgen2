@@ -5,6 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace Arbeidstilsynet.Brevgenerator.Client.Extensions;
 
+// replace with [JsonStringEnumMemberNameAttribute] and JsonStringEnumConverter when we drop support for .NET 8
 internal class EnumMemberJsonConverter : JsonConverterFactory
 {
     public override bool CanConvert(Type typeToConvert) => typeToConvert.IsEnum;
