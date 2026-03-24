@@ -42,8 +42,7 @@ RUN echo "deb http://security.debian.org/debian-security bookworm-security main"
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Create directory for custom fonts
-RUN mkdir -p /usr/share/fonts/truetype/custom
+# Copy custom fonts
 COPY apps/api/fonts/*.ttf /usr/share/fonts/truetype/custom/
 RUN fc-cache -fv
 
