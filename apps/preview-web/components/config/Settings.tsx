@@ -31,23 +31,45 @@ export function Settings() {
         <h3 className="text-lg font-medium mb-4">Avanserte funksjoner</h3>
 
         {getTypedEntries(settingsData).map(([key, data]) => (
-          <div key={key} className="space-y-3">
-            {/* oxlint-disable-next-line jsx_a11y/label-has-associated-control */}
-            <label className="flex items-center space-x-3">
-              <input
-                type="checkbox"
-                checked={settings.advancedFeatures[key]}
-                onChange={() => setAdvancedFeature(key, !settings.advancedFeatures[key])}
-                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-              />
-              <div>
-                <div className="font-medium">{data.name}</div>
-                <div className="text-sm text-gray-600">{data.description}</div>
-              </div>
-            </label>
-          </div>
+          <SettingsEntry
+            key={key}
+            name={data.name}
+            description={data.description}
+            enabled={settings.advancedFeatures[key]}
+            onToggle={() => setAdvancedFeature(key, !settings.advancedFeatures[key])}
+          />
         ))}
       </div>
     </>
+  );
+}
+
+function SettingsEntry({
+  name,
+  description,
+  enabled,
+  onToggle,
+}: {
+  name: string;
+  description: string;
+  enabled: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <div className="space-y-3">
+      <label className="flex items-center space-x-3 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={enabled}
+          onChange={onToggle}
+          aria-label={name}
+          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+        />
+        <div>
+          <div className="font-medium">{name}</div>
+          <div className="text-sm text-gray-600">{description}</div>
+        </div>
+      </label>
+    </div>
   );
 }
