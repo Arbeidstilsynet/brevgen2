@@ -3,8 +3,9 @@ using System.Runtime.Serialization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Arbeidstilsynet.Brevgenerator.Client;
+namespace Arbeidstilsynet.Brevgenerator.Client.Extensions;
 
+// replace with [JsonStringEnumMemberNameAttribute] and JsonStringEnumConverter when we drop support for .NET 8
 internal class EnumMemberJsonConverter : JsonConverterFactory
 {
     public override bool CanConvert(Type typeToConvert) => typeToConvert.IsEnum;
@@ -16,7 +17,7 @@ internal class EnumMemberJsonConverter : JsonConverterFactory
         return (JsonConverter)Activator.CreateInstance(converterType)!;
     }
 
-    private class EnumMemberConverter<T> : JsonConverter<T>
+    private sealed class EnumMemberConverter<T> : JsonConverter<T>
         where T : struct, Enum
     {
         private readonly Dictionary<T, string> _enumToString = new();

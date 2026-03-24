@@ -1,9 +1,20 @@
 using System.Text.Json;
-using Arbeidstilsynet.Brevgenerator.Client;
+using Arbeidstilsynet.Brevgenerator.Client.DependencyInjection;
 using Arbeidstilsynet.Brevgenerator.Client.Models;
+using Arbeidstilsynet.Brevgenerator.Client.Ports;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace BrevgeneratorClientCli;
+
+public class MyTokenProvider : ITokenProvider
+{
+    public async Task<string> GetToken()
+    {
+        // Hent token fra f.eks. Entra ID
+        return await Task.FromResult("my-token");
+    }
+}
 
 static class Program
 {
@@ -11,33 +22,35 @@ static class Program
     {
         // dotnet run "http://localhost:4000"
 
-        if (args.Length < 1)
-        {
-            Console.WriteLine("Usage: BrevgeneratorClientCli <API_URL>]");
-            return;
-        }
-
-        var apiUrl = args[0];
+        var builder = Host.CreateApplicationBuilder(
+            new HostApplicationBuilderSettings
+            {
+                Args = args,
+                EnvironmentName = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? Environments.Development,
+            }
+        );
+        var hostEnvironment = builder.Environment;
+        Console.WriteLine($"Environment: {hostEnvironment.EnvironmentName}");
 
         // ---------- Klient 1 via DI ----------
-        var serviceCollection = new ServiceCollection();
-        serviceCollection.AddSingleton(new BrevgeneratorConfig(apiUrl));
-        serviceCollection.AddSingleton<IBrevgeneratorClient>(sp => new BrevgeneratorClient(
-            sp.GetRequiredService<BrevgeneratorConfig>(),
-            BrevgeneratorClient.AuthMode.ApiKey,
-            apiKeyFactory: async () => "foo"
-        ));
-        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var services = new ServiceCollection();
+        services.AddBrevgeneratorClient<MyTokenProvider>(
+            hostEnvironment,
+            new BrevgeneratorConfig { AuthMode = AuthMode.BearerToken }
+        );
+
+        var serviceProvider = services.BuildServiceProvider();
         var client1 = serviceProvider.GetRequiredService<IBrevgeneratorClient>();
 
         // ---------- Klient 2 direkte konstruksjon ----------
-        // var client2 = new BrevgeneratorClient(
-        //     new BrevgeneratorConfig(apiUrl),
-        //     BrevgeneratorClient.AuthMode.ApiKey,
-        //     apiKeyFactory: async () => "foo"
-        // );
+        var baseUrlClient2 = args.Length > 0 ? args[0] : null;
+        using var client2 = Extensions.CreateBrevgeneratorClient(
+            hostEnvironment,
+            tokenFunc: async () => "my-token",
+            new BrevgeneratorConfig { AuthMode = AuthMode.BearerToken, BaseUrl = baseUrlClient2 }
+        );
 
-        var payload = GenererBrevArgsBuilder
+        var payload = IGenererBrevArgsBuilder
             .Create()
             .AddMarkdown(
                 "# Sample Markdown content\n## {{ exampleVariable }}",
@@ -93,21 +106,21 @@ static class Program
             .Build();
 
         Console.WriteLine($"Payload:\n{JsonSerializer.Serialize(payload)}");
-        Console.WriteLine("Sending request with client1");
-        var result1 = await client1.GenererBrev(payload);
-        Console.WriteLine($"Response:\n{result1}");
-        // Console.WriteLine("Sending request with client2");
-        // var result2 = await client2.GenererBrev(payload);
-        // Console.WriteLine($"Response:\n{result2}");
+        // Console.WriteLine("Sending request with client1");
+        // var result1 = await client1.GenererBrev(payload);
+        // Console.WriteLine($"Response:\n{result1}");
+        Console.WriteLine("Sending request with client2");
+        var result2 = await client2.GenererBrev(payload);
+        Console.WriteLine($"Response:\n{result2}");
 
-        if (payload.Options.AsHtml == true)
-        {
-            await File.WriteAllTextAsync("output.html", result1);
-        }
-        else
-        {
-            var pdfBytes = Convert.FromBase64String(result1);
-            await File.WriteAllBytesAsync("output.pdf", pdfBytes);
-        }
+        // if (payload.Options.AsHtml == true)
+        // {
+        //     await File.WriteAllTextAsync("output.html", result1);
+        // }
+        // else
+        // {
+        //     var pdfBytes = Convert.FromBase64String(result1);
+        //     await File.WriteAllBytesAsync("output.pdf", pdfBytes);
+        // }
     }
 }

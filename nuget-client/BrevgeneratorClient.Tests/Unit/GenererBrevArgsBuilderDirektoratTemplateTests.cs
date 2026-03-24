@@ -1,14 +1,15 @@
 using Arbeidstilsynet.Brevgenerator.Client.Models;
+using Arbeidstilsynet.Brevgenerator.Client.Ports;
 using Xunit;
 
 namespace Arbeidstilsynet.Brevgenerator.Client.Tests;
 
-public class GenererBrevArgsBuilderDirektoratTemplateTests
+public class IGenererBrevArgsBuilderDirektoratTemplateTests
 {
     [Fact]
     public void WithDirektoratTemplate_SetsTemplateType()
     {
-        var args = GenererBrevArgsBuilder
+        var args = IGenererBrevArgsBuilder
             .Create()
             .AddMarkdown("# Test", null)
             .WithDirektoratTemplate(Language.Bokmål, DirektoratTemplateSignatureVariant.Usignert)
@@ -37,7 +38,7 @@ public class GenererBrevArgsBuilderDirektoratTemplateTests
             Mottaker = mottaker,
         };
 
-        var args = GenererBrevArgsBuilder
+        var args = IGenererBrevArgsBuilder
             .Create()
             .AddMarkdown("# Test", new Dictionary<string, object?> { ["key"] = "value" })
             .WithDirektoratTemplate(
@@ -72,7 +73,7 @@ public class GenererBrevArgsBuilderDirektoratTemplateTests
     [Fact]
     public void WithDirektoratTemplate_WithMinimalFields_BuildsCorrectly()
     {
-        var args = GenererBrevArgsBuilder
+        var args = IGenererBrevArgsBuilder
             .Create()
             .AddMarkdown("# Minimal", null)
             .WithDirektoratTemplate(Language.Bokmål, DirektoratTemplateSignatureVariant.Usignert)
@@ -97,7 +98,7 @@ public class GenererBrevArgsBuilderDirektoratTemplateTests
 
         foreach (var variant in variants)
         {
-            var args = GenererBrevArgsBuilder
+            var args = IGenererBrevArgsBuilder
                 .Create()
                 .AddMarkdown("# Test", null)
                 .WithDirektoratTemplate(Language.Bokmål, variant)
@@ -113,7 +114,7 @@ public class GenererBrevArgsBuilderDirektoratTemplateTests
     {
         var signatureLines = new List<string> { "Leder Ledersen", "Avdelingsdirektør" };
 
-        var args = GenererBrevArgsBuilder
+        var args = IGenererBrevArgsBuilder
             .Create()
             .AddMarkdown("# Test", null)
             .WithDirektoratTemplate(
@@ -130,7 +131,7 @@ public class GenererBrevArgsBuilderDirektoratTemplateTests
     [Fact]
     public void WithDirektoratTemplate_MissingUnntattOffentlighetHjemmel_Throws()
     {
-        var builder = GenererBrevArgsBuilder
+        var builder = IGenererBrevArgsBuilder
             .Create()
             .AddMarkdown("# Test", null)
             .WithDirektoratTemplate(Language.Bokmål, DirektoratTemplateSignatureVariant.Usignert)

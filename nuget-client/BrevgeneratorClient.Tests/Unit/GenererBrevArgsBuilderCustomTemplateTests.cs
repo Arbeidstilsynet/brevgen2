@@ -1,14 +1,15 @@
 using Arbeidstilsynet.Brevgenerator.Client.Models;
+using Arbeidstilsynet.Brevgenerator.Client.Ports;
 using Xunit;
 
 namespace Arbeidstilsynet.Brevgenerator.Client.Tests;
 
-public class GenererBrevArgsBuilderCustomTemplateTests
+public class IGenererBrevArgsBuilderCustomTemplateTests
 {
     [Fact]
     public void WithCustomTemplate_SetsTemplateType()
     {
-        var args = GenererBrevArgsBuilder.Create().AddMarkdown("# Test", null).WithCustomTemplate().Build();
+        var args = IGenererBrevArgsBuilder.Create().AddMarkdown("# Test", null).WithCustomTemplate().Build();
 
         Assert.Equal(TemplateType.Custom, args.Options.Dynamic.Template);
     }
@@ -16,7 +17,7 @@ public class GenererBrevArgsBuilderCustomTemplateTests
     [Fact]
     public void WithCustomTemplate_HasNoTemplateArgs()
     {
-        var args = GenererBrevArgsBuilder.Create().AddMarkdown("# Test", null).WithCustomTemplate().Build();
+        var args = IGenererBrevArgsBuilder.Create().AddMarkdown("# Test", null).WithCustomTemplate().Build();
 
         Assert.Null(args.Options.Dynamic.DefaultTemplateArgs);
         Assert.Null(args.Options.Dynamic.DirektoratTemplateArgs);
@@ -25,7 +26,7 @@ public class GenererBrevArgsBuilderCustomTemplateTests
     [Fact]
     public void WithCustomTemplate_WithMetadata_BuildsCorrectly()
     {
-        var args = GenererBrevArgsBuilder
+        var args = IGenererBrevArgsBuilder
             .Create()
             .AddMarkdown("# Custom content", new Dictionary<string, object?> { ["var"] = 123 })
             .WithCustomTemplate()
@@ -43,7 +44,7 @@ public class GenererBrevArgsBuilderCustomTemplateTests
     {
         var pdfConfig = new PdfConfig { AsHtml = true, Css = ".custom { color: red; }" };
 
-        var args = GenererBrevArgsBuilder
+        var args = IGenererBrevArgsBuilder
             .Create()
             .AddMarkdown("# Test", null)
             .WithCustomTemplate()

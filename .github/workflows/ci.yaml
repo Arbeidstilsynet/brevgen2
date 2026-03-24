@@ -103,7 +103,7 @@ jobs:
         if: needs.changes.outputs.brevgen2 == 'true'
         name: "Circular dependencies check"
 
-      - run: pnpm test --filter=!nuget-client --filter=!nuget-client-tests
+      - run: pnpm test --filter=!nuget-client
         if: needs.changes.outputs.brevgen2 == 'true'
         name: "Test"
         id: test
@@ -122,7 +122,7 @@ jobs:
           files: "**/junit.xml"
           check_name: "Brevgen2 Unit Test Results"
 
-      - run: pnpm build --filter=!nuget-client --filter=!nuget-client-tests
+      - run: pnpm build --filter=!nuget-client
         if: needs.changes.outputs.brevgen2 == 'true'
         name: "Build"
 

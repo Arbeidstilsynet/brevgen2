@@ -1,14 +1,15 @@
 using Arbeidstilsynet.Brevgenerator.Client.Models;
+using Arbeidstilsynet.Brevgenerator.Client.Ports;
 using Xunit;
 
 namespace Arbeidstilsynet.Brevgenerator.Client.Tests;
 
-public class GenererBrevArgsBuilderDefaultTemplateTests
+public class IGenererBrevArgsBuilderDefaultTemplateTests
 {
     [Fact]
     public void WithDefaultTemplate_SetsTemplateType()
     {
-        var args = GenererBrevArgsBuilder
+        var args = IGenererBrevArgsBuilder
             .Create()
             .AddMarkdown("# Test", null)
             .WithDefaultTemplate(Language.Bokmål, DefaultTemplateSignatureVariant.ElektroniskGodkjent)
@@ -40,7 +41,7 @@ public class GenererBrevArgsBuilderDefaultTemplateTests
             UnntattOffentlighetHjemmel = "jf. offl. § 14",
         };
 
-        var args = GenererBrevArgsBuilder
+        var args = IGenererBrevArgsBuilder
             .Create()
             .AddMarkdown("# Test", new Dictionary<string, object?> { ["key"] = "value" })
             .WithDefaultTemplate(Language.Nynorsk, DefaultTemplateSignatureVariant.AutomatiskBehandlet)
@@ -78,7 +79,7 @@ public class GenererBrevArgsBuilderDefaultTemplateTests
 
         foreach (var variant in variants)
         {
-            var args = GenererBrevArgsBuilder
+            var args = IGenererBrevArgsBuilder
                 .Create()
                 .AddMarkdown("# Test", null)
                 .WithDefaultTemplate(Language.Bokmål, variant)
@@ -96,7 +97,7 @@ public class GenererBrevArgsBuilderDefaultTemplateTests
 
         foreach (var language in languages)
         {
-            var args = GenererBrevArgsBuilder
+            var args = IGenererBrevArgsBuilder
                 .Create()
                 .AddMarkdown("# Test", null)
                 .WithDefaultTemplate(language, DefaultTemplateSignatureVariant.Usignert)
@@ -110,7 +111,7 @@ public class GenererBrevArgsBuilderDefaultTemplateTests
     [Fact]
     public void WithDefaultTemplate_MissingUnntattOffentlighetHjemmel_Throws()
     {
-        var builder = GenererBrevArgsBuilder
+        var builder = IGenererBrevArgsBuilder
             .Create()
             .AddMarkdown("# Test", null)
             .WithDefaultTemplate(Language.Bokmål, DefaultTemplateSignatureVariant.Usignert)

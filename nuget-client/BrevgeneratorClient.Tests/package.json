@@ -1,8 +1,0 @@
-{
-  "name": "nuget-client-tests",
-  "version": "0.0.0",
-  "private": true,
-  "scripts": {
-    "test": "dotnet test --no-restore"
-  }
-}

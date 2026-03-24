@@ -1,5 +1,12 @@
 # Versjonslogg
 
+## 5.0.0
+
+- Oppdatert pakkestruktur for å få en bedre forståelse om hva som er `internal` og hva som burde være `public`
+- Lagt til støtte for å bruke pakken via DI-extension `ServiceCollection.AddBrevgeneratorClient()`
+- DI må nå gjøres med `ServiceProvider.GetRequiredService<IBrevgeneratorClient>()`
+- For å opprette klient uten eksisterende DI må den nye hjelpemetoden `Arbeidstilsynet.Brevgenerator.Client.DependencyInjection.Extensions.CreateBrevgeneratorClient()` brukes i stedet for direkte konstruktør
+
 ## 4.0.0
 
 - Publiserer nå til `nuget.org` i stedet for Azure DevOps

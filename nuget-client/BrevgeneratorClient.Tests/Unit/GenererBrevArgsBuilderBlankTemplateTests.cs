@@ -1,14 +1,15 @@
 using Arbeidstilsynet.Brevgenerator.Client.Models;
+using Arbeidstilsynet.Brevgenerator.Client.Ports;
 using Xunit;
 
 namespace Arbeidstilsynet.Brevgenerator.Client.Tests;
 
-public class GenererBrevArgsBuilderBlankTemplateTests
+public class IGenererBrevArgsBuilderBlankTemplateTests
 {
     [Fact]
     public void WithBlankTemplate_SetsTemplateType()
     {
-        var args = GenererBrevArgsBuilder.Create().AddMarkdown("# Test", null).WithBlankTemplate().Build();
+        var args = IGenererBrevArgsBuilder.Create().AddMarkdown("# Test", null).WithBlankTemplate().Build();
 
         Assert.Equal(TemplateType.Blank, args.Options.Dynamic.Template);
     }
@@ -16,7 +17,7 @@ public class GenererBrevArgsBuilderBlankTemplateTests
     [Fact]
     public void WithBlankTemplate_HasNoTemplateArgs()
     {
-        var args = GenererBrevArgsBuilder.Create().AddMarkdown("# Test", null).WithBlankTemplate().Build();
+        var args = IGenererBrevArgsBuilder.Create().AddMarkdown("# Test", null).WithBlankTemplate().Build();
 
         Assert.Null(args.Options.Dynamic.DefaultTemplateArgs);
         Assert.Null(args.Options.Dynamic.DirektoratTemplateArgs);
@@ -25,7 +26,7 @@ public class GenererBrevArgsBuilderBlankTemplateTests
     [Fact]
     public void WithBlankTemplate_WithMetadata_BuildsCorrectly()
     {
-        var args = GenererBrevArgsBuilder
+        var args = IGenererBrevArgsBuilder
             .Create()
             .AddMarkdown("# Blank page", null)
             .WithBlankTemplate()
