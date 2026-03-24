@@ -85,7 +85,7 @@ async function getBrowserInstance(): Promise<Browser> {
   // (Handles waits during recycle transparently.)
   while (true) {
     // If recycle in progress, wait.
-    if (browserClosePromise) {
+    if (browserClosePromise !== null) {
       await browserClosePromise;
     }
 
@@ -105,7 +105,7 @@ async function getBrowserInstance(): Promise<Browser> {
       }
 
       // Yield briefly to avoid tight loop.
-      if (!browserClosePromise) {
+      if (browserClosePromise === null) {
         await new Promise((r) => setTimeout(r, 10));
       }
       continue;
