@@ -135,7 +135,7 @@ export function parsePossiblySerializedJson(raw: string): unknown {
       return parsed;
     } catch {
       if (text.includes('\\"')) {
-        text = text.replace(/\\"/g, '"');
+        text = text.replaceAll('\\"', '"');
         continue;
       }
       break;
