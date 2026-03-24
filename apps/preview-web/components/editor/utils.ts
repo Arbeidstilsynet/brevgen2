@@ -2,9 +2,9 @@ import { useToast } from "../toast/provider";
 
 export async function saveLocal(md: string) {
   // use native save window in chromium
-  if (window.showSaveFilePicker) {
+  if (globalThis.showSaveFilePicker) {
     try {
-      const newHandle = await window.showSaveFilePicker({
+      const newHandle = await globalThis.showSaveFilePicker({
         types: [
           {
             description: "Markdown Files",
@@ -177,7 +177,7 @@ export async function readTextFromClipboard(promptMessage: string): Promise<stri
   try {
     return await navigator.clipboard.readText();
   } catch {
-    return window.prompt(promptMessage, "") ?? null;
+    return globalThis.prompt(promptMessage, "") ?? null;
   }
 }
 

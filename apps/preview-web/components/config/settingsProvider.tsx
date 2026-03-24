@@ -23,7 +23,7 @@ const DEFAULT_SETTINGS: AppSettings = {
 const SETTINGS_KEY = "brevgenerator-settings";
 
 function getSettings(): AppSettings {
-  if (typeof window === "undefined") {
+  if (globalThis.window === undefined) {
     return DEFAULT_SETTINGS;
   }
 
@@ -49,7 +49,7 @@ function getSettings(): AppSettings {
 }
 
 function updateSettings(newSettings: AppSettings): void {
-  if (typeof window === "undefined") {
+  if (globalThis === undefined) {
     return;
   }
 
@@ -57,7 +57,7 @@ function updateSettings(newSettings: AppSettings): void {
 }
 
 function resetSettings(): void {
-  if (typeof window === "undefined") {
+  if (globalThis.window === undefined) {
     return;
   }
 
