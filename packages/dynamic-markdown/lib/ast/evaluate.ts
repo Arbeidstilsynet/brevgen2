@@ -143,7 +143,7 @@ function processOperand(
     return [true, variables[operand]];
   }
 
-  if (!isNaN(Number(operand))) {
+  if (!Number.isNaN(Number(operand))) {
     return [true, Number(operand)];
   }
 
