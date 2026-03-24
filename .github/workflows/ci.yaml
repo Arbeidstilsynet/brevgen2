@@ -135,7 +135,7 @@ jobs:
       - uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5
         with:
           cache: true
-      - uses: j178/prek-action@0bb87d7f00b0c99306c8bcb8b8beba1eb581c037 # v1
+      - uses: j178/prek-action@79f765515bd648eb4d6bb1b17277b7cb22cb6468 # v2
 
   testcontainer:
     needs: changes
