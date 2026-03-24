@@ -82,7 +82,7 @@ function isTagValid(tag: string): string {
 }
 
 function generatePermanentUrlWorkspace(key: string) {
-  const baseUrl = window.location.origin;
+  const baseUrl = globalThis.location.origin;
   const { fileName } = extractTags(key);
   const url = new URL(baseUrl);
   url.searchParams.set(URL_SEARCH_PARAM_WORKSPACE, encodeURIComponent(fileName));

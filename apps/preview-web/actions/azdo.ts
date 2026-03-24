@@ -10,7 +10,7 @@ async function azdoFetch(url: string) {
   await requireSession();
   return await fetch(url, {
     headers: {
-      Authorization: `Basic ${Buffer.from(`:${token}`).toString("base64")}`,
+      Authorization: `Basic ${Buffer.from(":" + token).toString("base64")}`,
     },
     cache: "no-store",
   });

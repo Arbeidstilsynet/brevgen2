@@ -217,9 +217,6 @@ importers:
       '@types/sanitize-html':
         specifier: 2.16.1
         version: 2.16.1
-      '@types/wicg-file-system-access':
-        specifier: 2023.10.7
-        version: 2023.10.7
       '@typescript/native-preview':
         specifier: 7.0.0-dev.20260307.1
         version: 7.0.0-dev.20260307.1
@@ -1701,9 +1698,6 @@ packages:
 
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
-
-  '@types/wicg-file-system-access@2023.10.7':
-    resolution: {integrity: sha512-g49ijasEJvCd7ifmAY2D0wdEtt1xRjBbA33PJTiv8mKBr7DoMsPeISoJ8oQOTopSRi+FBWPpPW5ouDj2QPKtGA==}
 
   '@types/yauzl@2.10.3':
     resolution: {integrity: sha512-oJoftv0LSuaDZE3Le4DbKX+KS9G36NzOeSap90UIK0yMA/NhKJhqlSGtNDORNRaIbQfzjXDrQa0ytJ6mNRGz/Q==}
@@ -5160,8 +5154,6 @@ snapshots:
 
   '@types/trusted-types@2.0.7':
     optional: true
-
-  '@types/wicg-file-system-access@2023.10.7': {}
 
   '@types/yauzl@2.10.3':
     dependencies:

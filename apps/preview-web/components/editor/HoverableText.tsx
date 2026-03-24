@@ -5,16 +5,15 @@ type Props = Readonly<{
 
 export function HoverableText({ children, onHover }: Props) {
   return (
-    <span
-      onMouseEnter={() => {
-        onHover(true);
-      }}
-      onMouseLeave={() => {
-        onHover(false);
-      }}
-      className="underline decoration-dotted cursor-pointer hover:underline hover:decoration-solid"
+    <button
+      type="button"
+      onMouseEnter={() => onHover(true)}
+      onMouseLeave={() => onHover(false)}
+      onFocus={() => onHover(true)}
+      onBlur={() => onHover(false)}
+      className="inline underline decoration-dotted cursor-help hover:decoration-solid focus:outline-none focus:decoration-solid bg-transparent border-none p-0 font-inherit text-inherit"
     >
       {children}
-    </span>
+    </button>
   );
 }

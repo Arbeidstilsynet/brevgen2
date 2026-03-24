@@ -27,7 +27,7 @@ export function isAzDoFileAllowed({
 }
 
 function generatePermanentUrlGit(repoId: string, branch: string, key: string) {
-  const baseUrl = window.location.origin;
+  const baseUrl = globalThis.location.origin;
   const url = new URL(baseUrl);
   url.searchParams.set(GIT_PARAMS.git, encodeURIComponent(repoId));
   url.searchParams.set(GIT_PARAMS.branch, encodeURIComponent(branch));

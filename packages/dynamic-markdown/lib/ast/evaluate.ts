@@ -23,7 +23,7 @@ export function evaluateAST(ast: ASTNode[], variables: Record<string, VariableVa
       result += node.value;
     } else if (node.type === "if") {
       if (evaluateCondition(node.value, variables, node.line)) {
-        result += evaluateAST(node.children!, variables);
+        result += evaluateAST(node.children, variables);
       }
     } else if (node.type === "var") {
       result += processVariable(node.value, variables, node.line);
@@ -143,7 +143,7 @@ function processOperand(
     return [true, variables[operand]];
   }
 
-  if (!isNaN(Number(operand))) {
+  if (!Number.isNaN(Number(operand))) {
     return [true, Number(operand)];
   }
 

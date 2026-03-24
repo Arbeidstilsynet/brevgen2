@@ -14,13 +14,17 @@ export const getMarginObject = (margin: string): PDFOptions["margin"] => {
     throw new Error(`invalid margin input "${margin}": can have max 4 values.`);
   }
 
-  return left
-    ? { top, right, bottom, left }
-    : bottom
-      ? { top, right, bottom, left: right }
-      : right
-        ? { top, right, bottom: top, left: right }
-        : top
-          ? { top, right: top, bottom: top, left: top }
-          : undefined;
+  if (left) {
+    return { top, right, bottom, left };
+  }
+  if (bottom) {
+    return { top, right, bottom, left: right };
+  }
+  if (right) {
+    return { top, right, bottom: top, left: right };
+  }
+  if (top) {
+    return { top, right: top, bottom: top, left: top };
+  }
+  return undefined;
 };

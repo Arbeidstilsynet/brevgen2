@@ -1,5 +1,9 @@
 # Versjonslogg
 
+## 5.0.1
+
+- Fix access level of internal class' constructor
+
 ## 5.0.0
 
 - Oppdatert pakkestruktur for å få en bedre forståelse om hva som er `internal` og hva som burde være `public`

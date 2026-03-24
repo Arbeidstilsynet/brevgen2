@@ -40,7 +40,10 @@ function extractVariablesFromASTNodes(variables: Set<string>, nodes: ASTNode[]) 
 function extractVariablesFromCondition(variables: Set<string>, condition: string) {
   const conditionParts = condition.split(/\s+/);
   for (const part of conditionParts) {
-    if (!["if", "==", "!=", "true", "false"].includes(part.toLowerCase()) && isNaN(Number(part))) {
+    if (
+      !["if", "==", "!=", "true", "false"].includes(part.toLowerCase()) &&
+      Number.isNaN(Number(part))
+    ) {
       if (isNegatedVariable(part)) {
         return variables.add(part.slice(1));
       }

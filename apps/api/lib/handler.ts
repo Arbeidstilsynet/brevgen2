@@ -49,7 +49,7 @@ export function formatZodFastifySchemaValidationError(
   validation: ZodFastifySchemaValidationError[],
 ): ValidationErrorResponse {
   const details: ValidationErrorDetail[] = validation.map((error) => ({
-    path: error.instancePath.replace(/^\//, "").replace(/\//g, ".") || "body",
+    path: error.instancePath.replace(/^\//, "").replaceAll("/", ".") || "body",
     message: error.message!,
     code: error.keyword,
   }));

@@ -1,7 +1,3 @@
-# For available Chromium versions in the distro, see https://repology.org/project/chromium/versions
-# Chromium versions changes should be matched with Puppeteer version from https://pptr.dev/supported-browsers
-ARG CHROMIUM_VERSION="146.*"
-
 FROM node:24-slim@sha256:d8e448a56fc63242f70026718378bd4b00f8c82e78d20eefb199224a4d8e33d8 AS base
 FROM base AS builder
 
@@ -23,7 +19,9 @@ RUN pnpm --filter api build
 
 
 FROM base AS runner
-ARG CHROMIUM_VERSION
+# For available Chromium versions in the distro, see https://repology.org/project/chromium/versions
+# Chromium versions changes should be matched with Puppeteer version from https://pptr.dev/supported-browsers
+ARG CHROMIUM_VERSION="146.*"
 
 ### Versions managed by Renovate
 ### https://dev.azure.com/Atil-utvikling/Produkter%20og%20tjenester/_git/infra-renovate?anchor=custom-managers
@@ -42,8 +40,7 @@ RUN echo "deb http://security.debian.org/debian-security bookworm-security main"
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Create directory for custom fonts
-RUN mkdir -p /usr/share/fonts/truetype/custom
+# Copy custom fonts
 COPY apps/api/fonts/*.ttf /usr/share/fonts/truetype/custom/
 RUN fc-cache -fv
 

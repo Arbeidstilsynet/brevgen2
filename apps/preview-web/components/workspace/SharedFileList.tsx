@@ -16,16 +16,16 @@ export function SharedFileList() {
         <ul className="space-y-3">
           {files.map((file) => (
             <Fragment key={file.Key}>
-              {!file.Key ? (
-                <li className="border border-gray-200 p-3 text-red-500 rounded-sm hover:shadow-md">
-                  Error: File key is empty
-                </li>
-              ) : (
+              {file.Key ? (
                 <SharedFileListItem
                   fileKey={file.Key}
                   allFileKeys={files.map((f) => f.Key)}
                   lastModified={file.LastModified}
                 />
+              ) : (
+                <li className="border border-gray-200 p-3 text-red-500 rounded-sm hover:shadow-md">
+                  Error: File key is empty
+                </li>
               )}
             </Fragment>
           ))}

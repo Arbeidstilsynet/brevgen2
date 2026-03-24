@@ -1,5 +1,5 @@
 import type { GenerateDocumentRequest } from "@repo/shared-types";
-import { Readable } from "stream";
+import { Readable } from "node:stream";
 import { StartedDockerComposeEnvironment } from "testcontainers";
 
 export interface TestEnvironment {

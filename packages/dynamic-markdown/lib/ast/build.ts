@@ -1,12 +1,20 @@
 import { DynamicMarkdownParseError } from "./error";
 import { Token, tokenize } from "./tokenize";
 
-export type ASTNode = {
-  type: "md" | "if" | "var";
+export type ASTIfNode = {
+  type: "if";
   value: string;
-  children?: ASTNode[];
+  children: ASTNode[];
   line: number;
 };
+
+export type ASTNode =
+  | {
+      type: "md" | "var";
+      value: string;
+      line: number;
+    }
+  | ASTIfNode;
 
 export function buildAST(tokens: Token[]): ASTNode[] {
   const ast: ASTNode[] = [];
@@ -28,7 +36,7 @@ export function buildAST(tokens: Token[]): ASTNode[] {
   return ast;
 }
 
-export function parseLogicToken(token: Token): ASTNode {
+export function parseLogicToken(token: Token): ASTIfNode {
   const [condition, output] = splitAndValidateLogicToken(token);
   const cleanedCondition = cleanCondition(condition);
   const children = tokenizeAndAdjustLines(output, token.line);
