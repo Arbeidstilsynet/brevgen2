@@ -17,7 +17,7 @@ internal class EnumMemberJsonConverter : JsonConverterFactory
         return (JsonConverter)Activator.CreateInstance(converterType)!;
     }
 
-    private sealed class EnumMemberConverter<T> : JsonConverter<T>
+    internal sealed class EnumMemberConverter<T> : JsonConverter<T>
         where T : struct, Enum
     {
         private readonly Dictionary<T, string> _enumToString = new();
