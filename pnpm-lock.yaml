@@ -77,7 +77,7 @@ importers:
         specifier: 17.3.1
         version: 17.3.1
       fastify:
-        specifier: '>=5.8.3'
+        specifier: 5.8.4
         version: 5.8.4
       fastify-type-provider-zod:
         specifier: 6.1.0
