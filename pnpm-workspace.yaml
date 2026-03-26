@@ -29,8 +29,7 @@ minimumReleaseAgeExclude:
   - minimatch
   - "@next/*"
   - fastify@5.8.4
-  - picomatch@2.3.2
-  - picomatch@4.0.4
+  - picomatch
 
 onlyBuiltDependencies:
   - puppeteer
