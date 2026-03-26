@@ -48,6 +48,5 @@ overrides:
 trustPolicy: no-downgrade
 
 trustPolicyExclude:
-  - chokidar@4.0.3
   - jose@4.15.9
   - semver@6.3.1
