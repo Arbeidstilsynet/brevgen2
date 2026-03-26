@@ -2,6 +2,7 @@ import type { PDFOptions } from "puppeteer-core";
 
 export const defaultConfig: Config = {
   css: "",
+  merge_css: false,
   document_title: "",
   page_media_type: "screen",
   pdf_options: {
@@ -46,6 +47,13 @@ interface BasicConfig {
    * Custom css styles.
    */
   css: string;
+
+  /**
+   * Whether to merge the provided CSS with the chosen template's CSS. If false, only the provided CSS will be used.
+   * This is useful if you only want to partially extend the template styles without having to provide a complete set of styles.
+   * @default false
+   */
+  merge_css: boolean;
 
   /**
    * Name of the HTML Document.
