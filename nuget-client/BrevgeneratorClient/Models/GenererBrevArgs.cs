@@ -39,7 +39,7 @@ public class GenererBrevArgs
 public class GeneratePdfOptions : PdfConfig
 {
     /// <summary>
-    /// Konfigurasjon og standard flettefelter for dokumentmaler, typisk TemplateType.Default
+    /// Konfigurasjon og standard flettefelter for dokumentmaler (templates).
     /// </summary>
     [JsonPropertyName("dynamic")]
     public DynamicMdPdfConfig Dynamic { get; set; } = new();
@@ -141,10 +141,18 @@ public class PdfConfig : BasicConfig
 public class BasicConfig
 {
     /// <summary>
-    /// Custom css styles.
+    /// Custom CSS. This replaces the default CSS of the chosen template unless `MergeCss` is true.
     /// </summary>
     [JsonPropertyName("css")]
     public string? Css { get; set; }
+
+    /// <summary>
+    /// Whether to merge the provided CSS with the chosen template's CSS. If false, only the provided CSS will be used.
+    /// This is useful if you only want to partially extend the template styles without having to provide a complete set of styles.
+    /// Default: false
+    /// </summary>
+    [JsonPropertyName("merge_css")]
+    public bool? MergeCss { get; set; }
 
     /// <summary>
     /// Name of the HTML Document.

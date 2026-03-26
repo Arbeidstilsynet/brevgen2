@@ -1,7 +1,7 @@
 import { GenerateDocumentRequest } from "@repo/shared-types";
 import { writeFileSync } from "node:fs";
 import { readPdfText } from "pdf-text-reader";
-import { afterEach, beforeAll, expect, test } from "vitest";
+import { beforeAll, describe, expect, test } from "vitest";
 import { paths } from "../paths";
 import {
   defaultTemplateAllOptionalsPayload,
@@ -17,12 +17,6 @@ export function genererBrevTests(getTestEnv: () => TestEnvironment) {
 
   beforeAll(() => {
     testEnv = getTestEnv();
-  });
-
-  afterEach(async () => {
-    // WORKAROUND for instability in testcontainers
-    // wait so that the container will recycle the browser
-    await new Promise((resolve) => setTimeout(resolve, 1000));
   });
 
   test("Health endpoint returns 200", async () => {
@@ -308,4 +302,69 @@ export function genererBrevTests(getTestEnv: () => TestEnvironment) {
       writeFileSync(paths.temp.direktoratMinimal, buffer);
     },
   );
+
+  describe("Advanced options", () => {
+    test(
+      "Setting CSS overrides template CSS",
+      {
+        timeout: 10_000,
+      },
+      async () => {
+        const payload: GenerateDocumentRequest = {
+          md: "# Foo\n\n## Bar\n\nThis is a HTML document",
+          options: {
+            css: "h1 { color: red; }",
+            as_html: true, // return HTML for easier verification
+            dynamic: { template: "blank" },
+          },
+        };
+
+        const response = await fetcher(testEnv.genererBrevUrl, payload);
+        if (!response.ok) {
+          console.error(await response.text());
+        }
+        expect(response.status).toBe(200);
+
+        const htmlContent = await response.text(); // For HTML output, we expect plain text, not base64 pdf
+
+        expect(htmlContent).toContain("This is a HTML document");
+        expect(htmlContent).toContain("h1 { color: red; }");
+        expect(htmlContent).not.toContain(`p {
+  break-inside: avoid;
+}`);
+      },
+    );
+
+    test(
+      "Setting merged CSS extends template CSS",
+      {
+        timeout: 10_000,
+      },
+      async () => {
+        const payload: GenerateDocumentRequest = {
+          md: "# Foo\n\n## Bar\n\nThis is a HTML document",
+          options: {
+            css: "h1 { color: red; }",
+            merge_css: true,
+            as_html: true, // return HTML for easier verification
+            dynamic: { template: "blank" },
+          },
+        };
+
+        const response = await fetcher(testEnv.genererBrevUrl, payload);
+        if (!response.ok) {
+          console.error(await response.text());
+        }
+        expect(response.status).toBe(200);
+
+        const htmlContent = await response.text(); // For HTML output, we expect plain text, not base64 pdf
+
+        expect(htmlContent).toContain("This is a HTML document");
+        expect(htmlContent).toContain("h1 { color: red; }");
+        expect(htmlContent).toContain(`p {
+  break-inside: avoid;
+}`);
+      },
+    );
+  });
 }

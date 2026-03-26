@@ -99,6 +99,8 @@ static class Program
             .WithConversionOptions(
                 new()
                 {
+                    // Css = "body { color: red; }",
+                    // MergeCss = true,
                     AsHtml = true,
                     PdfOptions = new() { DisplayHeaderFooter = true },
                 }

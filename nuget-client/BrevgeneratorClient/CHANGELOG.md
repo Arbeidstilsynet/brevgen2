@@ -1,5 +1,9 @@
 # Versjonslogg
 
+## 5.1.0
+
+- Added `BasicConfig.MergeCss: bool`, which can be set in `WithConversionOptions` to append custom CSS to the template's default CSS instead of replacing it entirely
+
 ## 5.0.1
 
 - Fix access level of internal class' constructor

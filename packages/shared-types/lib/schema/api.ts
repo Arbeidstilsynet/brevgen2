@@ -1,9 +1,9 @@
 import { z } from "zod";
 import { configSchema } from "./api-core";
 import { defaultTemplateArgsSchema } from "./default-template";
+import { direktoratTemplateArgsSchema } from "./direktorat-template";
 import { documentTemplateOptionSchema } from "./document-templates";
 import { mdVariablesSchema } from "./dynamic-markdown";
-import { direktoratTemplateArgsSchema } from "./direktorat-template";
 
 export const dynamicMdPdfConfigSchema = z
   .object({
@@ -29,11 +29,15 @@ export const dynamicMdPdfConfigSchema = z
 export type DynamicMdPdfConfig = z.infer<typeof dynamicMdPdfConfigSchema>;
 
 // Add the dynamic property
-export const generateDocumentOptionsSchema = configSchema.and(
-  z.object({
-    dynamic: dynamicMdPdfConfigSchema,
-  }),
-);
+export const generateDocumentOptionsSchema = configSchema
+  .and(
+    z.object({
+      dynamic: dynamicMdPdfConfigSchema,
+    }),
+  )
+  .refine((data) => !(data.merge_css && !data.css), {
+    message: "css must be provided when merge_css is true",
+  });
 export type GenerateDocumentRequestOptions = z.infer<typeof generateDocumentOptionsSchema>;
 
 export const generateDocumentRequestSchema = z.object({

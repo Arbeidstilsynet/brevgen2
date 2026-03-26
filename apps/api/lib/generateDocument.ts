@@ -63,6 +63,9 @@ function mergeConfigs(
       ...userConfig.pdf_options,
     };
   }
+  if (userConfig.merge_css && userConfig.css) {
+    mergedConfig.css = `${defaultConfig.css ?? ""}\n${userConfig.css}`;
+  }
   return mergedConfig;
 }
 

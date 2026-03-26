@@ -3,6 +3,7 @@ import { pdfOptionsSchema } from "./pdf-options";
 
 export const basicConfigSchema = z.object({
   css: z.string(),
+  merge_css: z.boolean(),
   document_title: z.string(),
   page_media_type: z.enum(["screen", "print"]),
   pdf_options: pdfOptionsSchema,
