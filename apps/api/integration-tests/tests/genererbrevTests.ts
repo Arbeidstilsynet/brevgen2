@@ -1,7 +1,7 @@
 import { GenerateDocumentRequest } from "@repo/shared-types";
 import { writeFileSync } from "node:fs";
 import { readPdfText } from "pdf-text-reader";
-import { afterEach, beforeAll, describe, expect, test } from "vitest";
+import { beforeAll, describe, expect, test } from "vitest";
 import { paths } from "../paths";
 import {
   defaultTemplateAllOptionalsPayload,
@@ -17,12 +17,6 @@ export function genererBrevTests(getTestEnv: () => TestEnvironment) {
 
   beforeAll(() => {
     testEnv = getTestEnv();
-  });
-
-  afterEach(async () => {
-    // WORKAROUND for instability in testcontainers
-    // wait so that the container will recycle the browser
-    await new Promise((resolve) => setTimeout(resolve, 1000));
   });
 
   test("Health endpoint returns 200", async () => {
