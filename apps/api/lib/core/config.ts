@@ -44,7 +44,7 @@ export interface HtmlConfig extends BasicConfig {
 
 interface BasicConfig {
   /**
-   * Custom css styles.
+   * Custom CSS. This replaces the default CSS of the chosen template unless `merge_css` is true.
    */
   css: string;
 

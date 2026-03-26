@@ -141,7 +141,7 @@ public class PdfConfig : BasicConfig
 public class BasicConfig
 {
     /// <summary>
-    /// Custom css styles.
+    /// Custom CSS. This replaces the default CSS of the chosen template unless `MergeCss` is true.
     /// </summary>
     [JsonPropertyName("css")]
     public string? Css { get; set; }
