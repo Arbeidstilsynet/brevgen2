@@ -30,7 +30,7 @@
     "oxlint": "1.56.0",
     "oxlint-tsgolint": "0.17.3",
     "turbo": "2.8.20",
-    "typescript": "5.9.3"
+    "typescript": "6.0.2"
   },
   "engines": {
     "node": ">=24"
