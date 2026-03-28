@@ -62,7 +62,7 @@ importers:
         version: 10.0.0
       '@fastify/otel':
         specifier: 0.17.1
-        version: 0.17.1(@opentelemetry/api@1.9.0)
+        version: 0.17.1(@opentelemetry/api@1.9.1)
       '@fastify/swagger':
         specifier: 9.7.0
         version: 9.7.0
@@ -70,8 +70,8 @@ importers:
         specifier: 5.2.5
         version: 5.2.5
       '@opentelemetry/api':
-        specifier: 1.9.0
-        version: 1.9.0
+        specifier: 1.9.1
+        version: 1.9.1
       '@repo/shared-types':
         specifier: workspace:^
         version: link:../../packages/shared-types
@@ -150,7 +150,7 @@ importers:
         version: 7.0.0(vite@8.0.2(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.3))
       vitest:
         specifier: 4.1.1
-        version: 4.1.1(@opentelemetry/api@1.9.0)(@types/node@24.12.0)(vite@8.0.2(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.3))
+        version: 4.1.1(@opentelemetry/api@1.9.1)(@types/node@24.12.0)(vite@8.0.2(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.3))
 
   apps/preview-web:
     dependencies:
@@ -186,10 +186,10 @@ importers:
         version: 0.55.1
       next:
         specifier: 16.2.1
-        version: 16.2.1(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 16.2.1(@opentelemetry/api@1.9.1)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       next-auth:
         specifier: 4.24.13
-        version: 4.24.13(next@16.2.1(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 4.24.13(next@16.2.1(@opentelemetry/api@1.9.1)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react:
         specifier: 19.2.4
         version: 19.2.4
@@ -232,7 +232,7 @@ importers:
         version: 6.0.2
       vitest:
         specifier: 4.1.1
-        version: 4.1.1(@opentelemetry/api@1.9.0)(@types/node@24.12.0)(vite@8.0.2(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.3))
+        version: 4.1.1(@opentelemetry/api@1.9.1)(@types/node@24.12.0)(vite@8.0.2(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.3))
 
   nuget-client: {}
 
@@ -264,13 +264,13 @@ importers:
         version: 7.0.0-dev.20260325.1
       '@vitest/coverage-v8':
         specifier: 4.1.1
-        version: 4.1.1(vitest@4.1.1(@opentelemetry/api@1.9.0)(@types/node@24.12.0)(vite@8.0.2(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.3)))
+        version: 4.1.1(vitest@4.1.1(@opentelemetry/api@1.9.1)(@types/node@24.12.0)(vite@8.0.2(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.3)))
       typescript:
         specifier: 6.0.2
         version: 6.0.2
       vitest:
         specifier: 4.1.1
-        version: 4.1.1(@opentelemetry/api@1.9.0)(@types/node@24.12.0)(vite@8.0.2(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.3))
+        version: 4.1.1(@opentelemetry/api@1.9.1)(@types/node@24.12.0)(vite@8.0.2(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.3))
 
   packages/shared-types:
     dependencies:
@@ -923,8 +923,8 @@ packages:
     resolution: {integrity: sha512-TEEVrLbNROUkYY51sBJGk7lO/OLjuepch8+hmpM6ffMJQ2z/KVCjdHuCFX6fJj8OkJP2zckPjrJzQtXU3IAsFg==}
     engines: {node: '>=8.0.0'}
 
-  '@opentelemetry/api@1.9.0':
-    resolution: {integrity: sha512-3giAOQvZiH5F9bMlMiv8+GSPMeqg0dbaeo58/0SlA9sxSqZhnUtxzX9/2FzyhS9sWQf5S0GJE0AKBrFqjpeYcg==}
+  '@opentelemetry/api@1.9.1':
+    resolution: {integrity: sha512-gLyJlPHPZYdAk1JENA9LeHejZe1Ti77/pTeFm/nMXmQH/HFZlcS/O2XJB+L8fkbrNSqhdtlvjBVjxwUYanNH5Q==}
     engines: {node: '>=8.0.0'}
 
   '@opentelemetry/core@2.6.0':
@@ -4010,11 +4010,11 @@ snapshots:
     dependencies:
       dequal: 2.0.3
 
-  '@fastify/otel@0.17.1(@opentelemetry/api@1.9.0)':
+  '@fastify/otel@0.17.1(@opentelemetry/api@1.9.1)':
     dependencies:
-      '@opentelemetry/api': 1.9.0
-      '@opentelemetry/core': 2.6.0(@opentelemetry/api@1.9.0)
-      '@opentelemetry/instrumentation': 0.212.0(@opentelemetry/api@1.9.0)
+      '@opentelemetry/api': 1.9.1
+      '@opentelemetry/core': 2.6.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation': 0.212.0(@opentelemetry/api@1.9.1)
       '@opentelemetry/semantic-conventions': 1.40.0
       minimatch: 10.2.4
     transitivePeerDependencies:
@@ -4526,18 +4526,18 @@ snapshots:
 
   '@opentelemetry/api-logs@0.212.0':
     dependencies:
-      '@opentelemetry/api': 1.9.0
+      '@opentelemetry/api': 1.9.1
 
-  '@opentelemetry/api@1.9.0': {}
+  '@opentelemetry/api@1.9.1': {}
 
-  '@opentelemetry/core@2.6.0(@opentelemetry/api@1.9.0)':
+  '@opentelemetry/core@2.6.0(@opentelemetry/api@1.9.1)':
     dependencies:
-      '@opentelemetry/api': 1.9.0
+      '@opentelemetry/api': 1.9.1
       '@opentelemetry/semantic-conventions': 1.40.0
 
-  '@opentelemetry/instrumentation@0.212.0(@opentelemetry/api@1.9.0)':
+  '@opentelemetry/instrumentation@0.212.0(@opentelemetry/api@1.9.1)':
     dependencies:
-      '@opentelemetry/api': 1.9.0
+      '@opentelemetry/api': 1.9.1
       '@opentelemetry/api-logs': 0.212.0
       import-in-the-middle: 2.0.6
       require-in-the-middle: 8.0.1
@@ -5024,7 +5024,7 @@ snapshots:
       '@typescript/native-preview-win32-arm64': 7.0.0-dev.20260325.1
       '@typescript/native-preview-win32-x64': 7.0.0-dev.20260325.1
 
-  '@vitest/coverage-v8@4.1.1(vitest@4.1.1(@opentelemetry/api@1.9.0)(@types/node@24.12.0)(vite@8.0.2(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.3)))':
+  '@vitest/coverage-v8@4.1.1(vitest@4.1.1(@opentelemetry/api@1.9.1)(@types/node@24.12.0)(vite@8.0.2(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.3)))':
     dependencies:
       '@bcoe/v8-coverage': 1.0.2
       '@vitest/utils': 4.1.1
@@ -5036,7 +5036,7 @@ snapshots:
       obug: 2.1.1
       std-env: 4.0.0
       tinyrainbow: 3.1.0
-      vitest: 4.1.1(@opentelemetry/api@1.9.0)(@types/node@24.12.0)(vite@8.0.2(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.3))
+      vitest: 4.1.1(@opentelemetry/api@1.9.1)(@types/node@24.12.0)(vite@8.0.2(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.3))
 
   '@vitest/expect@4.1.1':
     dependencies:
@@ -6250,13 +6250,13 @@ snapshots:
 
   netmask@2.0.2: {}
 
-  next-auth@4.24.13(next@16.2.1(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
+  next-auth@4.24.13(next@16.2.1(@opentelemetry/api@1.9.1)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
     dependencies:
       '@babel/runtime': 7.28.6
       '@panva/hkdf': 1.2.1
       cookie: 0.7.2
       jose: 4.15.9
-      next: 16.2.1(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      next: 16.2.1(@opentelemetry/api@1.9.1)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       oauth: 0.9.15
       openid-client: 5.7.1
       preact: 10.29.0
@@ -6265,7 +6265,7 @@ snapshots:
       react-dom: 19.2.4(react@19.2.4)
       uuid: 8.3.2
 
-  next@16.2.1(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
+  next@16.2.1(@opentelemetry/api@1.9.1)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
     dependencies:
       '@next/env': 16.2.1
       '@swc/helpers': 0.5.15
@@ -6284,7 +6284,7 @@ snapshots:
       '@next/swc-linux-x64-musl': 16.2.1
       '@next/swc-win32-arm64-msvc': 16.2.1
       '@next/swc-win32-x64-msvc': 16.2.1
-      '@opentelemetry/api': 1.9.0
+      '@opentelemetry/api': 1.9.1
       babel-plugin-react-compiler: 1.0.0
       sharp: 0.34.5
     transitivePeerDependencies:
@@ -7194,7 +7194,7 @@ snapshots:
       jiti: 2.6.1
       yaml: 2.8.3
 
-  vitest@4.1.1(@opentelemetry/api@1.9.0)(@types/node@24.12.0)(vite@8.0.2(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.3)):
+  vitest@4.1.1(@opentelemetry/api@1.9.1)(@types/node@24.12.0)(vite@8.0.2(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.3)):
     dependencies:
       '@vitest/expect': 4.1.1
       '@vitest/mocker': 4.1.1(vite@8.0.2(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.3))
@@ -7217,7 +7217,7 @@ snapshots:
       vite: 8.0.2(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.3)
       why-is-node-running: 2.3.0
     optionalDependencies:
-      '@opentelemetry/api': 1.9.0
+      '@opentelemetry/api': 1.9.1
       '@types/node': 24.12.0
     transitivePeerDependencies:
       - msw
