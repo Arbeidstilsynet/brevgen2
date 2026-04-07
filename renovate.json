@@ -11,11 +11,11 @@
       "matchPackageNames": ["puppeteer", "puppeteer-core"],
       "matchManagers": ["npm"],
       "automerge": false,
-      "description": "Avoid automerging puuppeteer patches to preserve compatibility with specific Chromium versions"
+      "description": "Avoid automerging puppeteer patches to preserve compatibility with specific Chromium versions"
     },
     {
       "matchManagers": ["pre-commit"],
-      "matchPackageNames": "oxc-project/mirrors-oxlint",
+      "matchPackageNames": ["oxc-project/mirrors-oxlint"],
       "automerge": false,
       "description": "Avoid automerging oxlint updates until Windows OOM issue is resolved"
     }

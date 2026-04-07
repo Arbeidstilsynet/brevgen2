@@ -15,7 +15,7 @@ repos:
       - id: end-of-file-fixer
 
   - repo: https://github.com/oxc-project/mirrors-oxlint
-    # memory issue in windows with newer vesion and jsplugins
+    # memory issue in windows with newer version and jsplugins
     # https://github.com/oxc-project/oxc/issues/19395#issuecomment-3994051418
     # see "Fix Windows OOM" in https://github.com/oxc-project/oxc/issues/19918
     rev: v1.46.0
