@@ -10,7 +10,6 @@ export default defineConfig({
       adapter: "fastify",
       appPath: "./server.dev.ts",
       exportName: "fastify",
-      tsCompiler: "esbuild",
     }),
   ],
   optimizeDeps: {
