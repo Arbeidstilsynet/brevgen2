@@ -22,15 +22,13 @@ repos:
       - id: oxlint
         verbose: true
 
+  - repo: https://github.com/oxc-project/mirrors-oxfmt
+    rev: v0.44.0
+    hooks:
+      - id: oxfmt
+
   - repo: local
     hooks:
-      # official mirrors-oxfmt has no tags yet https://github.com/oxc-project/mirrors-oxfmt/issues/1
-      - id: oxfmt
-        name: format with oxfmt
-        entry: pnpx oxfmt@0.40.0
-        language: node
-        "types_or": [javascript, jsx, ts, tsx, json]
-
       - id: dotnet-tool-restore
         name: install .NET tools
         entry: dotnet tool restore
