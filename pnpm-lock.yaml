@@ -150,8 +150,8 @@ importers:
         specifier: 8.0.5
         version: 8.0.5(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.3)
       vite-plugin-node:
-        specifier: 7.0.0
-        version: 7.0.0(vite@8.0.5(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.3))
+        specifier: 8.0.0
+        version: 8.0.0(vite@8.0.5(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.3))
       vitest:
         specifier: 4.1.2
         version: 4.1.2(@opentelemetry/api@1.9.1)(@types/node@24.12.0)(vite@8.0.5(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.3))
@@ -1376,10 +1376,6 @@ packages:
   '@rolldown/pluginutils@1.0.0-rc.12':
     resolution: {integrity: sha512-HHMwmarRKvoFsJorqYlFeFRzXZqCt2ETQlEDOb9aqssrnVBB1/+xgTGtuTrIk5vzLNX1MjMtTf7W9z3tsSbrxw==}
 
-  '@rollup/pluginutils@4.2.1':
-    resolution: {integrity: sha512-iKnFXr7NkdZAIHiIWE+BX5ULi/ucVFYWD6TbAV+rZctiRTY2PL6tsIKhoIOaoskiWAkgu+VsbXgUVDNLHf+InQ==}
-    engines: {node: '>= 8.0.0'}
-
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
 
@@ -2222,9 +2218,6 @@ packages:
     resolution: {integrity: sha512-MMdARuVEQziNTeJD8DgMqmhwR11BRQ/cBP+pLtYdSTnf3MIO8fFeiINEbX36ZdNlfU/7A9f3gUw49B3oQsvwBA==}
     engines: {node: '>=4.0'}
 
-  estree-walker@2.0.2:
-    resolution: {integrity: sha512-Rfkk/Mp/DL7JVje3u18FxFujQlTNR2q6QfMSMB7AvCBx91NGj/ba3kCfza0f6dVDbw7YlRf/nDrn7pQrCCyQ/w==}
-
   estree-walker@3.0.3:
     resolution: {integrity: sha512-7RUKfXgSMMkzt6ZuXmqapOurLGPPfgj6l9uRZ7lRGolvk0y2yocc35LdcxKC5PQZdn2DMqioAQ2NoWcrTKmm6g==}
 
@@ -3050,10 +3043,6 @@ packages:
   picocolors@1.1.1:
     resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
 
-  picomatch@2.3.2:
-    resolution: {integrity: sha512-V7+vQEJ06Z+c5tSye8S+nHUfI51xoXIXjHQ99cQtKUkQqqO1kO/KCJUfZXuB47h/YBlDhah2H3hdUGXn8ie0oA==}
-    engines: {node: '>=8.6'}
-
   picomatch@4.0.4:
     resolution: {integrity: sha512-QP88BAKvMam/3NxH6vj2o21R6MjxZUAd6nlwAS/pnGvN9IVLocLHxGYIzFhg6fUQ+5th6P4dv4eW9jX3DSIj7A==}
     engines: {node: '>=12'}
@@ -3622,11 +3611,11 @@ packages:
     resolution: {integrity: sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==}
     hasBin: true
 
-  vite-plugin-node@7.0.0:
-    resolution: {integrity: sha512-FZqTHvCXUu+U8i6qMtlZCrEvlelUioEf6J4S77XHpZk73frveqKVot60W0hpbffv5OMECXYwP/LAiTGAOLN4/g==}
+  vite-plugin-node@8.0.0:
+    resolution: {integrity: sha512-/jz+hrOULqRfsOwSrA3xU0rm2ED/XLsUkQU3VhuJqaR/gvyGxb0ZRxsamh/U84DCpvIEhYkp2ZwgyDVQ+AmIRQ==}
     peerDependencies:
       '@swc/core': ^1.7.26
-      vite: ^7.0.0
+      vite: 8.0.5
     peerDependenciesMeta:
       '@swc/core':
         optional: true
@@ -4793,11 +4782,6 @@ snapshots:
 
   '@rolldown/pluginutils@1.0.0-rc.12': {}
 
-  '@rollup/pluginutils@4.2.1':
-    dependencies:
-      estree-walker: 2.0.2
-      picomatch: 2.3.2
-
   '@standard-schema/spec@1.1.0': {}
 
   '@swc/helpers@0.5.15':
@@ -5581,8 +5565,6 @@ snapshots:
   esprima@4.0.1: {}
 
   estraverse@5.3.0: {}
-
-  estree-walker@2.0.2: {}
 
   estree-walker@3.0.3:
     dependencies:
@@ -6489,8 +6471,6 @@ snapshots:
 
   picocolors@1.1.1: {}
 
-  picomatch@2.3.2: {}
-
   picomatch@4.0.4: {}
 
   pino-abstract-transport@3.0.0:
@@ -7178,9 +7158,8 @@ snapshots:
 
   uuid@9.0.1: {}
 
-  vite-plugin-node@7.0.0(vite@8.0.5(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.3)):
+  vite-plugin-node@8.0.0(vite@8.0.5(@types/node@24.12.0)(jiti@2.6.1)(yaml@2.8.3)):
     dependencies:
-      '@rollup/pluginutils': 4.2.1
       chalk: 4.1.2
       debounce: 2.2.0
       debug: 4.4.3
