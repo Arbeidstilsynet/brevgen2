@@ -7,6 +7,9 @@ auditConfig:
   ignoreGhsas:
     # used by pdf-visual-diff, need patch in intermediate transient dependency jimp https://github.com/jimp-dev/jimp/issues/1399
     - GHSA-5v7r-6r5c-r473
+    - GHSA-hm7r-c7qw-ghp6
+    # fix soon https://github.com/nearform/fast-jwt/pull/598
+    - GHSA-mvf2-f6gm-w987
 
 autoInstallPeers: false
 
