@@ -33,6 +33,8 @@ minimumReleaseAgeExclude:
   - "@next/*"
   - picomatch
   - vite@8.0.5
+  # Renovate security update: next@16.2.3
+  - next@16.2.3
 
 onlyBuiltDependencies:
   - puppeteer
