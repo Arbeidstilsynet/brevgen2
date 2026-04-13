@@ -21,7 +21,7 @@ RUN pnpm --filter api build
 FROM base AS runner
 # For available Chromium versions in the distro, see https://repology.org/project/chromium/versions
 # Chromium versions changes should be matched with Puppeteer version from https://pptr.dev/supported-browsers
-ARG CHROMIUM_VERSION="146.*"
+ARG CHROMIUM_VERSION="147.*"
 
 ### Versions managed by Renovate
 ### https://dev.azure.com/Atil-utvikling/Produkter%20og%20tjenester/_git/infra-renovate?anchor=custom-managers
