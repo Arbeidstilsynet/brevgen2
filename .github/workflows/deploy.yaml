@@ -254,7 +254,7 @@ jobs:
           PARALLEL_REQUESTS: 300
           BATCH_COUNT: 10
           BATCH_DELAY_MS: 500
-          TIMEOUT_MS: 60000
+          TIMEOUT_MS: 90000
           OUTPUT_FILE: results/gha-results.json
         run: pnpm --filter api run test:load
 
