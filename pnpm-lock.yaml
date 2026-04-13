@@ -11,7 +11,6 @@ overrides:
   dompurify@<3.3.2: 3.3.2
   fast-jwt@<6.2.1: '>=6.2.1'
   jimp@<1.6.1: '>=1.6.1'
-  vite@>=8.0.0 <=8.0.4: 8.0.5
 
 importers:
 
@@ -1656,7 +1655,7 @@ packages:
     resolution: {integrity: sha512-Ize4iQtEALHDttPRCmN+FKqOl2vxTiNUhzobQFFt/BM1lRUTG7zRCLOykG/6Vo4E4hnUdfVLo5/eqKPukcWW7Q==}
     peerDependencies:
       msw: ^2.4.9
-      vite: 8.0.5
+      vite: ^6.0.0 || ^7.0.0 || ^8.0.0
     peerDependenciesMeta:
       msw:
         optional: true
@@ -3623,7 +3622,7 @@ packages:
     resolution: {integrity: sha512-/jz+hrOULqRfsOwSrA3xU0rm2ED/XLsUkQU3VhuJqaR/gvyGxb0ZRxsamh/U84DCpvIEhYkp2ZwgyDVQ+AmIRQ==}
     peerDependencies:
       '@swc/core': ^1.7.26
-      vite: 8.0.5
+      vite: ^8.0.0
     peerDependenciesMeta:
       '@swc/core':
         optional: true
@@ -3685,7 +3684,7 @@ packages:
       '@vitest/ui': 4.1.2
       happy-dom: '*'
       jsdom: '*'
-      vite: 8.0.5
+      vite: ^6.0.0 || ^7.0.0 || ^8.0.0
     peerDependenciesMeta:
       '@edge-runtime/vm':
         optional: true

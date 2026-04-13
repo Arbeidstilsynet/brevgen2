@@ -32,7 +32,6 @@ overrides:
   dompurify@<3.3.2: 3.3.2
   fast-jwt@<6.2.1: ">=6.2.1"
   jimp@<1.6.1: ">=1.6.1"
-  vite@>=8.0.0 <=8.0.4: "8.0.5"
 
 trustPolicy: no-downgrade
 
