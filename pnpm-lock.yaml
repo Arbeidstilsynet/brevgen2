@@ -129,8 +129,8 @@ importers:
         specifier: 24.40.0
         version: 24.40.0(typescript@6.0.2)
       testcontainers:
-        specifier: 11.13.0
-        version: 11.13.0
+        specifier: 11.14.0
+        version: 11.14.0
       tsdown:
         specifier: 0.21.7
         version: 0.21.7(@typescript/native-preview@7.0.0-dev.20260410.1)(typescript@6.0.2)
@@ -2195,8 +2195,8 @@ packages:
   devtools-protocol@0.0.1581282:
     resolution: {integrity: sha512-nv7iKtNZQshSW2hKzYNr46nM/Cfh5SEvE2oV0/SEGgc9XupIY5ggf84Cz8eJIkBce7S3bmTAauFD6aysMpnqsQ==}
 
-  docker-compose@1.3.3:
-    resolution: {integrity: sha512-LzcZ6Dk+Ps5SbLZ4iqAcagzYFZ+bBWQ52uzUNfORNkXyash2EjHZI4REf1ccG19emroS0iWElfQN8RQJ8HOIIg==}
+  docker-compose@1.4.2:
+    resolution: {integrity: sha512-rPHigTKGaEHpkUmfd69QgaOp+Os5vGJwG/Ry8lcr8W/382AmI+z/D7qoa9BybKIkqNppaIbs8RYeHSevdQjWww==}
     engines: {node: '>= 6.0.0'}
 
   docker-modem@5.0.7:
@@ -3584,8 +3584,8 @@ packages:
   teex@1.0.1:
     resolution: {integrity: sha512-eYE6iEI62Ni1H8oIa7KlDU6uQBtqr4Eajni3wX7rpfXD8ysFx8z0+dri+KWEPWpBsxXfxu58x/0jvTVT1ekOSg==}
 
-  testcontainers@11.13.0:
-    resolution: {integrity: sha512-fzTvgOtd6U/esOzgmDatJh79OSK0tU6vjDOJ3B6ICrrJf0dqCWtFdpOr6f/g/KixMxKDTDbszmZYjSORJXsVCQ==}
+  testcontainers@11.14.0:
+    resolution: {integrity: sha512-r9pniwv/iwzyHaI7gwAvAm4Y+IvjJg3vBWdjrUCaDMc2AXIr4jKbq7jJO18Mw2ybs73pZy1Aj7p/4RVBGMRWjg==}
 
   text-decoder@1.2.7:
     resolution: {integrity: sha512-vlLytXkeP4xvEq2otHeJfSQIRyWxo/oZGEbXrtEEF9Hnmrdly59sUbzZ/QgyWuLYHctCHxFF4tRQZNQ9k60ExQ==}
@@ -5681,7 +5681,7 @@ snapshots:
 
   devtools-protocol@0.0.1581282: {}
 
-  docker-compose@1.3.3:
+  docker-compose@1.4.2:
     dependencies:
       yaml: 2.8.3
 
@@ -7305,7 +7305,7 @@ snapshots:
       - bare-abort-controller
       - react-native-b4a
 
-  testcontainers@11.13.0:
+  testcontainers@11.14.0:
     dependencies:
       '@balena/dockerignore': 1.0.2
       '@types/dockerode': 4.0.1
@@ -7313,7 +7313,7 @@ snapshots:
       async-lock: 1.4.1
       byline: 5.0.0
       debug: 4.4.3
-      docker-compose: 1.3.3
+      docker-compose: 1.4.2
       dockerode: 4.0.10
       get-port: 7.2.0
       proper-lockfile: 4.1.2
