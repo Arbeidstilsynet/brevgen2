@@ -92,7 +92,7 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         if: needs.changes.outputs.brevgen2 == 'true'
-      - uses: Arbeidstilsynet/action-pnpm-setup@1d7ca70816933ed09d6bbca732be59c0c6cf63f4 # v1
+      - uses: Arbeidstilsynet/action-pnpm-setup@0e98d6443d6688420659cad8a415674a993516bb # v1
         if: needs.changes.outputs.brevgen2 == 'true'
 
       - run: pnpm typecheck
@@ -146,7 +146,7 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         if: needs.changes.outputs.brevgen2 == 'true'
-      - uses: Arbeidstilsynet/action-pnpm-setup@1d7ca70816933ed09d6bbca732be59c0c6cf63f4 # v1
+      - uses: Arbeidstilsynet/action-pnpm-setup@0e98d6443d6688420659cad8a415674a993516bb # v1
         if: needs.changes.outputs.brevgen2 == 'true'
 
       - run: "pnpm test:integration"
