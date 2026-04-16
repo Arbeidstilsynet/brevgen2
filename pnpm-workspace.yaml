@@ -22,6 +22,8 @@ minimumReleaseAgeExclude:
   - oxfmt
   - "@oxfmt/*"
   - "@next/*"
+  # Renovate security update: fastify@5.8.5
+  - fastify@5.8.5
 
 onlyBuiltDependencies:
   - puppeteer
