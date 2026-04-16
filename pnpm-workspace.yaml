@@ -22,6 +22,8 @@ minimumReleaseAgeExclude:
   - oxfmt
   - "@oxfmt/*"
   - "@next/*"
+  # Renovate security update: dompurify@<3.3.2@3.4.0
+  - dompurify@<3.3.2@3.4.0
 
 onlyBuiltDependencies:
   - puppeteer
@@ -29,7 +31,7 @@ onlyBuiltDependencies:
 overrides:
   "@tootallnate/once@<3.0.1": ">=3.0.1"
   basic-ftp@<=5.2.1: ">=5.2.2"
-  dompurify@<3.3.2: 3.3.3
+  dompurify@<3.3.2: 3.4.0
   fast-jwt@<6.2.1: ">=6.2.1"
   jimp@<1.6.1: ">=1.6.1"
 
