@@ -3,6 +3,8 @@ packages:
   - packages/*
   - nuget-client
 
+nodeLinker: hoisted
+
 allowBuilds:
   cpu-features: false
   protobufjs: false
