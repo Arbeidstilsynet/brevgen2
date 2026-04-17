@@ -22,6 +22,8 @@ minimumReleaseAgeExclude:
   - oxfmt
   - "@oxfmt/*"
   - "@next/*"
+  # Renovate security update: sanitize-html@2.17.3
+  - sanitize-html@2.17.3
 
 onlyBuiltDependencies:
   - puppeteer
