@@ -276,6 +276,9 @@ importers:
       '@typescript/native-preview':
         specifier: 7.0.0-dev.20260412.1
         version: 7.0.0-dev.20260412.1
+      puppeteer-core:
+        specifier: 24.40.0
+        version: 24.40.0
       typescript:
         specifier: 6.0.2
         version: 6.0.2
