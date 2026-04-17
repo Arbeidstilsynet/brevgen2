@@ -74,7 +74,7 @@ const SettingsContext = createContext<AppSettingsContext>({
 export const useSettings = () => use(SettingsContext);
 
 export function SettingsProvider({ children }: Readonly<{ children: React.ReactNode }>) {
-  const [settings, setSettings] = useState<AppSettings>(DEFAULT_SETTINGS);
+  const [settings, setSettings] = useState(DEFAULT_SETTINGS);
 
   useEffect(() => {
     // Load settings on mount to prevent hydration issues with useState initializer function

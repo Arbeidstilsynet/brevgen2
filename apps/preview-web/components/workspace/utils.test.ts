@@ -208,8 +208,8 @@ describe("handleAddTag", () => {
   describe("single tag", () => {
     it("should add a single valid tag", () => {
       const tags = new Set<string>();
-      const setError = vi.fn();
-      const setTags = vi.fn();
+      const setError = vi.fn<() => void>();
+      const setTags = vi.fn<() => void>();
 
       handleAddTag("newtag", tags, setError, setTags);
 
@@ -219,8 +219,8 @@ describe("handleAddTag", () => {
 
     it("should add tag to existing tags", () => {
       const tags = new Set(["existing1", "existing2"]);
-      const setError = vi.fn();
-      const setTags = vi.fn();
+      const setError = vi.fn<() => void>();
+      const setTags = vi.fn<() => void>();
 
       handleAddTag("newtag", tags, setError, setTags);
 
@@ -230,8 +230,8 @@ describe("handleAddTag", () => {
 
     it("should trim whitespace from tag", () => {
       const tags = new Set<string>();
-      const setError = vi.fn();
-      const setTags = vi.fn();
+      const setError = vi.fn<() => void>();
+      const setTags = vi.fn<() => void>();
 
       handleAddTag("  spacey  ", tags, setError, setTags);
 
@@ -243,8 +243,8 @@ describe("handleAddTag", () => {
   describe("multiple tags (comma-separated)", () => {
     it("should add multiple comma-separated tags", () => {
       const tags = new Set<string>();
-      const setError = vi.fn();
-      const setTags = vi.fn();
+      const setError = vi.fn<() => void>();
+      const setTags = vi.fn<() => void>();
 
       handleAddTag("tag1, tag2, tag3", tags, setError, setTags);
 
@@ -254,8 +254,8 @@ describe("handleAddTag", () => {
 
     it("should trim whitespace from each tag", () => {
       const tags = new Set<string>();
-      const setError = vi.fn();
-      const setTags = vi.fn();
+      const setError = vi.fn<() => void>();
+      const setTags = vi.fn<() => void>();
 
       handleAddTag("  tag1  ,  tag2  ,  tag3  ", tags, setError, setTags);
 
@@ -265,8 +265,8 @@ describe("handleAddTag", () => {
 
     it("should add multiple tags to existing tags", () => {
       const tags = new Set(["existing"]);
-      const setError = vi.fn();
-      const setTags = vi.fn();
+      const setError = vi.fn<() => void>();
+      const setTags = vi.fn<() => void>();
 
       handleAddTag("new1, new2", tags, setError, setTags);
 
@@ -278,8 +278,8 @@ describe("handleAddTag", () => {
   describe("empty/whitespace input", () => {
     it("should handle empty string", () => {
       const tags = new Set(["existing"]);
-      const setError = vi.fn();
-      const setTags = vi.fn();
+      const setError = vi.fn<() => void>();
+      const setTags = vi.fn<() => void>();
 
       handleAddTag("", tags, setError, setTags);
 
@@ -289,8 +289,8 @@ describe("handleAddTag", () => {
 
     it("should ignore empty tags in comma-separated list", () => {
       const tags = new Set<string>();
-      const setError = vi.fn();
-      const setTags = vi.fn();
+      const setError = vi.fn<() => void>();
+      const setTags = vi.fn<() => void>();
 
       handleAddTag("tag1, , tag2", tags, setError, setTags);
 
@@ -300,8 +300,8 @@ describe("handleAddTag", () => {
 
     it("should handle only whitespace", () => {
       const tags = new Set(["existing"]);
-      const setError = vi.fn();
-      const setTags = vi.fn();
+      const setError = vi.fn<() => void>();
+      const setTags = vi.fn<() => void>();
 
       handleAddTag("   ", tags, setError, setTags);
 
@@ -313,8 +313,8 @@ describe("handleAddTag", () => {
   describe("invalid tags (containing separator)", () => {
     it("should reject tag containing dash separator", () => {
       const tags = new Set<string>();
-      const setError = vi.fn();
-      const setTags = vi.fn();
+      const setError = vi.fn<() => void>();
+      const setTags = vi.fn<() => void>();
 
       handleAddTag("invalid-tag", tags, setError, setTags);
 
@@ -324,8 +324,8 @@ describe("handleAddTag", () => {
 
     it("should add valid tags and report error for invalid ones", () => {
       const tags = new Set<string>();
-      const setError = vi.fn();
-      const setTags = vi.fn();
+      const setError = vi.fn<() => void>();
+      const setTags = vi.fn<() => void>();
 
       handleAddTag("valid1, invalid-tag, valid2", tags, setError, setTags);
 
@@ -335,8 +335,8 @@ describe("handleAddTag", () => {
 
     it("should report multiple errors for multiple invalid tags", () => {
       const tags = new Set<string>();
-      const setError = vi.fn();
-      const setTags = vi.fn();
+      const setError = vi.fn<() => void>();
+      const setTags = vi.fn<() => void>();
 
       handleAddTag("invalid-1, invalid-2", tags, setError, setTags);
 
@@ -348,8 +348,8 @@ describe("handleAddTag", () => {
 
     it("should add valid tags even when some are invalid", () => {
       const tags = new Set(["existing"]);
-      const setError = vi.fn();
-      const setTags = vi.fn();
+      const setError = vi.fn<() => void>();
+      const setTags = vi.fn<() => void>();
 
       handleAddTag("valid, invalid-tag, another-invalid, alsovalid", tags, setError, setTags);
 
@@ -363,8 +363,8 @@ describe("handleAddTag", () => {
   describe("edge cases", () => {
     it("should handle tag that already exists (Set deduplication)", () => {
       const tags = new Set(["existing"]);
-      const setError = vi.fn();
-      const setTags = vi.fn();
+      const setError = vi.fn<() => void>();
+      const setTags = vi.fn<() => void>();
 
       handleAddTag("existing", tags, setError, setTags);
 
@@ -375,8 +375,8 @@ describe("handleAddTag", () => {
 
     it("should handle duplicate tags in comma-separated input", () => {
       const tags = new Set<string>();
-      const setError = vi.fn();
-      const setTags = vi.fn();
+      const setError = vi.fn<() => void>();
+      const setTags = vi.fn<() => void>();
 
       handleAddTag("tag1, tag1, tag2", tags, setError, setTags);
 
