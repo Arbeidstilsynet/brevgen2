@@ -24,7 +24,8 @@ jobs:
         id: nais
         with:
           # correctly handle both push and pr events to get the right base ref
-          base-ref: ${{ github.event_name == 'pull_request' && 'origin/main' || github.event.before }}
+          base-ref: ${{ github.event_name == 'pull_request' && 'origin/main' ||
+            github.event.before }}
           include: |
             .github/workflows/ci.yaml
             .nais
@@ -33,7 +34,8 @@ jobs:
         uses: Arbeidstilsynet/action-check-changes@6e51077b178b819e4194f40e32bd562df0954f3f # v1
         id: brevgen2
         with:
-          base-ref: ${{ github.event_name == 'pull_request' && 'origin/main' || github.event.before }}
+          base-ref: ${{ github.event_name == 'pull_request' && 'origin/main' ||
+            github.event.before }}
           include: |
             .github/workflows/ci.yaml
             apps/
@@ -50,7 +52,8 @@ jobs:
         uses: Arbeidstilsynet/action-check-changes@6e51077b178b819e4194f40e32bd562df0954f3f # v1
         id: nuget-client
         with:
-          base-ref: ${{ github.event_name == 'pull_request' && 'origin/main' || github.event.before }}
+          base-ref: ${{ github.event_name == 'pull_request' && 'origin/main' ||
+            github.event.before }}
           include: |
             .github/workflows/ci.yaml
             nuget-client/
@@ -117,7 +120,8 @@ jobs:
       # https://github.com/EnricoMi/publish-unit-test-result-action/issues/12
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@c950f6fb443cb5af20a377fd0dfaa78838901040 # v2
-        if: needs.changes.outputs.brevgen2 == 'true' && (steps.test.outcome == 'success' || steps.test.outcome == 'failure')
+        if: needs.changes.outputs.brevgen2 == 'true' && (steps.test.outcome == 'success'
+          || steps.test.outcome == 'failure')
         with:
           files: "**/junit.xml"
           check_name: "Brevgen2 Unit Test Results"
@@ -156,7 +160,8 @@ jobs:
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@c950f6fb443cb5af20a377fd0dfaa78838901040 # v2
-        if: needs.changes.outputs.brevgen2 == 'true' && (steps.test.outcome == 'success' || steps.test.outcome == 'failure')
+        if: needs.changes.outputs.brevgen2 == 'true' && (steps.test.outcome == 'success'
+          || steps.test.outcome == 'failure')
         with:
           files: "**/junit.xml"
           check_name: "Integration Test Results"
