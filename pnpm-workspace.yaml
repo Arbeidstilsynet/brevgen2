@@ -3,14 +3,14 @@ packages:
   - packages/*
   - nuget-client
 
-autoInstallPeers: false
+allowBuilds:
+  cpu-features: false
+  protobufjs: false
+  puppeteer: true
+  sharp: false
+  ssh2: false
 
-ignoredBuiltDependencies:
-  - cpu-features
-  - esbuild
-  - protobufjs
-  - sharp
-  - ssh2
+autoInstallPeers: false
 
 injectWorkspacePackages: true
 
@@ -22,9 +22,6 @@ minimumReleaseAgeExclude:
   - oxfmt
   - "@oxfmt/*"
   - "@next/*"
-
-onlyBuiltDependencies:
-  - puppeteer
 
 overrides:
   "@tootallnate/once@<3.0.1": ">=3.0.1"
