@@ -15,7 +15,7 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 COPY apps/api ./apps/api
 COPY packages ./packages
-RUN pnpm --filter api build
+RUN pnpm_config_verify_deps_before_run=false pnpm --filter api build
 
 
 FROM base AS runner
