@@ -18,7 +18,7 @@ repos:
     # memory issue in windows with newer version and jsplugins
     # https://github.com/oxc-project/oxc/issues/19395#issuecomment-3994051418
     # see "Fix Windows OOM" in https://github.com/oxc-project/oxc/issues/19918
-    rev: v1.46.0
+    rev: v1.60.0
     hooks:
       - id: oxlint
         verbose: true
