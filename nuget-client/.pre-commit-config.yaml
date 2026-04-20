@@ -14,8 +14,8 @@ repos:
           - post-rewrite
       - id: csharpier
         name: format with CSharpier
-        entry: dotnet csharpier format .
+        entry: dotnet csharpier format
         language: system
         types:
           - c#
-        files: ^.*\.(cs|csproj|sln|slnx)$
+          - csproj
