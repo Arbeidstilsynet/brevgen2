@@ -24,7 +24,8 @@ jobs:
         id: nais
         with:
           # correctly handle both push and pr events to get the right base ref
-          base-ref: ${{ github.event_name == 'pull_request' && 'origin/main' || github.event.before }}
+          base-ref: ${{ github.event_name == 'pull_request' && 'origin/main' ||
+            github.event.before }}
           include: |
             .github/workflows/ci.yaml
             .nais
@@ -33,7 +34,8 @@ jobs:
         uses: Arbeidstilsynet/action-check-changes@6e51077b178b819e4194f40e32bd562df0954f3f # v1
         id: brevgen2
         with:
-          base-ref: ${{ github.event_name == 'pull_request' && 'origin/main' || github.event.before }}
+          base-ref: ${{ github.event_name == 'pull_request' && 'origin/main' ||
+            github.event.before }}
           include: |
             .github/workflows/ci.yaml
             apps/
@@ -50,7 +52,8 @@ jobs:
         uses: Arbeidstilsynet/action-check-changes@6e51077b178b819e4194f40e32bd562df0954f3f # v1
         id: nuget-client
         with:
-          base-ref: ${{ github.event_name == 'pull_request' && 'origin/main' || github.event.before }}
+          base-ref: ${{ github.event_name == 'pull_request' && 'origin/main' ||
+            github.event.before }}
           include: |
             .github/workflows/ci.yaml
             nuget-client/
@@ -92,7 +95,7 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         if: needs.changes.outputs.brevgen2 == 'true'
-      - uses: Arbeidstilsynet/action-pnpm-setup@1d7ca70816933ed09d6bbca732be59c0c6cf63f4 # v1
+      - uses: Arbeidstilsynet/action-pnpm-setup@0e98d6443d6688420659cad8a415674a993516bb # v1
         if: needs.changes.outputs.brevgen2 == 'true'
 
       - run: pnpm typecheck
@@ -117,7 +120,8 @@ jobs:
       # https://github.com/EnricoMi/publish-unit-test-result-action/issues/12
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@c950f6fb443cb5af20a377fd0dfaa78838901040 # v2
-        if: needs.changes.outputs.brevgen2 == 'true' && (steps.test.outcome == 'success' || steps.test.outcome == 'failure')
+        if: needs.changes.outputs.brevgen2 == 'true' && (steps.test.outcome == 'success'
+          || steps.test.outcome == 'failure')
         with:
           files: "**/junit.xml"
           check_name: "Brevgen2 Unit Test Results"
@@ -132,6 +136,8 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
       - uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5
+      # workaround to install oxlint-tsgolint without overriding additional_dependencies in .pre-commit-config.yaml
+      - uses: Arbeidstilsynet/action-pnpm-setup@0e98d6443d6688420659cad8a415674a993516bb # v1
       - uses: j178/prek-action@53276d8b0d10f8b6672aa85b4588c6921d0370cc # v2
 
   testcontainer:
@@ -146,7 +152,7 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         if: needs.changes.outputs.brevgen2 == 'true'
-      - uses: Arbeidstilsynet/action-pnpm-setup@1d7ca70816933ed09d6bbca732be59c0c6cf63f4 # v1
+      - uses: Arbeidstilsynet/action-pnpm-setup@0e98d6443d6688420659cad8a415674a993516bb # v1
         if: needs.changes.outputs.brevgen2 == 'true'
 
       - run: "pnpm test:integration"
@@ -156,7 +162,8 @@ jobs:
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@c950f6fb443cb5af20a377fd0dfaa78838901040 # v2
-        if: needs.changes.outputs.brevgen2 == 'true' && (steps.test.outcome == 'success' || steps.test.outcome == 'failure')
+        if: needs.changes.outputs.brevgen2 == 'true' && (steps.test.outcome == 'success'
+          || steps.test.outcome == 'failure')
         with:
           files: "**/junit.xml"
           check_name: "Integration Test Results"

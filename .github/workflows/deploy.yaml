@@ -7,7 +7,6 @@ on:
 concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: false
-
   #          +-------------------+
   #          |   check_changes   |
   #          +---------+---------+
@@ -95,7 +94,8 @@ jobs:
 
   build_api:
     needs: check_changes
-    if: needs.check_changes.result == 'success' && needs.check_changes.outputs.api == 'true'
+    if: needs.check_changes.result == 'success' && needs.check_changes.outputs.api
+      == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     outputs:
@@ -126,7 +126,8 @@ jobs:
 
   build_web:
     needs: check_changes
-    if: needs.check_changes.result == 'success' && needs.check_changes.outputs.web == 'true'
+    if: needs.check_changes.result == 'success' && needs.check_changes.outputs.web
+      == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     outputs:
@@ -146,7 +147,7 @@ jobs:
           dockerfile: "./apps/preview-web/Dockerfile"
 
   deploy_api_dev:
-    needs: [check_changes, build_api]
+    needs: [ check_changes, build_api ]
     # deploy using new image if built, or reuse previous deployed image if only nais config changed
     # https://docs.atil.cloud.nais.io/workloads/explanations/workload-image/?h=workload_image#using-the-workload_image-environment-variable
     if: |
@@ -171,7 +172,7 @@ jobs:
           TELEMETRY: ${{ needs.build_api.outputs.telemetry }}
 
   deploy_web_dev:
-    needs: [check_changes, build_web]
+    needs: [ check_changes, build_web ]
     # deploy using new image if built, or reuse previous deployed image if only nais config changed
     # https://docs.atil.cloud.nais.io/workloads/explanations/workload-image/?h=workload_image#using-the-workload_image-environment-variable
     if: |
@@ -243,7 +244,7 @@ jobs:
           [ -z "$JWT" -o "$JWT" = null ] && { echo "Token fetch failed"; echo "$RESPONSE"; exit 1; }
           echo "jwt=$JWT" >> $GITHUB_OUTPUT
 
-      - uses: Arbeidstilsynet/action-pnpm-setup@1d7ca70816933ed09d6bbca732be59c0c6cf63f4 # v1
+      - uses: Arbeidstilsynet/action-pnpm-setup@0e98d6443d6688420659cad8a415674a993516bb # v1
 
       - name: Run load tests (JWT auth)
         id: run_load_tests
@@ -259,11 +260,13 @@ jobs:
         run: pnpm --filter api run test:load
 
       - name: Analyze
-        if: ${{ always() && steps.run_load_tests.outcome != 'skipped' && steps.run_load_tests.outcome != '' }}
+        if: ${{ always() && steps.run_load_tests.outcome != 'skipped' &&
+          steps.run_load_tests.outcome != '' }}
         run: pnpm --filter api run test:load:analyze results/gha-results.json
 
       - name: Upload load test results
-        if: ${{ always() && steps.run_load_tests.outcome != 'skipped' && steps.run_load_tests.outcome != '' }}
+        if: ${{ always() && steps.run_load_tests.outcome != 'skipped' &&
+          steps.run_load_tests.outcome != '' }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: load-test-results
@@ -271,7 +274,8 @@ jobs:
           if-no-files-found: warn
 
       - name: Summarize result
-        if: ${{ always() && steps.run_load_tests.outcome != 'skipped' && steps.run_load_tests.outcome != '' }}
+        if: ${{ always() && steps.run_load_tests.outcome != 'skipped' &&
+          steps.run_load_tests.outcome != '' }}
         working-directory: ./apps/api
         shell: bash
         run: |
@@ -285,7 +289,7 @@ jobs:
           fi
 
   deploy_api_prod:
-    needs: [build_api, load_test_api, deploy_api_dev]
+    needs: [ build_api, load_test_api, deploy_api_dev ]
     if: |
       always() &&
       needs.load_test_api.result == 'success' &&
@@ -307,7 +311,7 @@ jobs:
           TELEMETRY: ${{ needs.build_api.outputs.telemetry }}
 
   deploy_web_prod:
-    needs: [build_web, deploy_web_dev]
+    needs: [ build_web, deploy_web_dev ]
     if: |
       always() &&
       needs.deploy_web_dev.result == 'success'

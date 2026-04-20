@@ -9,42 +9,18 @@ repos:
       - id: mixed-line-ending
       - id: check-json
       - id: check-yaml
-        exclude: ^.nais/.*
+        exclude: ^(\.nais/.*|pnpm-lock\.yaml)$
       - id: fix-byte-order-marker
       - id: check-case-conflict
       - id: end-of-file-fixer
 
   - repo: https://github.com/oxc-project/mirrors-oxlint
-    # memory issue in windows with newer version and jsplugins
-    # https://github.com/oxc-project/oxc/issues/19395#issuecomment-3994051418
-    # see "Fix Windows OOM" in https://github.com/oxc-project/oxc/issues/19918
-    rev: v1.46.0
+    rev: v1.60.0
     hooks:
       - id: oxlint
         verbose: true
 
   - repo: https://github.com/oxc-project/mirrors-oxfmt
-    rev: v0.44.0
+    rev: v0.45.0
     hooks:
       - id: oxfmt
-
-  - repo: local
-    hooks:
-      - id: dotnet-tool-restore
-        name: install .NET tools
-        entry: dotnet tool restore
-        language: unsupported
-        always_run: true
-        pass_filenames: false
-        stages:
-          - commit
-          - push
-          - post-checkout
-          - post-rewrite
-      - id: csharpier
-        name: format with CSharpier
-        entry: dotnet csharpier format .
-        language: system
-        types:
-          - c#
-        files: ^.*\.(cs|csproj|sln|slnx)$
