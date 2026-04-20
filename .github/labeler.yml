@@ -39,6 +39,11 @@ shared-types:
           - "packages/shared-types/**"
           - "!packages/shared-types/package.json"
 
+nais:
+  - changed-files:
+      - all-globs-to-any-file:
+          - ".nais/**"
+
 documentation:
   - changed-files:
       - all-globs-to-any-file:
