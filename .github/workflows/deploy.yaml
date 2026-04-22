@@ -67,6 +67,7 @@ jobs:
         with:
           include: |
             .nais/api.yaml
+            .nais/alerts.yaml
             .nais/vars-*.yaml
             .github/workflows/deploy.yaml
 
