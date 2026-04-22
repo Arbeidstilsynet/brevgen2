@@ -1,0 +1,21 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: brevgen2-api-alerts
+  namespace: "{{team}}"
+  labels:
+    team: "{{team}}"
+spec:
+  groups:
+    - name: brevgen2-api-alerts
+      rules:
+        - alert: Brevgen2Api5xxErrors
+          expr: sum(increase(nginx_ingress_controller_requests{namespace="{{team}}", service="{{api.name}}", status=~"5.."}[15m])) > 0
+          for: 1m
+          annotations:
+            consequence: "Users are receiving 5xx server errors from {{api.name}}"
+            action: "Check application logs: `kubectl logs -l app={{api.name}} -n {{team}}` and inspect recent deployments"
+            summary: "{{api.name}} has returned 5xx responses ({{promethues_value_humanize}} errors in the last 15m)"
+          labels:
+            namespace: "{{team}}"
+            severity: critical
