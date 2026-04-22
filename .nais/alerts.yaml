@@ -15,7 +15,7 @@ spec:
           annotations:
             consequence: "Users are receiving 5xx server errors from {{api.name}}"
             action: "Check application logs: `kubectl logs -l app={{api.name}} -n {{team}}` and inspect recent deployments"
-            summary: "{{api.name}} has returned 5xx responses ({{promethues_value_humanize}} errors in the last 15m)"
+            summary: "{{api.name}} has returned 5xx responses ({{prometheus_value_humanize }} errors in the last 15m)"
           labels:
             namespace: "{{team}}"
             severity: critical
