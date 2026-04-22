@@ -1,7 +1,7 @@
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
-  name: brevgen2-api-alerts
+  name: brevgen2-alerts
   namespace: "{{team}}"
   labels:
     team: "{{team}}"
