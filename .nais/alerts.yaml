@@ -14,7 +14,7 @@ spec:
           for: 1m
           annotations:
             consequence: "Users are receiving 5xx server errors from {{api.name}}"
-            action: "Check application logs: `kubectl logs -l app={{api.name}} -n {{team}}` and inspect recent deployments"
+            action: "Check application logs: `kubectl logs -l app={{api.name}} -n {{team}}` and inspect recent deployments: `gh run list -R Arbeidstilsynet/brevgen2 -w deploy.yaml --limit 10`"
             summary: "{{api.name}} has returned 5xx responses ({{prometheus_value_humanize }} errors in the last 15m)"
           labels:
             namespace: "{{team}}"
