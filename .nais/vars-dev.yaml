@@ -9,3 +9,4 @@ api:
 web:
   name: brevgen2-web
   ingress: https://brevgenerator.dev.arbeidstilsynet.no
+prometheus_value_humanize : "{{ $value | humanize }}"

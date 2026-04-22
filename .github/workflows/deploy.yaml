@@ -67,6 +67,7 @@ jobs:
         with:
           include: |
             .nais/api.yaml
+            .nais/alerts.yaml
             .nais/vars-*.yaml
             .github/workflows/deploy.yaml
 
@@ -165,7 +166,7 @@ jobs:
       - uses: nais/deploy/actions/deploy@fa754451577294aae42872a69b888b3470478ec1 # v2
         env:
           CLUSTER: dev
-          RESOURCE: .nais/api.yaml
+          RESOURCE: .nais/api.yaml,.nais/alerts.yaml
           WORKLOAD_IMAGE: ${{ needs.build_api.outputs.image }}
           VAR: git_sha=${{ github.sha }}
           VARS: .nais/vars-dev.yaml
@@ -304,7 +305,7 @@ jobs:
       - uses: nais/deploy/actions/deploy@fa754451577294aae42872a69b888b3470478ec1 # v2
         env:
           CLUSTER: prod
-          RESOURCE: .nais/api.yaml
+          RESOURCE: .nais/api.yaml,.nais/alerts.yaml
           WORKLOAD_IMAGE: ${{ needs.build_api.outputs.image }}
           VAR: git_sha=${{ github.sha }}
           VARS: .nais/vars-prod.yaml
