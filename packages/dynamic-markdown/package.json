@@ -21,7 +21,7 @@
     "@repo/typescript-config": "workspace:^",
     "@typescript/native-preview": "7.0.0-dev.20260418.1",
     "@vitest/coverage-v8": "4.1.4",
-    "typescript": "6.0.2",
+    "typescript": "6.0.3",
     "vitest": "4.1.4"
   }
 }

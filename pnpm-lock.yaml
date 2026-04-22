@@ -39,8 +39,8 @@ importers:
         specifier: 2.9.6
         version: 2.9.6
       typescript:
-        specifier: 6.0.2
-        version: 6.0.2
+        specifier: 6.0.3
+        version: 6.0.3
 
   apps/api:
     dependencies:
@@ -128,16 +128,16 @@ importers:
         version: 0.15.2
       puppeteer:
         specifier: 24.40.0
-        version: 24.40.0(typescript@6.0.2)
+        version: 24.40.0(typescript@6.0.3)
       testcontainers:
         specifier: 11.14.0
         version: 11.14.0
       tsdown:
         specifier: 0.21.9
-        version: 0.21.9(@typescript/native-preview@7.0.0-dev.20260418.1)(typescript@6.0.2)
+        version: 0.21.9(@typescript/native-preview@7.0.0-dev.20260418.1)(typescript@6.0.3)
       typescript:
-        specifier: 6.0.2
-        version: 6.0.2
+        specifier: 6.0.3
+        version: 6.0.3
       vite:
         specifier: 8.0.8
         version: 8.0.8(@types/node@24.12.2)(jiti@2.6.1)(yaml@2.8.3)
@@ -224,8 +224,8 @@ importers:
         specifier: 4.2.2
         version: 4.2.2
       typescript:
-        specifier: 6.0.2
-        version: 6.0.2
+        specifier: 6.0.3
+        version: 6.0.3
       vitest:
         specifier: 4.1.4
         version: 4.1.4(@opentelemetry/api@1.9.1)(@types/node@24.12.2)(@vitest/coverage-v8@4.1.4)(vite@8.0.8(@types/node@24.12.2)(jiti@2.6.1)(yaml@2.8.3))
@@ -247,8 +247,8 @@ importers:
         specifier: 7.0.0-dev.20260418.1
         version: 7.0.0-dev.20260418.1
       typescript:
-        specifier: 6.0.2
-        version: 6.0.2
+        specifier: 6.0.3
+        version: 6.0.3
 
   packages/dynamic-markdown:
     devDependencies:
@@ -262,8 +262,8 @@ importers:
         specifier: 4.1.4
         version: 4.1.4(vitest@4.1.4)
       typescript:
-        specifier: 6.0.2
-        version: 6.0.2
+        specifier: 6.0.3
+        version: 6.0.3
       vitest:
         specifier: 4.1.4
         version: 4.1.4(@opentelemetry/api@1.9.1)(@types/node@24.12.2)(@vitest/coverage-v8@4.1.4)(vite@8.0.8(@types/node@24.12.2)(jiti@2.6.1)(yaml@2.8.3))
@@ -281,8 +281,8 @@ importers:
         specifier: 24.40.0
         version: 24.40.0
       typescript:
-        specifier: 6.0.2
-        version: 6.0.2
+        specifier: 6.0.3
+        version: 6.0.3
 
 packages:
 
@@ -3696,8 +3696,8 @@ packages:
   typed-query-selector@2.12.1:
     resolution: {integrity: sha512-uzR+FzI8qrUEIu96oaeBJmd9E7CFEiQ3goA5qCVgc4s5llSubcfGHq9yUstZx/k4s9dXHVKsE35YWoFyvEqEHA==}
 
-  typescript@6.0.2:
-    resolution: {integrity: sha512-bGdAIrZ0wiGDo5l8c++HWtbaNCWTS4UTv7RaTH/ThVIgjkveJt83m74bBHMJkuCbslY8ixgLBVZJIOiQlQTjfQ==}
+  typescript@6.0.3:
+    resolution: {integrity: sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -5625,14 +5625,14 @@ snapshots:
 
   core-util-is@1.0.3: {}
 
-  cosmiconfig@9.0.1(typescript@6.0.2):
+  cosmiconfig@9.0.1(typescript@6.0.3):
     dependencies:
       env-paths: 2.2.1
       import-fresh: 3.3.1
       js-yaml: 4.1.1
       parse-json: 5.2.0
     optionalDependencies:
-      typescript: 6.0.2
+      typescript: 6.0.3
 
   cpu-features@0.0.10:
     dependencies:
@@ -6896,11 +6896,11 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  puppeteer@24.40.0(typescript@6.0.2):
+  puppeteer@24.40.0(typescript@6.0.3):
     dependencies:
       '@puppeteer/browsers': 2.13.0
       chromium-bidi: 14.0.0(devtools-protocol@0.0.1581282)
-      cosmiconfig: 9.0.1(typescript@6.0.2)
+      cosmiconfig: 9.0.1(typescript@6.0.3)
       devtools-protocol: 0.0.1581282
       puppeteer-core: 24.40.0
       typed-query-selector: 2.12.1
@@ -6988,7 +6988,7 @@ snapshots:
 
   rfdc@1.4.1: {}
 
-  rolldown-plugin-dts@0.23.2(@typescript/native-preview@7.0.0-dev.20260418.1)(rolldown@1.0.0-rc.16)(typescript@6.0.2):
+  rolldown-plugin-dts@0.23.2(@typescript/native-preview@7.0.0-dev.20260418.1)(rolldown@1.0.0-rc.16)(typescript@6.0.3):
     dependencies:
       '@babel/generator': 8.0.0-rc.3
       '@babel/helper-validator-identifier': 8.0.0-rc.3
@@ -7003,7 +7003,7 @@ snapshots:
       rolldown: 1.0.0-rc.16
     optionalDependencies:
       '@typescript/native-preview': 7.0.0-dev.20260418.1
-      typescript: 6.0.2
+      typescript: 6.0.3
     transitivePeerDependencies:
       - oxc-resolver
 
@@ -7386,7 +7386,7 @@ snapshots:
 
   tree-kill@1.2.2: {}
 
-  tsdown@0.21.9(@typescript/native-preview@7.0.0-dev.20260418.1)(typescript@6.0.2):
+  tsdown@0.21.9(@typescript/native-preview@7.0.0-dev.20260418.1)(typescript@6.0.3):
     dependencies:
       ansis: 4.2.0
       cac: 7.0.0
@@ -7397,7 +7397,7 @@ snapshots:
       obug: 2.1.1
       picomatch: 4.0.4
       rolldown: 1.0.0-rc.16
-      rolldown-plugin-dts: 0.23.2(@typescript/native-preview@7.0.0-dev.20260418.1)(rolldown@1.0.0-rc.16)(typescript@6.0.2)
+      rolldown-plugin-dts: 0.23.2(@typescript/native-preview@7.0.0-dev.20260418.1)(rolldown@1.0.0-rc.16)(typescript@6.0.3)
       semver: 7.7.4
       tinyexec: 1.1.1
       tinyglobby: 0.2.16
@@ -7405,7 +7405,7 @@ snapshots:
       unconfig-core: 7.5.0
       unrun: 0.2.36
     optionalDependencies:
-      typescript: 6.0.2
+      typescript: 6.0.3
     transitivePeerDependencies:
       - '@ts-macro/tsc'
       - '@typescript/native-preview'
@@ -7430,7 +7430,7 @@ snapshots:
 
   typed-query-selector@2.12.1: {}
 
-  typescript@6.0.2: {}
+  typescript@6.0.3: {}
 
   uint8array-extras@1.5.0: {}
 
