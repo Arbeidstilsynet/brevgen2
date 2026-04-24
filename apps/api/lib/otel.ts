@@ -1,4 +1,4 @@
-import { trace, type Attributes } from "@opentelemetry/api";
+import { metrics, trace, type Attributes } from "@opentelemetry/api";
 
 const tracer = trace.getTracer("brevgen2.api");
 
@@ -15,3 +15,9 @@ export async function withActiveSpan<T>(
     }
   });
 }
+
+const meter = metrics.getMeter("brevgen2.api");
+
+export const documentsGenerated = meter.createCounter("brevgen.documents.generated", {
+  description: "Total number of documents generated",
+});

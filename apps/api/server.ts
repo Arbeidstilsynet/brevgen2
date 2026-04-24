@@ -17,6 +17,7 @@ import {
   handlerGenerateDocument,
   ValidationError,
 } from "./lib/handler";
+import { documentsGenerated } from "./lib/otel";
 import { buildGenerateDocumentRequestContext } from "./lib/requestContext";
 import { registerSwagger } from "./swagger";
 
@@ -122,6 +123,12 @@ export async function initializeServer() {
           "genererbrev.request",
         );
         const result = await handlerGenerateDocument(request.body);
+        const template = request.body.options.dynamic.template ?? "default";
+        const outputFormat = request.body.options.as_html ? "html" : "pdf";
+        documentsGenerated.add(1, {
+          "document.template": template,
+          "document.output.format": outputFormat,
+        });
         reply.send(result);
       } catch (err) {
         request.log.error(err, "Error processing request:");
