@@ -138,7 +138,7 @@ jobs:
       - uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5
       # workaround to install oxlint-tsgolint without overriding additional_dependencies in .pre-commit-config.yaml
       - uses: Arbeidstilsynet/action-pnpm-setup@0e98d6443d6688420659cad8a415674a993516bb # v1
-      - uses: j178/prek-action@cbc2f23eb5539cf20d82d1aabd0d0ecbcc56f4e3 # v2
+      - uses: j178/prek-action@6ad80277337ad479fe43bd70701c3f7f8aa74db3 # v2
 
   testcontainer:
     needs: changes
