@@ -13,7 +13,7 @@
     "zod": "4.3.6"
   },
   "devDependencies": {
-    "@typescript/native-preview": "7.0.0-dev.20260419.1",
+    "@typescript/native-preview": "7.0.0-dev.20260426.1",
     "puppeteer-core": "24.41.0",
     "typescript": "6.0.3"
   }
