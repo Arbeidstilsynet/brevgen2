@@ -95,7 +95,7 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         if: needs.changes.outputs.brevgen2 == 'true'
-      - uses: Arbeidstilsynet/action-pnpm-setup@0e98d6443d6688420659cad8a415674a993516bb # v1
+      - uses: Arbeidstilsynet/action-pnpm-setup@72d8b6a4a6492697599795caf6bf6d3862474946 # v1
         if: needs.changes.outputs.brevgen2 == 'true'
 
       - run: pnpm typecheck
@@ -137,7 +137,7 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
       - uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5
       # workaround to install oxlint-tsgolint without overriding additional_dependencies in .pre-commit-config.yaml
-      - uses: Arbeidstilsynet/action-pnpm-setup@0e98d6443d6688420659cad8a415674a993516bb # v1
+      - uses: Arbeidstilsynet/action-pnpm-setup@72d8b6a4a6492697599795caf6bf6d3862474946 # v1
       - uses: j178/prek-action@6ad80277337ad479fe43bd70701c3f7f8aa74db3 # v2
 
   testcontainer:
@@ -152,7 +152,7 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         if: needs.changes.outputs.brevgen2 == 'true'
-      - uses: Arbeidstilsynet/action-pnpm-setup@0e98d6443d6688420659cad8a415674a993516bb # v1
+      - uses: Arbeidstilsynet/action-pnpm-setup@72d8b6a4a6492697599795caf6bf6d3862474946 # v1
         if: needs.changes.outputs.brevgen2 == 'true'
 
       - run: "pnpm test:integration"
