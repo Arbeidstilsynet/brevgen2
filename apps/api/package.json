@@ -42,7 +42,7 @@
     "@repo/typescript-config": "workspace:^",
     "@types/node": "24.12.2",
     "@types/sanitize-html": "2.16.1",
-    "@typescript/native-preview": "7.0.0-dev.20260426.1",
+    "@typescript/native-preview": "7.0.0-dev.20260427.1",
     "globals": "17.5.0",
     "pdf-text-reader": "5.1.1",
     "pdf-visual-diff": "0.15.2",
