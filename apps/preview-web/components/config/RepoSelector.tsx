@@ -1,20 +1,52 @@
 import { AzureDevOpsRepo } from "@/actions/azdo";
-import { allowedRepos, AzDoRepoWithName } from "./selectableRepos";
+import { GitHubRepo } from "@/actions/github";
+import { allowedAzDoRepos, allowedGitHubRepos, RepoWithName } from "./selectableRepos";
 
 type Props = Readonly<{
-  repos: AzureDevOpsRepo[];
-  selectedRepoName: string | null;
-  onRepoSelected: (repo: AzDoRepoWithName) => void;
+  azdoRepos: AzureDevOpsRepo[];
+  githubRepos: GitHubRepo[];
+  selectedRepoPrettyName: string | null;
+  onRepoSelected: (repo: RepoWithName) => void;
   disabled?: boolean;
+  azdoError?: boolean;
+  githubError?: boolean;
 }>;
 
-export function RepoSelector({ repos, selectedRepoName, onRepoSelected, disabled }: Props) {
-  const reposOptions: AzDoRepoWithName[] = allowedRepos
-    .map((allowedRepo) => {
-      const actualRepo = repos.find((repo) => repo.name === allowedRepo.repoName);
-      return actualRepo ? ([actualRepo, allowedRepo.prettyName] as const) : null;
-    })
-    .filter((r): r is NonNullable<typeof r> => Boolean(r));
+export function RepoSelector({
+  azdoRepos,
+  githubRepos,
+  selectedRepoPrettyName,
+  onRepoSelected,
+  disabled,
+  azdoError,
+  githubError,
+}: Props) {
+  const repoOptions: RepoWithName[] = [
+    ...allowedAzDoRepos
+      .map((info) => {
+        const actualRepo = azdoRepos.find((repo) => repo.name === info.repoName);
+        if (!actualRepo) return null;
+        return {
+          provider: "azdo" as const,
+          repo: actualRepo,
+          prettyName: info.prettyName,
+          repoInfo: info,
+        };
+      })
+      .filter((r): r is NonNullable<typeof r> => Boolean(r)),
+    ...allowedGitHubRepos
+      .map((info) => {
+        const actualRepo = githubRepos.find((repo) => repo.name === info.repoName);
+        if (!actualRepo) return null;
+        return {
+          provider: "github" as const,
+          repo: actualRepo,
+          prettyName: info.prettyName,
+          repoInfo: info,
+        };
+      })
+      .filter((r): r is NonNullable<typeof r> => Boolean(r)),
+  ].toSorted((a, b) => a.prettyName.localeCompare(b.prettyName));
 
   const base =
     "p-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition text-sm";
@@ -22,20 +54,30 @@ export function RepoSelector({ repos, selectedRepoName, onRepoSelected, disabled
   const disabledClasses = "border-gray-200 bg-gray-100 text-gray-500 cursor-not-allowed opacity-60";
 
   return (
-    <select
-      className={`${base} ${disabled ? disabledClasses : enabledClasses}`}
-      value={selectedRepoName ?? ""}
-      onChange={(e) => onRepoSelected(reposOptions.find((r) => r[1] === e.target.value)!)}
-      disabled={disabled}
-    >
-      <option value={""} disabled>
-        Velg fagsystem
-      </option>
-      {reposOptions.map((repo) => (
-        <option key={repo[1]} value={repo[1]}>
-          {repo[1]}
+    <div className="flex flex-col gap-1">
+      <select
+        className={`${base} ${disabled ? disabledClasses : enabledClasses}`}
+        value={selectedRepoPrettyName ?? ""}
+        onChange={(e) => onRepoSelected(repoOptions.find((r) => r.prettyName === e.target.value)!)}
+        disabled={disabled}
+      >
+        <option value={""} disabled>
+          Velg fagsystem
         </option>
-      ))}
-    </select>
+        {repoOptions.map((repo) => (
+          <option key={repo.prettyName} value={repo.prettyName}>
+            {repo.prettyName}
+          </option>
+        ))}
+      </select>
+      {azdoError && (
+        <span className="text-xs text-amber-700">
+          Kunne ikke hente Azure DevOps-repos (sjekk PAT)
+        </span>
+      )}
+      {githubError && (
+        <span className="text-xs text-amber-700">Kunne ikke hente GitHub-repos (sjekk PAT)</span>
+      )}
+    </div>
   );
 }

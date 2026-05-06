@@ -1,16 +1,32 @@
 import { AzureDevOpsFile, fetchFilesFromAzure } from "@/actions/azdo";
+import { fetchFilesFromGitHub, GitHubFile } from "@/actions/github";
 import { useQuery } from "@tanstack/react-query";
-import { AzDoRepoWithName } from "./selectableRepos";
-import { isAzDoFileAllowed } from "./utils";
+import type { RepoWithName } from "./selectableRepos";
+import { isFileAllowed } from "./utils";
 
-export function useGetMarkdownFilesInfo(repoWithName: AzDoRepoWithName, branch: string) {
-  const [repo, prettyName] = repoWithName;
-  return useQuery<AzureDevOpsFile[]>({
-    queryKey: ["files", repo.id, branch],
-    queryFn: () => fetchFilesFromAzure(repo.id, branch),
+interface FileInfo {
+  path: string;
+  size?: number;
+}
+
+export function useGetMarkdownFilesInfo(repoWithName: RepoWithName, branch: string) {
+  return useQuery<FileInfo[]>({
+    queryKey: ["files", repoWithName.provider, repoWithName.repo.name, branch],
+    queryFn: async () => {
+      if (repoWithName.provider === "azdo") {
+        const data = await fetchFilesFromAzure(repoWithName.repoInfo.id, branch);
+        return data.map((f: AzureDevOpsFile) => ({ path: f.path, size: f.size }));
+      }
+      const data = await fetchFilesFromGitHub(repoWithName.repo.name, branch);
+      return data.map((f: GitHubFile) => ({ path: f.path, size: f.size }));
+    },
     select: (data) =>
       data.filter((file) =>
-        isAzDoFileAllowed({ repoName: repo.name, prettyName, path: file.path }),
+        isFileAllowed({
+          repoName: repoWithName.repo.name,
+          prettyName: repoWithName.prettyName,
+          path: file.path,
+        }),
       ),
   });
 }

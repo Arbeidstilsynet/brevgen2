@@ -4,6 +4,7 @@
 
 import { fetchFileContentFromAzure } from "@/actions/azdo";
 import type { BucketFile } from "@/actions/gcp-bucket";
+import { fetchFileContentFromGitHub } from "@/actions/github";
 import { useMutation } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useEffectEvent } from "react";
@@ -17,7 +18,16 @@ export const GIT_PARAMS = {
   git: "git",
   branch: "branch",
   file: "file",
+  provider: "provider",
 } as const;
+
+type GitProvider = "azdo" | "github";
+
+function resolveProvider(providerParam: string | null): GitProvider {
+  if (providerParam === "gh") return "github";
+  // Default to azdo for backward compatibility (existing URLs without provider param)
+  return "azdo";
+}
 
 /**
  * Load a file from the workspace or Git based on seach params
@@ -33,6 +43,8 @@ export function useLoadPermanentUrl(
   const gitParam = params.get(GIT_PARAMS.git);
   const branchParam = decodeURIComponent(params.get(GIT_PARAMS.branch) ?? "");
   const fileParam = decodeURIComponent(params.get(GIT_PARAMS.file) ?? "");
+  const providerParam = params.get(GIT_PARAMS.provider);
+  const provider = resolveProvider(providerParam);
 
   // If git parameters are provided, they take precedence.
   const workspaceParamRaw = gitParam ? null : params.get(URL_SEARCH_PARAM_WORKSPACE);
@@ -45,14 +57,35 @@ export function useLoadPermanentUrl(
   } = useMutation({
     mutationFn: async () => {
       if (!gitParam || !branchParam || !fileParam) throw new TypeError("Missing Git parameters");
+      if (provider === "github") {
+        // gitParam is "owner/repo" for GitHub; extract repo name
+        const repoName = gitParam.includes("/") ? gitParam.split("/")[1] : gitParam;
+        return fetchFileContentFromGitHub(repoName, branchParam, fileParam);
+      }
       return fetchFileContentFromAzure(gitParam, branchParam, fileParam);
     },
     onSuccess: (md) => {
       const fileName = fileParam.split("/").at(-1)!;
-      const systemName =
-        allowedRepos.find(
-          (r) => r.id === gitParam && r.onlyPaths.some((p) => fileParam.includes(p)),
-        )?.prettyName ?? "unknown";
+      let systemName: string;
+
+      if (provider === "github") {
+        const repoName = gitParam!.includes("/") ? gitParam!.split("/")[1] : gitParam!;
+        systemName =
+          allowedRepos.find(
+            (r) =>
+              r.provider === "github" &&
+              r.repoName === repoName &&
+              r.onlyPaths.some((p) => fileParam.includes(p)),
+          )?.prettyName ?? "unknown";
+      } else {
+        systemName =
+          allowedRepos.find(
+            (r) =>
+              r.provider === "azdo" &&
+              r.id === gitParam &&
+              r.onlyPaths.some((p) => fileParam.includes(p)),
+          )?.prettyName ?? "unknown";
+      }
 
       onLoad(md);
       setLastLoadedFile({

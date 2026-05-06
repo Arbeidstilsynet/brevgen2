@@ -1,4 +1,5 @@
 import { GIT_PARAMS } from "../editor/useLoadPermanentUrl";
+import type { RepoInfo } from "./selectableRepos";
 import { allowedRepoNames, allowedRepos } from "./selectableRepos";
 
 const isRepoChooseable = (repoName: string) => allowedRepoNames.has(repoName);
@@ -14,7 +15,7 @@ function isPathAllowed(prettyName: string, path: string): boolean {
   return repoInfo.onlyPaths.some((p) => path.includes(p));
 }
 
-export function isAzDoFileAllowed({
+export function isFileAllowed({
   repoName,
   prettyName,
   path,
@@ -26,16 +27,37 @@ export function isAzDoFileAllowed({
   return isRepoChooseable(repoName) && isMarkdownFile(path) && isPathAllowed(prettyName, path);
 }
 
-function generatePermanentUrlGit(repoId: string, branch: string, key: string) {
+/** @deprecated Use isFileAllowed instead */
+export const isAzDoFileAllowed = isFileAllowed;
+
+function generatePermanentUrl(
+  provider: RepoInfo["provider"],
+  repoIdentifier: string,
+  branch: string,
+  key: string,
+) {
   const baseUrl = globalThis.location.origin;
   const url = new URL(baseUrl);
-  url.searchParams.set(GIT_PARAMS.git, encodeURIComponent(repoId));
+  url.searchParams.set(GIT_PARAMS.git, encodeURIComponent(repoIdentifier));
   url.searchParams.set(GIT_PARAMS.branch, encodeURIComponent(branch));
   url.searchParams.set(GIT_PARAMS.file, encodeURIComponent(key));
+  if (provider === "github") {
+    url.searchParams.set(GIT_PARAMS.provider, "gh");
+  }
   return url.toString();
 }
 
-export async function handleCopyUrlGit(repoId: string, branch: string, key: string) {
-  const url = generatePermanentUrlGit(repoId, branch, key);
+export async function handleCopyUrl(
+  provider: RepoInfo["provider"],
+  repoIdentifier: string,
+  branch: string,
+  key: string,
+) {
+  const url = generatePermanentUrl(provider, repoIdentifier, branch, key);
   await navigator.clipboard.writeText(url);
+}
+
+/** @deprecated Use handleCopyUrl instead */
+export async function handleCopyUrlGit(repoId: string, branch: string, key: string) {
+  await handleCopyUrl("azdo", repoId, branch, key);
 }

@@ -11,12 +11,13 @@ Se [api readme for oppsett i Entra](../api/README.md#konfigurasjon-av-app-i-entr
 
 ## Integrasjoner
 
-| Integrasjon           | Auth                            | Formål                        |
-| --------------------- | ------------------------------- | ----------------------------- |
-| Brevgenerator2 API    | Bearer JWT                      | Generering av PDF             |
-| Azure DevOps REST API | PAT Code:Read                   | Henting av brevmaler fra repo |
-| GCP Cloud Storage     | Application Default Credentials | Lagring av WIP brevmaler      |
-| Apertium API          | Ingen                           | Tekstoversetting              |
+| Integrasjon           | Auth                                    | Formål                        |
+| --------------------- | --------------------------------------- | ----------------------------- |
+| Brevgenerator2 API    | Bearer JWT                              | Generering av PDF             |
+| Azure DevOps REST API | PAT Code:Read                           | Henting av brevmaler fra repo |
+| GitHub REST API       | Fine-grained PAT Metadata+Contents:Read | Henting av brevmaler fra repo |
+| GCP Cloud Storage     | Application Default Credentials         | Lagring av WIP brevmaler      |
+| Apertium API          | Ingen                                   | Tekstoversetting              |
 
 ## Miljøvariabler
 
@@ -50,7 +51,8 @@ AZURE_CLIENT_SECRET=... # Ligger i Keeper
 
 
 # For å kunne hente maler fra repo
-AZURE_DEVOPS_PAT=yourPAT # trenger Code:Read
+AZURE_DEVOPS_PAT=yourAzdoPAT # trenger Code:Read
+GITHUB_PAT=yourGitHubPAT # fine-grained, trenger Metadata:read + Contents:read
 
 # For bruk av Workspace med WIP-maler
 GCP_BUCKET_NAME=at-brevgenerator2-workspace-dev
