@@ -246,7 +246,7 @@ export function Preview({
   ]);
 
   if (activePreviewTab === "md") {
-    return <pre className="whitespace-pre-wrap">{parsedMd}</pre>;
+    return <pre className="whitespace-pre-wrap overflow-auto h-full">{parsedMd}</pre>;
   }
 
   if (activePreviewTab === "html") {
