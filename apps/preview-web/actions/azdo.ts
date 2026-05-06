@@ -52,12 +52,6 @@ export async function fetchReposFromAzure(): Promise<AzureDevOpsRepo[]> {
   return data.value.filter((r) => !r.isDisabled);
 }
 
-export interface AzureDevOpsFile {
-  path: string;
-  isFolder: boolean;
-  size: number;
-}
-
 interface AzureDevOpsBranch {
   name: string;
 }
@@ -79,6 +73,10 @@ export async function fetchBranchesFromAzure(repoId: string): Promise<string[]> 
 
   const data = (await response.json()) as AzureDevOpsBranchesResponse;
   return data.value.map((branch) => branch.name);
+}
+
+interface AzureDevOpsFile {
+  path: string;
 }
 
 interface AzureDevOpsFilesResponse {

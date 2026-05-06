@@ -2,6 +2,7 @@
 
 import { requireSession } from "@/auth";
 import { createAppAuth } from "@octokit/auth-app";
+import { Octokit } from "@octokit/rest";
 
 const organization = "Arbeidstilsynet";
 
@@ -29,97 +30,60 @@ export async function getGitHubToken(): Promise<string> {
   return auth.token;
 }
 
-async function githubFetch(
-  /**
-   * Full URL to GitHub API endpoint, e.g. https://api.github.com/orgs/{org}/repos
-   */
-  url: string,
-  /**
-   * https://docs.github.com/en/rest/using-the-rest-api/getting-started-with-the-rest-api?apiVersion=2026-03-10#media-types
-   */
-  accept = "application/vnd.github+json",
-) {
+async function getOctokit(): Promise<Octokit> {
   await requireSession();
   const token = await getGitHubToken();
-  return await fetch(url, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: accept,
-      "X-GitHub-Api-Version": "2026-03-10",
-    },
-    cache: "no-store",
-  });
+  return new Octokit({ auth: token });
 }
 
 export interface GitHubRepo {
   name: string;
   full_name: string;
   default_branch: string;
-  html_url: string;
-  disabled: boolean;
-  archived: boolean;
 }
 
 export async function fetchReposFromGitHub(): Promise<GitHubRepo[]> {
-  const url = `https://api.github.com/orgs/${organization}/repos?per_page=100`;
-  const response = await githubFetch(url);
-
-  if (!response.ok) {
-    console.error(await response.text());
-    throw new Error(
-      `Failed to fetch repositories from GitHub, status: ${response.status} ${response.statusText}`,
-    );
-  }
-
-  const data = (await response.json()) as GitHubRepo[];
-  return data.filter((r) => !r.disabled);
-}
-
-interface GitHubBranch {
-  name: string;
+  const octokit = await getOctokit();
+  const repos = await octokit.paginate(octokit.repos.listForOrg, {
+    org: organization,
+    per_page: 100,
+  });
+  return repos
+    .filter((r) => !r.disabled)
+    .map((r) => ({
+      name: r.name,
+      full_name: r.full_name,
+      default_branch: r.default_branch ?? "main",
+    }));
 }
 
 export async function fetchBranchesFromGitHub(repo: string): Promise<string[]> {
-  const url = `https://api.github.com/repos/${organization}/${repo}/branches?per_page=100`;
-  const response = await githubFetch(url);
-
-  if (!response.ok) {
-    console.error(await response.text());
-    throw new Error(
-      `Failed to fetch branches from GitHub for ${repo}, status: ${response.status} ${response.statusText}`,
-    );
-  }
-
-  const data = (await response.json()) as GitHubBranch[];
-  return data.map((branch) => branch.name);
+  const octokit = await getOctokit();
+  const branches = await octokit.paginate(octokit.repos.listBranches, {
+    owner: organization,
+    repo,
+    per_page: 100,
+  });
+  return branches.map((branch) => branch.name);
 }
 
-export interface GitHubFile {
+interface GitHubFile {
   path: string;
-  type: "blob" | "tree";
-  size?: number;
-}
-
-interface GitHubTreeResponse {
-  sha: string;
-  url: string;
-  tree: GitHubFile[];
-  truncated: boolean;
 }
 
 export async function fetchFilesFromGitHub(repo: string, branch: string): Promise<GitHubFile[]> {
-  const url = `https://api.github.com/repos/${organization}/${repo}/git/trees/${encodeURIComponent(branch)}?recursive=1`;
-  const response = await githubFetch(url);
-
-  if (!response.ok) {
-    console.error(await response.text());
-    throw new Error(
-      `Failed to fetch files from GitHub for ${repo}/${branch}, status: ${response.status} ${response.statusText}`,
-    );
-  }
-
-  const data = (await response.json()) as GitHubTreeResponse;
-  return data.tree.filter((item) => item.type === "blob");
+  const octokit = await getOctokit();
+  const { data } = await octokit.git.getTree({
+    owner: organization,
+    repo,
+    tree_sha: branch,
+    recursive: "1",
+  });
+  return data.tree
+    .filter((item) => item.type === "blob")
+    .map((item) => ({
+      path: item.path,
+    }));
 }
 
 export async function fetchFileContentFromGitHub(
@@ -127,18 +91,16 @@ export async function fetchFileContentFromGitHub(
   branch: string,
   filePath: string,
 ): Promise<string> {
-  await requireSession();
-  const url = `https://api.github.com/repos/${organization}/${repo}/contents/${encodeURIComponent(filePath)}?ref=${encodeURIComponent(branch)}`;
-  const response = await githubFetch(url, "application/vnd.github.raw+json");
-
-  if (!response.ok) {
-    console.error(await response.text());
-    throw new Error(
-      `Failed to fetch file content from GitHub for ${repo}/${filePath}, status: ${response.status} ${response.statusText}`,
-    );
-  }
-
-  return await response.text();
+  const octokit = await getOctokit();
+  const { data } = await octokit.repos.getContent({
+    owner: organization,
+    repo,
+    path: filePath,
+    ref: branch,
+    mediaType: { format: "raw" },
+  });
+  // When format is "raw", Octokit returns a plain string but the types don't reflect this
+  return data as unknown as string;
 }
 
 export async function fetchManyFileContentFromGitHub(
