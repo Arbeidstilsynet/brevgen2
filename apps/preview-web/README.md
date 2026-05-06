@@ -75,18 +75,15 @@ Det krever at `docker build` kjøres fra roten av monorepo: `docker build . -t b
 
 > NB: for å kunne bygge i Windows 10/11 må developer mode være påskrudd for at [preconstruct](https://github.com/preconstruct/preconstruct) skal kunne opprette symlinks.
 >
-`System -> For developers -> Developer Mode -> On`
-Dette har vært et issue med Next og pnpm i flere år: <https://github.com/vercel/next.js/issues/40760#issuecomment-2156242160>
+> `System -> For developers -> Developer Mode -> On`
 >
->
+> Dette har vært et issue med Next og pnpm i flere år: <https://github.com/vercel/next.js/issues/40760#issuecomment-2156242160>
+
 Build:
 
-> ```sh
->
+```sh
 # cd to felles-brevgenerator root
-
 docker build . -t brevgen2-web -f apps/preview-web/Dockerfile
-
 ```
 
 Run:
