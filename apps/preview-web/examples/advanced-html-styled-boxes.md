@@ -1,4 +1,4 @@
-<div style="background: #e8f0fe; border-left: 4px solid #4285f4; padding: 16px; margin-bottom: 24px; border-radius: 4px;">
+<div style="break-after: page; background: #e8f0fe; border-left: 4px solid #4285f4; padding: 16px; margin-bottom: 24px; border-radius: 4px;">
 
 **Eksempelmal: Stilede bokser og fleksibelt layout med HTML**
 
@@ -44,7 +44,7 @@ Vi viser til vår telefonsamtale med Kari Nordmann den 15.04.2026.
 ## Hva vi skal kontrollere
 
 <div style="display: flex; gap: 16px; margin: 16px 0;">
-<div style="flex: 1; border: 1px solid #ddd; border-radius: 4px; padding: 16px;">
+<div style="flex: 1; border: 1px solid #b8daff; border-radius: 8px; padding: 20px; background: linear-gradient(to bottom, #e8f4fd, #ffffff);">
 
 ### Arbeidsmiljø
 
@@ -53,7 +53,7 @@ Vi viser til vår telefonsamtale med Kari Nordmann den 15.04.2026.
 - {{ if ekstraTema :: {{ ekstraTema }} }}
 
 </div>
-<div style="flex: 1; border: 1px solid #ddd; border-radius: 4px; padding: 16px;">
+<div style="flex: 1; border: 1px solid #c3e6cb; border-radius: 8px; padding: 20px; background: linear-gradient(to bottom, #eaf6ec, #ffffff);">
 
 ### HMS-arbeid
 
