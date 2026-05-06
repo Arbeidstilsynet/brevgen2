@@ -6,7 +6,7 @@ const organization = "Atil-utvikling";
 const project = "Produkter og tjenester";
 const token = process.env.AZURE_DEVOPS_PAT;
 
-async function azdoFetch(url: string) {
+async function azdoFetch(url: string, { expectJson = true }: { expectJson?: boolean } = {}) {
   await requireSession();
   if (!token) {
     throw new Error("AZURE_DEVOPS_PAT er ikke konfigurert");
@@ -22,9 +22,11 @@ async function azdoFetch(url: string) {
     throw new Error(`Azure DevOps: ${response.status} ${response.statusText}`);
   }
 
-  const contentType = response.headers.get("content-type") ?? "";
-  if (!contentType.includes("application/json")) {
-    throw new Error("Azure DevOps returnerte uventet svar — sjekk at PAT er gyldig");
+  if (expectJson) {
+    const contentType = response.headers.get("content-type") ?? "";
+    if (!contentType.includes("application/json")) {
+      throw new Error("Azure DevOps returnerte uventet svar — sjekk at PAT er gyldig");
+    }
   }
 
   return response;
@@ -104,7 +106,7 @@ export async function fetchFileContentFromAzure(
     filePath,
   )}&versionDescriptor.version=${encodeURIComponent(branch)}&api-version=7.1`;
 
-  const response = await azdoFetch(url);
+  const response = await azdoFetch(url, { expectJson: false });
 
   return await response.text();
 }
