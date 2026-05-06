@@ -40,11 +40,10 @@ export function useLoadPermanentUrl(
   const params = useSearchParams();
   const { addToast } = useToast();
 
-  const gitParam = params.get(GIT_PARAMS.git);
+  const provider = resolveProvider(params.get(GIT_PARAMS.provider));
+  const gitParam = decodeURIComponent(params.get(GIT_PARAMS.git) ?? "") || null;
   const branchParam = decodeURIComponent(params.get(GIT_PARAMS.branch) ?? "");
   const fileParam = decodeURIComponent(params.get(GIT_PARAMS.file) ?? "");
-  const providerParam = params.get(GIT_PARAMS.provider);
-  const provider = resolveProvider(providerParam);
 
   // If git parameters are provided, they take precedence.
   const workspaceParamRaw = gitParam ? null : params.get(URL_SEARCH_PARAM_WORKSPACE);

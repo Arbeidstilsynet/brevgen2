@@ -38,12 +38,10 @@ function generatePermanentUrl(
 ) {
   const baseUrl = globalThis.location.origin;
   const url = new URL(baseUrl);
+  url.searchParams.set(GIT_PARAMS.provider, provider === "github" ? "gh" : "azdo");
   url.searchParams.set(GIT_PARAMS.git, encodeURIComponent(repoIdentifier));
   url.searchParams.set(GIT_PARAMS.branch, encodeURIComponent(branch));
   url.searchParams.set(GIT_PARAMS.file, encodeURIComponent(key));
-  if (provider === "github") {
-    url.searchParams.set(GIT_PARAMS.provider, "gh");
-  }
   return url.toString();
 }
 
