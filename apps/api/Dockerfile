@@ -42,6 +42,12 @@ RUN echo "deb http://security.debian.org/debian-security bookworm-security main"
 
 # Copy custom fonts
 COPY apps/api/fonts/*.ttf /usr/share/fonts/truetype/custom/
+
+# Download OpenMoji color emoji font (COLRv1, vector-based, Chromium-compatible)
+# renovate: datasource=github-releases depName=hfg-gmuend/openmoji
+ARG OPENMOJI_VERSION="17.0.0"
+ADD "https://github.com/hfg-gmuend/openmoji/raw/${OPENMOJI_VERSION}/font/OpenMoji-color-glyf_colr_1/OpenMoji-color-glyf_colr_1.ttf" /usr/share/fonts/truetype/custom/OpenMoji-color-glyf_colr_1.ttf
+
 RUN fc-cache -fv
 
 ENV NODE_ENV=production
