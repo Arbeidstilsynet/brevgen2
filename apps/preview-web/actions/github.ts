@@ -4,7 +4,6 @@ import { requireSession } from "@/auth";
 import { createAppAuth } from "@octokit/auth-app";
 
 const organization = "Arbeidstilsynet";
-const token = process.env.GITHUB_PAT;
 
 const appAuth =
   process.env.GITHUB_APP_ID &&
@@ -12,7 +11,7 @@ const appAuth =
   process.env.GITHUB_APP_PRIVATE_KEY
     ? createAppAuth({
         appId: process.env.GITHUB_APP_ID,
-        installationId: Number(process.env.GITHUB_APP_INSTALLATION_ID),
+        installationId: process.env.GITHUB_APP_INSTALLATION_ID,
         privateKey: process.env.GITHUB_APP_PRIVATE_KEY.replaceAll(String.raw`\n`, "\n"),
       })
     : null;
@@ -41,11 +40,12 @@ async function githubFetch(
   accept = "application/vnd.github+json",
 ) {
   await requireSession();
+  const token = await getGitHubToken();
   return await fetch(url, {
     headers: {
       Authorization: `Bearer ${token}`,
       Accept: accept,
-      "X-GitHub-Api-Version": "2022-11-28",
+      "X-GitHub-Api-Version": "2026-03-10",
     },
     cache: "no-store",
   });
