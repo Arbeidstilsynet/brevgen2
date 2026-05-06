@@ -1,4 +1,4 @@
-<div style="break-after: page; background: #e8f0fe; border-left: 4px solid #4285f4; padding: 16px; margin-bottom: 24px; border-radius: 4px;">
+<div style="break-after: page; background: #e8f0fe; border-left: 4px solid #4285f4; padding: 4px 16px; margin-bottom: 24px; border-radius: 4px;">
 
 **Eksempelmal: Rapportoppsett med HTML**
 
@@ -6,7 +6,7 @@ Denne malen viser hvordan HTML og Markdown kan kombineres for å lage et struktu
 
 - Flexbox-header med metadata fordelt over to kolonner
 - Tabellrader levert som én variabel med ferdiggenerert HTML (`deltakerRader`)
-- Fargekodede statusbokser styrt av `if`-logikk med likhet (`hmsStatus == avvik`)
+- Fargekodede statusbokser styrt av `if`-logikk
 - Oppsummeringstabell med betinget innhold på én linje
 - Sideskift med `break-before: page` og `break-after: avoid`
 - Tokolonners kontaktlayout med `vertical-align: top`

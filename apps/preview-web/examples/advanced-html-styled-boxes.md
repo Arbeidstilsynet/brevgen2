@@ -1,4 +1,4 @@
-<div style="break-after: page; background: #e8f0fe; border-left: 4px solid #4285f4; padding: 16px; margin-bottom: 24px; border-radius: 4px;">
+<div style="break-after: page; background: #e8f0fe; border-left: 4px solid #4285f4; padding: 4px 16px; margin-bottom: 24px; border-radius: 4px;">
 
 **Eksempelmal: Stilede bokser og fleksibelt layout med HTML**
 
