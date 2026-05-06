@@ -81,7 +81,7 @@ export const allowedRepos: RepoInfo[] = (
     },
     {
       provider: "azdo",
-      id: "5a6eba39-5583-47b0-8c07-0f40b71c38c3",
+      id: "89bdfde2-71d1-4251-86fe-9c493a94e002",
       repoName: "asbest-saksbehandling",
       prettyName: "Asbest",
       onlyPaths: ["src/RegistrerSøknad/SendKvittering/Brevmaler"],
