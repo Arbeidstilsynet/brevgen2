@@ -116,41 +116,45 @@ export function SelectCombobox<T extends string = string>({
     [searchString, activeIndex, options, isOpen, open],
   );
 
+  const handleClosedKeyDown = (e: React.KeyboardEvent) => {
+    const { key } = e;
+    switch (key) {
+      case "ArrowDown":
+      case "ArrowUp":
+      case "Enter":
+      case " ":
+        e.preventDefault();
+        open();
+        if (key === "ArrowUp" && options.length > 0) {
+          setActiveIndex(0);
+        }
+        return;
+      case "Home":
+        e.preventDefault();
+        open();
+        setActiveIndex(0);
+        return;
+      case "End":
+        e.preventDefault();
+        open();
+        setActiveIndex(options.length - 1);
+        return;
+    }
+
+    if (key.length === 1 && key !== " ") {
+      findOptionByChar(key);
+    }
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (disabled) return;
 
-    const { key } = e;
-
     if (!isOpen) {
-      switch (key) {
-        case "ArrowDown":
-        case "ArrowUp":
-        case "Enter":
-        case " ":
-          e.preventDefault();
-          open();
-          if (key === "ArrowUp" && options.length > 0) {
-            setActiveIndex(0);
-          }
-          return;
-        case "Home":
-          e.preventDefault();
-          open();
-          setActiveIndex(0);
-          return;
-        case "End":
-          e.preventDefault();
-          open();
-          setActiveIndex(options.length - 1);
-          return;
-      }
-
-      if (key.length === 1 && key !== " ") {
-        findOptionByChar(key);
-        return;
-      }
+      handleClosedKeyDown(e);
       return;
     }
+
+    const { key } = e;
 
     // Listbox is open
     switch (key) {
