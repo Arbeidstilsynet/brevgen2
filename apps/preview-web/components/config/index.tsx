@@ -128,7 +128,7 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
       {(activeTab === "fileSelect" || activeTab === "loadExamples") && (
         <>
           <h2 className="text-xl font-semibold">
-            Last inn dokument fra {activeTab === "fileSelect" ? "versjonskontroll" : "eksempler"}
+            Last ned brevmal fra {activeTab === "fileSelect" ? "versjonskontroll" : "eksempler"}
           </h2>
           <div
             className="bg-yellow-100 border-l-4 border-yellow-500 text-gray-900 p-4 mb-4"
@@ -161,7 +161,7 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
                 onBranchSelect={(b) => setSelectedBranch(b)}
               />
 
-              <h3 className="text-l font-semibold">Velg en Markdown-fil</h3>
+              <h3 className="text-l font-semibold">Velg brevmal</h3>
               <FileSelector
                 repoWithName={selectedRepo}
                 branch={selectedBranch}

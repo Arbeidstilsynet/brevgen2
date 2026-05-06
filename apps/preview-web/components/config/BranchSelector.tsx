@@ -1,3 +1,6 @@
+import { useMemo } from "react";
+import { type ComboboxOption, SelectCombobox } from "../SelectCombobox";
+
 type Props = Readonly<{
   branches: string[];
   selectedBranch: string;
@@ -5,20 +8,18 @@ type Props = Readonly<{
 }>;
 
 export function BranchSelector({ branches, selectedBranch, onBranchSelect }: Props) {
+  const options: ComboboxOption[] = useMemo(
+    () => branches.map((b) => ({ value: b, label: b })),
+    [branches],
+  );
+
   return (
-    <select
-      className="p-2 border border-gray-300 rounded-sm"
+    <SelectCombobox
+      label="Kodegren"
+      options={options}
       value={selectedBranch}
-      onChange={(e) => onBranchSelect(e.target.value)}
-    >
-      <option value="" disabled>
-        Velg kodegren
-      </option>
-      {branches.map((branch) => (
-        <option key={branch} value={branch}>
-          {branch}
-        </option>
-      ))}
-    </select>
+      onChange={onBranchSelect}
+      placeholder="Velg kodegren"
+    />
   );
 }
