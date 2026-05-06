@@ -24,6 +24,7 @@ spec:
     - secret: azure-devops-pat-code-read # AZURE_DEVOPS_PAT
     - secret: brevgen2-azure-app-client-secret # AZURE_CLIENT_SECRET
     - secret: brevgen2-authjs-secret # AUTH_SECRET
+    - secret: brevgen2-github-app-contents-read # GITHUB_APP_ID, GITHUB_APP_INSTALLATION_ID, GITHUB_APP_PRIVATE_KEY
   ingresses:
     - "{{web.ingress}}"
   accessPolicy:
