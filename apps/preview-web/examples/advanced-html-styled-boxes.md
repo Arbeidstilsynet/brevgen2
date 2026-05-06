@@ -1,3 +1,19 @@
+<div style="background: #e8f0fe; border-left: 4px solid #4285f4; padding: 16px; margin-bottom: 24px; border-radius: 4px;">
+
+**Eksempelmal: Stilede bokser og fleksibelt layout med HTML**
+
+Denne malen viser hvordan HTML-elementer kan brukes til å lage visuelt rike dokumenter. Teknikker som demonstreres:
+
+- Informasjonsbanner med **bakgrunnsfarge og avrundede hjørner**
+- Tokolonners kortlayout med **flexbox** og Markdown-innhold inni `<div>`-er
+- Nummererte lister med tilpasset linjehøyde i `<ol>`
+- Varselboks med **rød ramme** for viktig informasjon
+- Tabell med deltakere (hardkodede eksempler — i praksis genererer fagsystemet rader fra en liste)
+- Markdown-tabell inne i en stilet `<div>`-beholder
+- Betinget visning av tabellrader og listeinnhold med `if`-logikk
+
+</div>
+
 # Varsel om tilsyn
 
 <div style="background-color: #e8f4fd; border: 1px solid #b8daff; border-radius: 4px; padding: 16px; margin: 16px 0;">
@@ -5,7 +21,7 @@
   Arbeidstilsynet vil gjennomføre tilsyn hos {{ virksomhetNavn }} på adressen {{ tilsynsAdresse }}.
 </div>
 
-Vi viser til vår telefonsamtale med {{ kontaktperson }} den {{ kontaktDato }}.
+Vi viser til vår telefonsamtale med Kari Nordmann den 15.04.2026.
 
 ## Hva vi skal kontrollere
 
@@ -16,7 +32,7 @@ Vi viser til vår telefonsamtale med {{ kontaktperson }} den {{ kontaktDato }}.
 
 - Fysisk arbeidsmiljø
 - Psykososialt arbeidsmiljø
-- {{ if ekstraTemaArbeidsmiljo :: {{ ekstraTemaArbeidsmiljo }} }}
+- {{ if ekstraTema :: {{ ekstraTema }} }}
 
 </div>
 <div style="flex: 1; border: 1px solid #ddd; border-radius: 4px; padding: 16px;">
@@ -25,7 +41,6 @@ Vi viser til vår telefonsamtale med {{ kontaktperson }} den {{ kontaktDato }}.
 
 - Internkontrollsystemet
 - Verneombud og AMU
-- {{ if ekstraTemaHMS :: {{ ekstraTemaHMS }} }}
 
 </div>
 </div>
@@ -37,8 +52,8 @@ Vi viser til vår telefonsamtale med {{ kontaktperson }} den {{ kontaktDato }}.
   <li>Organisasjonskart med oversikt over ansvarsforhold</li>
   <li>Skriftlig dokumentasjon av HMS-systemet (internkontroll)</li>
   <li>Oversikt over verneombud og arbeidsmiljøutvalg</li>
-  <li>Risikovurderinger knyttet til {{ risikoTema }}</li>
-  <li>{{ if ekstraDokument :: {{ ekstraDokument }} }}</li>
+  <li>Risikovurderinger knyttet til kjemisk arbeidsmiljø</li>
+  <li>Dokumentasjon på gjennomført opplæring</li>
 </ol>
 }}
 

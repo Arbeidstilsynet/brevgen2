@@ -1,3 +1,17 @@
+<div style="background: #e8f0fe; border-left: 4px solid #4285f4; padding: 16px; margin-bottom: 24px; border-radius: 4px;">
+
+**Eksempelmal: Rapportoppsett med HTML**
+
+Denne malen viser hvordan HTML og Markdown kan kombineres for å lage et strukturert rapportdokument. Teknikker som demonstreres:
+
+- Toppbanner med metadata i **flexbox-layout**
+- Deltakertabell med hardkodede eksempelrader (i praksis vil fagsystemet generere HTML-rader basert på en liste)
+- Fargekodede statusbokser med **betinget visning** (`if`-logikk)
+- Oppsummeringstabell med betinget innhold på én linje
+- Kontroll av **sideskift** med `break-before: page`
+
+</div>
+
 # Rapport fra tilsyn – {{ virksomhetNavn }}
 
 <div style="display: flex; justify-content: space-between; margin-bottom: 24px; padding: 16px; background: #f8f9fa; border-radius: 4px;">
@@ -22,13 +36,13 @@ Arbeidstilsynet gjennomførte tilsyn hos {{ virksomhetNavn }} den {{ tilsynsDato
     <th style="text-align: left; padding: 8px; border-bottom: 2px solid #333; width: 30%;">Representerer</th>
   </tr>
   <tr>
-    <td style="padding: 8px; border-bottom: 1px solid #eee;">{{ deltaker1Navn }}</td>
-    <td style="padding: 8px; border-bottom: 1px solid #eee;">{{ deltaker1Rolle }}</td>
+    <td style="padding: 8px; border-bottom: 1px solid #eee;">Kari Nordmann</td>
+    <td style="padding: 8px; border-bottom: 1px solid #eee;">Daglig leder</td>
     <td style="padding: 8px; border-bottom: 1px solid #eee;">{{ virksomhetNavn }}</td>
   </tr>
   <tr>
-    <td style="padding: 8px; border-bottom: 1px solid #eee;">{{ deltaker2Navn }}</td>
-    <td style="padding: 8px; border-bottom: 1px solid #eee;">{{ deltaker2Rolle }}</td>
+    <td style="padding: 8px; border-bottom: 1px solid #eee;">Per Hansen</td>
+    <td style="padding: 8px; border-bottom: 1px solid #eee;">Verneombud</td>
     <td style="padding: 8px; border-bottom: 1px solid #eee;">{{ virksomhetNavn }}</td>
   </tr>
   <tr>

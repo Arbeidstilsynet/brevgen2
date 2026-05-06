@@ -1,3 +1,18 @@
+<div style="background: #e8f0fe; border-left: 4px solid #4285f4; padding: 16px; margin-bottom: 24px; border-radius: 4px;">
+
+**Eksempelmal: Tabeller og stilede bokser med HTML**
+
+Denne malen viser hvordan HTML-tabeller og stilede elementer kan brukes sammen med Markdown. Teknikker som demonstreres:
+
+- Tabeller med **rammer, bakgrunnsfarger og `colspan`**
+- Fargede venstrekant-bokser for å fremheve avvik
+- Advarselsbokser med **bakgrunnsfarge og avrundede hjørner**
+- Tokolonners layout med tabell for kontaktinformasjon
+- Betinget visning av hele seksjoner med `if`-logikk
+- Tabellrader med hardkodede eksempler (i praksis genererer fagsystemet HTML-rader basert på data)
+
+</div>
+
 # Vedtak om pålegg etter tilsyn
 
 Vi viser til tilsynet hos {{ virksomhetNavn }} den {{ tilsynsDato }}.
@@ -16,15 +31,15 @@ Vi viser til tilsynet hos {{ virksomhetNavn }} den {{ tilsynsDato }}.
   <tbody>
     <tr>
       <td style="border: 1px solid #333; padding: 8px;">1</td>
-      <td style="border: 1px solid #333; padding: 8px;">{{ tema1 }}</td>
+      <td style="border: 1px solid #333; padding: 8px;">Kjemisk arbeidsmiljø</td>
       <td style="border: 1px solid #333; padding: 8px;">Arbeidsmiljøloven § 4-1</td>
-      <td style="border: 1px solid #333; padding: 8px;">{{ frist1 }}</td>
+      <td style="border: 1px solid #333; padding: 8px;">01.07.2026</td>
     </tr>
     <tr>
       <td style="border: 1px solid #333; padding: 8px;">2</td>
-      <td style="border: 1px solid #333; padding: 8px;">{{ tema2 }}</td>
+      <td style="border: 1px solid #333; padding: 8px;">Systematisk HMS-arbeid</td>
       <td style="border: 1px solid #333; padding: 8px;">Arbeidsmiljøloven § 3-1</td>
-      <td style="border: 1px solid #333; padding: 8px;">{{ frist2 }}</td>
+      <td style="border: 1px solid #333; padding: 8px;">15.08.2026</td>
     </tr>
     <tr>
       <td style="border: 1px solid #333; padding: 8px;" colspan="4"><em>Ytterligere detaljer følger nedenfor</em></td>
@@ -32,7 +47,7 @@ Vi viser til tilsynet hos {{ virksomhetNavn }} den {{ tilsynsDato }}.
   </tbody>
 </table>
 
-## Pålegg 1 – {{ tema1 }}
+## Pålegg 1 – Kjemisk arbeidsmiljø
 
 ### Hva vi fant
 
@@ -40,7 +55,7 @@ Under tilsynet avdekket vi følgende avvik:
 
 <div style="border-left: 4px solid #c00; padding-left: 12px; margin: 16px 0;">
 
-**Avvik:** {{ avvikBeskrivelse1 }}
+**Avvik:** Virksomheten mangler oppdaterte risikovurderinger for bruk av kjemikalier i produksjonen.
 
 **Hjemmel:** Arbeidsmiljøloven § 4-1 (1)
 
@@ -50,25 +65,25 @@ Under tilsynet avdekket vi følgende avvik:
 
 Dere må dokumentere at {{ virksomhetNavn }} har:
 
-1. Kartlagt risikoen knyttet til {{ tema1 }}
+1. Kartlagt risikoen knyttet til kjemisk arbeidsmiljø
 2. Vurdert risikoen og iverksatt tiltak
 3. Dokumentert tiltakene i en handlingsplan
 
 ### Frist
 
 <p style="background-color: #fff3cd; padding: 12px; border: 1px solid #ffc107; border-radius: 4px;">
-  <strong>Frist for å etterkomme pålegget:</strong> {{ frist1 }}
+  <strong>Frist for å etterkomme pålegget:</strong> 01.07.2026
 </p>
 
 {{ if harPaalegg2 ::
 
-## Pålegg 2 – {{ tema2 }}
+## Pålegg 2 – Systematisk HMS-arbeid
 
 ### Hva vi fant
 
 <div style="border-left: 4px solid #c00; padding-left: 12px; margin: 16px 0;">
 
-**Avvik:** {{ avvikBeskrivelse2 }}
+**Avvik:** Virksomheten har ikke gjennomført årlig gjennomgang av internkontrollsystemet.
 
 **Hjemmel:** Arbeidsmiljøloven § 3-1 (2) bokstav c
 
@@ -77,7 +92,7 @@ Dere må dokumentere at {{ virksomhetNavn }} har:
 ### Frist
 
 <p style="background-color: #fff3cd; padding: 12px; border: 1px solid #ffc107; border-radius: 4px;">
-  <strong>Frist for å etterkomme pålegget:</strong> {{ frist2 }}
+  <strong>Frist for å etterkomme pålegget:</strong> 15.08.2026
 </p>
 }}
 
