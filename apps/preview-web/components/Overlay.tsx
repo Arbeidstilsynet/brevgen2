@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 
 type Props = Readonly<{
   children: React.ReactNode;
@@ -12,19 +12,16 @@ type Props = Readonly<{
 export function Overlay({ children, widthPercent = 80, heightPercent = 80, onClose }: Props) {
   const modalRef = useRef<HTMLDivElement | null>(null);
 
-  const handleBackdropClick = useCallback(
-    (event: React.MouseEvent<HTMLDivElement>) => {
-      if (event.target !== event.currentTarget) return;
+  const handleBackdropClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (event.target !== event.currentTarget) return;
 
-      const path = event.nativeEvent.composedPath();
-      if (path.some((el) => el instanceof HTMLElement && el.dataset.ignoreOutside)) {
-        return;
-      }
+    const path = event.nativeEvent.composedPath();
+    if (path.some((el) => el instanceof HTMLElement && el.dataset.ignoreOutside)) {
+      return;
+    }
 
-      onClose();
-    },
-    [onClose],
-  );
+    onClose();
+  };
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {

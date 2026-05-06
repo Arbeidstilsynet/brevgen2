@@ -1,7 +1,6 @@
 import { AzureDevOpsRepo } from "@/actions/azdo";
 import { GitHubRepo } from "@/actions/github";
 import Image from "next/image";
-import { useMemo } from "react";
 import { type ComboboxOption, SelectCombobox } from "../SelectCombobox";
 import {
   allowedAzDoRepos,
@@ -45,24 +44,16 @@ export function RepoSelector({
   azdoError,
   githubError,
 }: Props) {
-  const repoOptions = useMemo(
-    () =>
-      [
-        ...matchRepos(allowedAzDoRepos, azdoRepos, "azdo"),
-        ...matchRepos(allowedGitHubRepos, githubRepos, "github"),
-      ].toSorted((a, b) => a.prettyName.localeCompare(b.prettyName)),
-    [azdoRepos, githubRepos],
-  );
+  const repoOptions = [
+    ...matchRepos(allowedAzDoRepos, azdoRepos, "azdo"),
+    ...matchRepos(allowedGitHubRepos, githubRepos, "github"),
+  ].toSorted((a, b) => a.prettyName.localeCompare(b.prettyName));
 
-  const comboboxOptions: ComboboxOption[] = useMemo(
-    () =>
-      repoOptions.map((r) => ({
-        value: r.prettyName,
-        label: r.prettyName,
-        icon: r.provider === "github" ? GitHubIcon : AzureDevOpsIcon,
-      })),
-    [repoOptions],
-  );
+  const comboboxOptions: ComboboxOption[] = repoOptions.map((r) => ({
+    value: r.prettyName,
+    label: r.prettyName,
+    icon: r.provider === "github" ? GitHubIcon : AzureDevOpsIcon,
+  }));
 
   return (
     <div className="flex flex-col gap-1">

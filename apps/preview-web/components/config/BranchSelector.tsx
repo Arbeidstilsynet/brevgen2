@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { type ComboboxOption, SelectCombobox } from "../SelectCombobox";
 
 type Props = Readonly<{
@@ -8,10 +7,7 @@ type Props = Readonly<{
 }>;
 
 export function BranchSelector({ branches, selectedBranch, onBranchSelect }: Props) {
-  const options: ComboboxOption[] = useMemo(
-    () => branches.map((b) => ({ value: b, label: b })),
-    [branches],
-  );
+  const options: ComboboxOption[] = branches.map((b) => ({ value: b, label: b }));
 
   return (
     <SelectCombobox

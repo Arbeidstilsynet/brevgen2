@@ -1,6 +1,6 @@
 "use client";
 
-import { type ReactNode, useCallback, useEffect, useId, useRef, useState } from "react";
+import { type ReactNode, useEffect, useId, useRef, useState } from "react";
 
 export interface ComboboxOption<T extends string = string> {
   value: T;
@@ -43,29 +43,26 @@ export function SelectCombobox<T extends string = string>({
   const selectedOption = options.find((o) => o.value === value);
   const activeOptionId = activeIndex >= 0 ? `${id}-option-${activeIndex}` : undefined;
 
-  const open = useCallback(() => {
+  const open = () => {
     if (disabled) return;
     setIsOpen(true);
     const idx = options.findIndex((o) => o.value === value);
     setActiveIndex(Math.max(idx, 0));
-  }, [disabled, options, value]);
+  };
 
-  const close = useCallback(() => {
+  const close = () => {
     setIsOpen(false);
     setActiveIndex(-1);
-  }, []);
+  };
 
-  const selectOption = useCallback(
-    (index: number) => {
-      const option = options[index];
-      if (option) {
-        onChange(option.value);
-      }
-      close();
-      comboRef.current?.focus();
-    },
-    [options, onChange, close],
-  );
+  const selectOption = (index: number) => {
+    const option = options[index];
+    if (option) {
+      onChange(option.value);
+    }
+    close();
+    comboRef.current?.focus();
+  };
 
   // Scroll active option into view
   useEffect(() => {
@@ -74,47 +71,44 @@ export function SelectCombobox<T extends string = string>({
     optionEl?.scrollIntoView({ block: "nearest" });
   }, [activeIndex, id, isOpen]);
 
-  const findOptionByChar = useCallback(
-    (char: string) => {
-      const newSearch = searchString + char;
-      setSearchString(newSearch);
+  const findOptionByChar = (char: string) => {
+    const newSearch = searchString + char;
+    setSearchString(newSearch);
 
-      clearTimeout(searchTimeoutRef.current);
-      searchTimeoutRef.current = setTimeout(() => setSearchString(""), 500);
+    clearTimeout(searchTimeoutRef.current);
+    searchTimeoutRef.current = setTimeout(() => setSearchString(""), 500);
 
-      // Find first match starting after current active index
-      const startIndex = Math.max(activeIndex, 0);
-      const allRepeated = newSearch.length > 1 && new Set(newSearch).size === 1;
+    // Find first match starting after current active index
+    const startIndex = Math.max(activeIndex, 0);
+    const allRepeated = newSearch.length > 1 && new Set(newSearch).size === 1;
 
-      let matchIndex: number;
-      if (allRepeated) {
-        // Same character typed repeatedly: cycle through options starting with that char
-        const singleChar = newSearch[0].toLowerCase();
-        const matches = options
-          .map((o, i) => ({ option: o, index: i }))
-          .filter(({ option }) => option.label.toLowerCase().startsWith(singleChar));
-        if (matches.length === 0) return;
-        const currentMatchIndex = matches.findIndex(({ index }) => index === activeIndex);
-        const nextMatch = matches[(currentMatchIndex + 1) % matches.length];
-        matchIndex = nextMatch.index;
-      } else {
-        // Multi-char: find first option matching the full string
-        const lowerSearch = newSearch.toLowerCase();
-        matchIndex = options.findIndex(
-          (o, i) => i > startIndex && o.label.toLowerCase().startsWith(lowerSearch),
-        );
-        if (matchIndex === -1) {
-          matchIndex = options.findIndex((o) => o.label.toLowerCase().startsWith(lowerSearch));
-        }
+    let matchIndex: number;
+    if (allRepeated) {
+      // Same character typed repeatedly: cycle through options starting with that char
+      const singleChar = newSearch[0].toLowerCase();
+      const matches = options
+        .map((o, i) => ({ option: o, index: i }))
+        .filter(({ option }) => option.label.toLowerCase().startsWith(singleChar));
+      if (matches.length === 0) return;
+      const currentMatchIndex = matches.findIndex(({ index }) => index === activeIndex);
+      const nextMatch = matches[(currentMatchIndex + 1) % matches.length];
+      matchIndex = nextMatch.index;
+    } else {
+      // Multi-char: find first option matching the full string
+      const lowerSearch = newSearch.toLowerCase();
+      matchIndex = options.findIndex(
+        (o, i) => i > startIndex && o.label.toLowerCase().startsWith(lowerSearch),
+      );
+      if (matchIndex === -1) {
+        matchIndex = options.findIndex((o) => o.label.toLowerCase().startsWith(lowerSearch));
       }
+    }
 
-      if (matchIndex >= 0) {
-        setActiveIndex(matchIndex);
-        if (!isOpen) open();
-      }
-    },
-    [searchString, activeIndex, options, isOpen, open],
-  );
+    if (matchIndex >= 0) {
+      setActiveIndex(matchIndex);
+      if (!isOpen) open();
+    }
+  };
 
   const handleClosedKeyDown = (e: React.KeyboardEvent) => {
     const { key } = e;
