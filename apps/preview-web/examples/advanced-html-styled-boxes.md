@@ -12,6 +12,24 @@ Denne malen viser hvordan HTML-elementer kan brukes til å lage visuelt rike dok
 - Markdown-tabell inne i en stilet `<div>`-beholder
 - Betinget visning av tabellrader og listeinnhold med `if`-logikk
 
+Eksempel på variabler som gir god visning:
+
+```json
+{
+  "tilsynsDato": "22.05.2026",
+  "virksomhetNavn": "Berge Bygg AS",
+  "tilsynsAdresse": "Industriveien 12, 7037 Trondheim",
+  "ekstraTema": "Støy og vibrasjoner",
+  "harDokumentListe": true,
+  "dokumentFrist": "08.05.2026",
+  "saksnummer": "2026/1587",
+  "harBHT": true,
+  "tilsynsKlokkeslett": "09:00",
+  "inspektorNavn": "Erik Solheim",
+  "inspektorTelefon": "73 19 97 00"
+}
+```
+
 </div>
 
 # Varsel om tilsyn

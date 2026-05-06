@@ -5,10 +5,31 @@
 Denne malen viser hvordan HTML og Markdown kan kombineres for å lage et strukturert rapportdokument. Teknikker som demonstreres:
 
 - Toppbanner med metadata i **flexbox-layout**
-- Deltakertabell med hardkodede eksempelrader (i praksis vil fagsystemet generere HTML-rader basert på en liste)
-- Fargekodede statusbokser med **betinget visning** (`if`-logikk)
+- Tabeller med hardkodede eksempelrader (i praksis genererer fagsystemet HTML-rader basert på en liste)
+- Tabell med `colspan` for rader som spenner over flere kolonner
+- Fargekodede statusbokser med **betinget visning** (`if`-logikk med spesifikke verdier)
 - Oppsummeringstabell med betinget innhold på én linje
 - Kontroll av **sideskift** med `break-before: page`
+- Tokolonners kontaktinformasjon med tabellayout
+
+Eksempel på variabler som gir god visning:
+
+```json
+{
+  "virksomhetNavn": "Nordvik Industri AS",
+  "tilsynsDato": "15.03.2026",
+  "inspektorNavn": "Lise Berg",
+  "saksnummer": "2026/4821",
+  "naering": "Industri og bergverk",
+  "varselDato": "01.02.2026",
+  "hmsStatus": "avvik",
+  "hmsAvvikTekst": "Manglende risikovurdering for kjemisk arbeidsmiljø",
+  "arbeidstidStatus": "ok",
+  "arbeidstidAvvikTekst": "",
+  "harPaalegg": true,
+  "inspektorTelefon": "73 19 97 00"
+}
+```
 
 </div>
 
@@ -49,6 +70,9 @@ Arbeidstilsynet gjennomførte tilsyn hos {{ virksomhetNavn }} den {{ tilsynsDato
     <td style="padding: 8px; border-bottom: 1px solid #eee;">{{ inspektorNavn }}</td>
     <td style="padding: 8px; border-bottom: 1px solid #eee;">Inspektør</td>
     <td style="padding: 8px; border-bottom: 1px solid #eee;">Arbeidstilsynet</td>
+  </tr>
+  <tr>
+    <td style="padding: 8px; border-bottom: 1px solid #eee;" colspan="3"><em>I praksis genereres radene ovenfor av fagsystemet basert på en deltakerliste</em></td>
   </tr>
 </table>
 
@@ -144,7 +168,24 @@ Det ble ikke avdekket avvik under tilsynet. Saken avsluttes uten videre oppfølg
 </div>
 }}
 
-## 4. Om rapporten
+## 4. Kontaktinformasjon
+
+<table style="border-collapse: collapse; width: 100%;">
+  <tr>
+    <td style="padding: 12px; vertical-align: top; width: 50%; border: 1px solid #ddd;">
+      <strong>Digitalt</strong><br/>
+      Send dokumentasjon via eDialog. Oppgi referansenummer {{ saksnummer }}.
+    </td>
+    <td style="padding: 12px; vertical-align: top; width: 50%; border: 1px solid #ddd;">
+      <strong>Per post</strong><br/>
+      Arbeidstilsynet<br/>
+      Postboks 4720 Torgarden<br/>
+      7468 Trondheim
+    </td>
+  </tr>
+</table>
+
+## 5. Om rapporten
 
 Denne rapporten er en oppsummering av tilsynet. Rapporten er ikke et enkeltvedtak etter forvaltningsloven § 2. Eventuelle vedtak sendes i egen forsendelse.
 
