@@ -1,7 +1,7 @@
 import { fetchFilesFromAzure } from "@/actions/azdo";
 import { fetchFilesFromGitHub } from "@/actions/github";
 import { useQuery } from "@tanstack/react-query";
-import type { RepoWithName } from "./selectableRepos";
+import type { RepoWithName } from "./allowedRepos";
 import { isFileAllowed } from "./utils";
 
 interface FileInfo {

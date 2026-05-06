@@ -1,7 +1,7 @@
 import type { GitProvider } from "@/utils/types";
 import { ErrorDetails } from "../ErrorDetails";
 import { useToast } from "../toast/provider";
-import type { RepoWithName } from "./selectableRepos";
+import type { RepoWithName } from "./allowedRepos";
 import { useGetMarkdownFilesInfo } from "./useGetMarkdownFilesInfo";
 import { handleCopyUrl } from "./utils";
 

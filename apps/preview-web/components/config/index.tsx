@@ -10,10 +10,10 @@ import { ActionButton, TabButton } from "../buttons";
 import { ErrorDetails } from "../ErrorDetails";
 import { useToast } from "../toast/provider";
 import { Toast } from "../toast/Toast";
+import type { RepoWithName } from "./allowedRepos";
 import { BranchSelector } from "./BranchSelector";
 import { FileSelector } from "./FileSelector";
 import { RepoSelector } from "./RepoSelector";
-import type { RepoWithName } from "./selectableRepos";
 import { Settings } from "./Settings";
 import { VariablesReport } from "./VariablesReport";
 

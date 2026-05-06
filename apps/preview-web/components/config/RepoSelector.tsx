@@ -9,7 +9,7 @@ import {
   type AzDoRepoInfo,
   type GitHubRepoInfo,
   type RepoWithName,
-} from "./selectableRepos";
+} from "./allowedRepos";
 
 const GitHubIcon = <Image src="/github.svg" alt="GitHub" width={16} height={16} />;
 const AzureDevOpsIcon = <Image src="/azdo.svg" alt="Azure DevOps" width={16} height={16} />;

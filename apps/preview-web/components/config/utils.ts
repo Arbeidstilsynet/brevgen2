@@ -1,6 +1,6 @@
 import { GIT_PARAMS } from "../editor/useLoadPermanentUrl";
-import type { RepoInfo } from "./selectableRepos";
-import { allowedRepoNames, allowedRepos } from "./selectableRepos";
+import type { RepoInfo } from "./allowedRepos";
+import { allowedRepoNames, allowedRepos } from "./allowedRepos";
 
 const isRepoChooseable = (repoName: string) => allowedRepoNames.has(repoName);
 

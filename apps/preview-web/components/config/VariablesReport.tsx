@@ -4,7 +4,7 @@ import { findMdVariables } from "@at/dynamic-markdown";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { TabButton } from "../buttons";
-import type { RepoWithName } from "./selectableRepos";
+import type { RepoWithName } from "./allowedRepos";
 import { useGetMarkdownFilesInfo } from "./useGetMarkdownFilesInfo";
 
 type Props = Readonly<{

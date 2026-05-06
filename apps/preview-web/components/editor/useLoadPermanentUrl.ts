@@ -9,7 +9,7 @@ import type { GitProvider } from "@/utils/types";
 import { useMutation } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useEffectEvent } from "react";
-import { allowedRepos } from "../config/selectableRepos";
+import { allowedRepos } from "../config/allowedRepos";
 import { useToast } from "../toast/provider";
 import { useLoadFile, useQueryWorkspaceFiles } from "../workspace/hooks";
 import { extractTags, URL_SEARCH_PARAM_WORKSPACE } from "../workspace/utils";
