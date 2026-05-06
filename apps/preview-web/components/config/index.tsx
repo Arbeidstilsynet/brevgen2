@@ -1,7 +1,8 @@
 "use client";
 
-import { AzureDevOpsRepo, fetchBranchesFromAzure, fetchReposFromAzure } from "@/actions/azdo";
-import { fetchBranchesFromGitHub, fetchReposFromGitHub, GitHubRepo } from "@/actions/github";
+import { fetchBranchesFromAzure } from "@/actions/azdo";
+import { fetchBranchesFromGitHub } from "@/actions/github";
+import { type AllReposResult, fetchAllRepos } from "@/actions/repos";
 import type { GitProvider } from "@/utils/types";
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
@@ -40,18 +41,12 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
     "fileSelect" | "loadExamples" | "variablesReport" | "settings"
   >("fileSelect");
 
-  const { data: azdoRepos, error: azdoReposError } = useQuery<AzureDevOpsRepo[]>({
-    queryKey: ["repos", "azdo"],
-    queryFn: fetchReposFromAzure,
-    initialData: [],
-    enabled: isAuthenticated,
-    retry: false,
-  });
-
-  const { data: githubRepos, error: githubReposError } = useQuery<GitHubRepo[]>({
-    queryKey: ["repos", "github"],
-    queryFn: fetchReposFromGitHub,
-    initialData: [],
+  const {
+    data: { azdoRepos, azdoError: azdoReposError, githubRepos, githubError: githubReposError },
+  } = useQuery<AllReposResult>({
+    queryKey: ["repos"],
+    queryFn: fetchAllRepos,
+    initialData: { azdoRepos: [], azdoError: null, githubRepos: [], githubError: null },
     enabled: isAuthenticated,
     retry: false,
   });
