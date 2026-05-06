@@ -7,7 +7,7 @@ import type { GitProvider } from "@/utils/types";
 import { findMdVariables } from "@at/dynamic-markdown";
 import { Editor, useMonaco } from "@monaco-editor/react";
 import { DocumentTemplateOption, PDFOptionsWithLimits } from "@repo/shared-types";
-import { useCallback, useReducer, useState } from "react";
+import { useReducer, useState } from "react";
 import { Overlay } from "../Overlay";
 import { Profile } from "../Profile";
 import { Config } from "../config";
@@ -68,20 +68,17 @@ export function DynamicMarkdownEditor() {
 
   const { message, variant, clearToast } = useToast();
 
-  const updateEditor = useCallback(
-    (markdown: string, vars: typeof mdVars) => {
-      if (!monaco) {
-        throw new TypeError("Expected Monaco to be instantiated");
-      }
-      const editor = monaco.editor.getEditors()[0];
-      if (editor) {
-        editor.setValue(markdown);
-        editor.focus();
-      }
-      parse(markdown, vars);
-    },
-    [monaco, parse],
-  );
+  const updateEditor = (markdown: string, vars: typeof mdVars) => {
+    if (!monaco) {
+      throw new TypeError("Expected Monaco to be instantiated");
+    }
+    const editor = monaco.editor.getEditors()[0];
+    if (editor) {
+      editor.setValue(markdown);
+      editor.focus();
+    }
+    parse(markdown, vars);
+  };
 
   const handleExampleSelected = (example: "initial" | "advanced") => {
     let data: string;
@@ -101,16 +98,13 @@ export function DynamicMarkdownEditor() {
     setLastLoadedFile({ fileName: `Examples/${example}`, tags: null });
   };
 
-  const loadMdWithEmptyVars = useCallback(
-    (markdown: string) => {
-      const foundVariables = findMdVariables(markdown);
-      const vars: Record<string, string> = {};
-      // set empty string defaults for all variables to avoid parsing error on load
-      foundVariables.forEach((v) => (vars[v] = ""));
-      updateEditor(markdown, vars);
-    },
-    [updateEditor],
-  );
+  const loadMdWithEmptyVars = (markdown: string) => {
+    const foundVariables = findMdVariables(markdown);
+    const vars: Record<string, string> = {};
+    // set empty string defaults for all variables to avoid parsing error on load
+    foundVariables.forEach((v) => (vars[v] = ""));
+    updateEditor(markdown, vars);
+  };
 
   const handleFileSelected = async (
     provider: GitProvider,
@@ -132,14 +126,11 @@ export function DynamicMarkdownEditor() {
     setLastLoadedFile({ fileName: getLoadedRepoFileName({ systemName, fileName }), tags: null });
   };
 
-  const handleLoadFromWorkspace = useCallback(
-    (markdown: string, fileName: string, tags: Set<string>) => {
-      loadMdWithEmptyVars(markdown);
-      setCurrentModal(null);
-      setLastLoadedFile({ fileName: getLoadedWorkspaceName(fileName), tags });
-    },
-    [loadMdWithEmptyVars],
-  );
+  const handleLoadFromWorkspace = (markdown: string, fileName: string, tags: Set<string>) => {
+    loadMdWithEmptyVars(markdown);
+    setCurrentModal(null);
+    setLastLoadedFile({ fileName: getLoadedWorkspaceName(fileName), tags });
+  };
 
   const isLoadingPermanentUrl = useLoadPermanentUrl(
     Boolean(monaco),
