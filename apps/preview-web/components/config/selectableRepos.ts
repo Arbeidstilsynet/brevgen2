@@ -33,6 +33,18 @@ export type RepoInfo = AzDoRepoInfo | GitHubRepoInfo;
 export const allowedRepos: RepoInfo[] = (
   [
     {
+      provider: "github",
+      repoName: "brevgen2",
+      prettyName: "Brevgen2 (eksempler)",
+      onlyPaths: ["apps/preview-web/examples"],
+    },
+    {
+      provider: "github",
+      repoName: "meldinger",
+      prettyName: "Forhåndsmelding",
+      onlyPaths: ["forhandsmelding/backend/Infrastructure/src/Brevgen/Markdown"],
+    },
+    {
       provider: "azdo",
       id: "4914f041-a899-4900-b228-8ca96122fb45",
       repoName: "era",
@@ -73,12 +85,6 @@ export const allowedRepos: RepoInfo[] = (
       repoName: "asbest-saksbehandling",
       prettyName: "Asbest",
       onlyPaths: ["src/RegistrerSøknad/SendKvittering/Brevmaler"],
-    },
-    {
-      provider: "github",
-      repoName: "brevgen2",
-      prettyName: "Brevgen2 (GitHub)",
-      onlyPaths: ["apps/preview-web/examples"],
     },
   ] satisfies RepoInfo[]
 ).toSorted((a, b) => a.prettyName.localeCompare(b.prettyName));
