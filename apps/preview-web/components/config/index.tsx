@@ -45,6 +45,7 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
     queryFn: fetchReposFromAzure,
     initialData: [],
     enabled: isAuthenticated,
+    retry: false,
   });
 
   const { data: githubRepos, error: githubReposError } = useQuery<GitHubRepo[]>({
@@ -52,6 +53,7 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
     queryFn: fetchReposFromGitHub,
     initialData: [],
     enabled: isAuthenticated,
+    retry: false,
   });
 
   const { data: branches = [], error: branchesError } = useQuery<string[]>({
