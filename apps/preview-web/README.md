@@ -11,19 +11,19 @@ Se [api readme for oppsett i Entra](../api/README.md#konfigurasjon-av-app-i-entr
 
 ## Integrasjoner
 
-| Integrasjon           | Auth                                                                                    | Formål                        |
-|-----------------------|-----------------------------------------------------------------------------------------|-------------------------------|
-| Brevgenerator2 API    | Bearer JWT                                                                              | Generering av PDF             |
-| Azure DevOps REST API | PAT Code:Read                                                                           | Henting av brevmaler fra repo |
+| Integrasjon           | Auth                                                                               | Formål                        |
+|-----------------------|------------------------------------------------------------------------------------|-------------------------------|
+| Brevgenerator2 API    | Bearer JWT                                                                         | Generering av PDF             |
+| Azure DevOps REST API | PAT Code:Read                                                                      | Henting av brevmaler fra repo |
 | GitHub REST API       | GitHub app installation token via Octokit SDK eller PAT (lokalt) med Contents:Read | Henting av brevmaler fra repo |
-| GCP Cloud Storage     | Application Default Credentials                                                         | Lagring av WIP brevmaler      |
-| Apertium API          | Ingen                                                                                   | Tekstoversetting              |
+| GCP Cloud Storage     | Application Default Credentials                                                    | Lagring av WIP brevmaler      |
+| Apertium API          | Ingen                                                                              | Tekstoversetting              |
 
 ### GitHub API
 
 Disse miljøvariabler trengs for å lage installation token. Legg de til som secret i Kubernetes (Nais secret).
 
-```
+```sh
 GITHUB_APP_ID
 GITHUB_APP_INSTALLATION_ID
 GITHUB_APP_PRIVATE_KEY
@@ -76,14 +76,17 @@ Det krever at `docker build` kjøres fra roten av monorepo: `docker build . -t b
 > NB: for å kunne bygge i Windows 10/11 må developer mode være påskrudd for at [preconstruct](https://github.com/preconstruct/preconstruct) skal kunne opprette symlinks.
 >
 `System -> For developers -> Developer Mode -> On`
-> Dette har vært et issue med Next og pnpm i flere år: <https://github.com/vercel/next.js/issues/40760#issuecomment-2156242160>
+Dette har vært et issue med Next og pnpm i flere år: <https://github.com/vercel/next.js/issues/40760#issuecomment-2156242160>
 >
+>
+Build:
 
-> Build:
-
-```sh
+> ```sh
+>
 # cd to felles-brevgenerator root
+
 docker build . -t brevgen2-web -f apps/preview-web/Dockerfile
+
 ```
 
 Run:
