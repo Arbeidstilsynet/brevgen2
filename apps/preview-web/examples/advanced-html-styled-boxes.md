@@ -44,7 +44,7 @@ Vi viser til vår telefonsamtale med Kari Nordmann den 15.04.2026.
 ## Hva vi skal kontrollere
 
 <div style="display: flex; gap: 16px; margin: 16px 0;">
-<div style="flex: 1; border: 1px solid #b8daff; border-radius: 8px; padding: 20px; background: linear-gradient(to bottom, #e8f4fd, #ffffff);">
+<div style="flex: 1; border: 1px solid #b8daff; border-radius: 8px; padding: 4px 20px; background: linear-gradient(to bottom, #e8f4fd, #ffffff);">
 
 ### Arbeidsmiljø
 
@@ -53,7 +53,7 @@ Vi viser til vår telefonsamtale med Kari Nordmann den 15.04.2026.
 - {{ if ekstraTema :: {{ ekstraTema }} }}
 
 </div>
-<div style="flex: 1; border: 1px solid #c3e6cb; border-radius: 8px; padding: 20px; background: linear-gradient(to bottom, #eaf6ec, #ffffff);">
+<div style="flex: 1; border: 1px solid #c3e6cb; border-radius: 8px; padding: 4px 20px; background: linear-gradient(to bottom, #eaf6ec, #ffffff);">
 
 ### HMS-arbeid
 
