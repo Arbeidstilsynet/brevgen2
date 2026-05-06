@@ -3,10 +3,28 @@ import { GitHubRepo } from "@/actions/github";
 import Image from "next/image";
 import { useMemo } from "react";
 import { type ComboboxOption, SelectCombobox } from "../SelectCombobox";
-import { allowedAzDoRepos, allowedGitHubRepos, RepoWithName } from "./selectableRepos";
+import {
+  allowedAzDoRepos,
+  allowedGitHubRepos,
+  type AzDoRepoInfo,
+  type GitHubRepoInfo,
+  type RepoWithName,
+} from "./selectableRepos";
 
 const GitHubIcon = <Image src="/github.svg" alt="GitHub" width={16} height={16} />;
 const AzureDevOpsIcon = <Image src="/azdo.svg" alt="Azure DevOps" width={16} height={16} />;
+
+function matchRepos<P extends "azdo" | "github">(
+  allowedRepos: (P extends "azdo" ? AzDoRepoInfo : GitHubRepoInfo)[],
+  actualRepos: (P extends "azdo" ? AzureDevOpsRepo : GitHubRepo)[],
+  provider: P,
+): RepoWithName[] {
+  return allowedRepos.flatMap((info) => {
+    const repo = actualRepos.find((r) => r.name === info.repoName);
+    if (!repo) return [];
+    return [{ provider, repo, prettyName: info.prettyName, repoInfo: info } as RepoWithName];
+  });
+}
 
 type Props = Readonly<{
   azdoRepos: AzureDevOpsRepo[];
@@ -27,33 +45,11 @@ export function RepoSelector({
   azdoError,
   githubError,
 }: Props) {
-  const repoOptions: RepoWithName[] = useMemo(
+  const repoOptions = useMemo(
     () =>
       [
-        ...allowedAzDoRepos
-          .map((info) => {
-            const actualRepo = azdoRepos.find((repo) => repo.name === info.repoName);
-            if (!actualRepo) return null;
-            return {
-              provider: "azdo" as const,
-              repo: actualRepo,
-              prettyName: info.prettyName,
-              repoInfo: info,
-            };
-          })
-          .filter((r): r is NonNullable<typeof r> => Boolean(r)),
-        ...allowedGitHubRepos
-          .map((info) => {
-            const actualRepo = githubRepos.find((repo) => repo.name === info.repoName);
-            if (!actualRepo) return null;
-            return {
-              provider: "github" as const,
-              repo: actualRepo,
-              prettyName: info.prettyName,
-              repoInfo: info,
-            };
-          })
-          .filter((r): r is NonNullable<typeof r> => Boolean(r)),
+        ...matchRepos(allowedAzDoRepos, azdoRepos, "azdo"),
+        ...matchRepos(allowedGitHubRepos, githubRepos, "github"),
       ].toSorted((a, b) => a.prettyName.localeCompare(b.prettyName)),
     [azdoRepos, githubRepos],
   );
