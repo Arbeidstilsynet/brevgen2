@@ -38,7 +38,7 @@ export async function fetchReposFromGitHub(): Promise<GitHubRepo[]> {
   }
 
   const data = (await response.json()) as GitHubRepo[];
-  return data.filter((r) => !r.disabled && !r.archived);
+  return data.filter((r) => !r.disabled);
 }
 
 interface GitHubBranch {
