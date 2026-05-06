@@ -32,8 +32,8 @@ type Props = Readonly<{
   selectedRepoPrettyName: string | null;
   onRepoSelected: (repo: RepoWithName) => void;
   disabled?: boolean;
-  azdoError?: boolean;
-  githubError?: boolean;
+  azdoError?: string | null;
+  githubError?: string | null;
 }>;
 
 export function RepoSelector({
@@ -80,13 +80,13 @@ export function RepoSelector({
       {azdoError && (
         <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4" role="alert">
           <p className="font-bold">Kunne ikke hente Azure DevOps-repos</p>
-          <p>Sjekk at PAT er gyldig og har tilgang</p>
+          <p>{azdoError}</p>
         </div>
       )}
       {githubError && (
         <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4" role="alert">
           <p className="font-bold">Kunne ikke hente GitHub-repos</p>
-          <p>Sjekk at GitHub App eller PAT er konfigurert</p>
+          <p>{githubError}</p>
         </div>
       )}
     </div>

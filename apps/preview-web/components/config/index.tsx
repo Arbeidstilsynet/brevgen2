@@ -143,8 +143,8 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
             selectedRepoPrettyName={selectedRepo?.prettyName ?? null}
             onRepoSelected={handleRepoSelected}
             disabled={!isAuthenticated}
-            azdoError={Boolean(azdoReposError)}
-            githubError={Boolean(githubReposError)}
+            azdoError={azdoReposError}
+            githubError={githubReposError}
           />
           <ErrorDetails error={branchesError} label="Kunne ikke hente branches" />
 
@@ -188,8 +188,8 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
             selectedRepoPrettyName={selectedRepo?.prettyName ?? null}
             onRepoSelected={handleRepoSelected}
             disabled={!isAuthenticated}
-            azdoError={Boolean(azdoReposError)}
-            githubError={Boolean(githubReposError)}
+            azdoError={azdoReposError}
+            githubError={githubReposError}
           />
 
           {selectedRepo && selectedBranch && (
