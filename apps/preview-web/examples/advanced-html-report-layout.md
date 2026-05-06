@@ -4,31 +4,24 @@
 
 Denne malen viser hvordan HTML og Markdown kan kombineres for å lage et strukturert rapportdokument. Teknikker som demonstreres:
 
-- Toppbanner med metadata i **flexbox-layout**
-- Tabell der radene leveres som en variabel med ferdiggenerert HTML (fagsystemet bygger radene fra en liste)
-- Tabell med `colspan` for rader som spenner over flere kolonner
-- Fargekodede statusbokser med **betinget visning** (`if`-logikk med spesifikke verdier)
+- Flexbox-header med metadata fordelt over to kolonner
+- Tabellrader levert som én variabel med ferdiggenerert HTML (`deltakerRader`)
+- Fargekodede statusbokser styrt av `if`-logikk med likhet (`hmsStatus == avvik`)
 - Oppsummeringstabell med betinget innhold på én linje
-- Kontroll av **sideskift** med `break-before: page`
-- Tokolonners kontaktinformasjon med tabellayout
+- Sideskift med `break-before: page` og `break-after: avoid`
+- Tokolonners kontaktlayout med `vertical-align: top`
 
 Eksempel på variabler som gir god visning:
 
 ```json
 {
-  "virksomhetNavn": "Nordvik Industri AS",
-  "tilsynsDato": "15.03.2026",
-  "inspektorNavn": "Lise Berg",
-  "saksnummer": "2026/4821",
-  "naering": "Industri og bergverk",
-  "varselDato": "01.02.2026",
-  "hmsStatus": "avvik",
-  "hmsAvvikTekst": "Manglende risikovurdering for kjemisk arbeidsmiljø",
-  "arbeidstidStatus": "ok",
-  "arbeidstidAvvikTekst": "",
-  "harPaalegg": true,
-  "inspektorTelefon": "73 19 97 00",
-  "deltakerRader": "<tr><td style='padding: 8px; border-bottom: 1px solid #eee;'>Kari Nordmann</td><td style='padding: 8px; border-bottom: 1px solid #eee;'>Daglig leder</td><td style='padding: 8px; border-bottom: 1px solid #eee;'>Nordvik Industri AS</td></tr><tr><td style='padding: 8px; border-bottom: 1px solid #eee;'>Per Hansen</td><td style='padding: 8px; border-bottom: 1px solid #eee;'>Verneombud</td><td style='padding: 8px; border-bottom: 1px solid #eee;'>Nordvik Industri AS</td></tr>"
+  "virksomhetNavn": "Nordvik Industri AS", "tilsynsDato": "15.03.2026",
+  "inspektorNavn": "Lise Berg", "saksnummer": "2026/4821",
+  "naering": "Industri og bergverk", "varselDato": "01.02.2026",
+  "hmsStatus": "avvik", "hmsAvvikTekst": "Manglende risikovurdering",
+  "arbeidstidStatus": "ok", "arbeidstidAvvikTekst": "",
+  "harPaalegg": true, "inspektorTelefon": "73 19 97 00",
+  "deltakerRader": "<tr><td style='padding: 8px;'>Kari Nordmann</td><td style='padding: 8px;'>Daglig leder</td><td style='padding: 8px;'>Nordvik Industri AS</td></tr><tr><td style='padding: 8px;'>Per Hansen</td><td style='padding: 8px;'>Verneombud</td><td style='padding: 8px;'>Nordvik Industri AS</td></tr>"
 }
 ```
 
