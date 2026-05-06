@@ -270,7 +270,7 @@ export function SelectCombobox<T extends string = string>({
               key={option.value}
               id={`${id}-option-${index}`}
               role="option"
-              aria-selected={index === activeIndex}
+              aria-selected={option.value === value}
               className={`flex items-center gap-2 px-3 py-2 text-sm cursor-default select-none
                 ${index === activeIndex ? "bg-blue-600 text-white" : "text-gray-900"}
                 ${option.value === value && index !== activeIndex ? "font-semibold" : ""}
