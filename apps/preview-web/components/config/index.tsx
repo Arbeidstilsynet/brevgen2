@@ -2,6 +2,7 @@
 
 import { AzureDevOpsRepo, fetchBranchesFromAzure, fetchReposFromAzure } from "@/actions/azdo";
 import { fetchBranchesFromGitHub, fetchReposFromGitHub, GitHubRepo } from "@/actions/github";
+import type { GitProvider } from "@/utils/types";
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
@@ -18,7 +19,7 @@ import { VariablesReport } from "./VariablesReport";
 
 type Props = Readonly<{
   onFileSelected: (
-    provider: "azdo" | "github",
+    provider: GitProvider,
     repoIdentifier: string,
     branch: string,
     filePath: string,

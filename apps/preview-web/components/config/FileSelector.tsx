@@ -1,3 +1,4 @@
+import type { GitProvider } from "@/utils/types";
 import { ErrorDetails } from "../ErrorDetails";
 import { useToast } from "../toast/provider";
 import type { RepoWithName } from "./selectableRepos";
@@ -8,7 +9,7 @@ type Props = Readonly<{
   repoWithName: RepoWithName;
   branch: string;
   onFileSelected: (
-    provider: "azdo" | "github",
+    provider: GitProvider,
     repoIdentifier: string,
     branch: string,
     filePath: string,

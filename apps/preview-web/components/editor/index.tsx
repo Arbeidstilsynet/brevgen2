@@ -3,6 +3,7 @@
 import { fetchFileContentFromAzure } from "@/actions/azdo";
 import { fetchFileContentFromGitHub } from "@/actions/github";
 import { useApertium } from "@/hooks/useApertium";
+import type { GitProvider } from "@/utils/types";
 import { findMdVariables } from "@at/dynamic-markdown";
 import { Editor, useMonaco } from "@monaco-editor/react";
 import { DocumentTemplateOption, PDFOptionsWithLimits } from "@repo/shared-types";
@@ -112,7 +113,7 @@ export function DynamicMarkdownEditor() {
   );
 
   const handleFileSelected = async (
-    provider: "azdo" | "github",
+    provider: GitProvider,
     repoIdentifier: string,
     branch: string,
     filePath: string,

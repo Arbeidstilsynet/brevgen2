@@ -5,6 +5,7 @@
 import { fetchFileContentFromAzure } from "@/actions/azdo";
 import type { BucketFile } from "@/actions/gcp-bucket";
 import { fetchFileContentFromGitHub } from "@/actions/github";
+import type { GitProvider } from "@/utils/types";
 import { useMutation } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useEffectEvent } from "react";
@@ -20,8 +21,6 @@ export const GIT_PARAMS = {
   file: "file",
   provider: "provider",
 } as const;
-
-type GitProvider = "azdo" | "github";
 
 function resolveProvider(providerParam: string | null): GitProvider {
   if (providerParam === "gh") return "github";
