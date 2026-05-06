@@ -5,7 +5,7 @@
 Denne malen viser hvordan HTML og Markdown kan kombineres for å lage et strukturert rapportdokument. Teknikker som demonstreres:
 
 - Toppbanner med metadata i **flexbox-layout**
-- Tabeller med hardkodede eksempelrader (i praksis genererer fagsystemet HTML-rader basert på en liste)
+- Tabell der radene leveres som en variabel med ferdiggenerert HTML (fagsystemet bygger radene fra en liste)
 - Tabell med `colspan` for rader som spenner over flere kolonner
 - Fargekodede statusbokser med **betinget visning** (`if`-logikk med spesifikke verdier)
 - Oppsummeringstabell med betinget innhold på én linje
@@ -27,7 +27,8 @@ Eksempel på variabler som gir god visning:
   "arbeidstidStatus": "ok",
   "arbeidstidAvvikTekst": "",
   "harPaalegg": true,
-  "inspektorTelefon": "73 19 97 00"
+  "inspektorTelefon": "73 19 97 00",
+  "deltakerRader": "<tr><td style='padding: 8px; border-bottom: 1px solid #eee;'>Kari Nordmann</td><td style='padding: 8px; border-bottom: 1px solid #eee;'>Daglig leder</td><td style='padding: 8px; border-bottom: 1px solid #eee;'>Nordvik Industri AS</td></tr><tr><td style='padding: 8px; border-bottom: 1px solid #eee;'>Per Hansen</td><td style='padding: 8px; border-bottom: 1px solid #eee;'>Verneombud</td><td style='padding: 8px; border-bottom: 1px solid #eee;'>Nordvik Industri AS</td></tr>"
 }
 ```
 
@@ -56,23 +57,11 @@ Arbeidstilsynet gjennomførte tilsyn hos {{ virksomhetNavn }} den {{ tilsynsDato
     <th style="text-align: left; padding: 8px; border-bottom: 2px solid #333; width: 30%;">Rolle</th>
     <th style="text-align: left; padding: 8px; border-bottom: 2px solid #333; width: 30%;">Representerer</th>
   </tr>
-  <tr>
-    <td style="padding: 8px; border-bottom: 1px solid #eee;">Kari Nordmann</td>
-    <td style="padding: 8px; border-bottom: 1px solid #eee;">Daglig leder</td>
-    <td style="padding: 8px; border-bottom: 1px solid #eee;">{{ virksomhetNavn }}</td>
-  </tr>
-  <tr>
-    <td style="padding: 8px; border-bottom: 1px solid #eee;">Per Hansen</td>
-    <td style="padding: 8px; border-bottom: 1px solid #eee;">Verneombud</td>
-    <td style="padding: 8px; border-bottom: 1px solid #eee;">{{ virksomhetNavn }}</td>
-  </tr>
+  {{ deltakerRader }}
   <tr>
     <td style="padding: 8px; border-bottom: 1px solid #eee;">{{ inspektorNavn }}</td>
     <td style="padding: 8px; border-bottom: 1px solid #eee;">Inspektør</td>
     <td style="padding: 8px; border-bottom: 1px solid #eee;">Arbeidstilsynet</td>
-  </tr>
-  <tr>
-    <td style="padding: 8px; border-bottom: 1px solid #eee;" colspan="3"><em>I praksis genereres radene ovenfor av fagsystemet basert på en deltakerliste</em></td>
   </tr>
 </table>
 
