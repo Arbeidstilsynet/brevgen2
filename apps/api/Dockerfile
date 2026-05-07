@@ -3,6 +3,9 @@ FROM base AS builder
 
 RUN npm i -g corepack@latest && corepack enable
 
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+
 WORKDIR /app
 
 COPY .npmrc package.json pnpm-lock.yaml pnpm-workspace.yaml ./
