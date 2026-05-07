@@ -43,10 +43,12 @@ RUN echo "deb http://security.debian.org/debian-security bookworm-security main"
 # Copy custom fonts
 COPY apps/api/fonts/*.ttf /usr/share/fonts/truetype/custom/
 
-# Download OpenMoji color emoji font (COLRv1, vector-based, Chromium-compatible)
-# renovate: datasource=github-releases depName=hfg-gmuend/openmoji
-ARG OPENMOJI_VERSION="17.0.0"
-ADD "https://github.com/hfg-gmuend/openmoji/raw/${OPENMOJI_VERSION}/font/OpenMoji-color-glyf_colr_1/OpenMoji-color-glyf_colr_1.ttf" /usr/share/fonts/truetype/custom/OpenMoji-color-glyf_colr_1.ttf
+# Download Noto Color Emoji font (COLRv1, vector-based, Chromium-compatible)
+# License: SIL Open Font License 1.1 — see /usr/share/fonts/truetype/custom/LICENSE-NotoEmoji
+# renovate: datasource=github-releases depName=googlefonts/noto-emoji
+ARG NOTO_EMOJI_VERSION="v2.051"
+ADD "https://github.com/googlefonts/noto-emoji/raw/${NOTO_EMOJI_VERSION}/fonts/Noto-COLRv1.ttf" /usr/share/fonts/truetype/custom/Noto-COLRv1.ttf
+ADD "https://github.com/googlefonts/noto-emoji/raw/${NOTO_EMOJI_VERSION}/fonts/LICENSE" /usr/share/fonts/truetype/custom/LICENSE-NotoEmoji
 
 RUN fc-cache -fv
 
