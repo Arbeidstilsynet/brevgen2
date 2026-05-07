@@ -4,7 +4,7 @@ import {
   UseMutationResult,
   useMutation,
 } from "@tanstack/react-query";
-import { useCallback, useRef } from "react";
+import { useRef } from "react";
 
 type DebouncedMutate<
   TData = unknown,
@@ -44,15 +44,15 @@ export function useDebouncedMutation<
   const { mutate, ...mutation } = useMutation<TData, TError, TVariables, TContext>(options);
   const timer = useRef<NodeJS.Timeout>(undefined);
 
-  const debouncedMutate: DebouncedMutate<TData, TError, TVariables, TContext> = useCallback(
-    (variables, { debounceMs }) => {
-      clearTimeout(timer.current);
-      timer.current = setTimeout(() => {
-        mutate(variables);
-      }, debounceMs);
-    },
-    [mutate],
-  );
+  const debouncedMutate: DebouncedMutate<TData, TError, TVariables, TContext> = (
+    variables,
+    { debounceMs },
+  ) => {
+    clearTimeout(timer.current);
+    timer.current = setTimeout(() => {
+      mutate(variables);
+    }, debounceMs);
+  };
 
   return { debouncedMutate, ...mutation };
 }

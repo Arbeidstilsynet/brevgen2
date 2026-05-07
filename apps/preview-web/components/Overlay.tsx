@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 
 type Props = Readonly<{
   children: React.ReactNode;
@@ -12,42 +12,37 @@ type Props = Readonly<{
 export function Overlay({ children, widthPercent = 80, heightPercent = 80, onClose }: Props) {
   const modalRef = useRef<HTMLDivElement | null>(null);
 
-  const handleClickOutside = useCallback(
-    (event: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
-        const path = event.composedPath();
-        // If any element in the path has the data-ignore-outside attribute, do nothing.
-        if (path.some((el) => el instanceof HTMLElement && el.dataset.ignoreOutside)) {
-          return;
-        }
+  const handleBackdropClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (event.target !== event.currentTarget) return;
 
-        onClose();
-      }
-    },
-    [onClose],
-  );
+    const path = event.nativeEvent.composedPath();
+    if (path.some((el) => el instanceof HTMLElement && el.dataset.ignoreOutside)) {
+      return;
+    }
 
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        onClose();
-      }
-    },
-    [onClose],
-  );
+    onClose();
+  };
 
   useEffect(() => {
-    document.addEventListener("click", handleClickOutside);
-    document.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
-      document.removeEventListener("keydown", handleKeyDown);
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && !event.defaultPrevented) {
+        onClose();
+      }
     };
-  }, [handleClickOutside, handleKeyDown]);
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    // The backdrop is not an interactive element — keyboard dismissal is handled
+    // by the document-level Escape listener above. Using onMouseDown instead of
+    // onClick avoids a11y lint rules that don't apply to modal backdrops.
+    // oxlint-disable-next-line jsx_a11y/no-static-element-interactions
+    <div // NOSONAR
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+      onMouseDown={handleBackdropClick}
+    >
       <div
         ref={modalRef}
         className="relative bg-white rounded-lg shadow-lg"

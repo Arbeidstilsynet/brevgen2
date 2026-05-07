@@ -6,14 +6,30 @@ const organization = "Atil-utvikling";
 const project = "Produkter og tjenester";
 const token = process.env.AZURE_DEVOPS_PAT;
 
-async function azdoFetch(url: string) {
+async function azdoFetch(url: string, { expectJson = true }: { expectJson?: boolean } = {}) {
   await requireSession();
-  return await fetch(url, {
+  if (!token) {
+    throw new Error("AZURE_DEVOPS_PAT er ikke konfigurert");
+  }
+  const response = await fetch(url, {
     headers: {
       Authorization: `Basic ${Buffer.from(":" + token).toString("base64")}`,
     },
     cache: "no-store",
   });
+
+  if (!response.ok) {
+    throw new Error(`Azure DevOps: ${response.status} ${response.statusText}`);
+  }
+
+  if (expectJson) {
+    const contentType = response.headers.get("content-type") ?? "";
+    if (!contentType.includes("application/json")) {
+      throw new Error("Azure DevOps returnerte uventet svar — sjekk at PAT er gyldig");
+    }
+  }
+
+  return response;
 }
 
 export interface AzureDevOpsRepo {
@@ -36,13 +52,6 @@ export async function fetchReposFromAzure(): Promise<AzureDevOpsRepo[]> {
   const url = `https://dev.azure.com/${organization}/${project}/_apis/git/repositories?api-version=7.1`;
   const response = await azdoFetch(url);
 
-  if (!response.ok) {
-    console.error(await response.text());
-    throw new Error(
-      `Failed to fetch repositories from ${url}, status: ${response.status} ${response.statusText}`,
-    );
-  }
-
   const data = (await response.json()) as AzureDevOpsReposResponse;
   if (!data.count) {
     throw new Error(
@@ -50,12 +59,6 @@ export async function fetchReposFromAzure(): Promise<AzureDevOpsRepo[]> {
     );
   }
   return data.value.filter((r) => !r.isDisabled);
-}
-
-export interface AzureDevOpsFile {
-  path: string;
-  isFolder: boolean;
-  size: number;
 }
 
 interface AzureDevOpsBranch {
@@ -69,16 +72,12 @@ interface AzureDevOpsBranchesResponse {
 export async function fetchBranchesFromAzure(repoId: string): Promise<string[]> {
   const url = `https://dev.azure.com/${organization}/${project}/_apis/git/repositories/${repoId}/refs?filter=heads/&api-version=7.1`;
   const response = await azdoFetch(url);
-
-  if (!response.ok) {
-    console.error(await response.text());
-    throw new Error(
-      `Failed to fetch branches from ${url}, status: ${response.status} ${response.statusText}`,
-    );
-  }
-
   const data = (await response.json()) as AzureDevOpsBranchesResponse;
   return data.value.map((branch) => branch.name);
+}
+
+interface AzureDevOpsFile {
+  path: string;
 }
 
 interface AzureDevOpsFilesResponse {
@@ -94,14 +93,6 @@ export async function fetchFilesFromAzure(
   )}&api-version=7.1`;
 
   const response = await azdoFetch(url);
-
-  if (!response.ok) {
-    console.error(await response.text());
-    throw new Error(
-      `Failed to fetch files from ${url}, status: ${response.status} ${response.statusText}`,
-    );
-  }
-
   const data = (await response.json()) as AzureDevOpsFilesResponse;
   return data.value;
 }
@@ -115,14 +106,7 @@ export async function fetchFileContentFromAzure(
     filePath,
   )}&versionDescriptor.version=${encodeURIComponent(branch)}&api-version=7.1`;
 
-  const response = await azdoFetch(url);
-
-  if (!response.ok) {
-    console.error(await response.text());
-    throw new Error(
-      `Failed to fetch file contents from ${url}, status: ${response.status} ${response.statusText}`,
-    );
-  }
+  const response = await azdoFetch(url, { expectJson: false });
 
   return await response.text();
 }

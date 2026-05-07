@@ -1,6 +1,9 @@
 "use client";
 
-import { AzureDevOpsRepo, fetchBranchesFromAzure, fetchReposFromAzure } from "@/actions/azdo";
+import { fetchBranchesFromAzure } from "@/actions/azdo";
+import { fetchBranchesFromGitHub } from "@/actions/github";
+import { type AllReposResult, fetchAllRepos } from "@/actions/repos";
+import type { GitProvider } from "@/utils/types";
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
@@ -8,16 +11,17 @@ import { ActionButton, TabButton } from "../buttons";
 import { ErrorDetails } from "../ErrorDetails";
 import { useToast } from "../toast/provider";
 import { Toast } from "../toast/Toast";
+import type { RepoWithName } from "./allowedRepos";
 import { BranchSelector } from "./BranchSelector";
 import { FileSelector } from "./FileSelector";
 import { RepoSelector } from "./RepoSelector";
-import { AzDoRepoWithName } from "./selectableRepos";
 import { Settings } from "./Settings";
 import { VariablesReport } from "./VariablesReport";
 
 type Props = Readonly<{
   onFileSelected: (
-    repoId: string,
+    provider: GitProvider,
+    repoIdentifier: string,
     branch: string,
     filePath: string,
     systemName: string,
@@ -30,38 +34,48 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
   const isAuthenticated = status === "authenticated";
   const { message, variant, clearToast } = useToast();
 
-  const [selectedRepo, setSelectedRepo] = useState<AzDoRepoWithName | null>(null);
+  const [selectedRepo, setSelectedRepo] = useState<RepoWithName | null>(null);
   const [selectedBranch, setSelectedBranch] = useState<string | null>(null);
 
   const [activeTab, setActiveTab] = useState<
     "fileSelect" | "loadExamples" | "variablesReport" | "settings"
   >("fileSelect");
 
-  const { data: repos, error: reposError } = useQuery<AzureDevOpsRepo[]>({
+  const {
+    data: { azdoRepos, azdoError: azdoReposError, githubRepos, githubError: githubReposError },
+  } = useQuery<AllReposResult>({
     queryKey: ["repos"],
-    queryFn: fetchReposFromAzure,
-    initialData: [],
+    queryFn: fetchAllRepos,
+    initialData: { azdoRepos: [], azdoError: null, githubRepos: [], githubError: null },
     enabled: isAuthenticated,
+    retry: false,
   });
 
   const { data: branches = [], error: branchesError } = useQuery<string[]>({
-    queryKey: ["branches", selectedRepo?.[0].id],
+    queryKey: ["branches", selectedRepo?.provider, selectedRepo?.repo.name],
     queryFn: async () => {
-      const data = await fetchBranchesFromAzure(selectedRepo![0].id);
+      if (!selectedRepo) throw new Error("No repo selected");
+      if (selectedRepo.provider === "azdo") {
+        const data = await fetchBranchesFromAzure(selectedRepo.repoInfo.id);
+        if (!selectedBranch) {
+          setSelectedBranch(selectedRepo.repo.defaultBranch.replace("refs/heads/", ""));
+        }
+        return data.map((b) => b.replace("refs/heads/", ""));
+      }
+      const data = await fetchBranchesFromGitHub(selectedRepo.repo.name);
       if (!selectedBranch) {
-        setSelectedBranch(selectedRepo![0].defaultBranch.replace("refs/heads/", ""));
+        setSelectedBranch(selectedRepo.repo.default_branch);
       }
       return data;
     },
     enabled: isAuthenticated && Boolean(selectedRepo),
-    select: (data) => data.map((b) => b.replace("refs/heads/", "")),
   });
 
-  const handleRepoSelected = (repo: AzDoRepoWithName) => {
-    setSelectedRepo(repo);
-    if (selectedRepo?.[0].id !== repo[0].id) {
+  const handleRepoSelected = (repo: RepoWithName) => {
+    if (selectedRepo?.prettyName !== repo.prettyName) {
       setSelectedBranch(null);
     }
+    setSelectedRepo(repo);
   };
 
   return (
@@ -109,7 +123,7 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
       {(activeTab === "fileSelect" || activeTab === "loadExamples") && (
         <>
           <h2 className="text-xl font-semibold">
-            Last inn dokument fra {activeTab === "fileSelect" ? "versjonskontroll" : "eksempler"}
+            Last ned brevmal fra {activeTab === "fileSelect" ? "versjonskontroll" : "eksempler"}
           </h2>
           <div
             className="bg-yellow-100 border-l-4 border-yellow-500 text-gray-900 p-4 mb-4"
@@ -124,12 +138,14 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
       {activeTab === "fileSelect" && (
         <>
           <RepoSelector
-            repos={repos}
-            selectedRepoName={selectedRepo?.[1] ?? null}
+            azdoRepos={azdoRepos}
+            githubRepos={githubRepos}
+            selectedRepoPrettyName={selectedRepo?.prettyName ?? null}
             onRepoSelected={handleRepoSelected}
             disabled={!isAuthenticated}
+            azdoError={azdoReposError}
+            githubError={githubReposError}
           />
-          <ErrorDetails error={reposError} label="Kunne ikke hente repos" />
           <ErrorDetails error={branchesError} label="Kunne ikke hente branches" />
 
           {selectedRepo && selectedBranch && (
@@ -140,7 +156,7 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
                 onBranchSelect={(b) => setSelectedBranch(b)}
               />
 
-              <h3 className="text-l font-semibold">Velg en Markdown-fil</h3>
+              <h3 className="text-l font-semibold">Velg brevmal</h3>
               <FileSelector
                 repoWithName={selectedRepo}
                 branch={selectedBranch}
@@ -167,10 +183,13 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
           <span>Dette viser alle variabler som er referert i fagsystemets brevmaler</span>
 
           <RepoSelector
-            repos={repos}
-            selectedRepoName={selectedRepo?.[1] ?? null}
+            azdoRepos={azdoRepos}
+            githubRepos={githubRepos}
+            selectedRepoPrettyName={selectedRepo?.prettyName ?? null}
             onRepoSelected={handleRepoSelected}
             disabled={!isAuthenticated}
+            azdoError={azdoReposError}
+            githubError={githubReposError}
           />
 
           {selectedRepo && selectedBranch && (

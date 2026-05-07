@@ -1,7 +1,7 @@
 "use client";
 
 import { findMdVariables, parseDynamicMd } from "@at/dynamic-markdown";
-import { useCallback, useReducer } from "react";
+import { useReducer } from "react";
 
 type MdVars = Record<string, string | boolean>;
 
@@ -100,18 +100,18 @@ function reducer(state: State, action: Action): State {
 export function useDynamicMarkdown(initialMd: string, initialVars: MdVars) {
   const [state, dispatch] = useReducer(reducer, { initialMd, initialVars }, getInitialState);
 
-  const setMd = useCallback((md: string) => {
+  const setMd = (md: string) => {
     dispatch({ type: "SET_MD", payload: md });
-  }, []);
+  };
 
-  const setMdVar = useCallback((mdVar: string, value: string | boolean) => {
+  const setMdVar = (mdVar: string, value: string | boolean) => {
     if (mdVar.startsWith("!")) mdVar = mdVar.slice(1); // handle negation
     dispatch({ type: "SET_MD_VAR", payload: { mdVar, value } });
-  }, []);
+  };
 
-  const parse = useCallback((md: string, mdVars: MdVars) => {
+  const parse = (md: string, mdVars: MdVars) => {
     dispatch({ type: "PARSE_MD", payload: { md, mdVars } });
-  }, []);
+  };
 
   return {
     ...state,

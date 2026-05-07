@@ -1,41 +1,85 @@
 import { AzureDevOpsRepo } from "@/actions/azdo";
-import { allowedRepos, AzDoRepoWithName } from "./selectableRepos";
+import { GitHubRepo } from "@/actions/github";
+import Image from "next/image";
+import { type ComboboxOption, SelectCombobox } from "../SelectCombobox";
+import {
+  allowedAzDoRepos,
+  allowedGitHubRepos,
+  type AzDoRepoInfo,
+  type GitHubRepoInfo,
+  type RepoWithName,
+} from "./allowedRepos";
+
+const GitHubIcon = <Image src="/github.svg" alt="GitHub" width={16} height={16} />;
+const AzureDevOpsIcon = <Image src="/azdo.svg" alt="Azure DevOps" width={16} height={16} />;
+
+function matchRepos<P extends "azdo" | "github">(
+  allowedRepos: (P extends "azdo" ? AzDoRepoInfo : GitHubRepoInfo)[],
+  actualRepos: (P extends "azdo" ? AzureDevOpsRepo : GitHubRepo)[],
+  provider: P,
+): RepoWithName[] {
+  return allowedRepos.flatMap((info) => {
+    const repo = actualRepos.find((r) => r.name === info.repoName);
+    if (!repo) return [];
+    return [{ provider, repo, prettyName: info.prettyName, repoInfo: info } as RepoWithName];
+  });
+}
 
 type Props = Readonly<{
-  repos: AzureDevOpsRepo[];
-  selectedRepoName: string | null;
-  onRepoSelected: (repo: AzDoRepoWithName) => void;
+  azdoRepos: AzureDevOpsRepo[];
+  githubRepos: GitHubRepo[];
+  selectedRepoPrettyName: string | null;
+  onRepoSelected: (repo: RepoWithName) => void;
   disabled?: boolean;
+  azdoError?: string | null;
+  githubError?: string | null;
 }>;
 
-export function RepoSelector({ repos, selectedRepoName, onRepoSelected, disabled }: Props) {
-  const reposOptions: AzDoRepoWithName[] = allowedRepos
-    .map((allowedRepo) => {
-      const actualRepo = repos.find((repo) => repo.name === allowedRepo.repoName);
-      return actualRepo ? ([actualRepo, allowedRepo.prettyName] as const) : null;
-    })
-    .filter((r): r is NonNullable<typeof r> => Boolean(r));
+export function RepoSelector({
+  azdoRepos,
+  githubRepos,
+  selectedRepoPrettyName,
+  onRepoSelected,
+  disabled,
+  azdoError,
+  githubError,
+}: Props) {
+  const repoOptions = [
+    ...matchRepos(allowedAzDoRepos, azdoRepos, "azdo"),
+    ...matchRepos(allowedGitHubRepos, githubRepos, "github"),
+  ].toSorted((a, b) => a.prettyName.localeCompare(b.prettyName));
 
-  const base =
-    "p-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition text-sm";
-  const enabledClasses = "border-gray-300 bg-white";
-  const disabledClasses = "border-gray-200 bg-gray-100 text-gray-500 cursor-not-allowed opacity-60";
+  const comboboxOptions: ComboboxOption[] = repoOptions.map((r) => ({
+    value: r.prettyName,
+    label: r.prettyName,
+    icon: r.provider === "github" ? GitHubIcon : AzureDevOpsIcon,
+  }));
 
   return (
-    <select
-      className={`${base} ${disabled ? disabledClasses : enabledClasses}`}
-      value={selectedRepoName ?? ""}
-      onChange={(e) => onRepoSelected(reposOptions.find((r) => r[1] === e.target.value)!)}
-      disabled={disabled}
-    >
-      <option value={""} disabled>
-        Velg fagsystem
-      </option>
-      {reposOptions.map((repo) => (
-        <option key={repo[1]} value={repo[1]}>
-          {repo[1]}
-        </option>
-      ))}
-    </select>
+    <div className="flex flex-col gap-1">
+      <SelectCombobox
+        label="Fagsystem"
+        options={comboboxOptions}
+        value={selectedRepoPrettyName}
+        onChange={(val) => {
+          const repo = repoOptions.find((r) => r.prettyName === val);
+          if (repo) onRepoSelected(repo);
+        }}
+        placeholder="Velg fagsystem"
+        disabled={disabled}
+      />
+      {azdoError && (
+        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4" role="alert">
+          <p className="font-bold">Kunne ikke hente Azure DevOps-repos</p>
+          <p>{azdoError}</p>
+        </div>
+      )}
+      {githubError && (
+        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4" role="alert">
+          <p className="font-bold">Kunne ikke hente GitHub-repos</p>
+          <p>{githubError}</p>
+        </div>
+      )}
+    </div>
   );
 }

@@ -1,31 +1,42 @@
 import { fetchManyFileContentFromAzure } from "@/actions/azdo";
+import { fetchManyFileContentFromGitHub } from "@/actions/github";
 import { findMdVariables } from "@at/dynamic-markdown";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { TabButton } from "../buttons";
-import { AzDoRepoWithName } from "./selectableRepos";
+import type { RepoWithName } from "./allowedRepos";
 import { useGetMarkdownFilesInfo } from "./useGetMarkdownFilesInfo";
 
 type Props = Readonly<{
-  repoWithName: AzDoRepoWithName;
+  repoWithName: RepoWithName;
   branch: string;
 }>;
 
 export function VariablesReport({ repoWithName, branch }: Props) {
-  const [repo, prettyName] = repoWithName;
-
   const [viewMode, setViewMode] = useState<"counts" | "perFile">("counts");
 
   const { data, isLoading } = useGetMarkdownFilesInfo(repoWithName, branch);
 
   const { data: variablesReport, isLoading: reportLoading } = useQuery({
-    queryKey: ["variablesReport", repo.id, branch, prettyName],
+    queryKey: [
+      "variablesReport",
+      repoWithName.provider,
+      repoWithName.repo.name,
+      branch,
+      repoWithName.prettyName,
+    ],
     queryFn: async () => {
       const filePaths = data!.map((file) => file.path);
-      const files = await fetchManyFileContentFromAzure(repo.id, branch, filePaths);
+      let files: { filePath: string; content: string }[];
+
+      if (repoWithName.provider === "azdo") {
+        files = await fetchManyFileContentFromAzure(repoWithName.repoInfo.id, branch, filePaths);
+      } else {
+        files = await fetchManyFileContentFromGitHub(repoWithName.repo.name, branch, filePaths);
+      }
 
       if (!files.length) {
-        console.warn("No files found", { repo: repo.id, branch, filePaths, files });
+        console.warn("No files found", { repo: repoWithName.repo.name, branch, filePaths, files });
       }
 
       return files.reduce(

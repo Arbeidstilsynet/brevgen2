@@ -45,4 +45,7 @@ a {
 table {
   width: 100%;
 }
+pre code {
+  white-space: pre-wrap;
+}
 `;
