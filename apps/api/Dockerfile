@@ -24,7 +24,8 @@ FROM base AS runner
 ARG CHROMIUM_VERSION="147.*"
 
 ### Versions managed by Renovate
-### https://dev.azure.com/Atil-utvikling/Produkter%20og%20tjenester/_git/infra-renovate?anchor=custom-managers
+### https://docs.renovatebot.com/presets-customManagers/#custommanagersdockerfileversions
+### https://docs.renovatebot.com/modules/datasource/repology/
 # renovate: datasource=repology depName=debian_12/fontconfig versioning=loose
 ENV FONTCONFIG_VERSION="2.14.1-4"
 # renovate: datasource=repology depName=debian_12_backports/curl versioning=loose
