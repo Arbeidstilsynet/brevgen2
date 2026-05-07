@@ -3,6 +3,9 @@ FROM base AS builder
 
 RUN npm i -g corepack@latest && corepack enable
 
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+
 WORKDIR /app
 
 COPY .npmrc package.json pnpm-lock.yaml pnpm-workspace.yaml ./
@@ -11,7 +14,7 @@ COPY apps/api/package.json ./apps/api/
 COPY packages/dynamic-markdown/package.json ./packages/dynamic-markdown/
 COPY packages/document-templates/package.json ./packages/document-templates/
 COPY packages/shared-types/package.json ./packages/shared-types/
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --filter api...
 
 COPY apps/api ./apps/api
 COPY packages ./packages
@@ -24,7 +27,8 @@ FROM base AS runner
 ARG CHROMIUM_VERSION="147.*"
 
 ### Versions managed by Renovate
-### https://dev.azure.com/Atil-utvikling/Produkter%20og%20tjenester/_git/infra-renovate?anchor=custom-managers
+### https://docs.renovatebot.com/presets-customManagers/#custommanagersdockerfileversions
+### https://docs.renovatebot.com/modules/datasource/repology/
 # renovate: datasource=repology depName=debian_12/fontconfig versioning=loose
 ENV FONTCONFIG_VERSION="2.14.1-4"
 # renovate: datasource=repology depName=debian_12_backports/curl versioning=loose

@@ -17,7 +17,7 @@ COPY .npmrc package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY packages/ ./packages
 # don't copy code for better caching
 COPY apps/preview-web/package.json ./apps/preview-web/
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --filter preview-web...
 
 COPY apps/preview-web ./apps/preview-web
 RUN pnpm --filter preview-web build
