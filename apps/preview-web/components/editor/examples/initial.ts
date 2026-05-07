@@ -31,7 +31,7 @@ Normal tekst og [guide for Markdown](https://markdownguide.offshoot.io/basic-syn
 Oppgi referansenummer {{ saksnummer }}
 
 ### Logikk
-{{ if visEksempelAvsnitt == true ::
+{{ if visEksempelAvsnitt ::
 #### Fagsystemet kan styre om dette avsnittet skal vises
 Normal tekst
 }}

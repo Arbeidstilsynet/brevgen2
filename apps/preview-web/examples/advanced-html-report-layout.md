@@ -18,8 +18,9 @@ Eksempel på variabler som gir god visning:
   "virksomhetNavn": "Nordvik Industri AS", "tilsynsDato": "15.03.2026",
   "inspektorNavn": "Lise Berg", "saksnummer": "2026/4821",
   "naering": "Industri og bergverk", "varselDato": "01.02.2026",
-  "hmsStatus": "avvik", "hmsAvvikTekst": "Manglende risikovurdering",
-  "arbeidstidStatus": "ok", "arbeidstidAvvikTekst": "",
+  "hmsAvvikTekst": "Manglende risikovurdering",
+  "hmsMerknadTekst": "",
+  "arbeidstidAvvikTekst": "",
   "harPaalegg": true, "inspektorTelefon": "73 19 97 00",
   "deltakerRader": "<tr><td style='padding: 8px;'>Kari Nordmann</td><td style='padding: 8px;'>Daglig leder</td><td style='padding: 8px;'>Nordvik Industri AS</td></tr><tr><td style='padding: 8px;'>Per Hansen</td><td style='padding: 8px;'>Verneombud</td><td style='padding: 8px;'>Nordvik Industri AS</td></tr>"
 }
@@ -66,19 +67,19 @@ Arbeidstilsynet gjennomførte tilsyn hos {{ virksomhetNavn }} den {{ tilsynsDato
 
 </div>
 
-{{ if hmsStatus == ok ::
+{{ if !hmsAvvikTekst :: {{ if !hmsMerknadTekst ::
 <div style="border-left: 4px solid #28a745; padding: 8px 12px; margin: 12px 0; background: #f0fff0;">
   <strong>Ingen avvik.</strong> Virksomheten har et fungerende HMS-system i tråd med kravene i internkontrollforskriften.
 </div>
-}}
+}} }}
 
-{{ if hmsStatus == avvik ::
+{{ if hmsAvvikTekst ::
 <div style="border-left: 4px solid #dc3545; padding: 8px 12px; margin: 12px 0; background: #fff0f0;">
   <strong>Avvik påvist.</strong> {{ hmsAvvikTekst }}
 </div>
 }}
 
-{{ if hmsStatus == merknad ::
+{{ if hmsMerknadTekst ::
 <div style="border-left: 4px solid #ffc107; padding: 8px 12px; margin: 12px 0; background: #fffef0;">
   <strong>Merknad.</strong> {{ hmsMerknadTekst }}
 </div>
@@ -90,13 +91,13 @@ Arbeidstilsynet gjennomførte tilsyn hos {{ virksomhetNavn }} den {{ tilsynsDato
 
 </div>
 
-{{ if arbeidstidStatus == ok ::
+{{ if !arbeidstidAvvikTekst ::
 <div style="border-left: 4px solid #28a745; padding: 8px 12px; margin: 12px 0; background: #f0fff0;">
   <strong>Ingen avvik.</strong> Arbeidstidsordningene er i tråd med arbeidsmiljøloven kapittel 10.
 </div>
 }}
 
-{{ if arbeidstidStatus == avvik ::
+{{ if arbeidstidAvvikTekst ::
 <div style="border-left: 4px solid #dc3545; padding: 8px 12px; margin: 12px 0; background: #fff0f0;">
   <strong>Avvik påvist.</strong> {{ arbeidstidAvvikTekst }}
 </div>
@@ -117,13 +118,13 @@ Arbeidstilsynet gjennomførte tilsyn hos {{ virksomhetNavn }} den {{ tilsynsDato
   <tbody>
     <tr>
       <td style="padding: 10px; border: 1px solid #ccc;">Systematisk HMS-arbeid</td>
-      <td style="padding: 10px; border: 1px solid #ccc; text-align: center;">{{ if hmsStatus == ok :: ✅ }}{{ if hmsStatus == avvik :: ❌ }}{{ if hmsStatus == merknad :: ⚠️ }}</td>
-      <td style="padding: 10px; border: 1px solid #ccc;">{{ if hmsStatus == ok :: Ingen }}{{ if hmsStatus == avvik :: Pålegg }}{{ if hmsStatus == merknad :: Anmerkning i rapport }}</td>
+      <td style="padding: 10px; border: 1px solid #ccc; text-align: center;">{{ if hmsAvvikTekst :: ❌ }}{{ if hmsMerknadTekst :: ⚠️ }}{{ if !hmsAvvikTekst :: {{ if !hmsMerknadTekst :: ✅ }} }}</td>
+      <td style="padding: 10px; border: 1px solid #ccc;">{{ if hmsAvvikTekst :: Pålegg }}{{ if hmsMerknadTekst :: Anmerkning i rapport }}{{ if !hmsAvvikTekst :: {{ if !hmsMerknadTekst :: Ingen }} }}</td>
     </tr>
     <tr>
       <td style="padding: 10px; border: 1px solid #ccc;">Arbeidstid</td>
-      <td style="padding: 10px; border: 1px solid #ccc; text-align: center;">{{ if arbeidstidStatus == ok :: ✅ }}{{ if arbeidstidStatus == avvik :: ❌ }}</td>
-      <td style="padding: 10px; border: 1px solid #ccc;">{{ if arbeidstidStatus == ok :: Ingen }}{{ if arbeidstidStatus == avvik :: Pålegg }}</td>
+      <td style="padding: 10px; border: 1px solid #ccc; text-align: center;">{{ if arbeidstidAvvikTekst :: ❌ }}{{ if !arbeidstidAvvikTekst :: ✅ }}</td>
+      <td style="padding: 10px; border: 1px solid #ccc;">{{ if arbeidstidAvvikTekst :: Pålegg }}{{ if !arbeidstidAvvikTekst :: Ingen }}</td>
     </tr>
   </tbody>
 </table>
