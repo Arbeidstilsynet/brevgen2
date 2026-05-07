@@ -41,6 +41,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/apps/preview-web/.next/standalone
 
 # workaround for rar mappestruktur
 COPY --from=builder --chown=nextjs:nodejs /app/apps/preview-web/.next/static ./apps/preview-web/.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/apps/preview-web/public ./apps/preview-web/public
 WORKDIR /app/apps/preview-web
 
 RUN apk add --no-cache curl
