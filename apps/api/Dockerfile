@@ -24,7 +24,7 @@ RUN pnpm_config_verify_deps_before_run=false pnpm --filter api build
 FROM base AS runner
 # For available Chromium versions in the distro, see https://repology.org/project/chromium/versions
 # Chromium versions changes should be matched with Puppeteer version from https://pptr.dev/supported-browsers
-ARG CHROMIUM_VERSION="147.*"
+ARG CHROMIUM_VERSION="148.*"
 
 ### Versions managed by Renovate
 ### https://docs.renovatebot.com/presets-customManagers/#custommanagersdockerfileversions
