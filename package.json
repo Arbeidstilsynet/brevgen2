@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
-    "@typescript/native-preview": "7.0.0-dev.20260505.1",
+    "@typescript/native-preview": "7.0.0-dev.20260508.1",
     "eslint-plugin-react-hooks": "7.1.1",
     "oxfmt": "0.48.0",
     "oxlint": "1.62.0",
