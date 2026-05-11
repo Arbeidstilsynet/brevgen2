@@ -14,7 +14,7 @@
   "dependencies": {
     "@at/document-templates": "workspace:*",
     "@at/dynamic-markdown": "workspace:*",
-    "@azure/msal-node": "5.1.5",
+    "@azure/msal-node": "5.2.0",
     "@google-cloud/storage": "7.19.0",
     "@monaco-editor/react": "4.7.0",
     "@octokit/auth-app": "8.2.0",
