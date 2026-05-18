@@ -25,6 +25,8 @@ minimumReleaseAgeExclude:
   - postcss@8.5.10
   - fast-xml-builder@1.1.7
   - fast-uri@3.1.2
+  # Renovate security update: sanitize-html@2.17.4
+  - sanitize-html@2.17.4
 
 nodeLinker: hoisted
 
