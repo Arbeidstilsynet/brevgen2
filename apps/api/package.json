@@ -42,7 +42,7 @@
     "@repo/typescript-config": "workspace:^",
     "@types/node": "24.12.2",
     "@types/sanitize-html": "2.16.1",
-    "@typescript/native-preview": "7.0.0-dev.20260510.1",
+    "@typescript/native-preview": "7.0.0-dev.20260511.1",
     "globals": "17.6.0",
     "pdf-text-reader": "5.1.1",
     "pdf-visual-diff": "0.15.2",
@@ -50,9 +50,9 @@
     "testcontainers": "11.14.0",
     "tsdown": "0.22.0",
     "typescript": "6.0.3",
-    "vite": "8.0.11",
+    "vite": "8.0.12",
     "vite-plugin-node": "8.0.0",
-    "vitest": "4.1.5"
+    "vitest": "4.1.6"
   },
   "engines": {
     "node": "24"
