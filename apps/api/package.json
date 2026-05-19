@@ -11,8 +11,8 @@
     "build": "tsdown server.ts",
     "test": "vitest run --coverage lib",
     "test:integration": "vitest run integration-tests",
-    "test:load": "npx --yes tsx load-tests/run.ts",
-    "test:load:analyze": "npx --yes tsx load-tests/analyze.ts",
+    "test:load": "pnpx tsx load-tests/run.ts",
+    "test:load:analyze": "pnpx tsx load-tests/analyze.ts",
     "lint": "oxlint",
     "typecheck": "tsgo --noEmit"
   },
