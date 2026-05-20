@@ -29,6 +29,7 @@ minimumReleaseAgeExclude:
   - sanitize-html@2.17.4
   - brace-expansion@5.0.6
   - ws@8.20.1
+  - protobufjs@7.5.8
 
 nodeLinker: hoisted
 
