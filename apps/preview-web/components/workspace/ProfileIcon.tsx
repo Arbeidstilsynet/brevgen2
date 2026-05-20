@@ -22,7 +22,6 @@ export function ProfileIcon({ fullName, lastModified }: Readonly<ProfileIconProp
     <span className="relative group inline-block ml-2" aria-hidden="true">
       <span
         className="w-8 h-8 rounded-full bg-gray-400 text-white inline-flex items-center justify-center text-xs font-medium cursor-default"
-        role="img"
         aria-hidden="true"
       >
         {initials}
