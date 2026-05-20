@@ -44,6 +44,7 @@
     "typescript/no-unsafe-type-assertion": "off", // suspicious, type-aware --- many semi-false positives that need refactor
     "typescript/consistent-return": "off", // suspicious, type-aware
     "eslint/no-await-in-loop": "off", // perf
+    "eslint/no-underscore-dangle": "off", // suspicious --- common in Node.js ESM for __filename/__dirname
     "jsx-a11y/control-has-associated-label": "off", // correctness --- false positives: https://github.com/oxc-project/oxc/issues/22606
     "jsx-a11y/prefer-tag-over-role": "off", // correctness --- too strict for custom ARIA widgets (e.g. combobox)
   },
