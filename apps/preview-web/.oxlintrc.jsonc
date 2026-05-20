@@ -2,4 +2,24 @@
   "$schema": "../../node_modules/oxlint/configuration_schema.json",
   "extends": ["../../.oxlintrc.jsonc"],
   "plugins": ["nextjs", "react", "jsx-a11y"],
+  "jsPlugins": [
+    {
+      "name": "react-hooks-extra",
+      "specifier": "eslint-plugin-react-hooks",
+    },
+  ],
+  "rules": {
+    // https://react.dev/reference/eslint-plugin-react-hooks
+    "react-hooks-extra/error-boundaries": "error",
+    "react-hooks-extra/immutability": "error",
+    "react-hooks-extra/purity": "error",
+    "react-hooks-extra/refs": "error",
+    "react-hooks-extra/set-state-in-effect": "error",
+    "react-hooks-extra/set-state-in-render": "error",
+    "react-hooks-extra/static-components": "error",
+
+    "react/rules-of-hooks": "error", // pedantic
+    "react/react-in-jsx-scope": "off", // suspicious
+    "react/jsx-no-constructed-context-values": "off", //perf --- handled by compiler
+  }
 }
