@@ -275,6 +275,7 @@ export function SelectCombobox<T extends string = string>({
               `}
               onMouseDown={() => selectOption(index)}
               onMouseEnter={() => setActiveIndex(index)}
+              tabIndex={-1}
             >
               {option.icon}
               {option.label}

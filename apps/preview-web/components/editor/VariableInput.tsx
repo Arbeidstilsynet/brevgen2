@@ -17,6 +17,7 @@ export function VariableInput({ variable, varType, value, handleVarInputChange }
             type="checkbox"
             checked={(value ?? false) as boolean}
             onChange={(e) => handleVarInputChange(variable, e.target.checked)}
+            aria-label={variable}
             className="mr-2"
           />
         </div>
@@ -25,6 +26,7 @@ export function VariableInput({ variable, varType, value, handleVarInputChange }
           <textarea
             value={(value ?? "") as string}
             onChange={(e) => handleVarInputChange(variable, e.target.value)}
+            aria-label={variable}
             className="w-full p-2 border border-gray-300 rounded-sm"
           />
         </div>
