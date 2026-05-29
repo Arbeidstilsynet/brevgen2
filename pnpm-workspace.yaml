@@ -16,6 +16,9 @@ injectWorkspacePackages: true
 
 minimumReleaseAge: 4320
 
+minimumReleaseAgeExclude:
+  - tmp@0.2.6
+
 nodeLinker: hoisted
 
 overrides:
