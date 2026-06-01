@@ -4,12 +4,11 @@ FROM node:24-alpine@sha256:2bdb65ed1dab192432bc31c95f94155ca5ad7fc1392fb7eb7526a
 FROM base AS builder
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
 RUN apk add --no-cache libc6-compat
-# fix corepack https://github.com/nodejs/corepack/issues/612
-RUN npm i -g corepack@latest && corepack enable
 
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
+ENV PATH="$PNPM_HOME/bin:$PATH"
+RUN corepack enable
 
 WORKDIR /app
 # # copy root workspace and lockfile
