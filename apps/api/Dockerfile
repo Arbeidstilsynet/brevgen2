@@ -1,10 +1,9 @@
 FROM node:24-slim@sha256:242549cd46785b480c832479a730f4f2a20865d61ea2e404fdb2a5c3d3b73ecf AS base
 FROM base AS builder
 
-RUN npm i -g corepack@latest && corepack enable
-
 ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
+ENV PATH="$PNPM_HOME/bin:$PATH"
+RUN corepack enable
 
 WORKDIR /app
 
