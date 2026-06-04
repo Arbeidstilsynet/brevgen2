@@ -168,7 +168,7 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-      - uses: nais/deploy/actions/deploy@8ed36847e27a937bb9cd9b3751b1a5fff8ef31dc # v2
+      - uses: nais/deploy/actions/deploy@c55d6073d913975d2dada508bdfefc6427d39867 # v2
         env:
           CLUSTER: dev
           RESOURCE: .nais/api.yaml,.nais/alerts.yaml
@@ -193,7 +193,7 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-      - uses: nais/deploy/actions/deploy@8ed36847e27a937bb9cd9b3751b1a5fff8ef31dc # v2
+      - uses: nais/deploy/actions/deploy@c55d6073d913975d2dada508bdfefc6427d39867 # v2
         env:
           CLUSTER: dev
           RESOURCE: .nais/web.yaml
@@ -307,7 +307,7 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-      - uses: nais/deploy/actions/deploy@8ed36847e27a937bb9cd9b3751b1a5fff8ef31dc # v2
+      - uses: nais/deploy/actions/deploy@c55d6073d913975d2dada508bdfefc6427d39867 # v2
         env:
           CLUSTER: prod
           RESOURCE: .nais/api.yaml,.nais/alerts.yaml
@@ -328,7 +328,7 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-      - uses: nais/deploy/actions/deploy@8ed36847e27a937bb9cd9b3751b1a5fff8ef31dc # v2
+      - uses: nais/deploy/actions/deploy@c55d6073d913975d2dada508bdfefc6427d39867 # v2
         env:
           CLUSTER: prod
           RESOURCE: .nais/web.yaml
