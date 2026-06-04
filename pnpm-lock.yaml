@@ -142,14 +142,14 @@ importers:
         specifier: 6.0.3
         version: 6.0.3
       vite:
-        specifier: 8.0.15
-        version: 8.0.15(@types/node@24.12.2)(jiti@2.6.1)(yaml@2.8.3)
+        specifier: 8.0.16
+        version: 8.0.16(@types/node@24.12.2)(jiti@2.6.1)(yaml@2.8.3)
       vite-plugin-node:
         specifier: 8.0.0
-        version: 8.0.0(vite@8.0.15(@types/node@24.12.2)(jiti@2.6.1)(yaml@2.8.3))
+        version: 8.0.0(vite@8.0.16(@types/node@24.12.2)(jiti@2.6.1)(yaml@2.8.3))
       vitest:
         specifier: 4.1.7
-        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@24.12.2)(@vitest/coverage-v8@4.1.7)(vite@8.0.15(@types/node@24.12.2)(jiti@2.6.1)(yaml@2.8.3))
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@24.12.2)(@vitest/coverage-v8@4.1.7)(vite@8.0.16(@types/node@24.12.2)(jiti@2.6.1)(yaml@2.8.3))
 
   apps/preview-web:
     dependencies:
@@ -237,7 +237,7 @@ importers:
         version: 6.0.3
       vitest:
         specifier: 4.1.7
-        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@24.12.2)(@vitest/coverage-v8@4.1.7)(vite@8.0.15(@types/node@24.12.2)(jiti@2.6.1)(yaml@2.8.3))
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@24.12.2)(@vitest/coverage-v8@4.1.7)(vite@8.0.16(@types/node@24.12.2)(jiti@2.6.1)(yaml@2.8.3))
 
   nuget-client: {}
 
@@ -275,7 +275,7 @@ importers:
         version: 6.0.3
       vitest:
         specifier: 4.1.7
-        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@24.12.2)(@vitest/coverage-v8@4.1.7)(vite@8.0.15(@types/node@24.12.2)(jiti@2.6.1)(yaml@2.8.3))
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@24.12.2)(@vitest/coverage-v8@4.1.7)(vite@8.0.16(@types/node@24.12.2)(jiti@2.6.1)(yaml@2.8.3))
 
   packages/shared-types:
     dependencies:
@@ -3877,8 +3877,8 @@ packages:
       '@swc/core':
         optional: true
 
-  vite@8.0.15:
-    resolution: {integrity: sha512-qpgllRxrLqwsMAGRdLhsEr9bepaOQk1rxH1xT2coBXLaEB/bfkqQj1j7RMxwMfnYrvO1ZnFMiwX+wBVgnsyn0g==}
+  vite@8.0.16:
+    resolution: {integrity: sha512-h9bXPmJichP5fLmVQo3PyaGSDE2n3aPuomeAlVRm0JLmt4rY6zmPKd59HYI4LNW8oTK7tlTsuC7l/m7awx9Jcw==}
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
     peerDependencies:
@@ -5508,7 +5508,7 @@ snapshots:
       obug: 2.1.1
       std-env: 4.1.0
       tinyrainbow: 3.1.0
-      vitest: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@24.12.2)(@vitest/coverage-v8@4.1.7)(vite@8.0.15(@types/node@24.12.2)(jiti@2.6.1)(yaml@2.8.3))
+      vitest: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@24.12.2)(@vitest/coverage-v8@4.1.7)(vite@8.0.16(@types/node@24.12.2)(jiti@2.6.1)(yaml@2.8.3))
 
   '@vitest/expect@4.1.7':
     dependencies:
@@ -5519,13 +5519,13 @@ snapshots:
       chai: 6.2.2
       tinyrainbow: 3.1.0
 
-  '@vitest/mocker@4.1.7(vite@8.0.15(@types/node@24.12.2)(jiti@2.6.1)(yaml@2.8.3))':
+  '@vitest/mocker@4.1.7(vite@8.0.16(@types/node@24.12.2)(jiti@2.6.1)(yaml@2.8.3))':
     dependencies:
       '@vitest/spy': 4.1.7
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
-      vite: 8.0.15(@types/node@24.12.2)(jiti@2.6.1)(yaml@2.8.3)
+      vite: 8.0.16(@types/node@24.12.2)(jiti@2.6.1)(yaml@2.8.3)
 
   '@vitest/pretty-format@4.1.7':
     dependencies:
@@ -7680,16 +7680,16 @@ snapshots:
 
   uuid@14.0.0: {}
 
-  vite-plugin-node@8.0.0(vite@8.0.15(@types/node@24.12.2)(jiti@2.6.1)(yaml@2.8.3)):
+  vite-plugin-node@8.0.0(vite@8.0.16(@types/node@24.12.2)(jiti@2.6.1)(yaml@2.8.3)):
     dependencies:
       chalk: 4.1.2
       debounce: 2.2.0
       debug: 4.4.3
-      vite: 8.0.15(@types/node@24.12.2)(jiti@2.6.1)(yaml@2.8.3)
+      vite: 8.0.16(@types/node@24.12.2)(jiti@2.6.1)(yaml@2.8.3)
     transitivePeerDependencies:
       - supports-color
 
-  vite@8.0.15(@types/node@24.12.2)(jiti@2.6.1)(yaml@2.8.3):
+  vite@8.0.16(@types/node@24.12.2)(jiti@2.6.1)(yaml@2.8.3):
     dependencies:
       lightningcss: 1.32.0
       picomatch: 4.0.4
@@ -7702,10 +7702,10 @@ snapshots:
       jiti: 2.6.1
       yaml: 2.8.3
 
-  vitest@4.1.7(@opentelemetry/api@1.9.1)(@types/node@24.12.2)(@vitest/coverage-v8@4.1.7)(vite@8.0.15(@types/node@24.12.2)(jiti@2.6.1)(yaml@2.8.3)):
+  vitest@4.1.7(@opentelemetry/api@1.9.1)(@types/node@24.12.2)(@vitest/coverage-v8@4.1.7)(vite@8.0.16(@types/node@24.12.2)(jiti@2.6.1)(yaml@2.8.3)):
     dependencies:
       '@vitest/expect': 4.1.7
-      '@vitest/mocker': 4.1.7(vite@8.0.15(@types/node@24.12.2)(jiti@2.6.1)(yaml@2.8.3))
+      '@vitest/mocker': 4.1.7(vite@8.0.16(@types/node@24.12.2)(jiti@2.6.1)(yaml@2.8.3))
       '@vitest/pretty-format': 4.1.7
       '@vitest/runner': 4.1.7
       '@vitest/snapshot': 4.1.7
@@ -7722,7 +7722,7 @@ snapshots:
       tinyexec: 1.1.2
       tinyglobby: 0.2.16
       tinyrainbow: 3.1.0
-      vite: 8.0.15(@types/node@24.12.2)(jiti@2.6.1)(yaml@2.8.3)
+      vite: 8.0.16(@types/node@24.12.2)(jiti@2.6.1)(yaml@2.8.3)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@opentelemetry/api': 1.9.1
