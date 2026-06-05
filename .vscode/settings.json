@@ -14,5 +14,9 @@
   "[typescriptreact]": {
     "editor.defaultFormatter": "oxc.oxc-vscode"
   },
-  "js/ts.experimental.useTsgo": true
+  "js/ts.experimental.useTsgo": true,
+  "sonarlint.connectedMode.project": {
+    "connectionId": "arbeidstilsynet",
+    "projectKey": "Arbeidstilsynet_brevgen2"
+  }
 }
