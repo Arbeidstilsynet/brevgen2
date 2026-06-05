@@ -10,7 +10,7 @@ spec:
     - name: brevgen2-api-alerts
       rules:
         - alert: Brevgen2Api5xxErrors
-          expr: sum(increase(haproxy_backend_http_responses_total{proxy="plattform_svc_brevgen2-api_http", code="5xx"}[15m])) > 0
+          expr: sum(increase(haproxy_backend_http_responses_total{proxy="{{team}}_svc_{{api.name}}_http", code="5xx"}[15m])) > 0
           for: 1m
           annotations:
             consequence: "Users are receiving 5xx server errors from {{api.name}}"
