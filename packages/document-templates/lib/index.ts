@@ -1,3 +1,5 @@
-export { blankTemplate } from "./blank";
-export { defaultTemplate } from "./default";
-export { direktoratTemplate } from "./direktorat";
+export { blankTemplate } from "./templates/blank";
+export { defaultTemplate } from "./templates/default";
+export { direktoratTemplate } from "./templates/direktorat";
+export { resolveTemplate } from "./registry";
+export type { Template } from "./template";
