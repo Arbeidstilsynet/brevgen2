@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { templateLanguageSchema } from "./document-templates";
+import { type DocumentTemplateOption, templateLanguageSchema } from "./document-templates";
 
 export const direktoratTemplateSignatureVariantSchema = z.enum(["usignert", "elektroniskGodkjent"]);
 export type DirektoratTemplateSignatureVariant = z.infer<
@@ -44,3 +44,18 @@ export const direktoratTemplateArgsSchema = z.object({
   fields: direktoratTemplateFieldsSchema,
 });
 export type DirektoratTemplateArgs = z.infer<typeof direktoratTemplateArgsSchema>;
+
+/**
+ * The `direktorat` template requires its args. This rule lives with the
+ * template so adding or changing a template does not touch the shared config
+ * schema.
+ */
+export const direktoratTemplateArgsRequiredMessage =
+  "direktoratTemplateArgs are required when using the direktorat template";
+
+export function hasRequiredDirektoratTemplateArgs(data: {
+  template?: DocumentTemplateOption;
+  direktoratTemplateArgs?: unknown;
+}): boolean {
+  return !(data.template === "direktorat" && !data.direktoratTemplateArgs);
+}
