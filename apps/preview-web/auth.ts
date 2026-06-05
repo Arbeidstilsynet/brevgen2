@@ -22,8 +22,9 @@ export const authOptions = {
     jwt({ token, user, profile }) {
       if (user && profile) {
         // Copy a *safe* image value, but strip it if too large
-        // workaround for "400 Request Header Or Cookie Too Large" response from nginx
-        // despite increasing nginx.ingress.kubernetes.io/proxy-buffer-size
+        // workaround for "400 Request Header Or Cookie Too Large" response from the
+        // ingress proxy. HAProxy has no per-ingress buffer-size annotation (buffer size
+        // is the global tune.bufsize), so keeping the cookie small is the primary fix.
         const candidateImage = user.image ?? profile.image;
         if (candidateImage && candidateImage.length < MAX_PICTURE_SIZE) {
           token.picture = candidateImage;
