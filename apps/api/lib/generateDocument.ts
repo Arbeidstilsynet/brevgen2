@@ -1,9 +1,5 @@
-import { blankTemplate, defaultTemplate, direktoratTemplate } from "@at/document-templates";
-import type {
-  DefaultTemplateFields,
-  DirektoratTemplateFields,
-  GenerateDocumentRequestOptions,
-} from "@repo/shared-types";
+import { blankTemplate, direktoratTemplate, resolveTemplate } from "@at/document-templates";
+import type { DirektoratTemplateFields, GenerateDocumentRequestOptions } from "@repo/shared-types";
 import { mdToPdf } from "./core";
 import { HtmlConfig, PdfConfig } from "./core/config";
 import { Output } from "./core/types";
@@ -14,18 +10,6 @@ const margin = {
   bottom: "1.2in",
   left: "1.2in",
 };
-
-function getDefaultTemplatePdfConfig(fields: DefaultTemplateFields): Partial<PdfConfig> {
-  return {
-    css: defaultTemplate.globalCss,
-    pdf_options: {
-      displayHeaderFooter: true,
-      headerTemplate: "<div></div>",
-      footerTemplate: defaultTemplate.getFooter(fields),
-      margin,
-    },
-  };
-}
 
 function getDirektoratTemplatePdfConfig(fields: DirektoratTemplateFields): Partial<PdfConfig> {
   return {
@@ -72,12 +56,7 @@ function mergeConfigs(
 function getConfigWithDefaults(
   options: GenerateDocumentRequestOptions,
 ): Partial<PdfConfig> | (Partial<HtmlConfig> & { as_html: true }) {
-  if (isDefaultTemplate(options)) {
-    return mergeConfigs(
-      getDefaultTemplatePdfConfig(options.dynamic.defaultTemplateArgs!.fields),
-      options,
-    );
-  } else if (isDirektoratTemplate(options)) {
+  if (isDirektoratTemplate(options)) {
     return mergeConfigs(
       getDirektoratTemplatePdfConfig(options.dynamic.direktoratTemplateArgs!.fields),
       options,
@@ -87,10 +66,6 @@ function getConfigWithDefaults(
   } else {
     return options;
   }
-}
-
-function isDefaultTemplate(options: GenerateDocumentRequestOptions): boolean {
-  return !options.dynamic.template || options.dynamic.template === "default";
 }
 
 function isDirektoratTemplate(options: GenerateDocumentRequestOptions): boolean {
@@ -105,11 +80,16 @@ export async function generateDocument(
   md: string,
   options: GenerateDocumentRequestOptions,
 ): Promise<Output> {
+  const template = resolveTemplate(options.dynamic.template);
+  if (template) {
+    const pdfConfig = mergeConfigs(template.getPdfConfig(options), options);
+    return await mdToPdf(template.getMd(md, options), pdfConfig);
+  }
+
+  // Templates not yet migrated to the Template interface (direktorat, blank, custom).
   const pdfConfig = getConfigWithDefaults(options);
 
-  if (isDefaultTemplate(options)) {
-    md = defaultTemplate.getMd(md, options.dynamic.defaultTemplateArgs!);
-  } else if (isDirektoratTemplate(options)) {
+  if (isDirektoratTemplate(options)) {
     md = direktoratTemplate.getMd(md, options.dynamic.direktoratTemplateArgs!);
   }
 
