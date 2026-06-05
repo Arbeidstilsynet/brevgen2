@@ -12,8 +12,6 @@ allowBuilds:
 
 autoInstallPeers: false
 
-injectWorkspacePackages: true
-
 minimumReleaseAge: 4320
 
 minimumReleaseAgeExclude:
