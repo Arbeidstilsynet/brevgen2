@@ -69,8 +69,8 @@ COPY --from=builder /app/apps/api/package.json ./
 COPY --from=builder /app/pnpm-lock.yaml ./
 
 # Copy static assets for @fastify/swagger-ui (which is external)
-COPY --from=builder /app/node_modules/@fastify/swagger-ui/static ./static
-COPY --from=builder /app/node_modules/@fastify/swagger-ui/static/logo.svg ./dist/static/logo.svg
+COPY --from=builder /app/apps/api/node_modules/@fastify/swagger-ui/static ./static
+COPY --from=builder /app/apps/api/node_modules/@fastify/swagger-ui/static/logo.svg ./dist/static/logo.svg
 
 
 EXPOSE 4000
