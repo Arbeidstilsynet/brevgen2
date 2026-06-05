@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { templateLanguageSchema } from "./document-templates";
+import { type DocumentTemplateOption, templateLanguageSchema } from "./document-templates";
 
 export const defaultTemplateSignatureVariantSchema = z.enum([
   "elektroniskGodkjent",
@@ -44,3 +44,17 @@ export const defaultTemplateArgsSchema = z.object({
   fields: defaultTemplateFieldsSchema,
 });
 export type DefaultTemplateArgs = z.infer<typeof defaultTemplateArgsSchema>;
+
+/**
+ * The `default` template requires its args. This rule lives with the template
+ * so adding or changing a template does not touch the shared config schema.
+ */
+export const defaultTemplateArgsRequiredMessage =
+  "defaultTemplateArgs are required when using the default template";
+
+export function hasRequiredDefaultTemplateArgs(data: {
+  template?: DocumentTemplateOption;
+  defaultTemplateArgs?: unknown;
+}): boolean {
+  return !((!data.template || data.template === "default") && !data.defaultTemplateArgs);
+}

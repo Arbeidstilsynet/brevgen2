@@ -1,7 +1,15 @@
 import { z } from "zod";
 import { configSchema } from "./api-core";
-import { defaultTemplateArgsSchema } from "./default-template";
-import { direktoratTemplateArgsSchema } from "./direktorat-template";
+import {
+  defaultTemplateArgsRequiredMessage,
+  defaultTemplateArgsSchema,
+  hasRequiredDefaultTemplateArgs,
+} from "./default-template";
+import {
+  direktoratTemplateArgsRequiredMessage,
+  direktoratTemplateArgsSchema,
+  hasRequiredDirektoratTemplateArgs,
+} from "./direktorat-template";
 import { documentTemplateOptionSchema } from "./document-templates";
 import { mdVariablesSchema } from "./dynamic-markdown";
 
@@ -12,19 +20,11 @@ export const dynamicMdPdfConfigSchema = z
     defaultTemplateArgs: defaultTemplateArgsSchema.optional(),
     direktoratTemplateArgs: direktoratTemplateArgsSchema.optional(),
   })
-  .refine(
-    (data) => {
-      if ((!data.template || data.template === "default") && !data.defaultTemplateArgs) {
-        return false;
-      }
-      return true;
-    },
-    {
-      message: "defaultTemplateArgs are required when using the default template",
-    },
-  )
-  .refine((data) => !(data.template === "direktorat" && !data.direktoratTemplateArgs), {
-    message: "direktoratTemplateArgs are required when using the direktorat template",
+  .refine(hasRequiredDefaultTemplateArgs, {
+    message: defaultTemplateArgsRequiredMessage,
+  })
+  .refine(hasRequiredDirektoratTemplateArgs, {
+    message: direktoratTemplateArgsRequiredMessage,
   });
 export type DynamicMdPdfConfig = z.infer<typeof dynamicMdPdfConfigSchema>;
 
