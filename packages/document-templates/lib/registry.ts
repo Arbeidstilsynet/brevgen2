@@ -56,7 +56,7 @@ const templates: Template[] = [defaultDocumentTemplate];
  * {@link Template} interface yet (direktorat, blank, custom).
  */
 export function resolveTemplate(
-  resolved: DocumentTemplateOption = "default",
+  resolved: DocumentTemplateOption | undefined = "default",
 ): Template | undefined {
   return templates.find((template) => template.name === resolved);
 }
