@@ -50,6 +50,12 @@ describe("AST", () => {
       {
         type: "if",
         value: "isUser == true",
+        condition: {
+          type: "comparison",
+          leftOperand: { value: "isUser" },
+          operator: "==",
+          rightOperand: { value: "true", literalValue: true },
+        },
         line: 2,
         children: [{ type: "md", value: "Hey!", line: 2 }],
       },
@@ -71,6 +77,12 @@ describe("AST", () => {
       {
         type: "if",
         value: "isUser == true",
+        condition: {
+          type: "comparison",
+          leftOperand: { value: "isUser" },
+          operator: "==",
+          rightOperand: { value: "true", literalValue: true },
+        },
         line: 2,
         children: [
           { type: "md", value: "Hello, ", line: 2 },

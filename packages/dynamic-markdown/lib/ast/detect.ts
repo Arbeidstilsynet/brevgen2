@@ -1,53 +1,46 @@
-import { ASTNode, parseLogicToken } from "./build";
-import { isNegatedVariable } from "./evaluate";
-import { Token, tokenize } from "./tokenize";
+import { buildAST, type ASTCondition, type ASTConditionOperand, type ASTNode } from "./build";
+import { tokenize } from "./tokenize";
 
 export function findMdVariables(input: string): Set<string> {
   const tokens = tokenize(input);
-  const variables = new Set<string>();
+  const ast = buildAST(tokens);
+  return findASTVariables(ast);
+}
 
-  extractVariablesFromTokens(variables, tokens);
+export function findASTVariables(nodes: ASTNode[]): Set<string> {
+  const variables = new Set<string>();
+  extractVariablesFromASTNodes(variables, nodes);
   return variables;
 }
 
-function extractVariablesFromTokens(variables: Set<string>, tokens: Token[]) {
-  for (const token of tokens) {
-    if (token.type === "var") {
-      variables.add(token.value);
-    } else if (token.type === "logic") {
-      const { value, children } = parseLogicToken(token);
-      extractVariablesFromCondition(variables, value);
-      if (children) {
-        extractVariablesFromASTNodes(variables, children);
-      }
-    }
-  }
-}
-
-function extractVariablesFromASTNodes(variables: Set<string>, nodes: ASTNode[]) {
+function extractVariablesFromASTNodes(variables: Set<string>, nodes: ASTNode[]): void {
   for (const node of nodes) {
     if (node.type === "var") {
       variables.add(node.value);
-    } else if (node.type === "if" && node.value) {
-      extractVariablesFromCondition(variables, node.value);
-      if (node.children) {
-        extractVariablesFromASTNodes(variables, node.children);
-      }
+    } else if (node.type === "if") {
+      extractVariablesFromCondition(variables, node.condition);
+      extractVariablesFromASTNodes(variables, node.children);
     }
   }
 }
 
-function extractVariablesFromCondition(variables: Set<string>, condition: string) {
-  const conditionParts = condition.split(/\s+/);
-  for (const part of conditionParts) {
-    if (
-      !["if", "==", "!=", "true", "false"].includes(part.toLowerCase()) &&
-      Number.isNaN(Number(part))
-    ) {
-      if (isNegatedVariable(part)) {
-        return variables.add(part.slice(1));
-      }
-      variables.add(part);
-    }
+function extractVariablesFromCondition(variables: Set<string>, condition: ASTCondition): void {
+  if (condition.type === "truthy") {
+    addVariableCandidate(variables, condition.operand);
+    return;
+  }
+
+  addVariableCandidate(variables, condition.leftOperand);
+  addVariableCandidate(variables, condition.rightOperand);
+}
+
+function addVariableCandidate(variables: Set<string>, operand: ASTConditionOperand): void {
+  if (operand.literalValue !== undefined) {
+    return;
+  }
+
+  const variableName = operand.value.startsWith("!") ? operand.value.slice(1) : operand.value;
+  if (variableName) {
+    variables.add(variableName);
   }
 }
