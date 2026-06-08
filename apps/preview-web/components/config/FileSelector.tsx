@@ -1,4 +1,4 @@
-import type { GitProvider } from "@/utils/types";
+import type { ProviderId } from "@/utils/types";
 import { ErrorDetails } from "../ErrorDetails";
 import { useToast } from "../toast/provider";
 import type { RepoWithName } from "./allowedRepos";
@@ -9,7 +9,7 @@ type Props = Readonly<{
   repoWithName: RepoWithName;
   branch: string;
   onFileSelected: (
-    provider: GitProvider,
+    provider: ProviderId,
     repoIdentifier: string,
     branch: string,
     filePath: string,
@@ -33,8 +33,7 @@ export function FileSelector({ repoWithName, branch, onFileSelected }: Props) {
     return <div>Ingen filer funnet</div>;
   }
 
-  const repoIdentifier =
-    repoWithName.provider === "azdo" ? repoWithName.repoInfo.id : repoWithName.repo.full_name;
+  const repoIdentifier = repoWithName.repo.id;
 
   return (
     <div>

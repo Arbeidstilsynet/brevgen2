@@ -78,6 +78,7 @@ export async function fetchBranchesFromAzure(repoId: string): Promise<string[]> 
 
 interface AzureDevOpsFile {
   path: string;
+  isFolder?: boolean;
 }
 
 interface AzureDevOpsFilesResponse {
@@ -94,7 +95,7 @@ export async function fetchFilesFromAzure(
 
   const response = await azdoFetch(url);
   const data = (await response.json()) as AzureDevOpsFilesResponse;
-  return data.value;
+  return data.value.filter((item) => !item.isFolder).map((item) => ({ path: item.path }));
 }
 
 export async function fetchFileContentFromAzure(

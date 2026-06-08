@@ -1,9 +1,9 @@
 "use client";
 
-import { fetchBranchesFromAzure } from "@/actions/azdo";
-import { fetchBranchesFromGitHub } from "@/actions/github";
-import { type AllReposResult, fetchAllRepos } from "@/actions/repos";
-import type { GitProvider } from "@/utils/types";
+import { listBranches } from "@/actions/git";
+import type { AllReposResult } from "@/actions/git-provider/types";
+import { fetchAllRepos } from "@/actions/repos";
+import type { ProviderId } from "@/utils/types";
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
@@ -20,7 +20,7 @@ import { VariablesReport } from "./VariablesReport";
 
 type Props = Readonly<{
   onFileSelected: (
-    provider: GitProvider,
+    provider: ProviderId,
     repoIdentifier: string,
     branch: string,
     filePath: string,
@@ -42,29 +42,22 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
   >("fileSelect");
 
   const {
-    data: { azdoRepos, azdoError: azdoReposError, githubRepos, githubError: githubReposError },
+    data: { azdo, github },
   } = useQuery<AllReposResult>({
     queryKey: ["repos"],
     queryFn: fetchAllRepos,
-    initialData: { azdoRepos: [], azdoError: null, githubRepos: [], githubError: null },
+    initialData: { azdo: { repos: [], error: null }, github: { repos: [], error: null } },
     enabled: isAuthenticated,
     retry: false,
   });
 
   const { data: branches = [], error: branchesError } = useQuery<string[]>({
-    queryKey: ["branches", selectedRepo?.provider, selectedRepo?.repo.name],
+    queryKey: ["branches", selectedRepo?.provider, selectedRepo?.repo.id],
     queryFn: async () => {
       if (!selectedRepo) throw new Error("No repo selected");
-      if (selectedRepo.provider === "azdo") {
-        const data = await fetchBranchesFromAzure(selectedRepo.repoInfo.id);
-        if (!selectedBranch) {
-          setSelectedBranch(selectedRepo.repo.defaultBranch.replace("refs/heads/", ""));
-        }
-        return data.map((b) => b.replace("refs/heads/", ""));
-      }
-      const data = await fetchBranchesFromGitHub(selectedRepo.repo.name);
+      const data = await listBranches(selectedRepo.provider, selectedRepo.repo.id);
       if (!selectedBranch) {
-        setSelectedBranch(selectedRepo.repo.default_branch);
+        setSelectedBranch(selectedRepo.repo.defaultBranch);
       }
       return data;
     },
@@ -138,13 +131,13 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
       {activeTab === "fileSelect" && (
         <>
           <RepoSelector
-            azdoRepos={azdoRepos}
-            githubRepos={githubRepos}
+            azdoRepos={azdo.repos}
+            githubRepos={github.repos}
             selectedRepoPrettyName={selectedRepo?.prettyName ?? null}
             onRepoSelected={handleRepoSelected}
             disabled={!isAuthenticated}
-            azdoError={azdoReposError}
-            githubError={githubReposError}
+            azdoError={azdo.error}
+            githubError={github.error}
           />
           <ErrorDetails error={branchesError} label="Kunne ikke hente branches" />
 
@@ -183,13 +176,13 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
           <span>Dette viser alle variabler som er referert i fagsystemets innholdsmaler</span>
 
           <RepoSelector
-            azdoRepos={azdoRepos}
-            githubRepos={githubRepos}
+            azdoRepos={azdo.repos}
+            githubRepos={github.repos}
             selectedRepoPrettyName={selectedRepo?.prettyName ?? null}
             onRepoSelected={handleRepoSelected}
             disabled={!isAuthenticated}
-            azdoError={azdoReposError}
-            githubError={githubReposError}
+            azdoError={azdo.error}
+            githubError={github.error}
           />
 
           {selectedRepo && selectedBranch && (

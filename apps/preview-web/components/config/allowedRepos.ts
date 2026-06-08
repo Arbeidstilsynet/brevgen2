@@ -1,5 +1,5 @@
-import { AzureDevOpsRepo } from "@/actions/azdo";
-import { GitHubRepo } from "@/actions/github";
+import type { Repo } from "@/actions/git-provider/types";
+import type { ProviderId } from "@/utils/types";
 
 interface BaseRepoInfo {
   /**
@@ -89,18 +89,11 @@ export const allowedRepos: RepoInfo[] = (
   ] satisfies RepoInfo[]
 ).toSorted((a, b) => a.prettyName.localeCompare(b.prettyName));
 
-export const allowedAzDoRepos = allowedRepos.filter(
-  (r): r is AzDoRepoInfo => r.provider === "azdo",
-);
-export const allowedGitHubRepos = allowedRepos.filter(
-  (r): r is GitHubRepoInfo => r.provider === "github",
-);
-
 export const allowedRepoNames = new Set(allowedRepos.map((r) => r.repoName));
 
-export type AzDoRepoWithName = Readonly<[azDoRepo: AzureDevOpsRepo, prettyName: string]>;
-export type GitHubRepoWithName = Readonly<[ghRepo: GitHubRepo, prettyName: string]>;
-export type RepoWithName = Readonly<
-  | { provider: "azdo"; repo: AzureDevOpsRepo; prettyName: string; repoInfo: AzDoRepoInfo }
-  | { provider: "github"; repo: GitHubRepo; prettyName: string; repoInfo: GitHubRepoInfo }
->;
+export type RepoWithName = Readonly<{
+  provider: ProviderId;
+  repo: Repo;
+  prettyName: string;
+  repoInfo: RepoInfo;
+}>;

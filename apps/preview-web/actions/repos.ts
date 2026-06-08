@@ -1,22 +1,9 @@
 "use server";
 
-import { type AzureDevOpsRepo, fetchReposFromAzure } from "./azdo";
-import { type GitHubRepo, fetchReposFromGitHub } from "./github";
-
-export interface AllReposResult {
-  azdoRepos: AzureDevOpsRepo[];
-  azdoError: string | null;
-  githubRepos: GitHubRepo[];
-  githubError: string | null;
-}
+import { realRegistry } from "./git-provider/adapters";
+import { aggregateRepos } from "./git-provider/registry";
+import type { AllReposResult } from "./git-provider/types";
 
 export async function fetchAllRepos(): Promise<AllReposResult> {
-  const [azdo, github] = await Promise.allSettled([fetchReposFromAzure(), fetchReposFromGitHub()]);
-
-  return {
-    azdoRepos: azdo.status === "fulfilled" ? azdo.value : [],
-    azdoError: azdo.status === "rejected" ? String(azdo.reason) : null,
-    githubRepos: github.status === "fulfilled" ? github.value : [],
-    githubError: github.status === "rejected" ? String(github.reason) : null,
-  };
+  return aggregateRepos(realRegistry);
 }
