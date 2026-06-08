@@ -20,4 +20,4 @@ Canonical triage label vocabulary (defaults, unchanged). See `docs/agents/triage
 
 ### Domain docs
 
-Multi-context (monorepo) layout — `CONTEXT-MAP.md` at root points to per-package `CONTEXT.md` files. See `docs/agents/domain.md`.
+Single-context layout — one `CONTEXT.md` glossary at the repo root covers the whole monorepo. See `docs/agents/domain.md`.

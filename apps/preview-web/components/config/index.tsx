@@ -98,7 +98,7 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
           isActive={activeTab === "variablesReport"}
           onClick={() => setActiveTab("variablesReport")}
         >
-          Flettefelt
+          Variabler
         </TabButton>
         <TabButton isActive={activeTab === "settings"} onClick={() => setActiveTab("settings")}>
           Innstillinger
@@ -123,7 +123,7 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
       {(activeTab === "fileSelect" || activeTab === "loadExamples") && (
         <>
           <h2 className="text-xl font-semibold">
-            Last ned brevmal fra {activeTab === "fileSelect" ? "versjonskontroll" : "eksempler"}
+            Last ned innholdsmal fra {activeTab === "fileSelect" ? "versjonskontroll" : "eksempler"}
           </h2>
           <div
             className="bg-yellow-100 border-l-4 border-yellow-500 text-gray-900 p-4 mb-4"
@@ -156,7 +156,7 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
                 onBranchSelect={(b) => setSelectedBranch(b)}
               />
 
-              <h3 className="text-l font-semibold">Velg brevmal</h3>
+              <h3 className="text-l font-semibold">Velg innholdsmal</h3>
               <FileSelector
                 repoWithName={selectedRepo}
                 branch={selectedBranch}
@@ -180,7 +180,7 @@ export function Config({ onFileSelected, onExampleSelected }: Props) {
       {activeTab === "variablesReport" && (
         <>
           <h2 className="text-xl font-semibold">Oversikt per repo</h2>
-          <span>Dette viser alle variabler som er referert i fagsystemets brevmaler</span>
+          <span>Dette viser alle variabler som er referert i fagsystemets innholdsmaler</span>
 
           <RepoSelector
             azdoRepos={azdoRepos}

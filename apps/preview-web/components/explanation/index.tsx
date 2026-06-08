@@ -26,7 +26,7 @@ export function Explanation({ setHoveredElement }: Props) {
       <h2 className="text-2xl font-extrabold mb-4">Brevgenerator2</h2>
       <section>
         <p className="mb-4">
-          Med Brevgenerator2 definerer vi brevmaler med{" "}
+          Med Brevgenerator2 definerer vi innholdsmaler med{" "}
           <a
             href="https://www.markdownguide.org/getting-started"
             target="_blank"
@@ -36,14 +36,14 @@ export function Explanation({ setHoveredElement }: Props) {
             Markdown
           </a>{" "}
           i stedet for Word-filer. Dette gjør det mulig å standardisere brevene. Det lar oss skille
-          innhold («brevmal») fra utformingen og standard felter som alle våre brev har
+          innhold («innholdsmal») fra utformingen og standard felter som alle våre brev har
           («dokumentmal» eller «template»). Vi kan også enkelt trekke ut standardavsnitt som går
           igjen i mange brev og garantere at de blir like der de brukes. På et teknisk nivå blir det
           også enklere å se endringer som skal sjekkes inn i kode og dermed tryggere å gjøre
           endringer på brev uten å manuelt dobbelt og trippeltkontrollere Word-filene.
         </p>
         <p>
-          For å muliggjøre bruk av flettefelter («variables») med Markdown bruker Brevgenerator2
+          For å muliggjøre bruk av variabler («variables») med Markdown bruker Brevgenerator2
           «Dynamisk Markdown». Det er en utvidelse som gjør det mulig å ikke bare flette inn enkelte
           felter, men hele avsnitt eller sider med innhold.
         </p>
@@ -54,7 +54,7 @@ export function Explanation({ setHoveredElement }: Props) {
         <p className="mb-4">
           Denne nettsiden er et verktøy for redigering og forhåndsvisning av «Dynamisk Markdown».{" "}
           <HoverableText onHover={getHoverHandler("editor")}>I midten</HoverableText> er en editor
-          hvor du kan skrive innhold («brevmal»).{" "}
+          hvor du kan skrive innhold («innholdsmal»).{" "}
           <HoverableText onHover={getHoverHandler("preview")}>På høyre side</HoverableText> er
           forhåndsvisning av tre forskjellige format, som kan veksles mellom med tab-knappene{" "}
           <HoverableText onHover={getHoverHandler("previewTabs")}>tab-knappene</HoverableText>{" "}
@@ -67,9 +67,9 @@ export function Explanation({ setHoveredElement }: Props) {
         </p>
         <p>
           NB: denne nettsiden har ikke funksjonalitet for å lagre endringene dine direkte i
-          kodebasen for fagsystemet. Når du er ferdig med å redigere brevmalen kan du sende det til
-          en utvikler for å sjekke det inn i kode. Husk at brevmalen bare består av Markdown (ren
-          tekst), så det er lett å overføre den via Teams e.l.
+          kodebasen for fagsystemet. Når du er ferdig med å redigere innholdsmalen kan du sende det
+          til en utvikler for å sjekke det inn i kode. Husk at innholdsmalen bare består av Markdown
+          (ren tekst), så det er lett å overføre den via Teams e.l.
         </p>
       </section>
 

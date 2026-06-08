@@ -1,5 +1,12 @@
 # Versjonslogg
 
+## 5.1.1
+
+- Updated XML documentation comments to align with the project glossary:
+  "flettefelt" is now described as "variabler" (variables), and the document
+  template metadata (DefaultTemplateFields / DirektoratTemplateFields) is now
+  called "dokumentmalfelt" instead of "flettefelter".
+
 ## 5.1.0
 
 - Added `BasicConfig.MergeCss: bool`, which can be set in `WithConversionOptions` to append custom CSS to the template's default CSS instead of replacing it entirely

@@ -79,7 +79,7 @@ export function VariablesReport({ repoWithName, branch }: Props) {
           Sum
         </TabButton>
         <TabButton isActive={viewMode === "perFile"} onClick={() => setViewMode("perFile")}>
-          Per brevmal
+          Per innholdsmal
         </TabButton>
       </div>
 

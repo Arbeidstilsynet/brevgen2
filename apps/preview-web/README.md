@@ -14,9 +14,9 @@ Se [api readme for oppsett i Entra](../api/README.md#konfigurasjon-av-app-i-entr
 | Integrasjon           | Auth                                                                               | Formål                        |
 |-----------------------|------------------------------------------------------------------------------------|-------------------------------|
 | Brevgenerator2 API    | Bearer JWT                                                                         | Generering av PDF             |
-| Azure DevOps REST API | PAT Code:Read                                                                      | Henting av brevmaler fra repo |
-| GitHub REST API       | GitHub app installation token via Octokit SDK eller PAT (lokalt) med Contents:Read | Henting av brevmaler fra repo |
-| GCP Cloud Storage     | Application Default Credentials                                                    | Lagring av WIP brevmaler      |
+| Azure DevOps REST API | PAT Code:Read                                                                      | Henting av innholdsmaler fra repo |
+| GitHub REST API       | GitHub app installation token via Octokit SDK eller PAT (lokalt) med Contents:Read | Henting av innholdsmaler fra repo |
+| GCP Cloud Storage     | Application Default Credentials                                                    | Lagring av WIP innholdsmaler      |
 | Apertium API          | Ingen                                                                              | Tekstoversetting              |
 
 ### GitHub API

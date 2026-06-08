@@ -27,7 +27,7 @@ Normal tekst og [guide for Markdown](https://markdownguide.offshoot.io/basic-syn
 
 ## Dynamisk funksjonalitet
 
-### Flettefelt/variabler (se forhåndsvisning)
+### Variabler (se forhåndsvisning)
 Oppgi referansenummer {{ saksnummer }}
 
 ### Logikk

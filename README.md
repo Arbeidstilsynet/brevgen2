@@ -1,6 +1,6 @@
 # Brevgenerator2
 
-Brevgenerator2 standardiserer og forenkler PDF-generering ved å definere dokumentmaler sentralt men brevmal hos konsument i form av Markdown.
+Brevgenerator2 standardiserer og forenkler PDF-generering ved å definere dokumentmaler sentralt men innholdsmal hos konsument i form av Markdown.
 
 Dette er konfigurert som et integrert monorepo med sentralisert konfigurasjon og mulighet til å importere mellom prosjektene.
 

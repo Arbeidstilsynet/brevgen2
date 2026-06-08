@@ -26,8 +26,8 @@ fagsystem: {
   label.near: top-center
   direction: down
 
-  brevmaler: {
-    label: "Brevmaler\nDynamic Markdown"
+  innholdsmaler: {
+    label: "Innholdsmaler\nDynamic Markdown"
   }
 
   nuget: {
@@ -46,7 +46,7 @@ preview-web: {
 api: {
   label: "Brevgen2 API"
   label.near: top-center
-  document-templates: "Document templates\nHTML+CSS"
+  document-templates: "Dokumentmaler\nHTML+CSS"
   chromium: "Chromium (Puppeteer)"
 }
 
@@ -77,17 +77,17 @@ external: {
 }
 
 # Main flows
-designer -> preview-web: "utformer brevmal"
-designer -> utvikler: "sender ferdig brevmal"
-utvikler -> fagsystem: "legger til brevmal i repo"
-fagsystem.nuget -> api: "brevmal + variabler"
+designer -> preview-web: "utformer innholdsmal"
+designer -> utvikler: "sender innholdsmal"
+utvikler -> fagsystem: "legger til innholdsmal i repo"
+fagsystem.nuget -> api: "innholdsmal + variabler"
 api -> fagsystem.nuget: "PDF" {
   style.stroke-dash: 3
 }
 
 preview-web -> api: "forhåndsvisning"
 preview-web -> external.entra-id: "OIDC"
-preview-web -> external.repos: "henter eksisterende maler"
+preview-web -> external.repos: "hente eksisterende innholdsmal"
 preview-web -> external.gcp-storage: "lagre/hent WIP"
 preview-web -> external.apertium: "oversett"
 

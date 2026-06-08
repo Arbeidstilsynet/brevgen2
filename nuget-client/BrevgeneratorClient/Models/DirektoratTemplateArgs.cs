@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 namespace Arbeidstilsynet.Brevgenerator.Client.Models;
 
 /// <summary>
-/// Flettefelter og valg for direktorat template
+/// Dokumentmalfelt og valg for direktorat template
 /// </summary>
 public class DirektoratTemplateArgs
 {
@@ -51,7 +51,7 @@ public enum DirektoratTemplateSignatureVariant
 }
 
 /// <summary>
-/// Flettefelter for direktorat template. De er helt separerte fra "MdVariables" som påvirker for selve innholdet i brevet.
+/// Dokumentmalfelt for direktorat template. De er helt separerte fra "MdVariables" som påvirker selve innholdet i brevet.
 /// </summary>
 public class DirektoratTemplateFields
 {
