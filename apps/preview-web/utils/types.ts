@@ -1,1 +1,1 @@
-export type GitProvider = "azdo" | "github";
+export type ProviderId = "azdo" | "github";

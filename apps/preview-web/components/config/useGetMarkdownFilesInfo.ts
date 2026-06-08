@@ -1,22 +1,13 @@
-import { fetchFilesFromAzure } from "@/actions/azdo";
-import { fetchFilesFromGitHub } from "@/actions/github";
+import { listFiles } from "@/actions/git";
+import type { RepoFile } from "@/actions/git-provider/types";
 import { useQuery } from "@tanstack/react-query";
 import type { RepoWithName } from "./allowedRepos";
 import { isFileAllowed } from "./utils";
 
-interface FileInfo {
-  path: string;
-}
-
 export function useGetMarkdownFilesInfo(repoWithName: RepoWithName, branch: string) {
-  return useQuery<FileInfo[]>({
-    queryKey: ["files", repoWithName.provider, repoWithName.repo.name, branch],
-    queryFn: async () => {
-      if (repoWithName.provider === "azdo") {
-        return await fetchFilesFromAzure(repoWithName.repoInfo.id, branch);
-      }
-      return await fetchFilesFromGitHub(repoWithName.repo.name, branch);
-    },
+  return useQuery<RepoFile[]>({
+    queryKey: ["files", repoWithName.provider, repoWithName.repo.id, branch],
+    queryFn: () => listFiles(repoWithName.provider, repoWithName.repo.id, branch),
     select: (data) =>
       data.filter((file) =>
         isFileAllowed({

@@ -1,9 +1,8 @@
 "use client";
 
-import { fetchFileContentFromAzure } from "@/actions/azdo";
-import { fetchFileContentFromGitHub } from "@/actions/github";
+import { readFileContent } from "@/actions/git";
 import { useApertium } from "@/hooks/useApertium";
-import type { GitProvider } from "@/utils/types";
+import type { ProviderId } from "@/utils/types";
 import { findMdVariables } from "@at/dynamic-markdown";
 import { Editor, useMonaco } from "@monaco-editor/react";
 import { DocumentTemplateOption, PDFOptionsWithLimits } from "@repo/shared-types";
@@ -107,19 +106,13 @@ export function DynamicMarkdownEditor() {
   };
 
   const handleFileSelected = async (
-    provider: GitProvider,
+    provider: ProviderId,
     repoIdentifier: string,
     branch: string,
     filePath: string,
     systemName: string,
   ) => {
-    let markdown: string;
-    if (provider === "github") {
-      const repoName = repoIdentifier.includes("/") ? repoIdentifier.split("/")[1] : repoIdentifier;
-      markdown = await fetchFileContentFromGitHub(repoName, branch, filePath);
-    } else {
-      markdown = await fetchFileContentFromAzure(repoIdentifier, branch, filePath);
-    }
+    const markdown = await readFileContent(provider, repoIdentifier, branch, filePath);
     loadMdWithEmptyVars(markdown);
     setCurrentModal(null);
     const fileName = filePath.split("/").at(-1)!;

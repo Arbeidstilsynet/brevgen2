@@ -1,5 +1,4 @@
-import { fetchManyFileContentFromAzure } from "@/actions/azdo";
-import { fetchManyFileContentFromGitHub } from "@/actions/github";
+import { readManyFileContents } from "@/actions/git";
 import { findMdVariables } from "@at/dynamic-markdown";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -21,19 +20,18 @@ export function VariablesReport({ repoWithName, branch }: Props) {
     queryKey: [
       "variablesReport",
       repoWithName.provider,
-      repoWithName.repo.name,
+      repoWithName.repo.id,
       branch,
       repoWithName.prettyName,
     ],
     queryFn: async () => {
       const filePaths = data!.map((file) => file.path);
-      let files: { filePath: string; content: string }[];
-
-      if (repoWithName.provider === "azdo") {
-        files = await fetchManyFileContentFromAzure(repoWithName.repoInfo.id, branch, filePaths);
-      } else {
-        files = await fetchManyFileContentFromGitHub(repoWithName.repo.name, branch, filePaths);
-      }
+      const files = await readManyFileContents(
+        repoWithName.provider,
+        repoWithName.repo.id,
+        branch,
+        filePaths,
+      );
 
       if (!files.length) {
         console.warn("No files found", { repo: repoWithName.repo.name, branch, filePaths, files });

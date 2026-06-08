@@ -1,33 +1,24 @@
-import { AzureDevOpsRepo } from "@/actions/azdo";
-import { GitHubRepo } from "@/actions/github";
+import type { Repo } from "@/actions/git-provider/types";
 import Image from "next/image";
 import { type ComboboxOption, SelectCombobox } from "../SelectCombobox";
-import {
-  allowedAzDoRepos,
-  allowedGitHubRepos,
-  type AzDoRepoInfo,
-  type GitHubRepoInfo,
-  type RepoWithName,
-} from "./allowedRepos";
+import { allowedRepos, type RepoInfo, type RepoWithName } from "./allowedRepos";
 
 const GitHubIcon = <Image src="/github.svg" alt="GitHub" width={16} height={16} />;
 const AzureDevOpsIcon = <Image src="/azdo.svg" alt="Azure DevOps" width={16} height={16} />;
 
-function matchRepos<P extends "azdo" | "github">(
-  allowedRepos: (P extends "azdo" ? AzDoRepoInfo : GitHubRepoInfo)[],
-  actualRepos: (P extends "azdo" ? AzureDevOpsRepo : GitHubRepo)[],
-  provider: P,
-): RepoWithName[] {
-  return allowedRepos.flatMap((info) => {
-    const repo = actualRepos.find((r) => r.name === info.repoName);
-    if (!repo) return [];
-    return [{ provider, repo, prettyName: info.prettyName, repoInfo: info } as RepoWithName];
-  });
+function matchRepos(actualRepos: Repo[], provider: RepoInfo["provider"]): RepoWithName[] {
+  return allowedRepos
+    .filter((info) => info.provider === provider)
+    .flatMap((info) => {
+      const repo = actualRepos.find((r) => r.name === info.repoName);
+      if (!repo) return [];
+      return [{ provider, repo, prettyName: info.prettyName, repoInfo: info }];
+    });
 }
 
 type Props = Readonly<{
-  azdoRepos: AzureDevOpsRepo[];
-  githubRepos: GitHubRepo[];
+  azdoRepos: Repo[];
+  githubRepos: Repo[];
   selectedRepoPrettyName: string | null;
   onRepoSelected: (repo: RepoWithName) => void;
   disabled?: boolean;
@@ -45,8 +36,8 @@ export function RepoSelector({
   githubError,
 }: Props) {
   const repoOptions = [
-    ...matchRepos(allowedAzDoRepos, azdoRepos, "azdo"),
-    ...matchRepos(allowedGitHubRepos, githubRepos, "github"),
+    ...matchRepos(azdoRepos, "azdo"),
+    ...matchRepos(githubRepos, "github"),
   ].toSorted((a, b) => a.prettyName.localeCompare(b.prettyName));
 
   const comboboxOptions: ComboboxOption[] = repoOptions.map((r) => ({

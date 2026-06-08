@@ -2,10 +2,9 @@
 
 "use client";
 
-import { fetchFileContentFromAzure } from "@/actions/azdo";
+import { readFileContent } from "@/actions/git";
 import type { BucketFile } from "@/actions/gcp-bucket";
-import { fetchFileContentFromGitHub } from "@/actions/github";
-import type { GitProvider } from "@/utils/types";
+import type { ProviderId } from "@/utils/types";
 import { useMutation } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useEffectEvent } from "react";
@@ -22,7 +21,7 @@ export const GIT_PARAMS = {
   provider: "provider",
 } as const;
 
-function resolveProvider(providerParam: string | null): GitProvider {
+function resolveProvider(providerParam: string | null): ProviderId {
   if (providerParam === "gh") return "github";
   // Default to azdo for backward compatibility (existing URLs without provider param)
   return "azdo";
@@ -56,11 +55,11 @@ export function useLoadPermanentUrl(
     mutationFn: async () => {
       if (!gitParam || !branchParam || !fileParam) throw new TypeError("Missing Git parameters");
       if (provider === "github") {
-        // gitParam is "owner/repo" for GitHub; extract repo name
+        // Legacy URLs store "owner/repo" for GitHub; the port expects the bare repo name.
         const repoName = gitParam.includes("/") ? gitParam.split("/")[1] : gitParam;
-        return fetchFileContentFromGitHub(repoName, branchParam, fileParam);
+        return readFileContent("github", repoName, branchParam, fileParam);
       }
-      return fetchFileContentFromAzure(gitParam, branchParam, fileParam);
+      return readFileContent("azdo", gitParam, branchParam, fileParam);
     },
     onSuccess: (md) => {
       const fileName = fileParam.split("/").at(-1)!;
