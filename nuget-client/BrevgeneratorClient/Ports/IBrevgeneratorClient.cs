@@ -8,7 +8,7 @@ namespace Arbeidstilsynet.Brevgenerator.Client.Ports
     public interface IBrevgeneratorClient
     {
         /// <summary>
-        /// Generer et brev ut i fra dynamisk markdown, variabler og diverse konfigurasjon.<br />
+        /// Generer et brev ut fra dynamisk markdown, variabler og diverse konfigurasjon.<br />
         /// Bruk IGenererBrevArgsBuilder til å bygge og validere payload for spørringen.
         /// </summary>
         /// <param name="payload"></param>
