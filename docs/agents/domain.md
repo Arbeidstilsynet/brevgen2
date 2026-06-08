@@ -4,41 +4,34 @@ How the engineering skills should consume this repo's domain documentation when 
 
 ## Before exploring, read these
 
-- **`CONTEXT-MAP.md`** at the repo root — it points at one `CONTEXT.md` per context. Read each one relevant to the topic.
-- Per-context **`CONTEXT.md`** files under `apps/<app>/` and `packages/<package>/`.
-- **`docs/adr/`** — read ADRs that touch the area you're about to work in. Also check `apps/<app>/docs/adr/` and `packages/<package>/docs/adr/` for context-scoped decisions.
+- **`CONTEXT.md`** at the repo root — the project glossary. Read it before naming domain concepts.
+- **`docs/adr/`** — read the ADRs that touch the area you're about to work in.
 
 If any of these files don't exist, **proceed silently**. Don't flag their absence; don't suggest creating them upfront. The producer skill (`/grill-with-docs`) creates them lazily when terms or decisions actually get resolved.
 
 ## File structure
 
-This is a multi-context monorepo (presence of `CONTEXT-MAP.md` at the root):
+This is a single-context repo: one `CONTEXT.md` at the root covers the whole monorepo, even though the code is split across `apps/` and `packages/`.
 
 ```
 /
-├── CONTEXT-MAP.md
-├── docs/adr/                          ← system-wide decisions
+├── CONTEXT.md
+├── docs/adr/
+│   ├── 0001-...md
+│   └── 0002-...md
 ├── apps/
 │   ├── api/
-│   │   ├── CONTEXT.md
-│   │   └── docs/adr/                  ← context-specific decisions
 │   └── preview-web/
-│       ├── CONTEXT.md
-│       └── docs/adr/
 └── packages/
     ├── config-typescript/
-    │   └── CONTEXT.md
     ├── document-templates/
-    │   └── CONTEXT.md
     ├── dynamic-markdown/
-    │   └── CONTEXT.md
     └── shared-types/
-        └── CONTEXT.md
 ```
 
 ## Use the glossary's vocabulary
 
-When your output names a domain concept (in an issue title, a refactor proposal, a hypothesis, a test name), use the term as defined in the relevant `CONTEXT.md`. Don't drift to synonyms the glossary explicitly avoids.
+When your output names a domain concept (in an issue title, a refactor proposal, a hypothesis, a test name), use the term as defined in `CONTEXT.md`. Don't drift to synonyms the glossary explicitly avoids.
 
 If the concept you need isn't in the glossary yet, that's a signal — either you're inventing language the project doesn't use (reconsider) or there's a real gap (note it for `/grill-with-docs`).
 
