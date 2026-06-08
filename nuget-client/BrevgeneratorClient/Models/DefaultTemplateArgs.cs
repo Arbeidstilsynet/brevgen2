@@ -45,7 +45,7 @@ public enum DefaultTemplateSignatureVariant
 }
 
 /// <summary>
-/// Dokumentmalfelt for default template. De er helt separerte fra "MdVariables" som påvirker for selve innholdet i brevet.
+/// Dokumentmalfelt for default template. De er helt separerte fra "MdVariables" som påvirker selve innholdet i brevet.
 /// </summary>
 public class DefaultTemplateFields
 {
