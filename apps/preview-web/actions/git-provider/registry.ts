@@ -3,7 +3,11 @@ import type { AllReposResult, GitProvider, ProviderRegistry } from "./types";
 
 /** Select the adapter for a provider from the registry. */
 export function selectProvider(registry: ProviderRegistry, providerId: ProviderId): GitProvider {
-  return registry[providerId];
+  const provider = registry[providerId];
+  if (!provider) {
+    throw new Error(`Unknown git provider: ${providerId}`);
+  }
+  return provider;
 }
 
 /**

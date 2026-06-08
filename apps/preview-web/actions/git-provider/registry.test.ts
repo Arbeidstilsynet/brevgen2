@@ -60,4 +60,10 @@ describe("selectProvider", () => {
     expect(selectProvider(registry, "github")).toBe(github);
     expect(selectProvider(registry, "azdo")).toBe(azdo);
   });
+
+  it("throws a clear error for an unknown provider id", () => {
+    const registry = { github: providerWithRepos([githubRepo]) } as ProviderRegistry;
+
+    expect(() => selectProvider(registry, "azdo")).toThrow("Unknown git provider: azdo");
+  });
 });
