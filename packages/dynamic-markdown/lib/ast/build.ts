@@ -1,9 +1,28 @@
 import { DynamicMarkdownParseError } from "./error";
 import { Token, tokenize } from "./tokenize";
 
+export type ASTConditionOperand = {
+  value: string;
+  literalValue?: number | boolean;
+};
+
+export type ASTCondition =
+  | {
+      type: "truthy";
+      operand: ASTConditionOperand;
+      negated: boolean;
+    }
+  | {
+      type: "comparison";
+      leftOperand: ASTConditionOperand;
+      operator: string;
+      rightOperand: ASTConditionOperand;
+    };
+
 export type ASTIfNode = {
   type: "if";
   value: string;
+  condition: ASTCondition;
   children: ASTNode[];
   line: number;
 };
@@ -36,7 +55,7 @@ export function buildAST(tokens: Token[]): ASTNode[] {
   return ast;
 }
 
-export function parseLogicToken(token: Token): ASTIfNode {
+function parseLogicToken(token: Token): ASTIfNode {
   const [condition, output] = splitAndValidateLogicToken(token);
   const cleanedCondition = cleanCondition(condition);
   const children = tokenizeAndAdjustLines(output, token.line);
@@ -44,6 +63,7 @@ export function parseLogicToken(token: Token): ASTIfNode {
   return {
     type: "if",
     value: cleanedCondition,
+    condition: parseCondition(cleanedCondition),
     children: buildAST(children),
     line: token.line,
   };
@@ -63,6 +83,70 @@ function cleanCondition(condition: string): string {
   const conditionParts = condition.split(" ");
   conditionParts.shift(); // Remove logic keyword
   return conditionParts.join(" ").trim();
+}
+
+function parseCondition(condition: string): ASTCondition {
+  let i = 0;
+  const length = condition.length;
+
+  i = skipWhitespace(i, length, condition);
+
+  let leftOperand = "";
+  while (i < length && condition[i] !== " ") {
+    leftOperand += condition[i];
+    i++;
+  }
+
+  i = skipWhitespace(i, length, condition);
+
+  let operator = "";
+  while (i < length && condition[i] !== " ") {
+    operator += condition[i];
+    i++;
+  }
+
+  if (operator === "") {
+    const negated = leftOperand.startsWith("!");
+    return {
+      type: "truthy",
+      operand: parseOperand(negated ? leftOperand.slice(1) : leftOperand),
+      negated,
+    };
+  }
+
+  i = skipWhitespace(i, length, condition);
+
+  let rightOperand = "";
+  while (i < length) {
+    rightOperand += condition[i];
+    i++;
+  }
+
+  return {
+    type: "comparison",
+    leftOperand: parseOperand(leftOperand),
+    operator,
+    rightOperand: parseOperand(rightOperand),
+  };
+}
+
+function parseOperand(operand: string): ASTConditionOperand {
+  if (!Number.isNaN(Number(operand))) {
+    return { value: operand, literalValue: Number(operand) };
+  }
+
+  if (operand.toLowerCase() === "true" || operand.toLowerCase() === "false") {
+    return { value: operand, literalValue: operand.toLowerCase() === "true" };
+  }
+
+  return { value: operand };
+}
+
+function skipWhitespace(i: number, length: number, condition: string): number {
+  while (i < length && condition[i] === " ") {
+    i++;
+  }
+  return i;
 }
 
 function tokenizeAndAdjustLines(output: string, startLine: number): Token[] {

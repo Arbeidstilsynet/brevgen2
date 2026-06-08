@@ -1,7 +1,42 @@
 import { describe, expect, test } from "vitest";
-import { findMdVariables } from "./detect";
+import { type ASTNode } from "./build";
+import { findASTVariables, findMdVariables } from "./detect";
 
 describe("findVariables", () => {
+  test("should find variables by folding an AST", () => {
+    const ast: ASTNode[] = [
+      {
+        type: "if",
+        value: "isParsingFun != false",
+        condition: {
+          type: "comparison",
+          leftOperand: { value: "isParsingFun" },
+          operator: "!=",
+          rightOperand: { value: "false", literalValue: false },
+        },
+        children: [
+          { type: "var", value: "userName", line: 1 },
+          {
+            type: "if",
+            value: "!isUserLoggedIn",
+            condition: {
+              type: "truthy",
+              operand: { value: "isUserLoggedIn" },
+              negated: true,
+            },
+            children: [{ type: "var", value: "loginUrl", line: 1 }],
+            line: 1,
+          },
+        ],
+        line: 1,
+      },
+    ];
+
+    const variables = findASTVariables(ast);
+
+    expect(variables).toEqual(new Set(["isParsingFun", "userName", "isUserLoggedIn", "loginUrl"]));
+  });
+
   test("should find variables in a simple string", () => {
     const input = "{{ userName }}";
     const variables = findMdVariables(input);
