@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 namespace Arbeidstilsynet.Brevgenerator.Client.Models;
 
 /// <summary>
-/// Flettefelter og valg for default template
+/// Dokumentmalfelt og valg for default template
 /// </summary>
 public class DefaultTemplateArgs
 {
@@ -45,7 +45,7 @@ public enum DefaultTemplateSignatureVariant
 }
 
 /// <summary>
-/// Flettefelter for default template. De er helt separerte fra "MdVariables" som påvirker for selve innholdet i brevet.
+/// Dokumentmalfelt for default template. De er helt separerte fra "MdVariables" som påvirker for selve innholdet i brevet.
 /// </summary>
 public class DefaultTemplateFields
 {
@@ -105,7 +105,7 @@ public class DefaultTemplateFields
 }
 
 /// <summary>
-/// Flettefelter for virksomhet i default template
+/// Dokumentmalfelt for virksomhet i default template
 /// </summary>
 public class Virksomhet
 {

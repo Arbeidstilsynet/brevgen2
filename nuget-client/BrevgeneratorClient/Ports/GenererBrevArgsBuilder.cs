@@ -9,11 +9,11 @@ namespace Arbeidstilsynet.Brevgenerator.Client.Ports;
 public interface IAddMarkdownStep
 {
     /// <summary>
-    /// Legg til dynamisk markdown og eventuelle variabler (flettefelt).
+    /// Legg til dynamisk markdown og eventuelle variabler.
     /// </summary>
     /// <param name="md">Dynamisk markdown</param>
     /// <param name="mdVariables">
-    /// Variabler (flettefelt) som er referert i dynamisk markdown.
+    /// Variabler som er referert i dynamisk markdown.
     /// Kan være string/number/boolean etter serialisering til JSON.
     /// </param>
     IChooseTemplateStep AddMarkdown(string md, Dictionary<string, object?>? mdVariables);
@@ -60,7 +60,7 @@ public interface IChooseTemplateStep
 public interface IDefaultTemplateFieldsStep
 {
     /// <summary>
-    /// Legg til flettefelt-verdier for default template. Saksnummer, Virksomhetsadresse o.l.
+    /// Legg til dokumentmalfelt-verdier for default template. Saksnummer, Virksomhetsadresse o.l.
     /// </summary>
     /// <param name="fields"></param>
     IBuildStep WithDefaultTemplateFields(DefaultTemplateFields fields);
@@ -72,7 +72,7 @@ public interface IDefaultTemplateFieldsStep
 public interface IDirektoratTemplateFieldsStep
 {
     /// <summary>
-    /// Legg til flettefelt-verdier for direktorat template. Saksnummer, Mottakeradresse o.l.
+    /// Legg til dokumentmalfelt-verdier for direktorat template. Saksnummer, Mottakeradresse o.l.
     /// </summary>
     /// <param name="fields"></param>
     IBuildStep WithDirektoratTemplateFields(DirektoratTemplateFields fields);

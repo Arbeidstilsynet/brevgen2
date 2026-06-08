@@ -39,7 +39,7 @@ public class GenererBrevArgs
 public class GeneratePdfOptions : PdfConfig
 {
     /// <summary>
-    /// Konfigurasjon og standard flettefelter for dokumentmaler (templates).
+    /// Konfigurasjon og standard dokumentmalfelt (templates).
     /// </summary>
     [JsonPropertyName("dynamic")]
     public DynamicMdPdfConfig Dynamic { get; set; } = new();

@@ -13,9 +13,9 @@ export function Workspace() {
       {message && <Toast message={message} variant={variant} onClose={clearToast} />}
 
       <span>
-        Dette er arbeidsområde for brevmaler. Her kan du opprette og laste opp brevmaler som ikke er
-        lagret i et repository. Hvis du vil endre en eksisterende mal, må du enten overskrive den
-        eller opprette en ny.
+        Dette er arbeidsområde for innholdsmaler. Her kan du opprette og laste opp innholdsmaler som
+        ikke er lagret i et repository. Hvis du vil endre en eksisterende mal, må du enten
+        overskrive den eller opprette en ny.
       </span>
 
       <aside className="p-4 bg-yellow-100 border-l-4 border-yellow-500 text-gray-900" role="alert">

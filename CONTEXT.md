@@ -24,9 +24,9 @@ _Avoid_: Brevmal, letter template, letter mal
 The reusable letterhead, footer, and styling wrapper applied around the content. Variants are `default`, `direktorat`, `custom`, and `blank`.
 _Avoid_: Layout, theme, brevmal
 
-**Document template fields** (Malfelter):
+**Document template fields** (Dokumentmalfelt):
 Consumer-supplied metadata a document template renders into its letterhead and footer (e.g. `dato`, `saksnummer`, `virksomhet`).
-_Avoid_: Template arguments, template args, props
+_Avoid_: Template arguments, template args, props, malfelter (ambiguous with the other "mal" terms)
 
 **Signature variant** (Signaturvariant):
 How a document is signed off: `elektroniskGodkjent`, `automatiskBehandlet`, or `usignert`.
