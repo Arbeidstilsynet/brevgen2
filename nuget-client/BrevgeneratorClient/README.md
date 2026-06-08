@@ -125,7 +125,7 @@ new BrevgeneratorConfig { AuthMode = AuthMode.BearerToken, BaseUrl = null }
 
 ## Hvordan publisere ny versjon
 
-1. Oppdater `Version` i [nuget-client.csproj](nuget-client.csproj) med passende nytt [semantisk versjonsnummer](https://semver.org/)
+1. Oppdater `Version` i [BrevgeneratorClient.csproj](BrevgeneratorClient.csproj) med passende nytt [semantisk versjonsnummer](https://semver.org/)
 2. Skriv inn dine endringer i [CHANGELOG.md](CHANGELOG.md)
 3. PR og merge til main-branch
 4. Lag Git tag `nuget-client-v<x.y.z>`
