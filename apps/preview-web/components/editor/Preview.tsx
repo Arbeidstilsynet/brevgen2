@@ -13,6 +13,7 @@ import type {
 import { marked } from "marked";
 import { useEffect, useRef } from "react";
 import sanitizeHtml from "sanitize-html";
+import { buildPreviewRequest, type PreviewRequestState } from "./buildPreviewRequest";
 import { ActivePreviewTab } from "./header/PreviewControls";
 
 function getHtml(md: string, css: string) {
@@ -164,23 +165,16 @@ export function Preview({
       direktoratTemplateArgs,
     };
 
-    const payload = {
+    const requestState: PreviewRequestState = {
       md,
       mdVariables,
-      options: {
-        document_title: "Preview",
-        author: "Brevgen2 Editor",
-        dynamic: {
-          template: selectedTemplate,
-          defaultTemplateArgs: selectedTemplate === "default" ? defaultTemplateArgs : undefined,
-          direktoratTemplateArgs:
-            selectedTemplate === "direktorat" ? direktoratTemplateArgs : undefined,
-        },
-        pdf_options: Object.keys(pdfOptions).length > 0 ? pdfOptions : undefined,
-      },
-    } satisfies GenerateDocumentRequest;
+      selectedTemplate,
+      defaultTemplateArgs,
+      direktoratTemplateArgs,
+      pdfOptions,
+    };
 
-    debouncedMutatePdf(payload, { debounceMs: 1000 });
+    debouncedMutatePdf(buildPreviewRequest(requestState, "pdf"), { debounceMs: 1000 });
   }, [
     activePreviewTab,
     debouncedMutatePdf,
@@ -218,22 +212,16 @@ export function Preview({
       direktoratTemplateArgs,
     };
 
-    const payload = {
+    const requestState: PreviewRequestState = {
       md,
       mdVariables,
-      options: {
-        document_title: "Preview",
-        dynamic: {
-          template: selectedTemplate,
-          defaultTemplateArgs: selectedTemplate === "default" ? defaultTemplateArgs : undefined,
-          direktoratTemplateArgs:
-            selectedTemplate === "direktorat" ? direktoratTemplateArgs : undefined,
-        },
-        as_html: true,
-      },
-    } satisfies GenerateDocumentRequest;
+      selectedTemplate,
+      defaultTemplateArgs,
+      direktoratTemplateArgs,
+      pdfOptions: {},
+    };
 
-    debouncedMutateHtml(payload, { debounceMs: 1000 });
+    debouncedMutateHtml(buildPreviewRequest(requestState, "html"), { debounceMs: 1000 });
   }, [
     activePreviewTab,
     debouncedMutateHtml,
