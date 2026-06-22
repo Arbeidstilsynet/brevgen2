@@ -81,8 +81,8 @@ importers:
         specifier: 4.1.0
         version: 4.1.0
       marked:
-        specifier: 17.0.6
-        version: 17.0.6
+        specifier: 18.0.5
+        version: 18.0.5
       p-limit:
         specifier: 7.3.0
         version: 7.3.0
@@ -178,8 +178,8 @@ importers:
         specifier: 2.1.1
         version: 2.1.1
       marked:
-        specifier: 17.0.6
-        version: 17.0.6
+        specifier: 18.0.5
+        version: 18.0.5
       monaco-editor:
         specifier: 0.55.1
         version: 0.55.1
@@ -3009,8 +3009,8 @@ packages:
     engines: {node: '>= 18'}
     hasBin: true
 
-  marked@17.0.6:
-    resolution: {integrity: sha512-gB0gkNafnonOw0obSTEGZTT86IuhILt2Wfx0mWH/1Au83kybTayroZ/V6nS25mN7u8ASy+5fMhgB3XPNrOZdmA==}
+  marked@18.0.5:
+    resolution: {integrity: sha512-S6GcvALHg6K4ohtu4E7x0a1AqhAjp6cV8KhLSyN9qVapnzJkusVBxZRcIU9AeYsbe6P1hKDusSbEOzGyyuce6w==}
     engines: {node: '>= 20'}
     hasBin: true
 
@@ -6697,7 +6697,7 @@ snapshots:
 
   marked@14.0.0: {}
 
-  marked@17.0.6: {}
+  marked@18.0.5: {}
 
   math-intrinsics@1.1.0: {}
 
