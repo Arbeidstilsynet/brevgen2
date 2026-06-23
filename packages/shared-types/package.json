@@ -7,14 +7,13 @@
     ".": "./lib/index.ts"
   },
   "scripts": {
-    "typecheck": "tsgo --noEmit"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "zod": "4.4.3"
   },
   "devDependencies": {
-    "@typescript/native-preview": "7.0.0-dev.20260619.1",
     "puppeteer-core": "24.43.1",
-    "typescript": "6.0.3"
+    "typescript": "7.0.1-rc"
   }
 }

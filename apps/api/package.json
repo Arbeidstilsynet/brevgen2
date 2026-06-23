@@ -14,7 +14,7 @@
     "test:load": "pnpx tsx load-tests/run.ts",
     "test:load:analyze": "pnpx tsx load-tests/analyze.ts",
     "lint": "oxlint",
-    "typecheck": "tsgo --noEmit"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@at/document-templates": "workspace:*",
@@ -42,14 +42,13 @@
     "@repo/typescript-config": "workspace:^",
     "@types/node": "24.13.2",
     "@types/sanitize-html": "2.16.1",
-    "@typescript/native-preview": "7.0.0-dev.20260619.1",
     "globals": "17.6.0",
     "pdf-text-reader": "5.1.1",
     "pdf-visual-diff": "0.15.2",
     "puppeteer": "24.43.1",
     "testcontainers": "12.0.3",
     "tsdown": "0.22.3",
-    "typescript": "6.0.3",
+    "typescript": "7.0.1-rc",
     "vite": "8.0.16",
     "vite-plugin-node": "8.0.0",
     "vitest": "4.1.9"
