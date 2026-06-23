@@ -15,13 +15,12 @@
   "scripts": {
     "test": "vitest run --coverage",
     "lint": "oxlint",
-    "typecheck": "tsgo --noEmit"
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:^",
-    "@typescript/native-preview": "7.0.0-dev.20260620.1",
     "@vitest/coverage-v8": "4.1.9",
-    "typescript": "6.0.3",
+    "typescript": "7.0.1-rc",
     "vitest": "4.1.9"
   }
 }
