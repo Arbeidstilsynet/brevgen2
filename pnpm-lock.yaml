@@ -218,8 +218,11 @@ importers:
         specifier: 4.3.1
         version: 4.3.1
       typescript:
-        specifier: 7.0.1-rc
-        version: 7.0.1-rc
+        specifier: 6.0.3
+        version: 6.0.3
+      typescript-7:
+        specifier: npm:typescript@7.0.1-rc
+        version: typescript@7.0.1-rc
       vitest:
         specifier: 4.1.9
         version: 4.1.9(@opentelemetry/api@1.9.1)(@types/node@24.13.2)(@vitest/coverage-v8@4.1.9)(vite@8.0.16(@types/node@24.13.2)(jiti@2.7.0)(yaml@2.9.0))
@@ -3863,6 +3866,11 @@ packages:
 
   typed-query-selector@2.12.2:
     resolution: {integrity: sha512-EOPFbyIub4ngnEdqi2yOcNeDLaX/0jcE1JoAXQDDMIthap7FoN795lc/SHfIq2d416VufXpM8z/lD+WRm2gfOQ==}
+
+  typescript@6.0.3:
+    resolution: {integrity: sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==}
+    engines: {node: '>=14.17'}
+    hasBin: true
 
   typescript@7.0.1-rc:
     resolution: {integrity: sha512-drEP77wK7CCDlPfXZH4e008UUQOsw1DFmHmZOZjuNA+yoDLLnSNMZRXi90NbV/1LVo7SbNLq1bs3jjvk49TEqQ==}
@@ -7727,6 +7735,8 @@ snapshots:
   tweetnacl@0.14.5: {}
 
   typed-query-selector@2.12.2: {}
+
+  typescript@6.0.3: {}
 
   typescript@7.0.1-rc:
     optionalDependencies:
