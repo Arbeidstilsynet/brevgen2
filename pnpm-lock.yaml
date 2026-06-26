@@ -148,8 +148,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/dynamic-markdown
       '@azure/msal-node':
-        specifier: 5.2.5
-        version: 5.2.5
+        specifier: 5.3.0
+        version: 5.3.0
       '@google-cloud/storage':
         specifier: 7.21.0
         version: 7.21.0
@@ -281,12 +281,12 @@ packages:
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
     engines: {node: '>=10'}
 
-  '@azure/msal-common@16.9.0':
-    resolution: {integrity: sha512-1MWGjqgUCRAYgLmVFZKp7fs3Rg1TFvIMgywY8ze2olNVvLlJoRThuoziWSDJuwwyJI5L4rnLb9Tyt5D9GvSLPw==}
+  '@azure/msal-common@16.10.0':
+    resolution: {integrity: sha512-iYtjpanlv6963Jprs0MvzIap07V+QhultjQctfbEDQCflsDAEeO3R7XnVA5gk30fhoBFLdgJT7VqO0TGsEsN9w==}
     engines: {node: '>=0.8.0'}
 
-  '@azure/msal-node@5.2.5':
-    resolution: {integrity: sha512-RUuewWk9JvWJS5Yiy8/74Lm1rQAWlrU/qg/Bgtk1jIauVRtnb9XKwS5Xg0J+Whwjesq9EVrBIFgQEP8vHxgezA==}
+  '@azure/msal-node@5.3.0':
+    resolution: {integrity: sha512-fXtJX811pX8y8QlrQqBSH6+plvWyKZDI0IxkheAcyAw9OtcpXyFivmTC7eGUqutLWaDlKXuQ3yOESD4zAmkjHg==}
     engines: {node: '>=20'}
 
   '@babel/code-frame@7.29.7':
@@ -4024,11 +4024,11 @@ snapshots:
 
   '@alloc/quick-lru@5.2.0': {}
 
-  '@azure/msal-common@16.9.0': {}
+  '@azure/msal-common@16.10.0': {}
 
-  '@azure/msal-node@5.2.5':
+  '@azure/msal-node@5.3.0':
     dependencies:
-      '@azure/msal-common': 16.9.0
+      '@azure/msal-common': 16.10.0
       jsonwebtoken: 9.0.3
 
   '@babel/code-frame@7.29.7':
