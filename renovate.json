@@ -23,7 +23,8 @@
       "matchDatasources": ["docker"],
       "matchPackageNames": ["node"],
       "matchUpdateTypes": ["digest"],
-      "groupName": "node.js digests"
+      "groupName": "node.js digests",
+      "description": "group different node image tags"
     }
   ]
 }
