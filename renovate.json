@@ -14,10 +14,11 @@
       "description": "Avoid automerging puppeteer patches to preserve compatibility with specific Chromium versions"
     },
     {
-      "matchManagers": ["pre-commit"],
-      "matchPackageNames": ["oxc-project/mirrors-oxlint"],
-      "automerge": false,
-      "description": "Avoid automerging oxlint updates until Windows OOM issue is resolved"
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["node"],
+      "matchUpdateTypes": ["digest"],
+      "groupName": "node.js digests",
+      "description": "group different node image tags"
     }
   ]
 }
