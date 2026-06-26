@@ -1,8 +1,11 @@
 # Require team approval for all files by default
+
 * @Arbeidstilsynet/team-plattform
 
 # Allow Renovate to auto-merge package files
+
 **/package.json
 pnpm-lock.yaml
 pnpm-workspace.yaml
 **/*.csproj
+**/Dockerfile
