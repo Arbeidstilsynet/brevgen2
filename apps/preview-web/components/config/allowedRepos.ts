@@ -87,7 +87,7 @@ export const allowedRepos: RepoInfo[] = (
       onlyPaths: [
         "src/Infrastructure.Adapters/Brevgenerator2/Brevmaler",
         "src/Register/Infrastructure/Driven/Brevgenerator2/Brevmaler",
-        "src/RegistrerSøknad/SendKvittering/Brevmaler"
+        "src/RegistrerSøknad/SendKvittering/Brevmaler",
       ],
     },
   ] satisfies RepoInfo[]
