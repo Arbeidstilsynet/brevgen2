@@ -13,7 +13,7 @@ COPY apps/api/package.json ./apps/api/
 COPY packages/dynamic-markdown/package.json ./packages/dynamic-markdown/
 COPY packages/document-templates/package.json ./packages/document-templates/
 COPY packages/shared-types/package.json ./packages/shared-types/
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --filter api...
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store PUPPETEER_SKIP_DOWNLOAD=true pnpm install --frozen-lockfile --filter api...
 
 COPY apps/api ./apps/api
 COPY packages ./packages
