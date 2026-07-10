@@ -89,3 +89,7 @@ yarn-error.log*
 # test output
 temp
 test*.html
+
+
+# copilot sandbbox created files
+.pnpm-store
