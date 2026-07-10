@@ -44,7 +44,7 @@ cd apps/api && pnpm exec vitest run -t "some test name"
 ```
 
 - `apps/api` unit tests: `pnpm test` (vitest, targets `lib`). Integration tests (spin up the API
-  via Testcontainers): `pnpm test:integration` or `pnpm test:integration` from root
+  via Testcontainers): from repo root run `pnpm test:integration` (filters to `api`), or from `apps/api` run `pnpm test:integration`
   (`apps/api/integration-tests`).
 - Load tests: `pnpm test:load` / `pnpm test:load:analyze` in `apps/api` (not part of CI).
 - `.NET` client (`nuget-client/`): built/tested via `Arbeidstilsynet/action-dotnet-build` in CI, not
