@@ -1,4 +1,4 @@
-FROM node:24-slim@sha256:b31e7a42fdf8b8aa5f5ed477c72d694301273f1069c5a2f71d53c6482e99a2fc AS base
+FROM node:24-slim@sha256:cb4e8f7c443347358b7875e717c29e27bf9befc8f5a26cf18af3c3dec80e58c5 AS base
 FROM base AS builder
 
 ENV PNPM_HOME="/pnpm"
@@ -13,7 +13,7 @@ COPY apps/api/package.json ./apps/api/
 COPY packages/dynamic-markdown/package.json ./packages/dynamic-markdown/
 COPY packages/document-templates/package.json ./packages/document-templates/
 COPY packages/shared-types/package.json ./packages/shared-types/
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --filter api...
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store PUPPETEER_SKIP_DOWNLOAD=true pnpm install --frozen-lockfile --filter api...
 
 COPY apps/api ./apps/api
 COPY packages ./packages
@@ -23,7 +23,7 @@ RUN pnpm_config_verify_deps_before_run=false pnpm --filter api build
 FROM base AS runner
 # For available Chromium versions in the distro, see https://repology.org/project/chromium/versions
 # Chromium versions changes should be matched with Puppeteer version from https://pptr.dev/supported-browsers
-ARG CHROMIUM_VERSION="149.*"
+ARG CHROMIUM_VERSION="150.*"
 
 ### Versions managed by Renovate
 ### https://docs.renovatebot.com/presets-customManagers/#custommanagersdockerfileversions
