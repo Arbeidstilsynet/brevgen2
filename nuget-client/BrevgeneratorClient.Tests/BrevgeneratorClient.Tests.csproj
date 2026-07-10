@@ -15,6 +15,9 @@
     <PackageReference Include="Shouldly" Version="4.3.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.7.0" />
     <PackageReference Include="WireMock.Net" Version="2.11.0" />
+    <!-- Override transitive Scriban.Signed 7.2.0 pulled in by WireMock.Net.Minimal: fixes
+         GHSA-6q7j-xr26-3h2c and GHSA-q6rr-fm2g-g5x8 (moderate severity advisories). -->
+    <PackageReference Include="Scriban.Signed" Version="7.2.1" />
     <PackageReference Include="xunit.v3.mtp-v2" Version="3.2.2" />
     <PackageReference Include="Xunit.Microsoft.DependencyInjection" Version="10.0.4" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
