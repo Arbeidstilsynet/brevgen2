@@ -40,7 +40,7 @@
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:^",
-    "@types/node": "24.13.2",
+    "@types/node": "24.13.3",
     "@types/sanitize-html": "2.16.1",
     "globals": "17.7.0",
     "pdf-text-reader": "5.1.1",
