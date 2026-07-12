@@ -30,7 +30,7 @@
     "fastify": "5.10.0",
     "fastify-type-provider-zod": "7.0.0",
     "jwks-rsa": "4.1.0",
-    "marked": "18.0.5",
+    "marked": "18.0.6",
     "p-limit": "7.3.0",
     "pdf-lib": "1.17.1",
     "pino-pretty": "13.1.3",
