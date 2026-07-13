@@ -3,8 +3,8 @@ FROM base AS builder
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME/bin:$PATH"
+ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 
-RUN npm install -g corepack
 RUN corepack enable
 
 WORKDIR /app
