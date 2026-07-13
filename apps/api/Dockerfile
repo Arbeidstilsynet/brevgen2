@@ -37,9 +37,11 @@ ENV CURL_VERSION="8.14.1-2+deb13u4"
 
 # Install specific Chromium version and other dependencies from the base image's (Debian trixie) default repos
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends chromium-common=${CHROMIUM_VERSION} chromium=${CHROMIUM_VERSION} \
-    && apt-get install -y --no-install-recommends fontconfig=${FONTCONFIG_VERSION} \
-    && apt-get install -y --no-install-recommends curl=${CURL_VERSION} \
+    && apt-get install -y --no-install-recommends \
+    chromium-common=${CHROMIUM_VERSION} \
+    chromium=${CHROMIUM_VERSION} \
+    fontconfig=${FONTCONFIG_VERSION} \
+    curl=${CURL_VERSION} \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
