@@ -5,7 +5,7 @@ ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME/bin:$PATH"
 ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 
-RUN corepack enable
+RUN npm install -g corepack@0.3.5 --ignore-scripts && corepack enable
 
 WORKDIR /app
 
