@@ -20,7 +20,7 @@
   "devDependencies": {
     "@repo/typescript-config": "workspace:^",
     "@vitest/coverage-v8": "4.1.10",
-    "typescript": "7.0.1-rc",
+    "typescript": "7.0.2",
     "vitest": "4.1.10"
   }
 }
