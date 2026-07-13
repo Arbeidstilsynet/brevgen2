@@ -1,4 +1,4 @@
-FROM node:24-trixie-slim AS base
+FROM node:25-trixie-slim@sha256:ffc78385a788964bb3cbab5e434ff79a10bdc25b8ae6db03fe5fe6cb14053c09 AS base
 FROM base AS builder
 
 ENV PNPM_HOME="/pnpm"
