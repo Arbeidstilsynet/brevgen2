@@ -1,9 +1,14 @@
-FROM node:24-slim@sha256:cb4e8f7c443347358b7875e717c29e27bf9befc8f5a26cf18af3c3dec80e58c5 AS base
+FROM node:26-trixie-slim@sha256:ffc78385a788964bb3cbab5e434ff79a10bdc25b8ae6db03fe5fe6cb14053c09 AS base
 FROM base AS builder
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME/bin:$PATH"
-RUN corepack enable
+ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
+
+# Node no longer bundles Corepack (removed by default since Node 25), so install it explicitly.
+# renovate: datasource=npm depName=corepack
+ARG COREPACK_VERSION="0.35.0"
+RUN npm install -g corepack@${COREPACK_VERSION} && corepack enable
 
 WORKDIR /app
 
@@ -13,6 +18,7 @@ COPY apps/api/package.json ./apps/api/
 COPY packages/dynamic-markdown/package.json ./packages/dynamic-markdown/
 COPY packages/document-templates/package.json ./packages/document-templates/
 COPY packages/shared-types/package.json ./packages/shared-types/
+COPY packages/config-typescript/package.json ./packages/config-typescript/
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store PUPPETEER_SKIP_DOWNLOAD=true pnpm install --frozen-lockfile --filter api...
 
 COPY apps/api ./apps/api
@@ -28,18 +34,18 @@ ARG CHROMIUM_VERSION="150.*"
 ### Versions managed by Renovate
 ### https://docs.renovatebot.com/presets-customManagers/#custommanagersdockerfileversions
 ### https://docs.renovatebot.com/modules/datasource/repology/
-# renovate: datasource=repology depName=debian_12/fontconfig versioning=loose
-ENV FONTCONFIG_VERSION="2.14.1-4"
-# renovate: datasource=repology depName=debian_12_backports/curl versioning=loose
-ENV CURL_VERSION="8.14.1-2+deb13u2~bpo13+1"
+# renovate: datasource=repology depName=debian_13/fontconfig versioning=loose
+ENV FONTCONFIG_VERSION="2.15.0-2.3"
+# renovate: datasource=repology depName=debian_13/curl versioning=loose
+ENV CURL_VERSION="8.14.1-2+deb13u4"
 
-# Install specific Chromium version and other dependencies
-RUN echo "deb http://security.debian.org/debian-security bookworm-security main" > /etc/apt/sources.list.d/security.list \
-    && echo "deb http://deb.debian.org/debian bookworm-backports main" > /etc/apt/sources.list.d/backports.list \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends chromium-common=${CHROMIUM_VERSION} chromium=${CHROMIUM_VERSION} \
-    && apt-get install -y --no-install-recommends fontconfig=${FONTCONFIG_VERSION} \
-    && apt-get install -y --no-install-recommends -t bookworm-backports curl=${CURL_VERSION} \
+# Install specific Chromium version and other dependencies from the base image's (Debian trixie) default repos
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    chromium-common=${CHROMIUM_VERSION} \
+    chromium=${CHROMIUM_VERSION} \
+    fontconfig=${FONTCONFIG_VERSION} \
+    curl=${CURL_VERSION} \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
