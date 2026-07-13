@@ -34,5 +34,5 @@
   "engines": {
     "node": ">=25"
   },
-  "packageManager": "pnpm@11.1.1+sha512.cb1f9fdaf1635f0b5f53084d074634a2fffcf22cf0207f7b75bcf3e00e65e2f0f15d33f7688f88b86eec76f7f0f18f4d8fadd3770732f70cd92f4aea9ef2f06f"
+  "packageManager": "pnpm@11.11.0+sha512.4463f65fd80ed80d69bc1d4bf163ee94f605c7380fc318bb5b2ebe15f8cd12d49c51a4d59e951b401e764d3b6ca751cbf51bc50ed7001a6bcb4935e684c34882"
 }
