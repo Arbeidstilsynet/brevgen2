@@ -1,11 +1,14 @@
-FROM node:25-trixie-slim@sha256:ffc78385a788964bb3cbab5e434ff79a10bdc25b8ae6db03fe5fe6cb14053c09 AS base
+FROM node:26-trixie-slim@sha256:ffc78385a788964bb3cbab5e434ff79a10bdc25b8ae6db03fe5fe6cb14053c09 AS base
 FROM base AS builder
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME/bin:$PATH"
 ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 
-RUN corepack enable
+# Node no longer bundles Corepack (removed by default since Node 25), so install it explicitly.
+# renovate: datasource=npm depName=corepack
+ARG COREPACK_VERSION="0.35.0"
+RUN npm install -g corepack@${COREPACK_VERSION} && corepack enable
 
 WORKDIR /app
 
