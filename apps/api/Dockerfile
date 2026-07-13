@@ -23,12 +23,23 @@ RUN pnpm_config_verify_deps_before_run=false pnpm --filter api build
 
 
 FROM base AS runner
+# For available Chromium versions in the distro, see https://repology.org/project/chromium/versions
+# Chromium versions changes should be matched with Puppeteer version from https://pptr.dev/supported-browsers
+ARG CHROMIUM_VERSION="150.*"
 
-# Install Chromium and other dependencies from the base image's (Debian trixie) default repos
+### Versions managed by Renovate
+### https://docs.renovatebot.com/presets-customManagers/#custommanagersdockerfileversions
+### https://docs.renovatebot.com/modules/datasource/repology/
+# renovate: datasource=repology depName=debian_13/fontconfig versioning=loose
+ENV FONTCONFIG_VERSION="2.15.0-2.3"
+# renovate: datasource=repology depName=debian_13/curl versioning=loose
+ENV CURL_VERSION="8.14.1-2+deb13u4"
+
+# Install specific Chromium version and other dependencies from the base image's (Debian trixie) default repos
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends chromium-common chromium \
-    && apt-get install -y --no-install-recommends fontconfig \
-    && apt-get install -y --no-install-recommends curl \
+    && apt-get install -y --no-install-recommends chromium-common=${CHROMIUM_VERSION} chromium=${CHROMIUM_VERSION} \
+    && apt-get install -y --no-install-recommends fontconfig=${FONTCONFIG_VERSION} \
+    && apt-get install -y --no-install-recommends curl=${CURL_VERSION} \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
