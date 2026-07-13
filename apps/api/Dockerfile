@@ -1,8 +1,10 @@
-FROM node:24-slim@sha256:cb4e8f7c443347358b7875e717c29e27bf9befc8f5a26cf18af3c3dec80e58c5 AS base
+FROM node:25-trixie-slim@sha256:ffc78385a788964bb3cbab5e434ff79a10bdc25b8ae6db03fe5fe6cb14053c09 AS base
 FROM base AS builder
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME/bin:$PATH"
+
+RUN npm install -g corepack
 RUN corepack enable
 
 WORKDIR /app
@@ -21,25 +23,12 @@ RUN pnpm_config_verify_deps_before_run=false pnpm --filter api build
 
 
 FROM base AS runner
-# For available Chromium versions in the distro, see https://repology.org/project/chromium/versions
-# Chromium versions changes should be matched with Puppeteer version from https://pptr.dev/supported-browsers
-ARG CHROMIUM_VERSION="150.*"
 
-### Versions managed by Renovate
-### https://docs.renovatebot.com/presets-customManagers/#custommanagersdockerfileversions
-### https://docs.renovatebot.com/modules/datasource/repology/
-# renovate: datasource=repology depName=debian_12/fontconfig versioning=loose
-ENV FONTCONFIG_VERSION="2.14.1-4"
-# renovate: datasource=repology depName=debian_12_backports/curl versioning=loose
-ENV CURL_VERSION="8.14.1-2+deb13u2~bpo13+1"
-
-# Install specific Chromium version and other dependencies
-RUN echo "deb http://security.debian.org/debian-security bookworm-security main" > /etc/apt/sources.list.d/security.list \
-    && echo "deb http://deb.debian.org/debian bookworm-backports main" > /etc/apt/sources.list.d/backports.list \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends chromium-common=${CHROMIUM_VERSION} chromium=${CHROMIUM_VERSION} \
-    && apt-get install -y --no-install-recommends fontconfig=${FONTCONFIG_VERSION} \
-    && apt-get install -y --no-install-recommends -t bookworm-backports curl=${CURL_VERSION} \
+# Install Chromium and other dependencies from the base image's (Debian trixie) default repos
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends chromium-common chromium \
+    && apt-get install -y --no-install-recommends fontconfig \
+    && apt-get install -y --no-install-recommends curl \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
