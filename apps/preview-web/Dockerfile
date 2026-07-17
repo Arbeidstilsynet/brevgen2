@@ -12,7 +12,7 @@ ENV PATH="$PNPM_HOME/bin:$PATH"
 # Node no longer bundles Corepack (removed by default since Node 25), so install it explicitly.
 # renovate: datasource=npm depName=corepack
 ARG COREPACK_VERSION="0.35.0"
-RUN npm install -g corepack@${COREPACK_VERSION} && corepack enable
+RUN npm install --ignore-scripts -g corepack@${COREPACK_VERSION} && corepack enable
 
 WORKDIR /app
 # # copy root workspace and lockfile
