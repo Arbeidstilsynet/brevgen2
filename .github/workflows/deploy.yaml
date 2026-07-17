@@ -250,7 +250,7 @@ jobs:
           [ -z "$JWT" -o "$JWT" = null ] && { echo "Token fetch failed"; echo "$RESPONSE"; exit 1; }
           echo "jwt=$JWT" >> $GITHUB_OUTPUT
 
-      - uses: Arbeidstilsynet/action-pnpm-setup@618fbc6ee30a13d077086cafba92b4e6cdca0f78 # v1
+      - uses: Arbeidstilsynet/action-pnpm-setup@v2
 
       - name: Run load tests (JWT auth)
         id: run_load_tests
