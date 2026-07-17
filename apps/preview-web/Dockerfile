@@ -8,7 +8,11 @@ RUN apk add --no-cache libc6-compat
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME/bin:$PATH"
-RUN corepack enable
+
+# Node no longer bundles Corepack (removed by default since Node 25), so install it explicitly.
+# renovate: datasource=npm depName=corepack
+ARG COREPACK_VERSION="0.35.0"
+RUN npm install -g corepack@${COREPACK_VERSION} && corepack enable
 
 WORKDIR /app
 # # copy root workspace and lockfile
