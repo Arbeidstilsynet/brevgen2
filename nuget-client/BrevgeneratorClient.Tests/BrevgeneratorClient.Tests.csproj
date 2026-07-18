@@ -13,7 +13,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Shouldly" Version="4.3.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.8.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
     <PackageReference Include="WireMock.Net" Version="2.12.0" />
     <!-- Override transitive Scriban.Signed 7.2.0 pulled in by WireMock.Net.Minimal: fixes
          GHSA-6q7j-xr26-3h2c and GHSA-q6rr-fm2g-g5x8 (moderate severity advisories). -->
