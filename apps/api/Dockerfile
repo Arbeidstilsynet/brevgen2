@@ -29,15 +29,13 @@ RUN pnpm_config_verify_deps_before_run=false pnpm --filter api build
 FROM base AS runner
 # For available Chromium versions in the distro, see https://repology.org/project/chromium/versions
 # Chromium versions changes should be matched with Puppeteer version from https://pptr.dev/supported-browsers
-ARG CHROMIUM_VERSION="150.*"
+ARG CHROMIUM_VERSION="151.*"
 
 ### Versions managed by Renovate
 ### https://docs.renovatebot.com/presets-customManagers/#custommanagersdockerfileversions
 ### https://docs.renovatebot.com/modules/datasource/repology/
 # renovate: datasource=repology depName=debian_13/fontconfig versioning=loose
 ENV FONTCONFIG_VERSION="2.15.0-2.3"
-# renovate: datasource=repology depName=debian_13/curl versioning=loose
-ENV CURL_VERSION="8.14.1-2+deb13u4"
 
 # Install specific Chromium version and other dependencies from the base image's (Debian trixie) default repos
 RUN apt-get update \
@@ -45,7 +43,6 @@ RUN apt-get update \
     chromium-common=${CHROMIUM_VERSION} \
     chromium=${CHROMIUM_VERSION} \
     fontconfig=${FONTCONFIG_VERSION} \
-    curl=${CURL_VERSION} \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -80,7 +77,5 @@ COPY --from=builder /app/apps/api/node_modules/@fastify/swagger-ui/static/logo.s
 
 
 EXPOSE 4000
-
-HEALTHCHECK --interval=30s --timeout=10s CMD curl -f http://localhost:4000/health || exit 1
 
 CMD ["node", "dist/server.mjs"]
