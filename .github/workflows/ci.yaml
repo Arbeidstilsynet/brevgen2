@@ -19,7 +19,7 @@ jobs:
       brevgen2: ${{ steps.brevgen2.outputs.changes_detected }}
       nuget-client: ${{ steps.nuget-client.outputs.changes_detected}}
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
 
@@ -71,7 +71,7 @@ jobs:
       run:
         working-directory: .nais
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - name: Install nais-cli
         run: |
           NAIS_GPG_KEY="/etc/apt/keyrings/nav_nais_gar.asc"
@@ -94,7 +94,7 @@ jobs:
       checks: write
       pull-requests: write
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: Arbeidstilsynet/action-pnpm-setup@618fbc6ee30a13d077086cafba92b4e6cdca0f78 # v1
 
       - run: pnpm typecheck
@@ -124,7 +124,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5
       # workaround to install oxlint-tsgolint without overriding additional_dependencies in .pre-commit-config.yaml
       - uses: Arbeidstilsynet/action-pnpm-setup@618fbc6ee30a13d077086cafba92b4e6cdca0f78 # v1
@@ -141,7 +141,7 @@ jobs:
       checks: write
       pull-requests: write
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: Arbeidstilsynet/action-pnpm-setup@618fbc6ee30a13d077086cafba92b4e6cdca0f78 # v1
 
       - run: "pnpm test:integration"
@@ -167,7 +167,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - name: Build and Test .NET solution
         uses: Arbeidstilsynet/action-dotnet-build@7112207464cac6fa7273a6806d76dc5ad03fe87e # v4
         with:
