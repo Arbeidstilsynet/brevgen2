@@ -10,6 +10,11 @@ allowBuilds:
   sharp: false
   ssh2: false
 
+audit:
+  ignore:
+    # https://github.com/vercel/next.js/issues/96064
+    - GHSA-f88m-g3jw-g9cj
+
 autoInstallPeers: false
 
 minimumReleaseAge: 4320
