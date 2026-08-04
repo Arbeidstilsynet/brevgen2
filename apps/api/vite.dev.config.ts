@@ -14,6 +14,6 @@ export default defineConfig({
   ],
   optimizeDeps: {
     include: ["puppeteer"],
-    exclude: ["cosmiconfig", "typescript"],
+    exclude: ["typescript"],
   },
 });
