@@ -1,86 +1,153 @@
 import fs from "node:fs";
-import { ResultData } from "./types";
+import { profileNames } from "./profiles";
+import type { RequestResult, ResultData } from "./types";
 
-// USAGE
-// tsx load-tests/analyze.ts ./results/load-test-results.json
+const [resultsFilePath, format = "text"] = process.argv.slice(2);
 
-const args = process.argv.slice(2);
-if (args.length === 0) {
+if (!resultsFilePath) {
   console.error("Please provide a results file path");
   process.exit(1);
 }
-
-const resultsFilePath = args[0];
 
 if (!fs.existsSync(resultsFilePath)) {
   console.error(`File not found: ${resultsFilePath}`);
   process.exit(1);
 }
 
-try {
-  const resultsData = JSON.parse(fs.readFileSync(resultsFilePath, "utf8")) as ResultData;
-  const { config, result } = resultsData;
-
-  console.log("=== Load Test Analysis ===");
-  console.log(`\nTest configuration:`);
-  console.log(`- API URL: ${config.apiUrl}`);
-  console.log(`- Parallel Requests: ${config.parallelRequests}`);
-  console.log(`- Batch Count: ${config.batchCount}`);
-  console.log(`- Batch Delay: ${config.batchDelayMs}ms`);
-  console.log(`- Total Requests: ${config.parallelRequests * config.batchCount}`);
-
-  console.log(`\nOverall results:`);
-  console.log(`- Total time: ${(result.totalTimeMs / 1000).toFixed(2)}s`);
-  console.log(
-    `- Successful requests: ${result.successfulRequests} (${((result.successfulRequests / result.totalRequests) * 100).toFixed(1)}%)`,
-  );
-  console.log(
-    `- Failed requests: ${result.failedRequests} (${((result.failedRequests / result.totalRequests) * 100).toFixed(1)}%)`,
-  );
-  console.log(`- Average request time: ${result.averageRequestTimeMs.toFixed(2)}ms`);
-
-  console.log(`\nPerformance by batch:`);
-  result.batches.forEach((batch, index) => {
-    console.log(`\nBatch #${index + 1}:`);
-    console.log(
-      `- Success rate: ${batch.successCount}/${batch.requests.length} (${((batch.successCount / batch.requests.length) * 100).toFixed(1)}%)`,
-    );
-    console.log(`- Total batch time: ${(batch.totalTimeMs / 1000).toFixed(2)}s`);
-
-    const batchTimes = batch.requests.map((r) => r.timeMs);
-    const avgTime = batchTimes.reduce((sum, t) => sum + t, 0) / batchTimes.length;
-    const minTime = Math.min(...batchTimes);
-    const maxTime = Math.max(...batchTimes);
-
-    console.log(
-      `- Min/Avg/Max request time: ${minTime}ms / ${avgTime.toFixed(2)}ms / ${maxTime}ms`,
-    );
-
-    if (batch.failureCount > 0) {
-      console.log(`- Failures:`);
-      batch.requests
-        .filter((r) => !r.success)
-        .forEach((r) => {
-          console.log(`  - ${r.requestId}: ${r.status} (${r.error})`);
-        });
-    }
-  });
-
-  // Distribution of response times
-  const allTimes = result.batches.flatMap((batch) => batch.requests.map((r) => r.timeMs));
-  allTimes.sort((a, b) => a - b);
-
-  const p50 = allTimes[Math.floor(allTimes.length * 0.5)];
-  const p90 = allTimes[Math.floor(allTimes.length * 0.9)];
-  const p95 = allTimes[Math.floor(allTimes.length * 0.95)];
-  const p99 = allTimes[Math.floor(allTimes.length * 0.99)];
-
-  console.log(`\nResponse time percentiles:`);
-  console.log(`- P50: ${p50}ms`);
-  console.log(`- P90: ${p90}ms`);
-  console.log(`- P95: ${p95}ms`);
-  console.log(`- P99: ${p99}ms`);
-} catch (error) {
-  console.error("Failed to analyze results:", error);
+if (!["text", "markdown"].includes(format)) {
+  console.error(`Unsupported output format: ${format}`);
   process.exit(1);
+}
+
+const resultsData = JSON.parse(fs.readFileSync(resultsFilePath, "utf8")) as ResultData;
+const { config, result } = resultsData;
+
+interface LatencySummary {
+  p50: number;
+  p90: number;
+  p95: number;
+  p99: number;
+  average: number;
+}
+
+function percentile(values: number[], percentileValue: number): number {
+  const sorted = values.toSorted((a, b) => a - b);
+  return sorted[
+    Math.min(Math.ceil((percentileValue / 100) * sorted.length) - 1, sorted.length - 1)
+  ];
+}
+
+/** Latency statistics for the given requests, or `undefined` when there were none. */
+function latencySummary(requests: RequestResult[]): LatencySummary | undefined {
+  if (requests.length === 0) {
+    return undefined;
+  }
+
+  const values = requests.map((request) => request.timeMs);
+  return {
+    p50: percentile(values, 50),
+    p90: percentile(values, 90),
+    p95: percentile(values, 95),
+    p99: percentile(values, 99),
+    average: values.reduce((sum, value) => sum + value, 0) / values.length,
+  };
+}
+
+function formatMs(value: number | undefined): string {
+  return value === undefined ? "-" : `${Math.round(value)}ms`;
+}
+
+function profileRows() {
+  return profileNames.map((profile) => {
+    const requests = result.requests.filter((request) => request.profile === profile);
+    const successful = requests.filter((request) => request.success).length;
+    return {
+      profile,
+      total: requests.length,
+      successful,
+      failed: requests.length - successful,
+      latency: latencySummary(requests),
+    };
+  });
+}
+
+function errorSummary() {
+  const errors = new Map<string, RequestResult[]>();
+  for (const request of result.requests.filter((entry) => !entry.success)) {
+    const key = request.status === 0 ? "network-or-timeout" : `HTTP ${request.status}`;
+    errors.set(key, [...(errors.get(key) ?? []), request]);
+  }
+  return [...errors.entries()].map(([kind, requests]) => ({
+    kind,
+    count: requests.length,
+    samples: requests.slice(0, 3),
+  }));
+}
+
+const overallLatency = latencySummary(result.requests);
+const rows = profileRows();
+const errors = errorSummary();
+const actualDurationSeconds = result.totalTimeMs / 1000;
+const actualRequestsPerSecond =
+  actualDurationSeconds > 0 ? result.totalRequests / actualDurationSeconds : 0;
+
+if (format === "markdown") {
+  console.log("## Load test results");
+  console.log("");
+  console.log(
+    `**${result.successfulRequests}/${result.totalRequests} successful** in ${actualDurationSeconds.toFixed(1)}s (${actualRequestsPerSecond.toFixed(2)} requests/s).`,
+  );
+  console.log("");
+  console.log("| Profile | Requests | Successful | Failed | P50 | P95 | P99 |");
+  console.log("| --- | ---: | ---: | ---: | ---: | ---: | ---: |");
+  for (const row of rows) {
+    console.log(
+      `| ${row.profile} | ${row.total} | ${row.successful} | ${row.failed} | ${formatMs(row.latency?.p50)} | ${formatMs(row.latency?.p95)} | ${formatMs(row.latency?.p99)} |`,
+    );
+  }
+  console.log("");
+  console.log(
+    `Overall latency: P50 **${formatMs(overallLatency?.p50)}**, P90 **${formatMs(overallLatency?.p90)}**, P95 **${formatMs(overallLatency?.p95)}**, P99 **${formatMs(overallLatency?.p99)}**, average **${formatMs(overallLatency?.average)}**.`,
+  );
+  if (errors.length > 0) {
+    console.log("");
+    console.log("### Failures");
+    for (const error of errors) {
+      console.log(`- **${error.kind}: ${error.count}**`);
+      for (const sample of error.samples) {
+        console.log(
+          `  - ${sample.requestId} (${sample.profile}, ${sample.timeMs}ms): ${sample.error ?? "No error detail"}`,
+        );
+      }
+    }
+  }
+} else {
+  console.log("=== Load Test Analysis ===");
+  console.log(`API URL: ${config.apiUrl}`);
+  console.log(
+    `Arrival rate: ${config.rampStartRequestsPerSecond} to ${config.peakRequestsPerSecond} requests/s over ${config.rampDurationMs}ms; sustained for ${config.sustainDurationMs}ms`,
+  );
+  console.log(
+    `Results: ${result.successfulRequests}/${result.totalRequests} successful in ${actualDurationSeconds.toFixed(1)}s (${actualRequestsPerSecond.toFixed(2)} requests/s)`,
+  );
+  console.log(
+    `Latency: P50 ${formatMs(overallLatency?.p50)}, P90 ${formatMs(overallLatency?.p90)}, P95 ${formatMs(overallLatency?.p95)}, P99 ${formatMs(overallLatency?.p99)}, average ${formatMs(overallLatency?.average)}`,
+  );
+  console.log("\nBy profile:");
+  for (const row of rows) {
+    console.log(
+      `- ${row.profile}: ${row.successful}/${row.total} successful, P50 ${formatMs(row.latency?.p50)}, P95 ${formatMs(row.latency?.p95)}, P99 ${formatMs(row.latency?.p99)}`,
+    );
+  }
+  if (errors.length > 0) {
+    console.log("\nFailures:");
+    for (const error of errors) {
+      console.log(`- ${error.kind}: ${error.count}`);
+      for (const sample of error.samples) {
+        console.log(
+          `  - ${sample.requestId} (${sample.profile}, ${sample.timeMs}ms): ${sample.error ?? "No error detail"}`,
+        );
+      }
+    }
+  }
 }

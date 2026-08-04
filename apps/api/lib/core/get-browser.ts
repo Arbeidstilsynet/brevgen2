@@ -2,6 +2,7 @@ import type { Browser } from "puppeteer-core";
 import { logger } from "../../app";
 import { withActiveSpan } from "../otel";
 import { getBrowserLaunchOptions } from "./get-puppeteer-options";
+import { BROWSER_CLOSE_TIMEOUT_MS, PUPPETEER_OPERATION_TIMEOUT_MS, withTimeout } from "./helpers";
 import { loadPuppeteer } from "./puppeteer-loader";
 
 // After max pages is reached, we recycle the browser.
@@ -122,7 +123,11 @@ async function initBrowser(): Promise<void> {
   try {
     const options = getBrowserLaunchOptions();
     const puppeteer = await loadPuppeteer();
-    browser = await puppeteer.launch(options);
+    browser = await withTimeout(
+      puppeteer.launch(options),
+      PUPPETEER_OPERATION_TIMEOUT_MS,
+      "Launching Chromium",
+    );
     logger.info({ event: "browser.init.success" }, "Browser instance created");
   } catch (error) {
     browserInitPromise = null;
@@ -146,7 +151,16 @@ async function recycleBrowser(): Promise<void> {
     pageCount = 0;
 
     if (currentBrowser) {
-      await currentBrowser.close();
+      try {
+        await withTimeout(
+          currentBrowser.close(),
+          BROWSER_CLOSE_TIMEOUT_MS,
+          "Closing Chromium browser",
+        );
+      } catch (error) {
+        currentBrowser.process()?.kill("SIGKILL");
+        throw error;
+      }
       logger.info({ event: "browser.recycle.success" }, "Browser instance closed successfully");
     }
   } catch (error) {

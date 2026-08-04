@@ -1,90 +1,107 @@
-import type { GenerateDocumentRequest } from "@repo/shared-types";
 import fs from "node:fs";
 import path from "node:path";
 import { readPdfText } from "pdf-text-reader";
-import { BatchResult, LoadTestConfig, LoadTestResult, RequestResult } from "./types";
+import { createPayload, profileForRequest } from "./profiles";
+import {
+  type LoadTestConfig,
+  type LoadTestProfile,
+  type LoadTestResult,
+  type RequestResult,
+} from "./types";
 
 /**
- * Run a load test with configurable parallel requests
+ * Create planned request offsets for a linear ramp followed by a sustained rate.
  */
+export function createArrivalSchedule(config: LoadTestConfig): number[] {
+  const { rampStartRequestsPerSecond, peakRequestsPerSecond, rampDurationMs, sustainDurationMs } =
+    config;
+  const rampDurationSeconds = rampDurationMs / 1000;
+  const rateIncrease = (peakRequestsPerSecond - rampStartRequestsPerSecond) / rampDurationSeconds;
+  const rampRequestCount = Math.floor(
+    rampStartRequestsPerSecond * rampDurationSeconds +
+      (rateIncrease * rampDurationSeconds ** 2) / 2,
+  );
+  const schedule = Array.from({ length: rampRequestCount }, (_, index) => {
+    const requestNumber = index + 1;
+    const seconds =
+      rateIncrease === 0
+        ? requestNumber / rampStartRequestsPerSecond
+        : (-rampStartRequestsPerSecond +
+            Math.sqrt(rampStartRequestsPerSecond ** 2 + 2 * rateIncrease * requestNumber)) /
+          rateIncrease;
+    return Math.round(seconds * 1000);
+  });
+
+  const sustainRequestCount = Math.floor((peakRequestsPerSecond * sustainDurationMs) / 1000);
+  for (let requestNumber = 1; requestNumber <= sustainRequestCount; requestNumber++) {
+    schedule.push(rampDurationMs + Math.round((requestNumber * 1000) / peakRequestsPerSecond));
+  }
+
+  return schedule;
+}
+
 export async function runLoadTest(config: LoadTestConfig): Promise<LoadTestResult> {
-  const {
-    parallelRequests,
-    batchCount,
-    apiUrl,
-    timeoutMs,
-    batchDelayMs,
-    apiKey,
-    jwt,
-    savePdfsDir,
-  } = config;
+  const { savePdfsDir } = config;
 
   if (savePdfsDir && !fs.existsSync(savePdfsDir)) {
     fs.mkdirSync(savePdfsDir, { recursive: true });
   }
 
   const startTime = Date.now();
-  const batches: BatchResult[] = [];
+  const schedule = createArrivalSchedule(config);
+  const requests: Promise<RequestResult>[] = [];
+  let completedRequests = 0;
+  let completedSuccessfulRequests = 0;
 
-  console.log(
-    `Starting load test with ${parallelRequests} parallel requests x ${batchCount} batches`,
-  );
-
-  for (let batchId = 0; batchId < batchCount; batchId++) {
-    console.log(`Starting batch ${batchId + 1}/${batchCount}`);
-    const batchStartTime = Date.now();
-
-    const requests = Array.from({ length: parallelRequests }).map((_, requestIndex) => {
-      const requestId = `request-${batchId + 1}-${requestIndex + 1}`;
-      return createAndSendRequest(
-        apiUrl,
-        requestId,
-        apiKey,
-        jwt,
-        timeoutMs,
-        config.validator,
-        savePdfsDir,
-      );
-    });
-
-    const results = await Promise.all(requests);
-
-    const batchTimeMs = Date.now() - batchStartTime;
-    const successCount = results.filter((r) => r.success).length;
-    const failureCount = results.filter((r) => !r.success).length;
-
-    batches.push({
-      batchId,
-      requests: results,
-      totalTimeMs: batchTimeMs,
-      successCount,
-      failureCount,
-    });
-
+  console.log(`Starting load test with ${schedule.length} scheduled requests`);
+  const progressTimer = setInterval(() => {
+    const elapsedSeconds = ((Date.now() - startTime) / 1000).toFixed(0);
+    const inFlightRequests = requests.length - completedRequests;
     console.log(
-      `Batch ${batchId + 1} completed: ${successCount} successes, ${failureCount} failures, time: ${batchTimeMs}ms`,
+      `Progress after ${elapsedSeconds}s: ${requests.length}/${schedule.length} started, ${completedRequests} completed (${completedSuccessfulRequests} successful, ${completedRequests - completedSuccessfulRequests} failed), ${inFlightRequests} in flight`,
     );
+  }, 10_000);
 
-    // Add delay between batches if not the last batch
-    if (batchId < batchCount - 1 && batchDelayMs > 0) {
-      console.log(`Waiting ${batchDelayMs}ms before next batch...`);
-      await new Promise((resolve) => setTimeout(resolve, batchDelayMs));
+  let requestResults: RequestResult[];
+  try {
+    for (const [requestNumber, scheduledAtMs] of schedule.entries()) {
+      const delayMs = startTime + scheduledAtMs - Date.now();
+      if (delayMs > 0) {
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
+      }
+
+      const requestId = `request-${requestNumber + 1}`;
+      const profile = profileForRequest(requestNumber);
+      const request = createAndSendRequest(config, {
+        requestId,
+        profile,
+        scheduledAtMs,
+        testStartedAtMs: startTime,
+      }).then((result) => {
+        completedRequests++;
+        if (result.success) {
+          completedSuccessfulRequests++;
+        }
+        return result;
+      });
+      requests.push(request);
     }
+    requestResults = await Promise.all(requests);
+  } finally {
+    clearInterval(progressTimer);
   }
 
   const totalTimeMs = Date.now() - startTime;
-  const totalRequests = batches.reduce((sum, batch) => sum + batch.requests.length, 0);
-  const successfulRequests = batches.reduce((sum, batch) => sum + batch.successCount, 0);
-  const failedRequests = batches.reduce((sum, batch) => sum + batch.failureCount, 0);
+  const totalRequests = requestResults.length;
+  const successfulRequests = requestResults.filter((request) => request.success).length;
+  const failedRequests = totalRequests - successfulRequests;
   const averageRequestTimeMs =
-    batches.reduce(
-      (sumBatches, batch) =>
-        sumBatches + batch.requests.reduce((sumRequests, req) => sumRequests + req.timeMs, 0),
-      0,
-    ) / totalRequests;
+    totalRequests === 0
+      ? 0
+      : requestResults.reduce((sum, request) => sum + request.timeMs, 0) / totalRequests;
 
   const result: LoadTestResult = {
-    batches,
+    requests: requestResults,
     totalRequests,
     successfulRequests,
     failedRequests,
@@ -92,51 +109,43 @@ export async function runLoadTest(config: LoadTestConfig): Promise<LoadTestResul
     averageRequestTimeMs,
   };
 
+  const percentageOfTotal = (count: number) =>
+    totalRequests === 0 ? "0.0" : ((count / totalRequests) * 100).toFixed(1);
+
   console.log(`Load test completed in ${totalTimeMs}ms`);
   console.log(`Total requests: ${totalRequests}`);
-  console.log(
-    `Successful: ${successfulRequests} (${((successfulRequests / totalRequests) * 100).toFixed(1)}%)`,
-  );
-  console.log(
-    `Failed: ${failedRequests} (${((failedRequests / totalRequests) * 100).toFixed(1)}%)`,
-  );
+  console.log(`Successful: ${successfulRequests} (${percentageOfTotal(successfulRequests)}%)`);
+  console.log(`Failed: ${failedRequests} (${percentageOfTotal(failedRequests)}%)`);
   console.log(`Average request time: ${averageRequestTimeMs.toFixed(2)}ms`);
 
   return result;
 }
 
-async function createAndSendRequest(
-  apiUrl: string,
-  requestId: string,
-  apiKey?: string,
-  jwt?: string,
-  timeoutMs = 30000,
-  validator?: LoadTestConfig["validator"],
-  savePdfsDir?: string,
-): Promise<RequestResult> {
-  const payload: GenerateDocumentRequest = {
-    md: "# Load Test PDF\n\nThis is a unique identifier: {{requestId}}\n\nThis document was generated for load testing.",
-    mdVariables: {
-      requestId,
-    },
-    options: {
-      document_title: `Load Test - ${requestId}`,
-      dynamic: {
-        template: "blank",
-      },
-    },
-  };
+/** Everything that identifies a single planned request within a load test run. */
+interface ScheduledRequest {
+  requestId: string;
+  profile: LoadTestProfile;
+  /** Planned offset from the start of the test, in milliseconds */
+  scheduledAtMs: number;
+  /** Wall-clock time the test started, used to derive the actual start offset */
+  testStartedAtMs: number;
+}
 
+async function createAndSendRequest(
+  config: LoadTestConfig,
+  scheduled: ScheduledRequest,
+): Promise<RequestResult> {
+  const { apiUrl, jwt, timeoutMs, validator, savePdfsDir } = config;
+  const { requestId, profile, scheduledAtMs, testStartedAtMs } = scheduled;
+  const payload = createPayload(profile, requestId);
   const startTime = Date.now();
+  const startedAtMs = startTime - testStartedAtMs;
 
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
     const headers = new Headers({ "Content-Type": "application/json" });
-    if (apiKey) {
-      headers.set("x-api-key", apiKey);
-    }
     if (jwt) {
       headers.set("Authorization", `Bearer ${jwt}`);
     }
@@ -155,9 +164,12 @@ async function createAndSendRequest(
       const errorText = await response.text();
       return {
         requestId,
+        profile,
         success: false,
         status: response.status,
         timeMs,
+        scheduledAtMs,
+        startedAtMs,
         error: `HTTP ${response.status}: ${errorText}`,
       };
     }
@@ -181,9 +193,12 @@ async function createAndSendRequest(
       } catch (error) {
         return {
           requestId,
+          profile,
           success: false,
           status: response.status,
           timeMs,
+          scheduledAtMs,
+          startedAtMs,
           error: `Validation failed: ${error instanceof Error ? error.message : String(error)}`,
         };
       }
@@ -191,17 +206,23 @@ async function createAndSendRequest(
 
     return {
       requestId,
+      profile,
       success: true,
       status: response.status,
       timeMs,
+      scheduledAtMs,
+      startedAtMs,
     };
   } catch (error) {
     const timeMs = Date.now() - startTime;
     return {
       requestId,
+      profile,
       success: false,
       status: 0, // No HTTP status for network or timeout errors
       timeMs,
+      scheduledAtMs,
+      startedAtMs,
       error: error instanceof Error ? error.message : String(error),
     };
   }

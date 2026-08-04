@@ -1,5 +1,33 @@
 import type { PDFOptions } from "puppeteer-core";
 
+export const PUPPETEER_OPERATION_TIMEOUT_MS = 30_000;
+export const BROWSER_CLOSE_TIMEOUT_MS = 5_000;
+
+export class OperationTimeoutError extends Error {
+  constructor(operation: string, timeoutMs: number) {
+    super(`${operation} timed out after ${timeoutMs}ms`);
+    this.name = "OperationTimeoutError";
+  }
+}
+
+export function withTimeout<T>(
+  operation: Promise<T>,
+  timeoutMs: number,
+  operationName: string,
+): Promise<T> {
+  let timeout: NodeJS.Timeout | undefined;
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timeout = setTimeout(
+      () => reject(new OperationTimeoutError(operationName, timeoutMs)),
+      timeoutMs,
+    );
+  });
+
+  return Promise.race([operation, timeoutPromise]).finally(() => {
+    clearTimeout(timeout);
+  });
+}
+
 /**
  * Get a margin object from a CSS-like margin string.
  */

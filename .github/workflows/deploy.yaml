@@ -258,9 +258,10 @@ jobs:
         env:
           API_URL: ${{ steps.nais.outputs.api_url }}
           JWT: ${{ steps.token.outputs.jwt }}
-          PARALLEL_REQUESTS: 300
-          BATCH_COUNT: 10
-          BATCH_DELAY_MS: 500
+          RAMP_START_RPS: 0.25
+          PEAK_RPS: 2
+          RAMP_DURATION_MS: 30000
+          SUSTAIN_DURATION_MS: 90000
           TIMEOUT_MS: 90000
           OUTPUT_FILE: results/gha-results.json
         run: pnpm --filter api run test:load
@@ -286,10 +287,7 @@ jobs:
         shell: bash
         run: |
           if [[ -f results/gha-results.json ]]; then
-            echo "Load test results:" >> $GITHUB_STEP_SUMMARY
-            echo '```json' >> $GITHUB_STEP_SUMMARY
-            jq '.result | {totalRequests, successfulRequests, failedRequests, totalTimeMs, averageRequestTimeMs}' results/gha-results.json >> $GITHUB_STEP_SUMMARY
-            echo '```' >> $GITHUB_STEP_SUMMARY
+            pnpm run test:load:analyze results/gha-results.json markdown >> $GITHUB_STEP_SUMMARY
           else
             echo "No results file found" >> $GITHUB_STEP_SUMMARY
           fi
