@@ -41,7 +41,7 @@ export function createArrivalSchedule(config: LoadTestConfig): number[] {
 }
 
 export async function runLoadTest(config: LoadTestConfig): Promise<LoadTestResult> {
-  const { apiUrl, timeoutMs, jwt, savePdfsDir } = config;
+  const { savePdfsDir } = config;
 
   if (savePdfsDir && !fs.existsSync(savePdfsDir)) {
     fs.mkdirSync(savePdfsDir, { recursive: true });
@@ -72,17 +72,12 @@ export async function runLoadTest(config: LoadTestConfig): Promise<LoadTestResul
 
       const requestId = `request-${requestNumber + 1}`;
       const profile = profileForRequest(requestNumber);
-      const request = createAndSendRequest(
-        apiUrl,
+      const request = createAndSendRequest(config, {
         requestId,
         profile,
         scheduledAtMs,
-        jwt,
-        timeoutMs,
-        config.validator,
-        savePdfsDir,
-        startTime,
-      ).then((result) => {
+        testStartedAtMs: startTime,
+      }).then((result) => {
         completedRequests++;
         if (result.success) {
           completedSuccessfulRequests++;
@@ -125,17 +120,22 @@ export async function runLoadTest(config: LoadTestConfig): Promise<LoadTestResul
   return result;
 }
 
+/** Everything that identifies a single planned request within a load test run. */
+interface ScheduledRequest {
+  requestId: string;
+  profile: LoadTestProfile;
+  /** Planned offset from the start of the test, in milliseconds */
+  scheduledAtMs: number;
+  /** Wall-clock time the test started, used to derive the actual start offset */
+  testStartedAtMs: number;
+}
+
 async function createAndSendRequest(
-  apiUrl: string,
-  requestId: string,
-  profile: LoadTestProfile,
-  scheduledAtMs: number,
-  jwt?: string,
-  timeoutMs = 30000,
-  validator?: LoadTestConfig["validator"],
-  savePdfsDir?: string,
-  testStartedAtMs = Date.now(),
+  config: LoadTestConfig,
+  scheduled: ScheduledRequest,
 ): Promise<RequestResult> {
+  const { apiUrl, jwt, timeoutMs, validator, savePdfsDir } = config;
+  const { requestId, profile, scheduledAtMs, testStartedAtMs } = scheduled;
   const payload = createPayload(profile, requestId);
   const startTime = Date.now();
   const startedAtMs = startTime - testStartedAtMs;

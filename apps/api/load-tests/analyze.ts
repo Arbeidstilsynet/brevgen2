@@ -1,5 +1,6 @@
 import fs from "node:fs";
-import type { LoadTestProfile, RequestResult, ResultData } from "./types";
+import { profileNames } from "./profiles";
+import type { RequestResult, ResultData } from "./types";
 
 const [resultsFilePath, format = "text"] = process.argv.slice(2);
 
@@ -20,12 +21,6 @@ if (!["text", "markdown"].includes(format)) {
 
 const resultsData = JSON.parse(fs.readFileSync(resultsFilePath, "utf8")) as ResultData;
 const { config, result } = resultsData;
-const profiles: LoadTestProfile[] = [
-  "small-blank",
-  "typical-default",
-  "typical-direktorat",
-  "heavy-default",
-];
 
 function percentile(values: number[], percentileValue: number): number {
   const sorted = values.toSorted((a, b) => a - b);
@@ -46,7 +41,7 @@ function latencySummary(requests: RequestResult[]) {
 }
 
 function profileRows() {
-  return profiles.map((profile) => {
+  return profileNames.map((profile) => {
     const requests = result.requests.filter((request) => request.profile === profile);
     const successful = requests.filter((request) => request.success).length;
     const latency = latencySummary(requests);

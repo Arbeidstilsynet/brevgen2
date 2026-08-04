@@ -1,3 +1,7 @@
+import type { LoadTestProfile } from "./profiles";
+
+export type { LoadTestProfile };
+
 export interface RequestResult {
   requestId: string;
   profile: LoadTestProfile;
@@ -8,12 +12,6 @@ export interface RequestResult {
   startedAtMs: number;
   error?: string;
 }
-
-export type LoadTestProfile =
-  | "small-blank"
-  | "typical-default"
-  | "typical-direktorat"
-  | "heavy-default";
 
 export interface LoadTestResult {
   requests: RequestResult[];
