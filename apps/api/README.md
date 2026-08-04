@@ -30,6 +30,22 @@ Starter API med [Testcontainers](https://testcontainers.com/) og gjør spørring
 
 `pnpm test:integration`
 
+## Load testing
+
+`pnpm test:load` simulates an open workload against `/genererbrev`. By default it ramps from
+0.25 to 2 requests per second over 30 seconds, then sustains 2 requests per second for 90
+seconds (about 213 requests total). The deterministic request cycle contains 20% small blank PDFs,
+60% typical letters across the `default` and `direktorat` templates, and 20% long `default`
+letters.
+
+Configure the target with `API_URL` and `JWT`; tune the workload with `RAMP_START_RPS`,
+`PEAK_RPS`, `RAMP_DURATION_MS`, and `SUSTAIN_DURATION_MS`. Save and inspect a result locally:
+
+```sh
+OUTPUT_FILE=results/load-test.json pnpm test:load
+pnpm test:load:analyze results/load-test.json
+```
+
 ## Auth
 
 API-et forventer et Azure Entra ID (Azure AD) access token hentet via OAuth2 Client Credentials flow.

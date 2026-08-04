@@ -8,39 +8,36 @@ import { deleteOldPdfs } from "./utils";
  * PDF Generator Load Testing Tool
  *
  * This script executes load tests against the PDF generator API by sending
- * configurable numbers of parallel requests in batches.
+ * a linear request-rate ramp followed by a sustained peak.
  *
  * USAGE:
  * tsx load-tests/run.ts [options]
  *
  * OPTIONS:
  * --apiUrl=<url>             The API endpoint to test (default: http://localhost:4000/genererbrev)
- * --parallelRequests=<n>     Number of requests to send in parallel per batch (default: 10)
- * --batchCount=<n>           Number of batches to run (default: 3)
- * --batchDelayMs=<ms>        Delay between batches in milliseconds (default: 1000)
- * --timeoutMs=<ms>           Request timeout in milliseconds (default: 30000)
- * --apiKey=<key>             Optional API key for authentication
+ * --rampStartRps=<n>         Requests per second at the beginning of the ramp (default: 0.25)
+ * --peakRps=<n>              Requests per second at the ramp peak (default: 2)
+ * --rampDurationMs=<ms>      Ramp duration in milliseconds (default: 30000)
+ * --sustainDurationMs=<ms>   Sustained peak duration in milliseconds (default: 90000)
+ * --timeoutMs=<ms>           Request timeout in milliseconds (default: 90000)
  * --jwt=<token>              Optional JWT bearer token for authentication
  * --outputFile=<path>        Path to save test results as JSON (e.g., ./results/test-results.json)
  * --savePdfsDir=<path>       Directory to save generated PDFs (e.g., ./results/pdfs)
  *
  * ENVIRONMENT VARIABLES:
  * The same options can be provided as environment variables:
- * API_URL, PARALLEL_REQUESTS, BATCH_COUNT, BATCH_DELAY_MS, TIMEOUT_MS,
- * API_KEY, JWT, OUTPUT_FILE, SAVE_PDFS_DIR
+ * API_URL, RAMP_START_RPS, PEAK_RPS, RAMP_DURATION_MS, SUSTAIN_DURATION_MS, TIMEOUT_MS,
+ * JWT, OUTPUT_FILE, SAVE_PDFS_DIR
  *
  * EXAMPLES:
  * Basic test with default settings:
  *   tsx load-tests/run.ts
  *
- * Run 20 parallel requests in 5 batches:
- *   tsx load-tests/run.ts --parallelRequests=20 --batchCount=5
+ * Ramp from 0.25 to 2 requests per second, then sustain the peak:
+ *   tsx load-tests/run.ts --rampStartRps=0.25 --peakRps=2 --rampDurationMs=30000 --sustainDurationMs=90000
  *
  * Save results to file and PDFs to directory:
  *   tsx load-tests/run.ts --outputFile=./results/test.json --savePdfsDir=./results/pdfs
- *
- * Test against deployed API with API key:
- *   tsx load-tests/run.ts --apiUrl=https://api.example.com/genererbrev --apiKey=myapikey
  *
  * Test against deployed API with JWT:
  *   tsx load-tests/run.ts --apiUrl=https://api.example.com/genererbrev --jwt=myjwttoken
@@ -56,27 +53,32 @@ async function main() {
   });
 
   const DEFAULT_API_URL = "http://localhost:4000/genererbrev";
-  const DEFAULT_PARALLEL_REQUESTS = 10;
-  const DEFAULT_BATCH_COUNT = 3;
-  const DEFAULT_BATCH_DELAY_MS = 1000;
-  const DEFAULT_TIMEOUT_MS = 30000;
+  const DEFAULT_RAMP_START_RPS = 0.25;
+  const DEFAULT_PEAK_RPS = 2;
+  const DEFAULT_RAMP_DURATION_MS = 30_000;
+  const DEFAULT_SUSTAIN_DURATION_MS = 90_000;
+  const DEFAULT_TIMEOUT_MS = 90000;
 
   // Parse config from arguments with defaults
   const config: LoadTestConfig = {
     apiUrl: argMap.apiUrl ?? process.env.API_URL ?? DEFAULT_API_URL,
-    parallelRequests: Number.parseInt(
-      argMap.parallelRequests ?? process.env.PARALLEL_REQUESTS ?? String(DEFAULT_PARALLEL_REQUESTS),
+    rampStartRequestsPerSecond: Number.parseFloat(
+      argMap.rampStartRps ?? process.env.RAMP_START_RPS ?? String(DEFAULT_RAMP_START_RPS),
     ),
-    batchCount: Number.parseInt(
-      argMap.batchCount ?? process.env.BATCH_COUNT ?? String(DEFAULT_BATCH_COUNT),
+    peakRequestsPerSecond: Number.parseFloat(
+      argMap.peakRps ?? process.env.PEAK_RPS ?? String(DEFAULT_PEAK_RPS),
     ),
-    batchDelayMs: Number.parseInt(
-      argMap.batchDelayMs ?? process.env.BATCH_DELAY_MS ?? String(DEFAULT_BATCH_DELAY_MS),
+    rampDurationMs: Number.parseInt(
+      argMap.rampDurationMs ?? process.env.RAMP_DURATION_MS ?? String(DEFAULT_RAMP_DURATION_MS),
+    ),
+    sustainDurationMs: Number.parseInt(
+      argMap.sustainDurationMs ??
+        process.env.SUSTAIN_DURATION_MS ??
+        String(DEFAULT_SUSTAIN_DURATION_MS),
     ),
     timeoutMs: Number.parseInt(
       argMap.timeoutMs ?? process.env.TIMEOUT_MS ?? String(DEFAULT_TIMEOUT_MS),
     ),
-    apiKey: argMap.apiKey ?? process.env.API_KEY,
     jwt: argMap.jwt ?? process.env.JWT,
     outputFile: argMap.outputFile ?? process.env.OUTPUT_FILE,
     savePdfsDir: argMap.savePdfsDir ?? process.env.SAVE_PDFS_DIR,
@@ -85,11 +87,11 @@ async function main() {
   // Output the configuration
   console.log("Load Test Configuration:");
   console.log(`API URL: ${config.apiUrl}`);
-  console.log(`Parallel Requests: ${config.parallelRequests}`);
-  console.log(`Batch Count: ${config.batchCount}`);
-  console.log(`Batch Delay: ${config.batchDelayMs}ms`);
+  console.log(
+    `Ramp: ${config.rampStartRequestsPerSecond} to ${config.peakRequestsPerSecond} requests/s over ${config.rampDurationMs}ms`,
+  );
+  console.log(`Sustained peak duration: ${config.sustainDurationMs}ms`);
   console.log(`Request Timeout: ${config.timeoutMs}ms`);
-  console.log(`API Key: ${config.apiKey ? "Provided" : "Not Provided"}`);
   console.log(`JWT Token: ${config.jwt ? "Provided" : "Not Provided"}`);
   console.log(`Output File: ${config.outputFile ?? "Not Specified"}`);
   console.log(`Save PDFs to: ${config.savePdfsDir ?? "Disabled"}`);
@@ -122,10 +124,6 @@ async function main() {
 
     // Write results to file if outputFile is specified
     if (config.outputFile) {
-      // censor apiKey
-      if (config.apiKey) {
-        config.apiKey = config.apiKey.substring(0, 4) + "****";
-      }
       if (config.jwt) {
         config.jwt = config.jwt.substring(0, 8) + "****";
       }

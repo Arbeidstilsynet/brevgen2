@@ -1,21 +1,22 @@
 export interface RequestResult {
   requestId: string;
+  profile: LoadTestProfile;
   success: boolean;
   status: number;
   timeMs: number;
+  scheduledAtMs: number;
+  startedAtMs: number;
   error?: string;
 }
 
-export interface BatchResult {
-  batchId: number;
-  requests: RequestResult[];
-  totalTimeMs: number;
-  successCount: number;
-  failureCount: number;
-}
+export type LoadTestProfile =
+  | "small-blank"
+  | "typical-default"
+  | "typical-direktorat"
+  | "heavy-default";
 
 export interface LoadTestResult {
-  batches: BatchResult[];
+  requests: RequestResult[];
   totalRequests: number;
   successfulRequests: number;
   failedRequests: number;
@@ -24,18 +25,18 @@ export interface LoadTestResult {
 }
 
 export interface LoadTestConfig {
-  /** Number of parallel requests to send in each batch */
-  parallelRequests: number;
-  /** Number of batches to run */
-  batchCount: number;
   /** Base URL for the API */
   apiUrl: string;
   /** Request timeout in milliseconds */
   timeoutMs: number;
-  /** Delay between batches in milliseconds */
-  batchDelayMs: number;
-  /** Optional API key */
-  apiKey?: string;
+  /** Requests per second at the beginning of the ramp */
+  rampStartRequestsPerSecond: number;
+  /** Requests per second at the end of the ramp and during the sustained phase */
+  peakRequestsPerSecond: number;
+  /** Duration of the linear arrival-rate ramp */
+  rampDurationMs: number;
+  /** Duration of the constant peak arrival-rate phase */
+  sustainDurationMs: number;
   /** Optional JWT bearer token */
   jwt?: string;
   /** Optional output file for results */
