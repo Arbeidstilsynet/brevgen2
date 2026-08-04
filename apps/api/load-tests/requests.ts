@@ -96,7 +96,9 @@ export async function runLoadTest(config: LoadTestConfig): Promise<LoadTestResul
   const successfulRequests = requestResults.filter((request) => request.success).length;
   const failedRequests = totalRequests - successfulRequests;
   const averageRequestTimeMs =
-    requestResults.reduce((sum, request) => sum + request.timeMs, 0) / totalRequests;
+    totalRequests === 0
+      ? 0
+      : requestResults.reduce((sum, request) => sum + request.timeMs, 0) / totalRequests;
 
   const result: LoadTestResult = {
     requests: requestResults,
@@ -107,14 +109,13 @@ export async function runLoadTest(config: LoadTestConfig): Promise<LoadTestResul
     averageRequestTimeMs,
   };
 
+  const percentageOfTotal = (count: number) =>
+    totalRequests === 0 ? "0.0" : ((count / totalRequests) * 100).toFixed(1);
+
   console.log(`Load test completed in ${totalTimeMs}ms`);
   console.log(`Total requests: ${totalRequests}`);
-  console.log(
-    `Successful: ${successfulRequests} (${((successfulRequests / totalRequests) * 100).toFixed(1)}%)`,
-  );
-  console.log(
-    `Failed: ${failedRequests} (${((failedRequests / totalRequests) * 100).toFixed(1)}%)`,
-  );
+  console.log(`Successful: ${successfulRequests} (${percentageOfTotal(successfulRequests)}%)`);
+  console.log(`Failed: ${failedRequests} (${percentageOfTotal(failedRequests)}%)`);
   console.log(`Average request time: ${averageRequestTimeMs.toFixed(2)}ms`);
 
   return result;

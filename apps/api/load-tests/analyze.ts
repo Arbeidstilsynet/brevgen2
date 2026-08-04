@@ -22,6 +22,14 @@ if (!["text", "markdown"].includes(format)) {
 const resultsData = JSON.parse(fs.readFileSync(resultsFilePath, "utf8")) as ResultData;
 const { config, result } = resultsData;
 
+interface LatencySummary {
+  p50: number;
+  p90: number;
+  p95: number;
+  p99: number;
+  average: number;
+}
+
 function percentile(values: number[], percentileValue: number): number {
   const sorted = values.toSorted((a, b) => a - b);
   return sorted[
@@ -29,7 +37,12 @@ function percentile(values: number[], percentileValue: number): number {
   ];
 }
 
-function latencySummary(requests: RequestResult[]) {
+/** Latency statistics for the given requests, or `undefined` when there were none. */
+function latencySummary(requests: RequestResult[]): LatencySummary | undefined {
+  if (requests.length === 0) {
+    return undefined;
+  }
+
   const values = requests.map((request) => request.timeMs);
   return {
     p50: percentile(values, 50),
@@ -40,21 +53,20 @@ function latencySummary(requests: RequestResult[]) {
   };
 }
 
+function formatMs(value: number | undefined): string {
+  return value === undefined ? "-" : `${Math.round(value)}ms`;
+}
+
 function profileRows() {
   return profileNames.map((profile) => {
     const requests = result.requests.filter((request) => request.profile === profile);
     const successful = requests.filter((request) => request.success).length;
-    const latency = latencySummary(requests);
     return {
       profile,
       total: requests.length,
       successful,
       failed: requests.length - successful,
-      p50: latency.p50,
-      p90: latency.p90,
-      p95: latency.p95,
-      p99: latency.p99,
-      average: latency.average,
+      latency: latencySummary(requests),
     };
   });
 }
@@ -76,7 +88,8 @@ const overallLatency = latencySummary(result.requests);
 const rows = profileRows();
 const errors = errorSummary();
 const actualDurationSeconds = result.totalTimeMs / 1000;
-const actualRequestsPerSecond = result.totalRequests / actualDurationSeconds;
+const actualRequestsPerSecond =
+  actualDurationSeconds > 0 ? result.totalRequests / actualDurationSeconds : 0;
 
 if (format === "markdown") {
   console.log("## Load test results");
@@ -89,12 +102,12 @@ if (format === "markdown") {
   console.log("| --- | ---: | ---: | ---: | ---: | ---: | ---: |");
   for (const row of rows) {
     console.log(
-      `| ${row.profile} | ${row.total} | ${row.successful} | ${row.failed} | ${row.p50}ms | ${row.p95}ms | ${row.p99}ms |`,
+      `| ${row.profile} | ${row.total} | ${row.successful} | ${row.failed} | ${formatMs(row.latency?.p50)} | ${formatMs(row.latency?.p95)} | ${formatMs(row.latency?.p99)} |`,
     );
   }
   console.log("");
   console.log(
-    `Overall latency: P50 **${overallLatency.p50}ms**, P90 **${overallLatency.p90}ms**, P95 **${overallLatency.p95}ms**, P99 **${overallLatency.p99}ms**, average **${overallLatency.average.toFixed(0)}ms**.`,
+    `Overall latency: P50 **${formatMs(overallLatency?.p50)}**, P90 **${formatMs(overallLatency?.p90)}**, P95 **${formatMs(overallLatency?.p95)}**, P99 **${formatMs(overallLatency?.p99)}**, average **${formatMs(overallLatency?.average)}**.`,
   );
   if (errors.length > 0) {
     console.log("");
@@ -118,12 +131,12 @@ if (format === "markdown") {
     `Results: ${result.successfulRequests}/${result.totalRequests} successful in ${actualDurationSeconds.toFixed(1)}s (${actualRequestsPerSecond.toFixed(2)} requests/s)`,
   );
   console.log(
-    `Latency: P50 ${overallLatency.p50}ms, P90 ${overallLatency.p90}ms, P95 ${overallLatency.p95}ms, P99 ${overallLatency.p99}ms, average ${overallLatency.average.toFixed(0)}ms`,
+    `Latency: P50 ${formatMs(overallLatency?.p50)}, P90 ${formatMs(overallLatency?.p90)}, P95 ${formatMs(overallLatency?.p95)}, P99 ${formatMs(overallLatency?.p99)}, average ${formatMs(overallLatency?.average)}`,
   );
   console.log("\nBy profile:");
   for (const row of rows) {
     console.log(
-      `- ${row.profile}: ${row.successful}/${row.total} successful, P50 ${row.p50}ms, P95 ${row.p95}ms, P99 ${row.p99}ms`,
+      `- ${row.profile}: ${row.successful}/${row.total} successful, P50 ${formatMs(row.latency?.p50)}, P95 ${formatMs(row.latency?.p95)}, P99 ${formatMs(row.latency?.p99)}`,
     );
   }
   if (errors.length > 0) {
