@@ -88,13 +88,17 @@ describe("GenerationScheduler", () => {
     });
     const active = createDeferred<void>();
     const cancelled = new AbortController();
+    let overflowTaskStarted = false;
 
     const activeResult = scheduler.schedule(async () => await active.promise);
     const queuedResult = scheduler.schedule(async () => undefined, cancelled.signal);
 
-    await expect(scheduler.schedule(async () => undefined)).rejects.toEqual(
-      new GenerationOverloadError("queue-full", 5),
-    );
+    await expect(
+      scheduler.schedule(async () => {
+        overflowTaskStarted = true;
+      }),
+    ).rejects.toEqual(new GenerationOverloadError("queue-full", 5));
+    expect(overflowTaskStarted).toBe(false);
 
     cancelled.abort();
     await expect(queuedResult).rejects.toMatchObject({ name: "AbortError" });
@@ -111,6 +115,7 @@ describe("GenerationScheduler", () => {
       retryAfterSeconds: 5,
     });
     const active = createDeferred<void>();
+    const replacement = createDeferred<string>();
     let queuedTaskStarted = false;
 
     const activeResult = scheduler.schedule(async () => await active.promise);
@@ -124,8 +129,12 @@ describe("GenerationScheduler", () => {
     await expect(queuedError).resolves.toEqual(new GenerationOverloadError("queue-deadline", 5));
     await vi.waitFor(() => expect(queuedTaskStarted).toBe(false));
 
+    const replacementResult = scheduler.schedule(async () => await replacement.promise);
     active.resolve();
     await expect(activeResult).resolves.toBeUndefined();
+
+    replacement.resolve("replacement result");
+    await expect(replacementResult).resolves.toBe("replacement result");
   });
 
   test("skips a queued task after its caller disconnects and admits replacement work", async () => {
