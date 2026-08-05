@@ -7,32 +7,30 @@ on:
 concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: false
-  #                 +-------------------+
-  #                 |   check_changes   |
-  #                 +---------+---------+
-  #                           |
-  #               +-----------+-----------+
-  #               |                       |
-  #         +-----------+           +-----------+
-  #         | build_api |           | build_web |
-  #         +-----+-----+           +-----+-----+
-  #               |                       |
-  #      +--------+---------+             |
-  #      |                  |             |
-  # +----------+   +--------------+  +-----------+
-  # |deploy_api|   | publish_ghcr |  |deploy_web |
-  # |   _dev   |   |    _api      |  |   _dev    |
-  # +----+-----+   +--------------+  +-----+-----+
-  #      |                                 |
-  # +----------+                           |
-  # |load_test |                           |
-  # |   _api   |                           |
-  # +----+-----+                           |
-  #      |                                 |
-  # +----------+                     +-----------+
-  # |deploy_api|                     |deploy_web |
-  # |   _prod  |                     |   _prod   |
-  # +----------+                     +-----------+
+  #          +-------------------+
+  #          |   check_changes   |
+  #          +---------+---------+
+  #                    |
+  #        +-----------+-----------+
+  #        |                       |
+  #  +-----------+           +-----------+
+  #  | build_api |           | build_web |
+  #  +-----+-----+           +-----+-----+
+  #        |                       |
+  #  +-----------+           +-----------+
+  #  |deploy_api |           |deploy_web |
+  #  |   _dev    |           |   _dev    |
+  #  +-----+-----+           +-----+-----+
+  #        |                       |
+  #  +-----------+           +-----------+
+  #  |load_test  |           |           |
+  #  |  _api     |           |           |
+  #  +-----+-----+           +-----+-----+
+  #        |                       |
+  #  +-----------+           +-----------+
+  #  |deploy_api |           |deploy_web |
+  #  |   _prod   |           |   _prod   |
+  #  +-----------+           +-----------+
 
 jobs:
   check_changes:
@@ -106,6 +104,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
+      packages: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: nais/docker-build-push@31c3a7321909bcb20799fdf46153fec721fd9512 # v0
@@ -116,16 +115,6 @@ jobs:
           docker_context: "."
           dockerfile: "./apps/api/Dockerfile"
           platforms: linux/amd64,linux/arm64
-
-  publish_api_ghcr:
-    name: Publish API image to GHCR
-    needs: build_api
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    permissions:
-      contents: read
-      packages: write
-    steps:
       - name: Login to GitHub Container Registry
         uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
@@ -139,7 +128,7 @@ jobs:
           docker buildx imagetools create \
             -t "${TARGET_REPO}:latest" \
             -t "${TARGET_REPO}:${SHORT_SHA}" \
-            "${{ needs.build_api.outputs.image }}"
+            "${{ steps.docker.outputs.image }}"
 
   build_web:
     needs: check_changes
