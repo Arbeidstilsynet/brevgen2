@@ -4,7 +4,7 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { type ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { GenerationOverloadError } from "./generationScheduler";
-import { documentGeneration, documentsGenerated } from "./otel";
+import { documentGenerationMetrics } from "./otel";
 import { buildGenerateDocumentRequestContext } from "./requestContext";
 
 export type DocumentGenerationHandler = (
@@ -76,7 +76,7 @@ export async function registerDocumentGenerationRoute(
         const result = await generateDocument(request.body, requestAbort.signal);
         const template = request.body.options.dynamic.template ?? "default";
         const outputFormat = request.body.options.as_html ? "html" : "pdf";
-        documentsGenerated.add(1, {
+        documentGenerationMetrics.generated.add(1, {
           "document.template": template,
           "document.output.format": outputFormat,
         });
@@ -84,7 +84,7 @@ export async function registerDocumentGenerationRoute(
       } catch (err) {
         if (err instanceof GenerationOverloadError) {
           request.log.warn({ reason: err.reason }, "Document generation overloaded");
-          documentGeneration.overloadResponses.add(1);
+          documentGenerationMetrics.overloadResponses.add(1);
           return reply
             .header("Retry-After", String(err.retryAfterSeconds))
             .status(503)

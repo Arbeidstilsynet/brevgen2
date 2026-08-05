@@ -1,4 +1,4 @@
-import { documentGeneration } from "./otel";
+import { documentGenerationMetrics } from "./otel";
 
 const MAX_CONCURRENT_JOBS = 10;
 const DEFAULT_MAX_PENDING_JOBS = 150;
@@ -85,7 +85,7 @@ export class GenerationScheduler {
     }
 
     if (this.activeJobs < this.options.maxConcurrentJobs) {
-      documentGeneration.admitted.add(1);
+      documentGenerationMetrics.admitted.add(1);
       return this.startTask<T>({
         task,
         resolve: () => undefined,
@@ -96,7 +96,7 @@ export class GenerationScheduler {
 
     if (this.pendingJobs.length >= this.options.maxPendingJobs) {
       const error = new GenerationOverloadError("queue-full", this.options.retryAfterSeconds);
-      documentGeneration.overloadRejected.add(1, { reason: error.reason });
+      documentGenerationMetrics.overloadRejected.add(1, { reason: error.reason });
       return Promise.reject(error);
     }
 
@@ -115,22 +115,22 @@ export class GenerationScheduler {
       );
       signal?.addEventListener("abort", queuedTask.abortListener, { once: true });
       this.pendingJobs.push(queuedTask);
-      documentGeneration.pending.add(1);
-      documentGeneration.admitted.add(1);
+      documentGenerationMetrics.pending.add(1);
+      documentGenerationMetrics.admitted.add(1);
     });
   }
 
   private startTask<T>(task: QueuedTask): Promise<T> {
     this.activeJobs += 1;
-    documentGeneration.active.add(1);
-    documentGeneration.queueWait.record(this.now() - task.enqueuedAt);
+    documentGenerationMetrics.active.add(1);
+    documentGenerationMetrics.queueWait.record(this.now() - task.enqueuedAt);
 
     return Promise.resolve()
       .then(task.task)
       .then((result) => result as T)
       .finally(() => {
         this.activeJobs -= 1;
-        documentGeneration.active.add(-1);
+        documentGenerationMetrics.active.add(-1);
         this.startPendingTasks();
       });
   }
@@ -138,18 +138,18 @@ export class GenerationScheduler {
   private startPendingTasks() {
     while (this.activeJobs < this.options.maxConcurrentJobs && this.pendingJobs.length > 0) {
       const queuedTask = this.pendingJobs.shift()!;
-      documentGeneration.pending.add(-1);
+      documentGenerationMetrics.pending.add(-1);
       this.clearQueuedTaskResources(queuedTask);
 
       if (queuedTask.signal?.aborted) {
-        documentGeneration.queuedCancelled.add(1);
+        documentGenerationMetrics.queuedCancelled.add(1);
         queuedTask.reject(createCancellationError());
         continue;
       }
 
       if (this.now() - queuedTask.enqueuedAt >= this.options.maxQueueWaitMs) {
         const error = new GenerationOverloadError("queue-deadline", this.options.retryAfterSeconds);
-        documentGeneration.overloadRejected.add(1, { reason: error.reason });
+        documentGenerationMetrics.overloadRejected.add(1, { reason: error.reason });
         queuedTask.reject(error);
         continue;
       }
@@ -164,7 +164,7 @@ export class GenerationScheduler {
     }
 
     const error = new GenerationOverloadError("queue-deadline", this.options.retryAfterSeconds);
-    documentGeneration.overloadRejected.add(1, { reason: error.reason });
+    documentGenerationMetrics.overloadRejected.add(1, { reason: error.reason });
     task.reject(error);
   }
 
@@ -173,7 +173,7 @@ export class GenerationScheduler {
       return;
     }
 
-    documentGeneration.queuedCancelled.add(1);
+    documentGenerationMetrics.queuedCancelled.add(1);
     task.reject(createCancellationError());
   }
 
@@ -184,7 +184,7 @@ export class GenerationScheduler {
     }
 
     this.pendingJobs.splice(index, 1);
-    documentGeneration.pending.add(-1);
+    documentGenerationMetrics.pending.add(-1);
     this.clearQueuedTaskResources(task);
     return true;
   }

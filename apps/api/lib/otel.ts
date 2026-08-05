@@ -18,11 +18,11 @@ export async function withActiveSpan<T>(
 
 const meter = metrics.getMeter("brevgen2.api");
 
-export const documentsGenerated = meter.createCounter("brevgen.documents.generated", {
-  description: "Total number of documents generated",
-});
-
-export const documentGeneration = {
+export const documentGenerationMetrics = {
+  generated: meter.createCounter("brevgen.documents.generated", {
+    description: "Total number of documents generated",
+    unit: "{document}",
+  }),
   active: meter.createUpDownCounter("brevgen.document_generation.active", {
     description: "Current number of active document generation jobs",
     unit: "{job}",
