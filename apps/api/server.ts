@@ -1,24 +1,15 @@
-import { DynamicMarkdownParseError } from "@at/dynamic-markdown";
 import fastifyCors from "@fastify/cors";
 import { FastifyOtelInstrumentation } from "@fastify/otel";
-import { generateDocumentRequestSchema } from "@repo/shared-types";
 import { configDotenv } from "dotenv";
 import {
   hasZodFastifySchemaValidationErrors,
   serializerCompiler,
   validatorCompiler,
-  type ZodTypeProvider,
 } from "fastify-type-provider-zod";
-import { z } from "zod";
 import { fastify } from "./app";
 import { setupAuth } from "./auth";
-import {
-  formatZodFastifySchemaValidationError,
-  handlerGenerateDocument,
-  ValidationError,
-} from "./lib/handler";
-import { documentsGenerated } from "./lib/otel";
-import { buildGenerateDocumentRequestContext } from "./lib/requestContext";
+import { formatZodFastifySchemaValidationError, ValidationError } from "./lib/handler";
+import { registerDocumentGenerationRoute } from "./lib/documentGenerationRoute";
 import { registerSwagger } from "./swagger";
 
 configDotenv();
@@ -83,67 +74,7 @@ export async function initializeServer() {
     reply.status(200).send();
   });
 
-  const errorResponseSchema = z.object({
-    message: z.string(),
-    error: z.string(),
-  });
-
-  const validationErrorResponseSchema = errorResponseSchema.extend({
-    details: z
-      .array(
-        z.object({
-          path: z.string(),
-          message: z.string(),
-          code: z.string(),
-        }),
-      )
-      .nullish(),
-  });
-
-  fastify.withTypeProvider<ZodTypeProvider>().post(
-    "/genererbrev",
-    {
-      onRequest: [fastify.authenticate],
-      schema: {
-        description: "Generate document from markdown template",
-        security: [{ bearerAuth: [] }],
-        body: generateDocumentRequestSchema,
-        response: {
-          200: z.string().describe("HTML or Base64-encoded PDF"),
-          400: validationErrorResponseSchema.describe("Validation or parse error"),
-          500: errorResponseSchema.describe("Internal server error"),
-        },
-      },
-    },
-    async (request, reply) => {
-      const user = request.user;
-      try {
-        request.log.info(
-          { requestContext: buildGenerateDocumentRequestContext(request.body, user) },
-          "genererbrev.request",
-        );
-        const result = await handlerGenerateDocument(request.body);
-        const template = request.body.options.dynamic.template ?? "default";
-        const outputFormat = request.body.options.as_html ? "html" : "pdf";
-        documentsGenerated.add(1, {
-          "document.template": template,
-          "document.output.format": outputFormat,
-        });
-        reply.send(result);
-      } catch (err) {
-        request.log.error(err, "Error processing request:");
-
-        if (err instanceof DynamicMarkdownParseError) {
-          return reply.status(400).send({
-            message: "Parse error",
-            error: err.message,
-          });
-        }
-        const error = err instanceof Error ? err.message : String(err);
-        reply.status(500).send({ message: "Internal error", error });
-      }
-    },
-  );
+  await registerDocumentGenerationRoute(fastify);
 
   // avoid conflict with Vite dev server
   if (!isDev) {

@@ -9,8 +9,18 @@ spec:
   groups:
     - name: brevgen2-api-alerts
       rules:
-        - alert: Brevgen2Api5xxErrors
-          expr: sum(increase(haproxy_backend_http_responses_total{proxy="{{team}}_svc_{{api.name}}_http", code="5xx"}[15m])) > 0
+        - alert: Brevgen2ApiDocumentGenerationOverload
+          expr: sum(increase(brevgen_document_generation_overload_rejected_total[15m])) > 0
+          for: 0m
+          annotations:
+            consequence: "Document generation requests are being rejected because the scheduler is overloaded"
+            action: "Inspect document generation scheduler metrics and application logs: `kubectl logs -l app={{api.name}} -n {{team}}`"
+            summary: "{{api.name}} rejected document generation requests because it was overloaded ({{prometheus_value_humanize }} rejections in the last 15m)"
+          labels:
+            namespace: "{{team}}"
+            severity: warning
+        - alert: Brevgen2ApiUnexpected5xxErrors
+          expr: sum(increase(haproxy_backend_http_responses_total{proxy="{{team}}_svc_{{api.name}}_http", code="5xx"}[15m])) - sum(increase(brevgen_document_generation_overload_rejected_total[15m])) > 0
           for: 0m
           annotations:
             consequence: "Users are receiving 5xx server errors from {{api.name}}"

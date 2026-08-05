@@ -1,13 +1,9 @@
 import { parseDynamicMd } from "@at/dynamic-markdown";
 import { type GenerateDocumentRequest, generateDocumentRequestSchema } from "@repo/shared-types";
 import { ZodFastifySchemaValidationError } from "fastify-type-provider-zod";
-import pLimit from "p-limit";
 import { ZodError } from "zod";
 import { generateDocument } from "./generateDocument";
-
-// limit parallel generation to reduce CPU spikes
-const MAX_PARALLEL_GENERATION = 10;
-const limit = pLimit(MAX_PARALLEL_GENERATION);
+import { generationScheduler } from "./generationScheduler";
 
 export interface ValidationErrorDetail {
   path: string;
@@ -66,7 +62,10 @@ export function formatZodFastifySchemaValidationError(
 /**
  * @returns HTML or Base64-encoded PDF
  */
-export async function handlerGenerateDocument(request: GenerateDocumentRequest) {
+export async function handlerGenerateDocument(
+  request: GenerateDocumentRequest,
+  signal?: AbortSignal,
+) {
   try {
     generateDocumentRequestSchema.parse(request);
   } catch (error) {
@@ -79,7 +78,10 @@ export async function handlerGenerateDocument(request: GenerateDocumentRequest) 
   const { md, mdVariables, options } = request;
 
   const parsedMd = parseDynamicMd(md, { variables: mdVariables ?? {} });
-  const result = await limit(() => generateDocument(parsedMd, options));
+  const result = await generationScheduler.schedule(
+    () => generateDocument(parsedMd, options),
+    signal,
+  );
   if (typeof result.content === "string") {
     return result.content;
   }

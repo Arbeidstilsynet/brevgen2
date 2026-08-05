@@ -1,0 +1,109 @@
+import { DynamicMarkdownParseError } from "@at/dynamic-markdown";
+import { type GenerateDocumentRequest, generateDocumentRequestSchema } from "@repo/shared-types";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import { type ZodTypeProvider } from "fastify-type-provider-zod";
+import { z } from "zod";
+import { GenerationOverloadError } from "./generationScheduler";
+import { handlerGenerateDocument } from "./handler";
+import { documentsGenerated } from "./otel";
+import { buildGenerateDocumentRequestContext } from "./requestContext";
+
+export type DocumentGenerationHandler = (
+  request: GenerateDocumentRequest,
+  signal: AbortSignal,
+) => Promise<string>;
+
+function createRequestAbortSignal(request: FastifyRequest, reply: FastifyReply) {
+  const controller = new AbortController();
+  const abort = () => controller.abort();
+  request.raw.once("aborted", abort);
+  reply.raw.once("close", abort);
+
+  return {
+    signal: controller.signal,
+    cleanup: () => {
+      request.raw.removeListener("aborted", abort);
+      reply.raw.removeListener("close", abort);
+    },
+  };
+}
+
+export async function registerDocumentGenerationRoute(
+  fastify: FastifyInstance,
+  generateDocument: DocumentGenerationHandler = handlerGenerateDocument,
+) {
+  const errorResponseSchema = z.object({
+    message: z.string(),
+    error: z.string(),
+  });
+
+  const validationErrorResponseSchema = errorResponseSchema.extend({
+    details: z
+      .array(
+        z.object({
+          path: z.string(),
+          message: z.string(),
+          code: z.string(),
+        }),
+      )
+      .nullish(),
+  });
+
+  fastify.withTypeProvider<ZodTypeProvider>().post(
+    "/genererbrev",
+    {
+      onRequest: [fastify.authenticate],
+      schema: {
+        description: "Generate document from markdown template",
+        security: [{ bearerAuth: [] }],
+        body: generateDocumentRequestSchema,
+        response: {
+          200: z.string().describe("HTML or Base64-encoded PDF"),
+          400: validationErrorResponseSchema.describe("Validation or parse error"),
+          500: errorResponseSchema.describe("Internal server error"),
+          503: errorResponseSchema.describe("Document generation is overloaded"),
+        },
+      },
+    },
+    async (request, reply) => {
+      const user = request.user;
+      const requestAbort = createRequestAbortSignal(request, reply);
+
+      try {
+        request.log.info(
+          { requestContext: buildGenerateDocumentRequestContext(request.body, user) },
+          "genererbrev.request",
+        );
+        const result = await generateDocument(request.body, requestAbort.signal);
+        const template = request.body.options.dynamic.template ?? "default";
+        const outputFormat = request.body.options.as_html ? "html" : "pdf";
+        documentsGenerated.add(1, {
+          "document.template": template,
+          "document.output.format": outputFormat,
+        });
+        reply.send(result);
+      } catch (err) {
+        if (err instanceof GenerationOverloadError) {
+          request.log.warn({ reason: err.reason }, "Document generation overloaded");
+          return reply
+            .header("Retry-After", String(err.retryAfterSeconds))
+            .status(503)
+            .send({ message: "Service unavailable", error: err.message });
+        }
+
+        request.log.error(err, "Error processing request:");
+
+        if (err instanceof DynamicMarkdownParseError) {
+          return reply.status(400).send({
+            message: "Parse error",
+            error: err.message,
+          });
+        }
+        const error = err instanceof Error ? err.message : String(err);
+        reply.status(500).send({ message: "Internal error", error });
+      } finally {
+        requestAbort.cleanup();
+      }
+    },
+  );
+}
