@@ -3,7 +3,7 @@ import { type GenerateDocumentRequest, generateDocumentRequestSchema } from "@re
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { type ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
-import { GenerationOverloadError } from "./generationScheduler";
+import { GenerationCancelledError, GenerationOverloadError } from "./generationScheduler";
 import { documentGenerationMetrics } from "./otel";
 import { buildGenerateDocumentRequestContext } from "./requestContext";
 
@@ -59,6 +59,7 @@ export async function registerDocumentGenerationRoute(
         response: {
           200: z.string().describe("HTML or Base64-encoded PDF"),
           400: validationErrorResponseSchema.describe("Validation or parse error"),
+          499: errorResponseSchema.describe("Client closed the request before generation began"),
           500: errorResponseSchema.describe("Internal server error"),
           503: errorResponseSchema.describe("Document generation is overloaded"),
         },
@@ -89,6 +90,12 @@ export async function registerDocumentGenerationRoute(
             .header("Retry-After", String(err.retryAfterSeconds))
             .status(503)
             .send({ message: "Service unavailable", error: err.message });
+        }
+
+        if (err instanceof GenerationCancelledError) {
+          // The caller is already gone; this is expected, not an unexpected 5xx.
+          request.log.info("Document generation cancelled after caller disconnect");
+          return reply.status(499).send({ message: "Client closed request", error: err.message });
         }
 
         request.log.error(err, "Error processing request:");

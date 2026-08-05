@@ -21,6 +21,14 @@ export class GenerationOverloadError extends Error {
   }
 }
 
+export class GenerationCancelledError extends Error {
+  constructor() {
+    super("Document generation request was cancelled");
+    // Keeps the platform-conventional name for callers matching on `AbortError`.
+    this.name = "AbortError";
+  }
+}
+
 export interface GenerationSchedulerOptions {
   maxConcurrentJobs: number;
   maxPendingJobs: number;
@@ -37,12 +45,6 @@ interface QueuedTask {
   signal?: AbortSignal;
   abortListener?: () => void;
   deadlineTimer?: ReturnType<typeof setTimeout>;
-}
-
-function createCancellationError() {
-  const error = new Error("Document generation request was cancelled");
-  error.name = "AbortError";
-  return error;
 }
 
 function positiveIntegerFromEnvironment(name: string, defaultValue: number) {
@@ -81,7 +83,7 @@ export class GenerationScheduler {
 
   schedule<T>(task: () => Promise<T> | T, signal?: AbortSignal): Promise<T> {
     if (signal?.aborted) {
-      return Promise.reject(createCancellationError());
+      return Promise.reject(new GenerationCancelledError());
     }
 
     if (this.activeJobs < this.options.maxConcurrentJobs) {
@@ -144,7 +146,7 @@ export class GenerationScheduler {
 
       if (queuedTask.signal?.aborted) {
         documentGenerationMetrics.queuedCancelled.add(1);
-        queuedTask.reject(createCancellationError());
+        queuedTask.reject(new GenerationCancelledError());
         continue;
       }
 
@@ -175,7 +177,7 @@ export class GenerationScheduler {
     }
 
     documentGenerationMetrics.queuedCancelled.add(1);
-    task.reject(createCancellationError());
+    task.reject(new GenerationCancelledError());
   }
 
   private removeQueuedTask(task: QueuedTask) {
