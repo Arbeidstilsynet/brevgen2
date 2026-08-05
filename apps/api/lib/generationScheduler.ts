@@ -7,6 +7,8 @@ const DEFAULT_RETRY_AFTER_SECONDS = 5;
 
 export type GenerationOverloadReason = "queue-full" | "queue-deadline";
 
+type QueueOutcome = "started" | "queue-deadline" | "cancelled";
+
 export class GenerationOverloadError extends Error {
   constructor(
     readonly reason: GenerationOverloadReason,
@@ -97,9 +99,7 @@ export class GenerationScheduler {
     }
 
     if (this.pendingJobs.length >= this.options.maxPendingJobs) {
-      const error = new GenerationOverloadError("queue-full", this.options.retryAfterSeconds);
-      documentGenerationMetrics.overloadRejected.add(1, { reason: error.reason });
-      return Promise.reject(error);
+      return Promise.reject(this.overloadError("queue-full"));
     }
 
     return new Promise<T>((resolve, reject) => {
@@ -126,7 +126,7 @@ export class GenerationScheduler {
     // Once admitted, rendering is allowed to finish even if the caller disconnects.
     this.activeJobs += 1;
     documentGenerationMetrics.active.add(1);
-    documentGenerationMetrics.queueWait.record(this.now() - task.enqueuedAt);
+    this.recordQueueWait(task, "started");
 
     return Promise.resolve()
       .then(task.task)
@@ -145,15 +145,12 @@ export class GenerationScheduler {
       this.clearQueuedTaskResources(queuedTask);
 
       if (queuedTask.signal?.aborted) {
-        documentGenerationMetrics.queuedCancelled.add(1);
-        queuedTask.reject(new GenerationCancelledError());
+        this.rejectCancelled(queuedTask);
         continue;
       }
 
       if (this.now() - queuedTask.enqueuedAt >= this.options.maxQueueWaitMs) {
-        const error = new GenerationOverloadError("queue-deadline", this.options.retryAfterSeconds);
-        documentGenerationMetrics.overloadRejected.add(1, { reason: error.reason });
-        queuedTask.reject(error);
+        this.rejectExpired(queuedTask);
         continue;
       }
 
@@ -166,9 +163,7 @@ export class GenerationScheduler {
       return;
     }
 
-    const error = new GenerationOverloadError("queue-deadline", this.options.retryAfterSeconds);
-    documentGenerationMetrics.overloadRejected.add(1, { reason: error.reason });
-    task.reject(error);
+    this.rejectExpired(task);
   }
 
   private cancelQueuedTask(task: QueuedTask) {
@@ -176,8 +171,29 @@ export class GenerationScheduler {
       return;
     }
 
+    this.rejectCancelled(task);
+  }
+
+  private overloadError(reason: GenerationOverloadReason) {
+    documentGenerationMetrics.overloadRejected.add(1, { reason });
+    return new GenerationOverloadError(reason, this.options.retryAfterSeconds);
+  }
+
+  private rejectExpired(task: QueuedTask) {
+    this.recordQueueWait(task, "queue-deadline");
+    task.reject(this.overloadError("queue-deadline"));
+  }
+
+  private rejectCancelled(task: QueuedTask) {
+    this.recordQueueWait(task, "cancelled");
     documentGenerationMetrics.queuedCancelled.add(1);
     task.reject(new GenerationCancelledError());
+  }
+
+  private recordQueueWait(task: QueuedTask, outcome: QueueOutcome) {
+    // Every exit from the queue is measured, so the histogram is not biased
+    // towards jobs that were lucky enough to start.
+    documentGenerationMetrics.queueWait.record(this.now() - task.enqueuedAt, { outcome });
   }
 
   private removeQueuedTask(task: QueuedTask) {

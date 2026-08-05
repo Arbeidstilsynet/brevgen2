@@ -1,5 +1,10 @@
 import { afterEach, describe, expect, test, vi } from "vitest";
-import { GenerationOverloadError, GenerationScheduler } from "./generationScheduler";
+import {
+  createGenerationSchedulerFromEnvironment,
+  GenerationOverloadError,
+  GenerationScheduler,
+} from "./generationScheduler";
+import { documentGenerationMetrics } from "./otel";
 
 function createDeferred<T>() {
   let resolve!: (value: T | PromiseLike<T>) => void;
@@ -12,7 +17,23 @@ function createDeferred<T>() {
 
 afterEach(() => {
   vi.useRealTimers();
+  vi.restoreAllMocks();
 });
+
+// The queue wait histogram is the only histogram instrument, so it can be
+// observed directly without a metrics SDK.
+function spyOnQueueWait() {
+  return vi.spyOn(documentGenerationMetrics.queueWait, "record");
+}
+
+function createScheduler() {
+  return new GenerationScheduler({
+    maxConcurrentJobs: 1,
+    maxPendingJobs: 1,
+    maxQueueWaitMs: 100,
+    retryAfterSeconds: 5,
+  });
+}
 
 describe("GenerationScheduler", () => {
   test("runs no more than the configured number of generation tasks concurrently", async () => {
@@ -185,5 +206,135 @@ describe("GenerationScheduler", () => {
     result.resolve("generated document");
 
     await expect(scheduledResult).resolves.toBe("generated document");
+  });
+});
+
+describe("queue wait metric", () => {
+  test("records the wait of a job that starts", async () => {
+    const queueWait = spyOnQueueWait();
+    const scheduler = createScheduler();
+    const active = createDeferred<void>();
+
+    const result = scheduler.schedule(async () => await active.promise);
+    active.resolve();
+    await result;
+
+    expect(queueWait).toHaveBeenCalledExactlyOnceWith(expect.any(Number), { outcome: "started" });
+  });
+
+  test("records the wait of a job rejected at its queue deadline", async () => {
+    vi.useFakeTimers();
+    const queueWait = spyOnQueueWait();
+    const scheduler = createScheduler();
+    const active = createDeferred<void>();
+
+    const activeResult = scheduler.schedule(async () => await active.promise);
+    const queuedError = scheduler.schedule(async () => undefined).catch((error: unknown) => error);
+    await vi.advanceTimersByTimeAsync(100);
+    await expect(queuedError).resolves.toBeInstanceOf(GenerationOverloadError);
+
+    expect(queueWait).toHaveBeenCalledWith(100, { outcome: "queue-deadline" });
+
+    active.resolve();
+    await activeResult;
+  });
+
+  test("records the wait of a job cancelled by a disconnecting caller", async () => {
+    const queueWait = spyOnQueueWait();
+    const scheduler = createScheduler();
+    const active = createDeferred<void>();
+    const disconnected = new AbortController();
+
+    const activeResult = scheduler.schedule(async () => await active.promise);
+    const cancelledResult = scheduler.schedule(async () => undefined, disconnected.signal);
+    disconnected.abort();
+    await expect(cancelledResult).rejects.toMatchObject({ name: "AbortError" });
+
+    expect(queueWait).toHaveBeenCalledWith(expect.any(Number), { outcome: "cancelled" });
+
+    active.resolve();
+    await activeResult;
+  });
+});
+
+describe("createGenerationSchedulerFromEnvironment", () => {
+  const environmentVariables = [
+    "GENERATION_MAX_PENDING_JOBS",
+    "GENERATION_MAX_QUEUE_WAIT_MS",
+    "GENERATION_OVERLOAD_RETRY_AFTER_SECONDS",
+  ] as const;
+
+  afterEach(() => {
+    for (const name of environmentVariables) {
+      delete process.env[name];
+    }
+  });
+
+  test("applies the documented default limits", async () => {
+    vi.useFakeTimers();
+    for (const name of environmentVariables) {
+      delete process.env[name];
+    }
+    const scheduler = createGenerationSchedulerFromEnvironment();
+    const blocked = createDeferred<void>();
+    const started: number[] = [];
+
+    // 10 active slots plus 150 pending jobs are admitted by default.
+    const results = Array.from({ length: 160 }, (_unused, index) =>
+      scheduler
+        .schedule(async () => {
+          started.push(index);
+          await blocked.promise;
+        })
+        .catch((error: unknown) => error),
+    );
+    await vi.advanceTimersByTimeAsync(0);
+    expect(started).toHaveLength(10);
+
+    const overflow = await scheduler
+      .schedule(async () => undefined)
+      .catch((error: unknown) => error);
+    expect(overflow).toEqual(new GenerationOverloadError("queue-full", 5));
+
+    // The default queue deadline is 30 seconds.
+    await vi.advanceTimersByTimeAsync(29_999);
+    expect(started).toHaveLength(10);
+    await vi.advanceTimersByTimeAsync(1);
+
+    const queuedOutcomes = await Promise.all(results.slice(10));
+    expect(queuedOutcomes).toHaveLength(150);
+    for (const outcome of queuedOutcomes) {
+      expect(outcome).toEqual(new GenerationOverloadError("queue-deadline", 5));
+    }
+    expect(started).toHaveLength(10);
+
+    blocked.resolve();
+    await Promise.all(results.slice(0, 10));
+  });
+
+  test("reads limits from the environment", async () => {
+    process.env.GENERATION_MAX_PENDING_JOBS = "1";
+    process.env.GENERATION_OVERLOAD_RETRY_AFTER_SECONDS = "11";
+    const scheduler = createGenerationSchedulerFromEnvironment();
+    const blocked = createDeferred<void>();
+
+    const results = Array.from({ length: 11 }, () =>
+      scheduler.schedule(async () => await blocked.promise).catch((error: unknown) => error),
+    );
+
+    await expect(scheduler.schedule(async () => undefined)).rejects.toEqual(
+      new GenerationOverloadError("queue-full", 11),
+    );
+
+    blocked.resolve();
+    await Promise.all(results);
+  });
+
+  test("rejects a limit that is not a positive integer", () => {
+    process.env.GENERATION_MAX_QUEUE_WAIT_MS = "0";
+    expect(() => createGenerationSchedulerFromEnvironment()).toThrow(TypeError);
+
+    process.env.GENERATION_MAX_QUEUE_WAIT_MS = "not-a-number";
+    expect(() => createGenerationSchedulerFromEnvironment()).toThrow(TypeError);
   });
 });
