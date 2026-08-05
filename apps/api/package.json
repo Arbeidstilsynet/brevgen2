@@ -12,6 +12,7 @@
     "test": "vitest run --coverage lib",
     "test:integration": "vitest run integration-tests",
     "test:load": "pnpx tsx load-tests/run.ts",
+    "test:burst": "pnpx tsx load-tests/burst.ts",
     "test:load:analyze": "pnpx tsx load-tests/analyze.ts",
     "lint": "oxlint",
     "typecheck": "tsc --noEmit"

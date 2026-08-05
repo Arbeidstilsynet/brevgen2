@@ -46,6 +46,25 @@ OUTPUT_FILE=results/load-test.json pnpm test:load
 pnpm test:load:analyze results/load-test.json
 ```
 
+### Testing admission control
+
+`pnpm test:load` ramps the arrival _rate_ and requires zero failures, so it is the regression
+gate rather than a way to provoke overload — at 2 requests per second it never fills the queue,
+and a controlled `503` counts as a failure.
+
+To exercise the scheduler instead, `pnpm test:burst` fires one wave of simultaneous requests and
+reports the admission outcome of each. Controlled `503` responses are expected; anything else
+fails the run.
+
+```sh
+pnpm test:burst --count=200 --profile=small-blank        # provokes queue-full rejections
+pnpm test:burst --count=60 --abandonCount=30             # provokes caller disconnects
+```
+
+Filling the queue needs more than 10 simultaneous requests, because the active job limit is not
+configurable. Reaching the queue deadline depends on render throughput; lower
+`GENERATION_MAX_QUEUE_WAIT_MS` on the server to reach that path deterministically.
+
 ## Auth
 
 API-et forventer et Azure Entra ID (Azure AD) access token hentet via OAuth2 Client Credentials flow.
