@@ -1,6 +1,5 @@
 import fastifyCors from "@fastify/cors";
 import { FastifyOtelInstrumentation } from "@fastify/otel";
-import { configDotenv } from "dotenv";
 import {
   hasZodFastifySchemaValidationErrors,
   serializerCompiler,
@@ -11,8 +10,6 @@ import { setupAuth } from "./auth";
 import { formatZodFastifySchemaValidationError, ValidationError } from "./lib/handler";
 import { registerDocumentGenerationRoute } from "./lib/documentGenerationRoute";
 import { registerSwagger } from "./swagger";
-
-configDotenv();
 
 const port = process.env.PORT ? Number(process.env.PORT) : 4000;
 const isDev = process.env.NODE_ENV === "development";

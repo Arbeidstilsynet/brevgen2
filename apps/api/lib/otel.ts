@@ -39,6 +39,10 @@ export const documentGeneration = {
     description: "Total number of rejected document generation jobs",
     unit: "{job}",
   }),
+  overloadResponses: meter.createCounter("brevgen.document_generation.overload_responses", {
+    description: "Total number of overload responses returned to consumers",
+    unit: "{response}",
+  }),
   queuedCancelled: meter.createCounter("brevgen.document_generation.queued_cancelled", {
     description: "Total number of queued document generation jobs cancelled by callers",
     unit: "{job}",

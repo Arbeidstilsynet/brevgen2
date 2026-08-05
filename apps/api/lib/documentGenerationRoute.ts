@@ -5,7 +5,7 @@ import { type ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { GenerationOverloadError } from "./generationScheduler";
 import { handlerGenerateDocument } from "./handler";
-import { documentsGenerated } from "./otel";
+import { documentGeneration, documentsGenerated } from "./otel";
 import { buildGenerateDocumentRequestContext } from "./requestContext";
 
 export type DocumentGenerationHandler = (
@@ -85,6 +85,7 @@ export async function registerDocumentGenerationRoute(
       } catch (err) {
         if (err instanceof GenerationOverloadError) {
           request.log.warn({ reason: err.reason }, "Document generation overloaded");
+          documentGeneration.overloadResponses.add(1);
           return reply
             .header("Retry-After", String(err.retryAfterSeconds))
             .status(503)

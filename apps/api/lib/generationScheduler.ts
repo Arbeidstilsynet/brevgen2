@@ -1,3 +1,4 @@
+import "./environment";
 import { documentGeneration } from "./otel";
 
 const MAX_CONCURRENT_JOBS = 10;
