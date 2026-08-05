@@ -17,7 +17,7 @@
     "@azure/msal-node": "5.4.3",
     "@google-cloud/storage": "7.21.0",
     "@monaco-editor/react": "4.7.0",
-    "@octokit/auth-app": "8.2.0",
+    "@octokit/auth-app": "8.3.0",
     "@octokit/rest": "22.0.1",
     "@tanstack/react-query": "5.101.4",
     "@tanstack/react-query-devtools": "5.101.4",
