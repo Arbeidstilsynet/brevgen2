@@ -10,7 +10,7 @@ spec:
     - name: brevgen2-api-alerts
       rules:
         - alert: Brevgen2ApiDocumentGenerationOverload
-          expr: sum(increase(brevgen_document_generation_overload_rejected_total[15m])) > 0
+          expr: sum(increase(brevgen_generation_overload_rejected_total[15m])) > 0
           for: 0m
           annotations:
             consequence: "Document generation requests are being rejected because the scheduler is overloaded"
@@ -23,7 +23,7 @@ spec:
           # The overload counter is only exported once it has been incremented, so an
           # absent series must fall back to 0 or the subtraction yields an empty vector
           # and the alert can never fire.
-          expr: sum(increase(haproxy_backend_http_responses_total{proxy="{{team}}_svc_{{api.name}}_http", code="5xx"}[15m])) - (sum(increase(brevgen_document_generation_overload_responses_total[15m])) or vector(0)) > 0
+          expr: sum(increase(haproxy_backend_http_responses_total{proxy="{{team}}_svc_{{api.name}}_http", code="5xx"}[15m])) - (sum(increase(brevgen_generation_overload_responses_total[15m])) or vector(0)) > 0
           for: 0m
           annotations:
             consequence: "Users are receiving 5xx server errors from {{api.name}}"

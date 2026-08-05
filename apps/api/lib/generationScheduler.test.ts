@@ -233,7 +233,7 @@ describe("queue wait metric", () => {
     await vi.advanceTimersByTimeAsync(100);
     await expect(queuedError).resolves.toBeInstanceOf(GenerationOverloadError);
 
-    expect(queueWait).toHaveBeenCalledWith(100, { outcome: "queue-deadline" });
+    expect(queueWait).toHaveBeenCalledWith(0.1, { outcome: "queue-deadline" });
 
     active.resolve();
     await activeResult;

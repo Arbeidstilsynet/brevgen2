@@ -20,13 +20,13 @@ const meter = metrics.getMeter("brevgen2.api");
 
 export const documentGenerationMetricNames = {
   generated: "brevgen.documents.generated",
-  active: "brevgen.document_generation.active",
-  pending: "brevgen.document_generation.pending",
-  admitted: "brevgen.document_generation.admitted",
-  overloadRejected: "brevgen.document_generation.overload_rejected",
-  overloadResponses: "brevgen.document_generation.overload_responses",
-  queuedCancelled: "brevgen.document_generation.queued_cancelled",
-  queueWait: "brevgen.document_generation.queue_wait",
+  active: "brevgen.generation.active",
+  pending: "brevgen.generation.pending",
+  admitted: "brevgen.generation.admitted",
+  overloadRejected: "brevgen.generation.overload_rejected",
+  overloadResponses: "brevgen.generation.overload_responses",
+  queuedCancelled: "brevgen.generation.queued_cancelled",
+  queueWait: "brevgen.generation.queue_wait",
 } as const;
 
 export const documentGenerationMetrics = {
@@ -59,7 +59,7 @@ export const documentGenerationMetrics = {
     unit: "{job}",
   }),
   queueWait: meter.createHistogram(documentGenerationMetricNames.queueWait, {
-    description: "Time document generation jobs wait before starting",
-    unit: "ms",
+    description: "Time document generation jobs wait before leaving the queue",
+    unit: "s",
   }),
 };

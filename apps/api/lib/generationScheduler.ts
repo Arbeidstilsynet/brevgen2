@@ -193,7 +193,8 @@ export class GenerationScheduler {
   private recordQueueWait(task: QueuedTask, outcome: QueueOutcome) {
     // Every exit from the queue is measured, so the histogram is not biased
     // towards jobs that were lucky enough to start.
-    documentGenerationMetrics.queueWait.record(this.now() - task.enqueuedAt, { outcome });
+    const waitedSeconds = (this.now() - task.enqueuedAt) / 1000;
+    documentGenerationMetrics.queueWait.record(waitedSeconds, { outcome });
   }
 
   private removeQueuedTask(task: QueuedTask) {

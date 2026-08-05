@@ -134,9 +134,10 @@ If a consumer disconnects while its request is queued, the request is removed an
 rendered later. Rendering already in progress is allowed to finish.
 
 The scheduler emits metrics for active and pending jobs, admissions, overload rejections by reason,
-queued cancellations, and queue-wait duration. Queue-wait is recorded for every job that leaves the
-queue, tagged with the `outcome` that ended the wait (`started`, `queue-deadline`, or `cancelled`),
-so the histogram is not biased towards jobs that started. Controlled overload responses raise the
+queued cancellations, and queue-wait duration. Queue-wait is recorded in seconds for every job that
+leaves the queue, tagged with the `outcome` that ended the wait (`started`, `queue-deadline`, or
+`cancelled`), so the histogram is not biased towards jobs that started. Controlled overload responses
+raise the
 overload warning alert, while unexpected application and ingress 5xx responses remain critical.
 
 A consumer that disconnects before its job starts receives `499 Client Closed Request` rather than a
