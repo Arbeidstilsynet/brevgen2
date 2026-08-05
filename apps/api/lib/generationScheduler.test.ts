@@ -45,6 +45,40 @@ describe("GenerationScheduler", () => {
     await expect(secondResult).resolves.toBe("second result");
   });
 
+  test("admits two active and two pending tasks before rejecting additional work", async () => {
+    const scheduler = new GenerationScheduler({
+      maxConcurrentJobs: 2,
+      maxPendingJobs: 2,
+      maxQueueWaitMs: 100,
+      retryAfterSeconds: 5,
+    });
+    const tasks = Array.from({ length: 4 }, () => createDeferred<string>());
+    const started: number[] = [];
+    const results = tasks.map((task, index) =>
+      scheduler.schedule(async () => {
+        started.push(index);
+        return await task.promise;
+      }),
+    );
+
+    await vi.waitFor(() => expect(started).toEqual([0, 1]));
+    await expect(scheduler.schedule(async () => undefined)).rejects.toEqual(
+      new GenerationOverloadError("queue-full", 5),
+    );
+
+    tasks[0].resolve("first result");
+    await expect(results[0]).resolves.toBe("first result");
+    await vi.waitFor(() => expect(started).toEqual([0, 1, 2]));
+
+    tasks[1].resolve("second result");
+    await expect(results[1]).resolves.toBe("second result");
+    await vi.waitFor(() => expect(started).toEqual([0, 1, 2, 3]));
+
+    tasks[2].resolve("third result");
+    tasks[3].resolve("fourth result");
+    await expect(Promise.all(results.slice(2))).resolves.toEqual(["third result", "fourth result"]);
+  });
+
   test("rejects a task immediately when the pending queue is full", async () => {
     const scheduler = new GenerationScheduler({
       maxConcurrentJobs: 1,
