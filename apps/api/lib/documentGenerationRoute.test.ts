@@ -5,8 +5,8 @@ import {
   type ZodTypeProvider,
 } from "fastify-type-provider-zod";
 import { describe, expect, test } from "vitest";
-import { GenerationOverloadError } from "./generationScheduler";
 import { registerDocumentGenerationRoute } from "./documentGenerationRoute";
+import { GenerationOverloadError } from "./generationScheduler";
 
 describe("document generation route", () => {
   test("returns a retryable 503 response when document generation is overloaded", async () => {

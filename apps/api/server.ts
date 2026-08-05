@@ -8,13 +8,13 @@ import {
 } from "fastify-type-provider-zod";
 import { fastify } from "./app";
 import { setupAuth } from "./auth";
+import { registerDocumentGenerationRoute } from "./lib/documentGenerationRoute";
+import { createGenerationSchedulerFromEnvironment } from "./lib/generationScheduler";
 import {
   createDocumentGenerationHandler,
   formatZodFastifySchemaValidationError,
   ValidationError,
 } from "./lib/handler";
-import { registerDocumentGenerationRoute } from "./lib/documentGenerationRoute";
-import { createGenerationSchedulerFromEnvironment } from "./lib/generationScheduler";
 import { registerSwagger } from "./swagger";
 
 configDotenv();
