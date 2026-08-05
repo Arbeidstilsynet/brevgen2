@@ -3,7 +3,7 @@ import { type GenerateDocumentRequest, generateDocumentRequestSchema } from "@re
 import { ZodFastifySchemaValidationError } from "fastify-type-provider-zod";
 import { ZodError } from "zod";
 import { generateDocument } from "./generateDocument";
-import { generationScheduler } from "./generationScheduler";
+import type { GenerationScheduler } from "./generationScheduler";
 
 export interface ValidationErrorDetail {
   path: string;
@@ -59,31 +59,30 @@ export function formatZodFastifySchemaValidationError(
   };
 }
 
-/**
- * @returns HTML or Base64-encoded PDF
- */
-export async function handlerGenerateDocument(
-  request: GenerateDocumentRequest,
-  signal?: AbortSignal,
-) {
-  try {
-    generateDocumentRequestSchema.parse(request);
-  } catch (error) {
-    if (error instanceof ZodError) {
-      throw ValidationError.fromZodError(error);
+export function createDocumentGenerationHandler(scheduler: GenerationScheduler) {
+  /**
+   * @returns HTML or Base64-encoded PDF
+   */
+  return async function handlerGenerateDocument(
+    request: GenerateDocumentRequest,
+    signal?: AbortSignal,
+  ) {
+    try {
+      generateDocumentRequestSchema.parse(request);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        throw ValidationError.fromZodError(error);
+      }
+      throw error;
     }
-    throw error;
-  }
 
-  const { md, mdVariables, options } = request;
+    const { md, mdVariables, options } = request;
 
-  const parsedMd = parseDynamicMd(md, { variables: mdVariables ?? {} });
-  const result = await generationScheduler.schedule(
-    () => generateDocument(parsedMd, options),
-    signal,
-  );
-  if (typeof result.content === "string") {
-    return result.content;
-  }
-  return result.content.toString("base64");
+    const parsedMd = parseDynamicMd(md, { variables: mdVariables ?? {} });
+    const result = await scheduler.schedule(() => generateDocument(parsedMd, options), signal);
+    if (typeof result.content === "string") {
+      return result.content;
+    }
+    return result.content.toString("base64");
+  };
 }

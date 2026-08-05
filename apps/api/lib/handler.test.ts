@@ -1,6 +1,16 @@
 import type { GenerateDocumentRequest, GenerateDocumentRequestOptions } from "@repo/shared-types";
 import { describe, expect, test } from "vitest";
-import { handlerGenerateDocument, ValidationError } from "./handler";
+import { GenerationScheduler } from "./generationScheduler";
+import { createDocumentGenerationHandler, ValidationError } from "./handler";
+
+const handlerGenerateDocument = createDocumentGenerationHandler(
+  new GenerationScheduler({
+    maxConcurrentJobs: 1,
+    maxPendingJobs: 1,
+    maxQueueWaitMs: 100,
+    retryAfterSeconds: 5,
+  }),
+);
 
 describe("schema validation", () => {
   test("missing defaultTemplateFields (undefined) throws", async () => {

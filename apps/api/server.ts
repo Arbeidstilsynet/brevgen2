@@ -1,5 +1,6 @@
 import fastifyCors from "@fastify/cors";
 import { FastifyOtelInstrumentation } from "@fastify/otel";
+import { configDotenv } from "dotenv";
 import {
   hasZodFastifySchemaValidationErrors,
   serializerCompiler,
@@ -7,14 +8,24 @@ import {
 } from "fastify-type-provider-zod";
 import { fastify } from "./app";
 import { setupAuth } from "./auth";
-import { formatZodFastifySchemaValidationError, ValidationError } from "./lib/handler";
+import {
+  createDocumentGenerationHandler,
+  formatZodFastifySchemaValidationError,
+  ValidationError,
+} from "./lib/handler";
 import { registerDocumentGenerationRoute } from "./lib/documentGenerationRoute";
+import { createGenerationSchedulerFromEnvironment } from "./lib/generationScheduler";
 import { registerSwagger } from "./swagger";
+
+configDotenv();
 
 const port = process.env.PORT ? Number(process.env.PORT) : 4000;
 const isDev = process.env.NODE_ENV === "development";
 
 export async function initializeServer() {
+  const handlerGenerateDocument = createDocumentGenerationHandler(
+    createGenerationSchedulerFromEnvironment(),
+  );
   const fastifyOtelInstrumentation = new FastifyOtelInstrumentation();
   await fastify.register(fastifyOtelInstrumentation.plugin());
   await setupAuth(fastify);
@@ -71,7 +82,7 @@ export async function initializeServer() {
     reply.status(200).send();
   });
 
-  await registerDocumentGenerationRoute(fastify);
+  await registerDocumentGenerationRoute(fastify, handlerGenerateDocument);
 
   // avoid conflict with Vite dev server
   if (!isDev) {

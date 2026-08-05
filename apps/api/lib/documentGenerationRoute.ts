@@ -4,7 +4,6 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { type ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { GenerationOverloadError } from "./generationScheduler";
-import { handlerGenerateDocument } from "./handler";
 import { documentGeneration, documentsGenerated } from "./otel";
 import { buildGenerateDocumentRequestContext } from "./requestContext";
 
@@ -30,7 +29,7 @@ function createRequestAbortSignal(request: FastifyRequest, reply: FastifyReply) 
 
 export async function registerDocumentGenerationRoute(
   fastify: FastifyInstance,
-  generateDocument: DocumentGenerationHandler = handlerGenerateDocument,
+  generateDocument: DocumentGenerationHandler,
 ) {
   const errorResponseSchema = z.object({
     message: z.string(),

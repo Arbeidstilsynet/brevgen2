@@ -1,4 +1,3 @@
-import "./environment";
 import { documentGeneration } from "./otel";
 
 const MAX_CONCURRENT_JOBS = 10;
@@ -200,18 +199,20 @@ export class GenerationScheduler {
   }
 }
 
-export const generationScheduler = new GenerationScheduler({
-  maxConcurrentJobs: MAX_CONCURRENT_JOBS,
-  maxPendingJobs: positiveIntegerFromEnvironment(
-    "GENERATION_MAX_PENDING_JOBS",
-    DEFAULT_MAX_PENDING_JOBS,
-  ),
-  maxQueueWaitMs: positiveIntegerFromEnvironment(
-    "GENERATION_MAX_QUEUE_WAIT_MS",
-    DEFAULT_MAX_QUEUE_WAIT_MS,
-  ),
-  retryAfterSeconds: positiveIntegerFromEnvironment(
-    "GENERATION_OVERLOAD_RETRY_AFTER_SECONDS",
-    DEFAULT_RETRY_AFTER_SECONDS,
-  ),
-});
+export function createGenerationSchedulerFromEnvironment() {
+  return new GenerationScheduler({
+    maxConcurrentJobs: MAX_CONCURRENT_JOBS,
+    maxPendingJobs: positiveIntegerFromEnvironment(
+      "GENERATION_MAX_PENDING_JOBS",
+      DEFAULT_MAX_PENDING_JOBS,
+    ),
+    maxQueueWaitMs: positiveIntegerFromEnvironment(
+      "GENERATION_MAX_QUEUE_WAIT_MS",
+      DEFAULT_MAX_QUEUE_WAIT_MS,
+    ),
+    retryAfterSeconds: positiveIntegerFromEnvironment(
+      "GENERATION_OVERLOAD_RETRY_AFTER_SECONDS",
+      DEFAULT_RETRY_AFTER_SECONDS,
+    ),
+  });
+}
