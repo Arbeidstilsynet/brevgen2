@@ -7,30 +7,32 @@ on:
 concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: false
-  #          +-------------------+
-  #          |   check_changes   |
-  #          +---------+---------+
-  #                    |
-  #        +-----------+-----------+
-  #        |                       |
-  #  +-----------+           +-----------+
-  #  | build_api |           | build_web |
-  #  +-----+-----+           +-----+-----+
-  #        |                       |
-  #  +-----------+           +-----------+
-  #  |deploy_api |           |deploy_web |
-  #  |   _dev    |           |   _dev    |
-  #  +-----+-----+           +-----+-----+
-  #        |                       |
-  #  +-----------+           +-----------+
-  #  |load_test  |           |           |
-  #  |  _api     |           |           |
-  #  +-----+-----+           +-----+-----+
-  #        |                       |
-  #  +-----------+           +-----------+
-  #  |deploy_api |           |deploy_web |
-  #  |   _prod   |           |   _prod   |
-  #  +-----------+           +-----------+
+  #                 +-------------------+
+  #                 |   check_changes   |
+  #                 +---------+---------+
+  #                           |
+  #               +-----------+-----------+
+  #               |                       |
+  #         +-----------+           +-----------+
+  #         | build_api |           | build_web |
+  #         +-----+-----+           +-----+-----+
+  #               |                       |
+  #      +--------+---------+             |
+  #      |                  |             |
+  # +----------+   +--------------+  +-----------+
+  # |deploy_api|   | publish_ghcr |  |deploy_web |
+  # |   _dev   |   |    _api      |  |   _dev    |
+  # +----+-----+   +--------------+  +-----+-----+
+  #      |                                 |
+  # +----------+                           |
+  # |load_test |                           |
+  # |   _api   |                           |
+  # +----+-----+                           |
+  #      |                                 |
+  # +----------+                     +-----------+
+  # |deploy_api|                     |deploy_web |
+  # |   _prod  |                     |   _prod   |
+  # +----------+                     +-----------+
 
 jobs:
   check_changes:
@@ -95,8 +97,7 @@ jobs:
 
   build_api:
     needs: check_changes
-    if: needs.check_changes.result == 'success' && needs.check_changes.outputs.api
-      == 'true'
+    if: needs.check_changes.result == 'success' && needs.check_changes.outputs.api == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     outputs:
@@ -105,7 +106,6 @@ jobs:
     permissions:
       contents: read
       id-token: write
-      packages: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: nais/docker-build-push@31c3a7321909bcb20799fdf46153fec721fd9512 # v0
@@ -115,6 +115,17 @@ jobs:
           image_suffix: api
           docker_context: "."
           dockerfile: "./apps/api/Dockerfile"
+          platforms: linux/amd64,linux/arm64
+
+  publish_api_ghcr:
+    name: Publish API image to GHCR
+    needs: build_api
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      packages: write
+    steps:
       - name: Login to GitHub Container Registry
         uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
@@ -128,12 +139,11 @@ jobs:
           docker buildx imagetools create \
             -t "${TARGET_REPO}:latest" \
             -t "${TARGET_REPO}:${SHORT_SHA}" \
-            "${{ steps.docker.outputs.image }}"
+            "${{ needs.build_api.outputs.image }}"
 
   build_web:
     needs: check_changes
-    if: needs.check_changes.result == 'success' && needs.check_changes.outputs.web
-      == 'true'
+    if: needs.check_changes.result == 'success' && needs.check_changes.outputs.web == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     outputs:
@@ -153,7 +163,7 @@ jobs:
           dockerfile: "./apps/preview-web/Dockerfile"
 
   deploy_api_dev:
-    needs: [ check_changes, build_api ]
+    needs: [check_changes, build_api]
     # deploy using new image if built, or reuse previous deployed image if only nais config changed
     # https://docs.atil.cloud.nais.io/workloads/explanations/workload-image/?h=workload_image#using-the-workload_image-environment-variable
     if: |
@@ -178,7 +188,7 @@ jobs:
           TELEMETRY: ${{ needs.build_api.outputs.telemetry }}
 
   deploy_web_dev:
-    needs: [ check_changes, build_web ]
+    needs: [check_changes, build_web]
     # deploy using new image if built, or reuse previous deployed image if only nais config changed
     # https://docs.atil.cloud.nais.io/workloads/explanations/workload-image/?h=workload_image#using-the-workload_image-environment-variable
     if: |
@@ -293,7 +303,7 @@ jobs:
           fi
 
   deploy_api_prod:
-    needs: [ build_api, load_test_api, deploy_api_dev ]
+    needs: [build_api, load_test_api, deploy_api_dev]
     if: |
       always() &&
       needs.load_test_api.result == 'success' &&
@@ -315,7 +325,7 @@ jobs:
           TELEMETRY: ${{ needs.build_api.outputs.telemetry }}
 
   deploy_web_prod:
-    needs: [ build_web, deploy_web_dev ]
+    needs: [build_web, deploy_web_dev]
     if: |
       always() &&
       needs.deploy_web_dev.result == 'success'
