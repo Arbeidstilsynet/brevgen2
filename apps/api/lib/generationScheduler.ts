@@ -121,6 +121,7 @@ export class GenerationScheduler {
   }
 
   private startTask<T>(task: QueuedTask): Promise<T> {
+    // Once admitted, rendering is allowed to finish even if the caller disconnects.
     this.activeJobs += 1;
     documentGenerationMetrics.active.add(1);
     documentGenerationMetrics.queueWait.record(this.now() - task.enqueuedAt);
@@ -190,6 +191,7 @@ export class GenerationScheduler {
   }
 
   private clearQueuedTaskResources(task: QueuedTask) {
+    // Removed queue entries must not retain timers or abort listeners.
     if (task.deadlineTimer) {
       clearTimeout(task.deadlineTimer);
     }

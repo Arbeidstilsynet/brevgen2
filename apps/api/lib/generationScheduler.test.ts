@@ -131,11 +131,13 @@ describe("GenerationScheduler", () => {
     });
     const result = createDeferred<string>();
     const disconnected = new AbortController();
+    let taskStarted = false;
 
-    const scheduledResult = scheduler.schedule(
-      async () => await result.promise,
-      disconnected.signal,
-    );
+    const scheduledResult = scheduler.schedule(async () => {
+      taskStarted = true;
+      return await result.promise;
+    }, disconnected.signal);
+    await vi.waitFor(() => expect(taskStarted).toBe(true));
     disconnected.abort();
     result.resolve("generated document");
 
