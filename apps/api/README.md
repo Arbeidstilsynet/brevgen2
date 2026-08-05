@@ -94,6 +94,8 @@ Description: Allows users to access the Brevgenerator web platform and all integ
 PORT=4000 # default
 AZURE_TENANT_ID=da4bf886-a8a6-450d-a806-c347b8eb8d80 # default, Arbeidstilsynet
 AZURE_APPLICATION_ID # Brevgenerator2 DEV: 079a726c-1419-4907-9aeb-e230f700e22a
+
+# Scheduler config
 GENERATION_MAX_PENDING_JOBS=150 # maximum jobs waiting to generate a document per pod
 GENERATION_MAX_QUEUE_WAIT_MS=30000 # maximum time a job may wait before it is rejected
 GENERATION_OVERLOAD_RETRY_AFTER_SECONDS=5 # Retry-After value returned for overload
@@ -101,6 +103,20 @@ GENERATION_OVERLOAD_RETRY_AFTER_SECONDS=5 # Retry-After value returned for overl
 # ONLY to be used in tests/locally to not require authorization header
 # DANGEROUS_DISABLE_AUTH=true
 ```
+
+## Document generation scheduler
+
+Document generation uses a bounded scheduler to protect rendering capacity. Requests are admitted
+while capacity is available; requests that cannot be admitted or begin rendering before their queue
+deadline receive `503 Service Unavailable`. These responses include `Retry-After`, which consumers
+can use to decide when to retry.
+
+If a consumer disconnects while its request is queued, the request is removed and will not be
+rendered later. Rendering already in progress is allowed to finish.
+
+The scheduler emits metrics for active and pending jobs, admissions, overload rejections by reason,
+queued cancellations, and queue-wait duration. Controlled overload responses raise the overload
+warning alert, while unexpected application and ingress 5xx responses remain critical.
 
 ## md-to-pdf (lib)
 
