@@ -217,9 +217,6 @@ importers:
       typescript:
         specifier: 7.0.2
         version: 7.0.2
-      typescript-7:
-        specifier: npm:typescript@7.0.2
-        version: typescript@7.0.2
       vitest:
         specifier: 4.1.10
         version: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(vite@8.2.0(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))
