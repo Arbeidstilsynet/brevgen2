@@ -1,4 +1,4 @@
-# Versjonslogg
+# Changelog
 
 ## 5.2.0
 
