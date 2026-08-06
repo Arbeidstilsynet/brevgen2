@@ -113,7 +113,7 @@ public class BrevgenClientTests : TestBed<BrevgenAppFixture>
             .ThenRespondWith(r => r.WithStatusCode(System.Net.HttpStatusCode.OK).WithBody("generertBrevString"));
 
         //act
-        var result = await _sut.GenererBrev(SampleRequest);
+        var result = await _sut.GenererBrev(SampleRequest, TestContext.Current.CancellationToken);
 
         //assert
         result.ShouldBeEquivalentTo("generertBrevString");

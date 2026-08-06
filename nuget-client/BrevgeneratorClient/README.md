@@ -103,6 +103,32 @@ var payload = GenererBrevArgsBuilder
 var result = await client.GenererBrev(payload);
 ```
 
+## Automatisk retry ved overbelastning
+
+Når APIet er overbelastet svarer det `503 Service Unavailable` med en `Retry-After`-header. Brevgenerering er
+uten sideeffekter, så klienten prøver slike spørringer automatisk på nytt, og venter minst den serveroppgitte
+tiden pluss litt tilfeldig jitter slik at flere konsumenter ikke prøver samtidig. Alt annet, inkludert `503`
+uten gyldig `Retry-After`, kastes videre til kalleren som før.
+
+| Innstilling          | Standard    | Beskrivelse                                                                 |
+|----------------------|-------------|-----------------------------------------------------------------------------|
+| `MaxRetryAttempts`   | `2`         | Antall nye forsøk etter det første. `0` skrur av retry.                     |
+| `MaxRetryAfterDelay` | 30 sekunder | Største `Retry-After` klienten godtar. Lengre verdier gir 503 til kalleren. |
+
+```csharp
+new BrevgeneratorConfig
+{
+    MaxRetryAttempts = 2,
+    MaxRetryAfterDelay = TimeSpan.FromSeconds(30),
+}
+```
+
+Bruk overloaden som tar `CancellationToken` for å avbryte både pågående spørring og venting før nytt forsøk:
+
+```csharp
+var result = await client.GenererBrev(payload, cancellationToken);
+```
+
 ## Konfigurasjon av Base-URL og `IHostEnvironment`
 
 Klienten bruker `IHostEnvironment` for å automatisk velge riktig base-URL basert på miljøet:

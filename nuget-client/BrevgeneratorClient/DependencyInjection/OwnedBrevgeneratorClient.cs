@@ -25,6 +25,12 @@ public sealed class OwnedBrevgeneratorClient : IBrevgeneratorClient, IDisposable
     }
 
     /// <inheritdoc />
+    public Task<string> GenererBrev(GenererBrevArgs payload, CancellationToken cancellationToken)
+    {
+        return _inner.GenererBrev(payload, cancellationToken);
+    }
+
+    /// <inheritdoc />
     public void Dispose()
     {
         _serviceProvider.Dispose();
