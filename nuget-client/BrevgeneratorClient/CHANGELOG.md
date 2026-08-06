@@ -1,5 +1,17 @@
 # Versjonslogg
 
+## 5.2.0
+
+- The client now retries automatically when the API responds `503 Service Unavailable` with a valid
+  `Retry-After` header (overload), waiting at least the server-provided delay plus a small random
+  jitter. Nothing else is retried.
+- New `BrevgeneratorConfig` settings: `MaxRetryAttempts` (default `2`, `0` disables retry) and
+  `MaxRetryAfterDelay` (default 30 seconds). Longer `Retry-After` values are not retried; the 503 is
+  returned to the caller instead.
+- New overload `GenererBrev(GenererBrevArgs payload, CancellationToken cancellationToken)`, which
+  cancels both an in-flight request and a pending retry delay. Note: custom implementations or
+  hand-written fakes of `IBrevgeneratorClient` must implement the new method.
+
 ## 5.1.1
 
 - Updated XML documentation comments to align with the project glossary:

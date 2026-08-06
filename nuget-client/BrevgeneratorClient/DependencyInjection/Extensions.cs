@@ -2,6 +2,7 @@ using Arbeidstilsynet.Brevgenerator.Client.Extensions;
 using Arbeidstilsynet.Brevgenerator.Client.Implementation;
 using Arbeidstilsynet.Brevgenerator.Client.Ports;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 
 namespace Arbeidstilsynet.Brevgenerator.Client.DependencyInjection;
@@ -40,6 +41,7 @@ public static class Extensions
     {
         brevgeneratorConfig ??= new BrevgeneratorConfig { AuthMode = AuthMode.BearerToken, BaseUrl = null };
         services.AddSingleton(brevgeneratorConfig);
+        services.TryAddSingleton<IRetryTimer, SystemRetryTimer>();
         services.AddSingleton<IBrevgeneratorClient, Implementation.BrevgeneratorClient>();
         services.AddHttpClient(
             BrevgeneratorHttpClientKey,
