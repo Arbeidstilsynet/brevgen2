@@ -1,5 +1,5 @@
 import { metrics, trace, type Attributes } from "@opentelemetry/api";
-import type { RendererHealth } from "./rendererHealth";
+import { RENDERER_HEALTH_STATES, type RendererHealth } from "./rendererHealth";
 
 const tracer = trace.getTracer("brevgen2.api");
 
@@ -30,6 +30,8 @@ export const documentGenerationMetricNames = {
   queueWait: "brevgen.generation.queue_wait",
   oldestActiveAge: "brevgen.generation.oldest_active_age",
   timeSinceProgress: "brevgen.renderer.time_since_progress",
+  longestProgressGap: "brevgen.renderer.longest_progress_gap",
+  stalledJobs: "brevgen.renderer.stalled_jobs",
   rendererHealthState: "brevgen.renderer.health_state",
   readiness: "brevgen.renderer.readiness",
   liveness: "brevgen.renderer.liveness",
@@ -99,10 +101,22 @@ const timeSinceProgress = meter.createObservableGauge(
     unit: "s",
   },
 );
+const longestProgressGap = meter.createObservableGauge(
+  documentGenerationMetricNames.longestProgressGap,
+  {
+    description: "Time since the least recently progressing active renderer job made progress",
+    unit: "s",
+  },
+);
+const stalledJobs = meter.createObservableGauge(documentGenerationMetricNames.stalledJobs, {
+  description: "Active renderer jobs that have individually stopped making progress",
+  unit: "{job}",
+});
 const rendererHealthState = meter.createObservableGauge(
   documentGenerationMetricNames.rendererHealthState,
   {
-    description: "Current renderer health state",
+    description:
+      "Current renderer health state, reported as 1 for the active state and 0 for the rest",
     unit: "1",
   },
 );
@@ -116,22 +130,30 @@ const liveness = meter.createObservableGauge(documentGenerationMetricNames.liven
 });
 
 export function registerRendererHealthMetrics(rendererHealth: RendererHealth): void {
-  const observe = () => rendererHealth.getSnapshot();
-
-  oldestActiveAge.addCallback((result) => {
-    result.observe(observe().oldestActiveJobAgeMs / 1000);
-  });
-  timeSinceProgress.addCallback((result) => {
-    result.observe(observe().timeSinceProgressMs / 1000);
-  });
-  rendererHealthState.addCallback((result) => {
-    const snapshot = observe();
-    result.observe(1, { state: snapshot.state });
-  });
-  readiness.addCallback((result) => {
-    result.observe(observe().ready ? 1 : 0);
-  });
-  liveness.addCallback((result) => {
-    result.observe(observe().live ? 1 : 0);
-  });
+  // One snapshot per collection: observing each gauge separately would export series that
+  // disagree with each other about the same moment in time.
+  meter.addBatchObservableCallback(
+    (result) => {
+      const snapshot = rendererHealth.getSnapshot();
+      result.observe(oldestActiveAge, snapshot.oldestActiveJobAgeMs / 1000);
+      result.observe(timeSinceProgress, snapshot.timeSinceProgressMs / 1000);
+      result.observe(longestProgressGap, snapshot.longestProgressGapMs / 1000);
+      result.observe(stalledJobs, snapshot.stalledJobs);
+      // Every state is reported so a stale series cannot be mistaken for the current one.
+      for (const state of RENDERER_HEALTH_STATES) {
+        result.observe(rendererHealthState, snapshot.state === state ? 1 : 0, { state });
+      }
+      result.observe(readiness, snapshot.ready ? 1 : 0);
+      result.observe(liveness, snapshot.live ? 1 : 0);
+    },
+    [
+      oldestActiveAge,
+      timeSinceProgress,
+      longestProgressGap,
+      stalledJobs,
+      rendererHealthState,
+      readiness,
+      liveness,
+    ],
+  );
 }

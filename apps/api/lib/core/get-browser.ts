@@ -6,7 +6,7 @@ import { getBrowserLaunchOptions } from "./get-puppeteer-options";
 import {
   BROWSER_CLOSE_TIMEOUT_MS,
   DOCUMENT_GENERATION_TIMEOUT_MS,
-  OperationTimeoutError,
+  GenerationDeadlineError,
   PUPPETEER_OPERATION_TIMEOUT_MS,
   withTimeout,
 } from "./helpers";
@@ -96,9 +96,29 @@ function recycleIfIdle(): void {
 function remainingGenerationTime(deadline: number, timeoutMs: number, now: () => number): number {
   const remainingMs = deadline - now();
   if (remainingMs <= 0) {
-    throw new OperationTimeoutError("Generating document", timeoutMs);
+    throw new GenerationDeadlineError(timeoutMs);
   }
   return Math.ceil(remainingMs);
+}
+
+/**
+ * Race an operation against what is left of the total generation budget.
+ *
+ * Timing out here means the request ran out of budget, not that Chromium misbehaved, so the
+ * rejection is a `GenerationDeadlineError` rather than a plain `OperationTimeoutError`.
+ */
+function withGenerationDeadline<T>(
+  operation: Promise<T>,
+  deadline: number,
+  timeoutMs: number,
+  now: () => number,
+): Promise<T> {
+  return withTimeout(
+    operation,
+    remainingGenerationTime(deadline, timeoutMs, now),
+    "Generating document",
+    () => new GenerationDeadlineError(timeoutMs),
+  );
 }
 
 async function getBrowserInstance(
@@ -115,21 +135,13 @@ async function getBrowserInstance(
     // If recycle in progress, wait.
     if (browserClosePromise !== null) {
       progress?.("recycling-browser");
-      await withTimeout(
-        browserClosePromise,
-        remainingGenerationTime(deadline, timeoutMs, now),
-        "Generating document",
-      );
+      await withGenerationDeadline(browserClosePromise, deadline, timeoutMs, now);
     }
 
     // Initialize browser if needed.
     if (!browser) {
       browserInitPromise ??= initBrowser();
-      await withTimeout(
-        browserInitPromise,
-        remainingGenerationTime(deadline, timeoutMs, now),
-        "Generating document",
-      );
+      await withGenerationDeadline(browserInitPromise, deadline, timeoutMs, now);
     }
 
     // If page limit reached (or already requested), trigger / wait for recycle before handing out.
@@ -253,13 +265,17 @@ export async function useBrowserWithRetry<T>(
         },
       );
       const acquiredBrowser = instance;
+      // The remaining budget is resolved before `fn` is called: evaluating it as an argument would
+      // leave the render promise without a handler when the deadline has already passed.
+      const remainingMs = remainingGenerationTime(deadline, timeoutMs, now);
       return await withActiveSpan(
         "browser.render_attempt",
         async () =>
           await withTimeout(
             fn(acquiredBrowser),
-            remainingGenerationTime(deadline, timeoutMs, now),
+            remainingMs,
             "Generating document",
+            () => new GenerationDeadlineError(timeoutMs),
           ),
         {
           "browser.render_attempt.attempt": attempt,
@@ -268,18 +284,24 @@ export async function useBrowserWithRetry<T>(
       );
     } catch (error) {
       lastError = error;
-      markBrowserUnhealthy(error);
-      progress?.("recycling-browser");
-      if (!instance) {
-        recycleIfIdle();
+      // Running out of budget says nothing about Chromium's health. Recycling on it would make
+      // every slow request under load force a recycle, which starves the requests behind it.
+      const deadlineExceeded = error instanceof GenerationDeadlineError;
+      if (!deadlineExceeded) {
+        markBrowserUnhealthy(error);
+        progress?.("recycling-browser");
+        if (!instance) {
+          recycleIfIdle();
+        }
       }
 
-      if (attempt === maxAttempts || now() >= deadline) {
+      if (deadlineExceeded || attempt === maxAttempts) {
         logger.error(
           {
             event: "browser.use.exhausted",
             attempt,
             maxAttempts,
+            deadlineExceeded,
             error,
           },
           "Browser generation failed after retries or deadline",

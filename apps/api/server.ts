@@ -29,6 +29,9 @@ export async function initializeServer() {
   const generationScheduler = createGenerationSchedulerFromEnvironment();
   const handlerGenerateDocument = createDocumentGenerationHandler(generationScheduler);
   registerRendererHealthMetrics(generationScheduler.rendererHealth);
+  fastify.addHook("onClose", async () => {
+    generationScheduler.rendererHealth.stop();
+  });
   const startupHealth = new StartupHealthCheck(
     () =>
       generationScheduler.schedule(({ progress, timeoutMs }) =>

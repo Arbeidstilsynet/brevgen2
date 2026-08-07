@@ -2,6 +2,7 @@ import { logger } from "../app";
 import { DOCUMENT_GENERATION_TIMEOUT_MS, HTTP_HANDLER_TIMEOUT_MS } from "./core/helpers";
 import { documentGenerationMetrics } from "./otel";
 import {
+  DEFAULT_RENDERER_MONITOR_INTERVAL_MS,
   DEFAULT_RENDERER_RECOVERY_GRACE_MS,
   DEFAULT_RENDERER_STALL_THRESHOLD_MS,
   RendererHealth,
@@ -51,6 +52,10 @@ export interface GenerationSchedulerOptions {
 
 export interface GenerationTaskContext {
   progress: RendererProgressReporter;
+  /**
+   * What is left of this request's total generation budget, measured from the moment it entered
+   * the queue rather than from the moment it started rendering.
+   */
   timeoutMs: number;
 }
 
@@ -106,6 +111,11 @@ export class GenerationScheduler {
         "Generation scheduler job duration must be below the HTTP handler timeout",
       );
     }
+    // Queue wait is spent inside the job budget, so a queue deadline at or above the job duration
+    // would admit jobs with no budget left to render with.
+    if (options.maxQueueWaitMs >= maxJobDurationMs) {
+      throw new TypeError("Generation scheduler queue wait must be below the job duration");
+    }
     this.now = options.now ?? Date.now;
     this.maxJobDurationMs = maxJobDurationMs;
     this.rendererHealth =
@@ -114,7 +124,20 @@ export class GenerationScheduler {
         maxConcurrentJobs: options.maxConcurrentJobs,
         stallThresholdMs: DEFAULT_RENDERER_STALL_THRESHOLD_MS,
         recoveryGraceMs: DEFAULT_RENDERER_RECOVERY_GRACE_MS,
+        // Job ages must be measured on the same clock the scheduler is driven by, otherwise an
+        // injected test clock leaves renderer health running on wall time.
+        now: options.now,
       });
+    // A job that exhausts its budget is torn down and stops counting as active, so thresholds at
+    // or above the job duration could never be crossed and the probes would be decorative.
+    if (
+      this.rendererHealth.stallThresholdMs + this.rendererHealth.recoveryGraceMs >=
+      maxJobDurationMs
+    ) {
+      throw new TypeError(
+        "Renderer stall threshold plus recovery grace must be below the job duration",
+      );
+    }
   }
 
   schedule<T>(
@@ -167,11 +190,15 @@ export class GenerationScheduler {
     documentGenerationMetrics.active.add(1);
     this.recordQueueWait(task, "started");
 
+    // Time already spent queuing is charged against the job budget so that queue wait plus render
+    // stays below the Fastify handler timeout instead of stacking on top of it.
+    const remainingMs = this.maxJobDurationMs - (this.now() - task.enqueuedAt);
+
     return Promise.resolve()
       .then(() =>
         task.task({
           progress: rendererJob.progress,
-          timeoutMs: this.maxJobDurationMs,
+          timeoutMs: Math.max(1, Math.ceil(remainingMs)),
         }),
       )
       .then((result) => result as T)
@@ -282,6 +309,12 @@ export function createGenerationSchedulerFromEnvironment() {
     recoveryGraceMs: positiveIntegerFromEnvironment(
       "RENDERER_RECOVERY_GRACE_MS",
       DEFAULT_RENDERER_RECOVERY_GRACE_MS,
+    ),
+    // Without this, a wedged renderer would only change state when a probe or the metrics
+    // exporter happened to look at it.
+    monitorIntervalMs: positiveIntegerFromEnvironment(
+      "RENDERER_MONITOR_INTERVAL_MS",
+      DEFAULT_RENDERER_MONITOR_INTERVAL_MS,
     ),
     onStateChange: ({ previousState, newState, snapshot }) => {
       documentGenerationMetrics.rendererHealthTransitions.add(1, {

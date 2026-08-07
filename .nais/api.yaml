@@ -18,9 +18,9 @@ spec:
     - name: GENERATION_MAX_DURATION_MS
       value: "50000"
     - name: RENDERER_STALL_THRESHOLD_MS
-      value: "75000"
+      value: "20000"
     - name: RENDERER_RECOVERY_GRACE_MS
-      value: "75000"
+      value: "20000"
   ingresses:
     - "{{api.ingress}}"
   accessPolicy:
@@ -46,10 +46,10 @@ spec:
     timeout: 2
   readiness:
     path: /health/readiness
-    failureThreshold: 1
+    failureThreshold: 3
     initialDelay: 0
     periodSeconds: 5
-    timeout: 2
+    timeout: 5
   liveness:
     path: /health/liveness
     failureThreshold: 3

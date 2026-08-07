@@ -65,6 +65,12 @@ export async function registerDocumentGenerationRoute(
           "document.template": template,
           "document.output.format": outputFormat,
         });
+        if (reply.sent) {
+          // The handler timeout already answered the caller; sending again would only log
+          // FST_ERR_REP_ALREADY_SENT.
+          request.log.warn("Document generation finished after the reply was already sent");
+          return;
+        }
         reply.send(result);
       } catch (err) {
         if (err instanceof GenerationOverloadError) {

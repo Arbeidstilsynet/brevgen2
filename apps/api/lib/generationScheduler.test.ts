@@ -207,6 +207,60 @@ describe("GenerationScheduler", () => {
 
     await expect(scheduledResult).resolves.toBe("generated document");
   });
+
+  test("charges queue wait against the generation budget", async () => {
+    vi.useFakeTimers();
+    const timeouts: number[] = [];
+    const active = createDeferred<void>();
+    const scheduler = new GenerationScheduler({
+      maxConcurrentJobs: 1,
+      maxPendingJobs: 1,
+      maxQueueWaitMs: 1_000,
+      retryAfterSeconds: 5,
+      maxJobDurationMs: 45_000,
+    });
+
+    const activeResult = scheduler.schedule(async ({ timeoutMs }) => {
+      timeouts.push(timeoutMs);
+      await active.promise;
+    });
+    const queuedResult = scheduler.schedule(async ({ timeoutMs }) => {
+      timeouts.push(timeoutMs);
+    });
+
+    await vi.advanceTimersByTimeAsync(400);
+    active.resolve();
+    await activeResult;
+    await queuedResult;
+
+    expect(timeouts[0]).toBe(45_000);
+    expect(timeouts[1]).toBeLessThanOrEqual(44_600);
+  });
+
+  test("measures renderer job ages on the scheduler's clock", async () => {
+    let now = 0;
+    const scheduler = new GenerationScheduler({
+      maxConcurrentJobs: 1,
+      maxPendingJobs: 1,
+      maxQueueWaitMs: 100,
+      retryAfterSeconds: 5,
+      now: () => now,
+    });
+    const active = createDeferred<void>();
+    let taskStarted = false;
+
+    const activeResult = scheduler.schedule(async () => {
+      taskStarted = true;
+      await active.promise;
+    });
+    await vi.waitFor(() => expect(taskStarted).toBe(true));
+
+    now = 5_000;
+    expect(scheduler.rendererHealth.getSnapshot().oldestActiveJobAgeMs).toBe(5_000);
+
+    active.resolve();
+    await activeResult;
+  });
 });
 
 describe("queue wait metric", () => {
@@ -265,6 +319,7 @@ describe("createGenerationSchedulerFromEnvironment", () => {
     "GENERATION_MAX_DURATION_MS",
     "RENDERER_STALL_THRESHOLD_MS",
     "RENDERER_RECOVERY_GRACE_MS",
+    "RENDERER_MONITOR_INTERVAL_MS",
   ] as const;
 
   afterEach(() => {
@@ -319,6 +374,9 @@ describe("createGenerationSchedulerFromEnvironment", () => {
     process.env.GENERATION_MAX_PENDING_JOBS = "1";
     process.env.GENERATION_OVERLOAD_RETRY_AFTER_SECONDS = "11";
     process.env.GENERATION_MAX_DURATION_MS = "1234";
+    process.env.GENERATION_MAX_QUEUE_WAIT_MS = "1000";
+    process.env.RENDERER_STALL_THRESHOLD_MS = "600";
+    process.env.RENDERER_RECOVERY_GRACE_MS = "600";
     const scheduler = createGenerationSchedulerFromEnvironment();
     const blocked = createDeferred<void>();
     let receivedTimeoutMs: number | undefined;
@@ -372,6 +430,21 @@ describe("createGenerationSchedulerFromEnvironment", () => {
     process.env.GENERATION_MAX_DURATION_MS = "55000";
     expect(() => createGenerationSchedulerFromEnvironment()).toThrow(
       "Generation scheduler job duration must be below the HTTP handler timeout",
+    );
+  });
+
+  test("rejects a queue deadline that leaves no generation budget", () => {
+    process.env.GENERATION_MAX_QUEUE_WAIT_MS = "50000";
+    expect(() => createGenerationSchedulerFromEnvironment()).toThrow(
+      "Generation scheduler queue wait must be below the job duration",
+    );
+  });
+
+  test("rejects renderer stall timings that a job could never reach", () => {
+    process.env.RENDERER_STALL_THRESHOLD_MS = "40000";
+    process.env.RENDERER_RECOVERY_GRACE_MS = "40000";
+    expect(() => createGenerationSchedulerFromEnvironment()).toThrow(
+      "Renderer stall threshold plus recovery grace must be below the job duration",
     );
   });
 });

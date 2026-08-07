@@ -1,13 +1,17 @@
-import { describe, expect, test, vi } from "vitest";
+import { afterEach, describe, expect, test, vi } from "vitest";
 import { RendererHealth, type RendererHealthTransition } from "./rendererHealth";
 
+const MONITOR_INTERVAL_MS = 50;
+
 function createHealth(maxConcurrentJobs = 2) {
+  vi.useFakeTimers();
   let now = 0;
   const transitions: RendererHealthTransition[] = [];
   const health = new RendererHealth({
     maxConcurrentJobs,
     stallThresholdMs: 100,
     recoveryGraceMs: 200,
+    monitorIntervalMs: MONITOR_INTERVAL_MS,
     now: () => now,
     onStateChange: (transition) => transitions.push(transition),
   });
@@ -15,17 +19,24 @@ function createHealth(maxConcurrentJobs = 2) {
   return {
     health,
     transitions,
-    advance: (milliseconds: number) => {
+    // Moves the injected clock and lets the background monitor observe the new time, which is how
+    // a wedged renderer is detected in production without anything polling the snapshot.
+    advance: async (milliseconds: number) => {
       now += milliseconds;
+      await vi.advanceTimersByTimeAsync(milliseconds);
     },
   };
 }
 
+afterEach(() => {
+  vi.useRealTimers();
+});
+
 describe("RendererHealth", () => {
-  test("keeps an idle renderer healthy regardless of time since the last completed job", () => {
+  test("keeps an idle renderer healthy regardless of time since the last completed job", async () => {
     const { health, advance } = createHealth();
 
-    advance(10_000);
+    await advance(10_000);
 
     expect(health.getSnapshot()).toMatchObject({
       state: "healthy",
@@ -36,14 +47,14 @@ describe("RendererHealth", () => {
     });
   });
 
-  test("stays healthy at full capacity while any active render makes progress", () => {
+  test("stays healthy at full capacity while any active render makes progress", async () => {
     const { health, advance } = createHealth();
     const first = health.startJob();
     const second = health.startJob();
 
-    advance(90);
+    await advance(90);
     first.progress("loading-content");
-    advance(90);
+    await advance(90);
     second.progress("producing-output");
 
     expect(health.getSnapshot()).toMatchObject({
@@ -53,12 +64,12 @@ describe("RendererHealth", () => {
     });
   });
 
-  test("becomes unready when every slot is occupied without progress even with no pending jobs", () => {
+  test("becomes unready when every slot is occupied without progress even with no pending jobs", async () => {
     const { health, advance, transitions } = createHealth();
     health.startJob();
     health.startJob();
 
-    advance(101);
+    await advance(101);
 
     expect(health.getSnapshot()).toMatchObject({
       state: "stalled",
@@ -68,24 +79,36 @@ describe("RendererHealth", () => {
       pendingJobs: 0,
       activeJobStages: {},
       timeSinceProgressMs: 101,
+      stalledJobs: 2,
       stalledForMs: 1,
     });
     expect(transitions).toHaveLength(1);
   });
 
-  test("fails liveness only after the recovery grace period", () => {
+  test("treats more active jobs than configured capacity as full capacity", async () => {
+    const { health, advance } = createHealth(2);
+    health.startJob();
+    health.startJob();
+    health.startJob();
+
+    await advance(101);
+
+    expect(health.getSnapshot()).toMatchObject({ state: "stalled", activeJobs: 3 });
+  });
+
+  test("fails liveness only after the recovery grace period", async () => {
     const { health, advance } = createHealth();
     health.startJob();
     health.startJob();
 
-    advance(300);
+    await advance(300);
     expect(health.getSnapshot()).toMatchObject({
       state: "stalled",
       ready: false,
       live: true,
     });
 
-    advance(1);
+    await advance(1);
     expect(health.getSnapshot()).toMatchObject({
       state: "unhealthy",
       ready: false,
@@ -94,12 +117,12 @@ describe("RendererHealth", () => {
     });
   });
 
-  test("restores readiness when retry or recycle progress resumes", () => {
+  test("restores readiness when retry or recycle progress resumes", async () => {
     const { health, advance, transitions } = createHealth();
     const first = health.startJob();
     health.startJob();
 
-    advance(150);
+    await advance(150);
     expect(health.getSnapshot().state).toBe("stalled");
 
     first.progress("retrying");
@@ -112,12 +135,12 @@ describe("RendererHealth", () => {
     expect(transitions.map(({ newState }) => newState)).toEqual(["stalled", "healthy"]);
   });
 
-  test("restores health when a stalled active job completes", () => {
+  test("restores health when a stalled active job completes", async () => {
     const { health, advance } = createHealth();
     const first = health.startJob();
     health.startJob();
 
-    advance(301);
+    await advance(301);
     expect(health.getSnapshot().state).toBe("unhealthy");
 
     first.complete();
@@ -130,34 +153,74 @@ describe("RendererHealth", () => {
     });
   });
 
-  test("emits transitions only when renderer health changes state", () => {
-    const onStateChange = vi.fn<(transition: RendererHealthTransition) => void>();
+  test("reports individually stalled jobs while the renderer is still healthy overall", async () => {
+    const { health, advance } = createHealth(2);
+    const wedged = health.startJob();
+    wedged.progress("loading-content");
+    const healthy = health.startJob();
+
+    await advance(150);
+    healthy.progress("producing-output");
+
+    expect(health.getSnapshot()).toMatchObject({
+      state: "healthy",
+      ready: true,
+      activeJobs: 2,
+      stalledJobs: 1,
+      longestProgressGapMs: 150,
+      timeSinceProgressMs: 0,
+    });
+  });
+
+  test("emits transitions only when renderer health changes state", async () => {
+    const { health, advance, transitions } = createHealth(1);
+    health.startJob();
+
+    await advance(101);
+    await advance(49);
+
+    expect(transitions).toHaveLength(1);
+    expect(transitions[0]).toMatchObject({ previousState: "healthy", newState: "stalled" });
+  });
+
+  test("reads snapshots without advancing the state machine", async () => {
     let now = 0;
+    const transitions: RendererHealthTransition[] = [];
     const health = new RendererHealth({
       maxConcurrentJobs: 1,
       stallThresholdMs: 100,
       recoveryGraceMs: 200,
       now: () => now,
-      onStateChange,
+      onStateChange: (transition) => transitions.push(transition),
     });
     health.startJob();
 
     now = 101;
-    health.getSnapshot();
-    health.getSnapshot();
-    now = 150;
-    health.getSnapshot();
 
-    expect(onStateChange).toHaveBeenCalledOnce();
+    // No monitor interval, so only the pure read happens here.
+    expect(health.getSnapshot().state).toBe("stalled");
+    expect(health.getSnapshot().state).toBe("stalled");
+    expect(transitions).toHaveLength(0);
   });
 
-  test("reports queue depth and oldest active job age", () => {
+  test("stops evaluating renderer health once stopped", async () => {
+    const { health, advance, transitions } = createHealth(1);
+    health.startJob();
+    health.stop();
+
+    await advance(101);
+
+    expect(transitions).toHaveLength(0);
+    expect(health.getSnapshot().state).toBe("stalled");
+  });
+
+  test("reports queue depth and oldest active job age", async () => {
     const { health, advance } = createHealth();
     health.startJob();
-    advance(50);
+    await advance(50);
     health.startJob();
     health.setPendingJobs(3);
-    advance(25);
+    await advance(25);
 
     expect(health.getSnapshot()).toMatchObject({
       activeJobs: 2,
