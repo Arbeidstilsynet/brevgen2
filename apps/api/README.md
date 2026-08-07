@@ -118,6 +118,9 @@ AZURE_APPLICATION_ID # Brevgenerator2 DEV: 079a726c-1419-4907-9aeb-e230f700e22a
 GENERATION_MAX_PENDING_JOBS=150 # maximum jobs waiting to generate a document per pod
 GENERATION_MAX_QUEUE_WAIT_MS=30000 # maximum time a job may wait before it is rejected
 GENERATION_OVERLOAD_RETRY_AFTER_SECONDS=5 # Retry-After value returned for overload
+GENERATION_MAX_DURATION_MS=50000 # complete render/recycle/retry deadline, below HAProxy's 60s
+RENDERER_STALL_THRESHOLD_MS=75000 # full-capacity no-progress time before readiness fails
+RENDERER_RECOVERY_GRACE_MS=75000 # additional stalled time before liveness fails
 
 # ONLY to be used in tests/locally to not require authorization header
 # DANGEROUS_DISABLE_AUTH=true
@@ -132,6 +135,13 @@ can use to decide when to retry.
 
 If a consumer disconnects while its request is queued, the request is removed and will not be
 rendered later. Rendering already in progress is allowed to finish.
+
+The complete in-process generation path has a 50-second deadline, including browser acquisition,
+recycle, and retry. Fastify has a 55-second handler timeout as a final application backstop before
+the ingress timeout. The startup probe performs one cached lightweight render. Readiness fails only
+when every generation slot has stopped making progress beyond the 75-second renderer stall
+threshold. Liveness remains healthy for the additional 75-second recovery grace period so normal
+Chromium recycle and retry remain the primary recovery mechanism.
 
 The scheduler emits metrics for active and pending jobs, admissions, overload rejections by reason,
 queued cancellations, and queue-wait duration. Queue-wait is recorded in seconds for every job that

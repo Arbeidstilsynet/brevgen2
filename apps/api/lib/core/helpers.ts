@@ -2,6 +2,8 @@ import type { PDFOptions } from "puppeteer-core";
 
 export const PUPPETEER_OPERATION_TIMEOUT_MS = 30_000;
 export const BROWSER_CLOSE_TIMEOUT_MS = 5_000;
+export const DOCUMENT_GENERATION_TIMEOUT_MS = 50_000;
+export const HTTP_HANDLER_TIMEOUT_MS = 55_000;
 
 export class OperationTimeoutError extends Error {
   constructor(operation: string, timeoutMs: number) {

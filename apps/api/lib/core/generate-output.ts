@@ -3,6 +3,7 @@ import type { Browser } from "puppeteer-core";
 import type { Config } from "./config";
 import { BROWSER_CLOSE_TIMEOUT_MS, PUPPETEER_OPERATION_TIMEOUT_MS, withTimeout } from "./helpers";
 import { InferOutputType } from "./types";
+import type { RendererProgressReporter } from "../rendererHealth";
 
 /**
  * Generate the output (either PDF or HTML) based on config.
@@ -11,7 +12,9 @@ export async function generateOutput<T extends Config>(
   html: string,
   config: T,
   browser: Browser,
+  progress?: RendererProgressReporter,
 ): Promise<InferOutputType<T>> {
+  progress?.("creating-page");
   const page = await withTimeout(
     browser.newPage(),
     PUPPETEER_OPERATION_TIMEOUT_MS,
@@ -19,6 +22,7 @@ export async function generateOutput<T extends Config>(
   );
 
   try {
+    progress?.("loading-content");
     await page.goto("about:blank", { timeout: PUPPETEER_OPERATION_TIMEOUT_MS });
     await page.setContent(html, {
       timeout: PUPPETEER_OPERATION_TIMEOUT_MS,
@@ -36,12 +40,14 @@ export async function generateOutput<T extends Config>(
     let outputFileContent: string | Buffer = "";
 
     if (config.as_html) {
+      progress?.("producing-output");
       outputFileContent = await withTimeout(
         page.content(),
         PUPPETEER_OPERATION_TIMEOUT_MS,
         "Reading page content",
       );
     } else {
+      progress?.("producing-output");
       await withTimeout(
         page.emulateMediaType(config.page_media_type),
         PUPPETEER_OPERATION_TIMEOUT_MS,

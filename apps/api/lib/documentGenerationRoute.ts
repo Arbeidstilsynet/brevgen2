@@ -1,6 +1,6 @@
 import { DynamicMarkdownParseError } from "@at/dynamic-markdown";
 import { type GenerateDocumentRequest, generateDocumentRequestSchema } from "@repo/shared-types";
-import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyInstance } from "fastify";
 import { type ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { GenerationCancelledError, GenerationOverloadError } from "./generationScheduler";
@@ -11,21 +11,6 @@ export type DocumentGenerationHandler = (
   request: GenerateDocumentRequest,
   signal: AbortSignal,
 ) => Promise<string>;
-
-function createRequestAbortSignal(request: FastifyRequest, reply: FastifyReply) {
-  const controller = new AbortController();
-  const abort = () => controller.abort();
-  request.raw.once("aborted", abort);
-  reply.raw.once("close", abort);
-
-  return {
-    signal: controller.signal,
-    cleanup: () => {
-      request.raw.removeListener("aborted", abort);
-      reply.raw.removeListener("close", abort);
-    },
-  };
-}
 
 export async function registerDocumentGenerationRoute(
   fastify: FastifyInstance,
@@ -67,14 +52,13 @@ export async function registerDocumentGenerationRoute(
     },
     async (request, reply) => {
       const user = request.user;
-      const requestAbort = createRequestAbortSignal(request, reply);
 
       try {
         request.log.info(
           { requestContext: buildGenerateDocumentRequestContext(request.body, user) },
           "genererbrev.request",
         );
-        const result = await generateDocument(request.body, requestAbort.signal);
+        const result = await generateDocument(request.body, request.signal);
         const template = request.body.options.dynamic.template ?? "default";
         const outputFormat = request.body.options.as_html ? "html" : "pdf";
         documentGenerationMetrics.generated.add(1, {
@@ -108,8 +92,6 @@ export async function registerDocumentGenerationRoute(
         }
         const error = err instanceof Error ? err.message : String(err);
         reply.status(500).send({ message: "Internal error", error });
-      } finally {
-        requestAbort.cleanup();
       }
     },
   );

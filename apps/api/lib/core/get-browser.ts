@@ -1,8 +1,15 @@
 import type { Browser } from "puppeteer-core";
 import { logger } from "../../app";
 import { withActiveSpan } from "../otel";
+import type { RendererProgressReporter } from "../rendererHealth";
 import { getBrowserLaunchOptions } from "./get-puppeteer-options";
-import { BROWSER_CLOSE_TIMEOUT_MS, PUPPETEER_OPERATION_TIMEOUT_MS, withTimeout } from "./helpers";
+import {
+  BROWSER_CLOSE_TIMEOUT_MS,
+  DOCUMENT_GENERATION_TIMEOUT_MS,
+  OperationTimeoutError,
+  PUPPETEER_OPERATION_TIMEOUT_MS,
+  withTimeout,
+} from "./helpers";
 import { loadPuppeteer } from "./puppeteer-loader";
 
 // After max pages is reached, we recycle the browser.
@@ -11,6 +18,7 @@ import { loadPuppeteer } from "./puppeteer-loader";
 
 // failed requests are retried a limited number of times.
 const MAX_RETRIES_PER_REQUEST = 2;
+const monotonicNow = () => performance.now();
 
 // WORKAROUND for instability in testcontainers, recycle after each request there.
 const MAX_PAGES_PER_BROWSER = process.env.TESTCONTAINERS ? 1 : 50;
@@ -67,6 +75,10 @@ function releaseUser(): void {
     activeUsers--;
   }
 
+  recycleIfIdle();
+}
+
+function recycleIfIdle(): void {
   // If nobody is using it and we either hit the cap or a recycle was requested, recycle now.
   if (
     activeUsers === 0 &&
@@ -81,19 +93,43 @@ function releaseUser(): void {
  * Gets a browser instance and returns both the browser and a release function.
  * Ensures a single browser instance is never used for more than MAX_PAGES_PER_BROWSER pages.
  */
-async function getBrowserInstance(): Promise<Browser> {
+function remainingGenerationTime(deadline: number, timeoutMs: number, now: () => number): number {
+  const remainingMs = deadline - now();
+  if (remainingMs <= 0) {
+    throw new OperationTimeoutError("Generating document", timeoutMs);
+  }
+  return Math.ceil(remainingMs);
+}
+
+async function getBrowserInstance(
+  deadline: number,
+  timeoutMs: number,
+  now: () => number,
+  progress?: RendererProgressReporter,
+): Promise<Browser> {
   // Loop until we can safely return a valid browser below page limit.
   // (Handles waits during recycle transparently.)
   while (true) {
+    remainingGenerationTime(deadline, timeoutMs, now);
+
     // If recycle in progress, wait.
     if (browserClosePromise !== null) {
-      await browserClosePromise;
+      progress?.("recycling-browser");
+      await withTimeout(
+        browserClosePromise,
+        remainingGenerationTime(deadline, timeoutMs, now),
+        "Generating document",
+      );
     }
 
     // Initialize browser if needed.
     if (!browser) {
       browserInitPromise ??= initBrowser();
-      await browserInitPromise;
+      await withTimeout(
+        browserInitPromise,
+        remainingGenerationTime(deadline, timeoutMs, now),
+        "Generating document",
+      );
     }
 
     // If page limit reached (or already requested), trigger / wait for recycle before handing out.
@@ -113,6 +149,7 @@ async function getBrowserInstance(): Promise<Browser> {
     }
 
     // Safe to use current browser.
+    remainingGenerationTime(deadline, timeoutMs, now);
     activeUsers++;
     pageCount++;
     return browser!;
@@ -178,28 +215,66 @@ async function recycleBrowser(): Promise<void> {
  * - Retries a configured number of times.
  * - Each retry waits for the unhealthy browser to recycle to guarantee a new instance.
  */
-export async function useBrowserWithRetry<T>(fn: (browser: Browser) => Promise<T>): Promise<T> {
+export interface BrowserRetryOptions {
+  progress?: RendererProgressReporter;
+  timeoutMs?: number;
+}
+
+export async function useBrowserWithRetry<T>(
+  fn: (browser: Browser) => Promise<T>,
+  options: BrowserRetryOptions = {},
+): Promise<T> {
+  const progress = options.progress;
+  const timeoutMs = options.timeoutMs ?? DOCUMENT_GENERATION_TIMEOUT_MS;
+  if (!Number.isSafeInteger(timeoutMs) || timeoutMs <= 0) {
+    throw new TypeError("Document generation timeout must be a positive integer");
+  }
+  const now = monotonicNow;
+  const deadline = now() + timeoutMs;
   const maxAttempts = MAX_RETRIES_PER_REQUEST + 1;
   let lastError: unknown;
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    const instance = await withActiveSpan("browser.acquire", async () => getBrowserInstance(), {
-      "browser.acquire.attempt": attempt,
-      "browser.acquire.max_attempts": maxAttempts,
-      "browser.active_users": activeUsers,
-      "browser.page_count": pageCount,
-      "browser.recycle_requested": recycleRequested,
-    });
+    if (attempt > 1) {
+      progress?.("retrying");
+    }
+    let instance: Browser | undefined;
     try {
-      return await withActiveSpan("browser.render_attempt", async () => fn(instance), {
-        "browser.render_attempt.attempt": attempt,
-        "browser.render_attempt.max_attempts": maxAttempts,
-      });
+      progress?.("acquiring-browser");
+      instance = await withActiveSpan(
+        "browser.acquire",
+        async () => getBrowserInstance(deadline, timeoutMs, now, progress),
+        {
+          "browser.acquire.attempt": attempt,
+          "browser.acquire.max_attempts": maxAttempts,
+          "browser.active_users": activeUsers,
+          "browser.page_count": pageCount,
+          "browser.recycle_requested": recycleRequested,
+        },
+      );
+      const acquiredBrowser = instance;
+      return await withActiveSpan(
+        "browser.render_attempt",
+        async () =>
+          await withTimeout(
+            fn(acquiredBrowser),
+            remainingGenerationTime(deadline, timeoutMs, now),
+            "Generating document",
+          ),
+        {
+          "browser.render_attempt.attempt": attempt,
+          "browser.render_attempt.max_attempts": maxAttempts,
+        },
+      );
     } catch (error) {
       lastError = error;
       markBrowserUnhealthy(error);
+      progress?.("recycling-browser");
+      if (!instance) {
+        recycleIfIdle();
+      }
 
-      if (attempt === maxAttempts) {
+      if (attempt === maxAttempts || now() >= deadline) {
         logger.error(
           {
             event: "browser.use.exhausted",
@@ -207,7 +282,7 @@ export async function useBrowserWithRetry<T>(fn: (browser: Browser) => Promise<T
             maxAttempts,
             error,
           },
-          "All browser retries failed",
+          "Browser generation failed after retries or deadline",
         );
         break;
       }
@@ -222,7 +297,9 @@ export async function useBrowserWithRetry<T>(fn: (browser: Browser) => Promise<T
         "Retrying with new browser after failure",
       );
     } finally {
-      releaseUser();
+      if (instance) {
+        releaseUser();
+      }
     }
   }
 

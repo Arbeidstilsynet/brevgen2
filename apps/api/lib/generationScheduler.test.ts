@@ -262,6 +262,9 @@ describe("createGenerationSchedulerFromEnvironment", () => {
     "GENERATION_MAX_PENDING_JOBS",
     "GENERATION_MAX_QUEUE_WAIT_MS",
     "GENERATION_OVERLOAD_RETRY_AFTER_SECONDS",
+    "GENERATION_MAX_DURATION_MS",
+    "RENDERER_STALL_THRESHOLD_MS",
+    "RENDERER_RECOVERY_GRACE_MS",
   ] as const;
 
   afterEach(() => {
@@ -315,16 +318,43 @@ describe("createGenerationSchedulerFromEnvironment", () => {
   test("reads limits from the environment", async () => {
     process.env.GENERATION_MAX_PENDING_JOBS = "1";
     process.env.GENERATION_OVERLOAD_RETRY_AFTER_SECONDS = "11";
+    process.env.GENERATION_MAX_DURATION_MS = "1234";
     const scheduler = createGenerationSchedulerFromEnvironment();
     const blocked = createDeferred<void>();
+    let receivedTimeoutMs: number | undefined;
 
     const results = Array.from({ length: 11 }, () =>
-      scheduler.schedule(async () => await blocked.promise).catch((error: unknown) => error),
+      scheduler
+        .schedule(async ({ timeoutMs }) => {
+          receivedTimeoutMs = timeoutMs;
+          return await blocked.promise;
+        })
+        .catch((error: unknown) => error),
     );
+    await vi.waitFor(() => expect(receivedTimeoutMs).toBe(1234));
 
     await expect(scheduler.schedule(async () => undefined)).rejects.toEqual(
       new GenerationOverloadError("queue-full", 11),
     );
+
+    blocked.resolve();
+    await Promise.all(results);
+  });
+
+  test("reads renderer health timings from the environment", async () => {
+    vi.useFakeTimers();
+    process.env.RENDERER_STALL_THRESHOLD_MS = "100";
+    process.env.RENDERER_RECOVERY_GRACE_MS = "200";
+    const scheduler = createGenerationSchedulerFromEnvironment();
+    const blocked = createDeferred<void>();
+    const results = Array.from({ length: 10 }, () =>
+      scheduler.schedule(async () => await blocked.promise),
+    );
+
+    await vi.advanceTimersByTimeAsync(101);
+    expect(scheduler.rendererHealth.getSnapshot().state).toBe("stalled");
+    await vi.advanceTimersByTimeAsync(200);
+    expect(scheduler.rendererHealth.getSnapshot().state).toBe("unhealthy");
 
     blocked.resolve();
     await Promise.all(results);
@@ -336,5 +366,12 @@ describe("createGenerationSchedulerFromEnvironment", () => {
 
     process.env.GENERATION_MAX_QUEUE_WAIT_MS = "not-a-number";
     expect(() => createGenerationSchedulerFromEnvironment()).toThrow(TypeError);
+  });
+
+  test("rejects a job duration that could exceed the HTTP handler timeout", () => {
+    process.env.GENERATION_MAX_DURATION_MS = "55000";
+    expect(() => createGenerationSchedulerFromEnvironment()).toThrow(
+      "Generation scheduler job duration must be below the HTTP handler timeout",
+    );
   });
 });

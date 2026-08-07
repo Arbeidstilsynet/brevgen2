@@ -1,4 +1,12 @@
+import { logger } from "../app";
+import { DOCUMENT_GENERATION_TIMEOUT_MS, HTTP_HANDLER_TIMEOUT_MS } from "./core/helpers";
 import { documentGenerationMetrics } from "./otel";
+import {
+  DEFAULT_RENDERER_RECOVERY_GRACE_MS,
+  DEFAULT_RENDERER_STALL_THRESHOLD_MS,
+  RendererHealth,
+  type RendererProgressReporter,
+} from "./rendererHealth";
 
 const MAX_CONCURRENT_JOBS = 10;
 const DEFAULT_MAX_PENDING_JOBS = 150;
@@ -36,11 +44,18 @@ export interface GenerationSchedulerOptions {
   maxPendingJobs: number;
   maxQueueWaitMs: number;
   retryAfterSeconds: number;
+  maxJobDurationMs?: number;
   now?: () => number;
+  rendererHealth?: RendererHealth;
+}
+
+export interface GenerationTaskContext {
+  progress: RendererProgressReporter;
+  timeoutMs: number;
 }
 
 interface QueuedTask {
-  task: () => unknown;
+  task: (context: GenerationTaskContext) => unknown;
   resolve: (value: unknown) => void;
   reject: (reason?: unknown) => void;
   enqueuedAt: number;
@@ -66,6 +81,8 @@ export class GenerationScheduler {
   private activeJobs = 0;
   private readonly pendingJobs: QueuedTask[] = [];
   private readonly now: () => number;
+  private readonly maxJobDurationMs: number;
+  readonly rendererHealth: RendererHealth;
 
   constructor(private readonly options: GenerationSchedulerOptions) {
     if (
@@ -80,10 +97,30 @@ export class GenerationScheduler {
     ) {
       throw new TypeError("Generation scheduler limits must be positive integers");
     }
+    const maxJobDurationMs = options.maxJobDurationMs ?? DOCUMENT_GENERATION_TIMEOUT_MS;
+    if (!Number.isSafeInteger(maxJobDurationMs) || maxJobDurationMs <= 0) {
+      throw new TypeError("Generation scheduler job duration must be a positive integer");
+    }
+    if (maxJobDurationMs >= HTTP_HANDLER_TIMEOUT_MS) {
+      throw new TypeError(
+        "Generation scheduler job duration must be below the HTTP handler timeout",
+      );
+    }
     this.now = options.now ?? Date.now;
+    this.maxJobDurationMs = maxJobDurationMs;
+    this.rendererHealth =
+      options.rendererHealth ??
+      new RendererHealth({
+        maxConcurrentJobs: options.maxConcurrentJobs,
+        stallThresholdMs: DEFAULT_RENDERER_STALL_THRESHOLD_MS,
+        recoveryGraceMs: DEFAULT_RENDERER_RECOVERY_GRACE_MS,
+      });
   }
 
-  schedule<T>(task: () => Promise<T> | T, signal?: AbortSignal): Promise<T> {
+  schedule<T>(
+    task: (context: GenerationTaskContext) => Promise<T> | T,
+    signal?: AbortSignal,
+  ): Promise<T> {
     if (signal?.aborted) {
       return Promise.reject(new GenerationCancelledError());
     }
@@ -117,6 +154,7 @@ export class GenerationScheduler {
       );
       signal?.addEventListener("abort", queuedTask.abortListener, { once: true });
       this.pendingJobs.push(queuedTask);
+      this.rendererHealth.setPendingJobs(this.pendingJobs.length);
       documentGenerationMetrics.pending.add(1);
       documentGenerationMetrics.admitted.add(1);
     });
@@ -125,13 +163,20 @@ export class GenerationScheduler {
   private startTask<T>(task: QueuedTask): Promise<T> {
     // Once admitted, rendering is allowed to finish even if the caller disconnects.
     this.activeJobs += 1;
+    const rendererJob = this.rendererHealth.startJob();
     documentGenerationMetrics.active.add(1);
     this.recordQueueWait(task, "started");
 
     return Promise.resolve()
-      .then(task.task)
+      .then(() =>
+        task.task({
+          progress: rendererJob.progress,
+          timeoutMs: this.maxJobDurationMs,
+        }),
+      )
       .then((result) => result as T)
       .finally(() => {
+        rendererJob.complete();
         this.activeJobs -= 1;
         documentGenerationMetrics.active.add(-1);
         this.startPendingTasks();
@@ -141,6 +186,7 @@ export class GenerationScheduler {
   private startPendingTasks() {
     while (this.activeJobs < this.options.maxConcurrentJobs && this.pendingJobs.length > 0) {
       const queuedTask = this.pendingJobs.shift()!;
+      this.rendererHealth.setPendingJobs(this.pendingJobs.length);
       documentGenerationMetrics.pending.add(-1);
       this.clearQueuedTaskResources(queuedTask);
 
@@ -204,6 +250,7 @@ export class GenerationScheduler {
     }
 
     this.pendingJobs.splice(index, 1);
+    this.rendererHealth.setPendingJobs(this.pendingJobs.length);
     documentGenerationMetrics.pending.add(-1);
     this.clearQueuedTaskResources(task);
     return true;
@@ -221,8 +268,52 @@ export class GenerationScheduler {
 }
 
 export function createGenerationSchedulerFromEnvironment() {
+  const maxConcurrentJobs = MAX_CONCURRENT_JOBS;
+  const maxJobDurationMs = positiveIntegerFromEnvironment(
+    "GENERATION_MAX_DURATION_MS",
+    DOCUMENT_GENERATION_TIMEOUT_MS,
+  );
+  const rendererHealth = new RendererHealth({
+    maxConcurrentJobs,
+    stallThresholdMs: positiveIntegerFromEnvironment(
+      "RENDERER_STALL_THRESHOLD_MS",
+      DEFAULT_RENDERER_STALL_THRESHOLD_MS,
+    ),
+    recoveryGraceMs: positiveIntegerFromEnvironment(
+      "RENDERER_RECOVERY_GRACE_MS",
+      DEFAULT_RENDERER_RECOVERY_GRACE_MS,
+    ),
+    onStateChange: ({ previousState, newState, snapshot }) => {
+      documentGenerationMetrics.rendererHealthTransitions.add(1, {
+        previous_state: previousState,
+        new_state: newState,
+      });
+      const wasReady = previousState === "healthy";
+      if (wasReady !== snapshot.ready) {
+        documentGenerationMetrics.readinessTransitions.add(1, {
+          ready: snapshot.ready,
+        });
+      }
+      const wasLive = previousState !== "unhealthy";
+      if (wasLive !== snapshot.live) {
+        documentGenerationMetrics.livenessTransitions.add(1, {
+          live: snapshot.live,
+        });
+      }
+      logger.warn(
+        {
+          event: "renderer.health.changed",
+          previousState,
+          newState,
+          ...snapshot,
+        },
+        "Renderer health state changed",
+      );
+    },
+  });
+
   return new GenerationScheduler({
-    maxConcurrentJobs: MAX_CONCURRENT_JOBS,
+    maxConcurrentJobs,
     maxPendingJobs: positiveIntegerFromEnvironment(
       "GENERATION_MAX_PENDING_JOBS",
       DEFAULT_MAX_PENDING_JOBS,
@@ -235,5 +326,7 @@ export function createGenerationSchedulerFromEnvironment() {
       "GENERATION_OVERLOAD_RETRY_AFTER_SECONDS",
       DEFAULT_RETRY_AFTER_SECONDS,
     ),
+    maxJobDurationMs,
+    rendererHealth,
   });
 }
