@@ -8,7 +8,7 @@ export class StartupHealthCheck {
   readonly result: Promise<void>;
 
   constructor(warmup: () => Promise<unknown>, onFailure?: (error: unknown) => void) {
-    this.result = this.run(warmup, onFailure);
+    this.result = this.run(warmup, onFailure); //NOSONAR
   }
 
   getStatus(): StartupHealthStatus {
