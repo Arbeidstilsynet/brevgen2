@@ -8,21 +8,24 @@ export class StartupHealthCheck {
   readonly result: Promise<void>;
 
   constructor(warmup: () => Promise<unknown>, onFailure?: (error: unknown) => void) {
-    this.result = Promise.resolve()
-      .then(warmup)
-      .then(
-        () => {
-          this.status = "succeeded";
-        },
-        (error: unknown) => {
-          this.status = "failed";
-          onFailure?.(error);
-        },
-      );
+    this.result = this.run(warmup, onFailure);
   }
 
   getStatus(): StartupHealthStatus {
     return this.status;
+  }
+
+  private async run(
+    warmup: () => Promise<unknown>,
+    onFailure?: (error: unknown) => void,
+  ): Promise<void> {
+    try {
+      await warmup();
+      this.status = "succeeded";
+    } catch (error) {
+      this.status = "failed";
+      onFailure?.(error);
+    }
   }
 }
 
