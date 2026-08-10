@@ -232,97 +232,145 @@ export interface BrowserRetryOptions {
   timeoutMs?: number;
 }
 
-export async function useBrowserWithRetry<T>(
-  fn: (browser: Browser) => Promise<T>,
-  options: BrowserRetryOptions = {},
-): Promise<T> {
-  const progress = options.progress;
+interface BrowserRetryContext {
+  deadline: number;
+  maxAttempts: number;
+  now: () => number;
+  progress?: RendererProgressReporter;
+  timeoutMs: number;
+}
+
+type BrowserAttemptResult<T> =
+  | { succeeded: true; value: T }
+  | { succeeded: false; deadlineExceeded: boolean; error: unknown };
+
+function createBrowserRetryContext(options: BrowserRetryOptions): BrowserRetryContext {
   const timeoutMs = options.timeoutMs ?? DOCUMENT_GENERATION_TIMEOUT_MS;
   if (!Number.isSafeInteger(timeoutMs) || timeoutMs <= 0) {
     throw new TypeError("Document generation timeout must be a positive integer");
   }
-  const now = monotonicNow;
-  const deadline = now() + timeoutMs;
-  const maxAttempts = MAX_RETRIES_PER_REQUEST + 1;
+
+  return {
+    deadline: monotonicNow() + timeoutMs,
+    maxAttempts: MAX_RETRIES_PER_REQUEST + 1,
+    now: monotonicNow,
+    progress: options.progress,
+    timeoutMs,
+  };
+}
+
+async function runBrowserAttempt<T>(
+  fn: (browser: Browser) => Promise<T>,
+  attempt: number,
+  context: BrowserRetryContext,
+): Promise<BrowserAttemptResult<T>> {
+  const { deadline, maxAttempts, now, progress, timeoutMs } = context;
+  let instance: Browser | undefined;
+
+  try {
+    progress?.("acquiring-browser");
+    instance = await withActiveSpan(
+      "browser.acquire",
+      async () => getBrowserInstance(deadline, timeoutMs, now, progress),
+      {
+        "browser.acquire.attempt": attempt,
+        "browser.acquire.max_attempts": maxAttempts,
+        "browser.active_users": activeUsers,
+        "browser.page_count": pageCount,
+        "browser.recycle_requested": recycleRequested,
+      },
+    );
+    // Resolve the remaining budget before calling `fn`: evaluating it as a `withTimeout` argument
+    // would leave the render promise without a handler when the deadline has already passed.
+    const acquiredBrowser = instance;
+    const remainingMs = remainingGenerationTime(deadline, timeoutMs, now);
+    const value = await withActiveSpan(
+      "browser.render_attempt",
+      async () =>
+        await withTimeout(
+          fn(acquiredBrowser),
+          remainingMs,
+          "Generating document",
+          () => new GenerationDeadlineError(timeoutMs),
+        ),
+      {
+        "browser.render_attempt.attempt": attempt,
+        "browser.render_attempt.max_attempts": maxAttempts,
+      },
+    );
+    return { succeeded: true, value };
+  } catch (error) {
+    return {
+      succeeded: false,
+      deadlineExceeded: handleBrowserAttemptFailure(error, instance !== undefined, progress),
+      error,
+    };
+  } finally {
+    if (instance) {
+      releaseUser();
+    }
+  }
+}
+
+function handleBrowserAttemptFailure(
+  error: unknown,
+  browserAcquired: boolean,
+  progress?: RendererProgressReporter,
+): boolean {
+  const deadlineExceeded = error instanceof GenerationDeadlineError;
+  if (!deadlineExceeded) {
+    markBrowserUnhealthy(error);
+    progress?.("recycling-browser");
+    if (!browserAcquired) {
+      recycleIfIdle();
+    }
+  }
+  return deadlineExceeded;
+}
+
+export async function useBrowserWithRetry<T>(
+  fn: (browser: Browser) => Promise<T>,
+  options: BrowserRetryOptions = {},
+): Promise<T> {
+  const context = createBrowserRetryContext(options);
   let lastError: unknown;
 
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+  for (let attempt = 1; attempt <= context.maxAttempts; attempt++) {
     if (attempt > 1) {
-      progress?.("retrying");
+      context.progress?.("retrying");
     }
-    let instance: Browser | undefined;
-    try {
-      progress?.("acquiring-browser");
-      instance = await withActiveSpan(
-        "browser.acquire",
-        async () => getBrowserInstance(deadline, timeoutMs, now, progress),
-        {
-          "browser.acquire.attempt": attempt,
-          "browser.acquire.max_attempts": maxAttempts,
-          "browser.active_users": activeUsers,
-          "browser.page_count": pageCount,
-          "browser.recycle_requested": recycleRequested,
-        },
-      );
-      const acquiredBrowser = instance;
-      // The remaining budget is resolved before `fn` is called: evaluating it as an argument would
-      // leave the render promise without a handler when the deadline has already passed.
-      const remainingMs = remainingGenerationTime(deadline, timeoutMs, now);
-      return await withActiveSpan(
-        "browser.render_attempt",
-        async () =>
-          await withTimeout(
-            fn(acquiredBrowser),
-            remainingMs,
-            "Generating document",
-            () => new GenerationDeadlineError(timeoutMs),
-          ),
-        {
-          "browser.render_attempt.attempt": attempt,
-          "browser.render_attempt.max_attempts": maxAttempts,
-        },
-      );
-    } catch (error) {
-      lastError = error;
-      // Running out of budget says nothing about Chromium's health. Recycling on it would make
-      // every slow request under load force a recycle, which starves the requests behind it.
-      const deadlineExceeded = error instanceof GenerationDeadlineError;
-      if (!deadlineExceeded) {
-        markBrowserUnhealthy(error);
-        progress?.("recycling-browser");
-        if (!instance) {
-          recycleIfIdle();
-        }
-      }
 
-      if (deadlineExceeded || attempt === maxAttempts) {
-        logger.error(
-          {
-            event: "browser.use.exhausted",
-            attempt,
-            maxAttempts,
-            deadlineExceeded,
-            error,
-          },
-          "Browser generation failed after retries or deadline",
-        );
-        break;
-      }
+    const result = await runBrowserAttempt(fn, attempt, context);
+    if (result.succeeded) {
+      return result.value;
+    }
 
-      logger.warn(
+    lastError = result.error;
+    // Running out of budget says nothing about Chromium's health. Recycling on it would make
+    // every slow request under load force a recycle, which starves the requests behind it.
+    if (result.deadlineExceeded || attempt === context.maxAttempts) {
+      logger.error(
         {
-          event: "browser.use.retry",
+          event: "browser.use.exhausted",
           attempt,
-          maxAttempts,
-          error,
+          maxAttempts: context.maxAttempts,
+          deadlineExceeded: result.deadlineExceeded,
+          error: result.error,
         },
-        "Retrying with new browser after failure",
+        "Browser generation failed after retries or deadline",
       );
-    } finally {
-      if (instance) {
-        releaseUser();
-      }
+      break;
     }
+
+    logger.warn(
+      {
+        event: "browser.use.retry",
+        attempt,
+        maxAttempts: context.maxAttempts,
+        error: result.error,
+      },
+      "Retrying with new browser after failure",
+    );
   }
 
   throw lastError;
