@@ -8,6 +8,24 @@ import { describe, expect, test } from "vitest";
 import { registerDocumentGenerationRoute } from "./documentGenerationRoute";
 import { GenerationCancelledError, GenerationOverloadError } from "./generationScheduler";
 
+const requestPayload = {
+  md: "# Test",
+  options: {
+    as_html: true,
+    dynamic: {
+      template: "blank" as const,
+    },
+  },
+};
+
+function createDeferred<T>() {
+  let resolve!: (value: T | PromiseLike<T>) => void;
+  const promise = new Promise<T>((resolvePromise) => {
+    resolve = resolvePromise;
+  });
+  return { promise, resolve };
+}
+
 describe("document generation route", () => {
   test("returns a retryable 503 response when document generation is overloaded", async () => {
     const app = Fastify();
@@ -75,5 +93,90 @@ describe("document generation route", () => {
     expect(loggedErrors).toEqual([]);
 
     await app.close();
+  });
+
+  test("does not cancel generation after a connected caller finishes sending its request", async () => {
+    const app = Fastify();
+    app.decorate("authenticate", async () => undefined);
+    app.setValidatorCompiler(validatorCompiler);
+    app.setSerializerCompiler(serializerCompiler);
+    const releaseGeneration = createDeferred<string>();
+    await registerDocumentGenerationRoute(
+      app.withTypeProvider<ZodTypeProvider>(),
+      async (_request, signal) =>
+        await Promise.race([
+          releaseGeneration.promise,
+          new Promise<string>((_resolve, reject) => {
+            signal.addEventListener("abort", () => reject(new GenerationCancelledError()), {
+              once: true,
+            });
+          }),
+        ]),
+    );
+    const address = await app.listen({ host: "127.0.0.1", port: 0 });
+    const responsePromise = fetch(`${address}/genererbrev`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(requestPayload),
+    });
+
+    try {
+      const earlyStatus = await Promise.race([
+        responsePromise.then((response) => response.status),
+        new Promise<undefined>((resolve) => setTimeout(resolve, 100)),
+      ]);
+
+      expect(earlyStatus).toBeUndefined();
+      releaseGeneration.resolve("generated");
+      expect((await responsePromise).status).toBe(200);
+    } finally {
+      releaseGeneration.resolve("generated");
+      await responsePromise.catch(() => undefined);
+      await app.close();
+    }
+  });
+
+  test("cancels generation when the caller disconnects before receiving a response", async () => {
+    const app = Fastify();
+    app.decorate("authenticate", async () => undefined);
+    app.setValidatorCompiler(validatorCompiler);
+    app.setSerializerCompiler(serializerCompiler);
+    const generationStarted = createDeferred<void>();
+    const generationCancelled = createDeferred<void>();
+    await registerDocumentGenerationRoute(
+      app.withTypeProvider<ZodTypeProvider>(),
+      async (_request, signal) => {
+        generationStarted.resolve();
+        await new Promise<void>((resolve) => {
+          signal.addEventListener("abort", () => resolve(), { once: true });
+        });
+        generationCancelled.resolve();
+        throw new GenerationCancelledError();
+      },
+    );
+    const address = await app.listen({ host: "127.0.0.1", port: 0 });
+    const controller = new AbortController();
+    const responsePromise = fetch(`${address}/genererbrev`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(requestPayload),
+      signal: controller.signal,
+    });
+
+    try {
+      await generationStarted.promise;
+      controller.abort();
+      await responsePromise.catch(() => undefined);
+      await expect(
+        Promise.race([
+          generationCancelled.promise.then(() => true),
+          new Promise<boolean>((resolve) => setTimeout(() => resolve(false), 1000)),
+        ]),
+      ).resolves.toBe(true);
+    } finally {
+      controller.abort();
+      await responsePromise.catch(() => undefined);
+      await app.close();
+    }
   });
 });
