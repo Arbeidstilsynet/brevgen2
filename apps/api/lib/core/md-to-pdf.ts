@@ -4,6 +4,7 @@ import { generateOutput } from "./generate-output";
 import { getHtml } from "./get-html";
 import { getMarginObject } from "./helpers";
 import { InferOutputType } from "./types";
+import type { RendererProgressReporter } from "../rendererHealth";
 
 /**
  * Convert markdown to pdf.
@@ -12,6 +13,7 @@ export async function convertMdToPdf<T extends Config>(
   md: string,
   config: T,
   browser: Browser,
+  progress?: RendererProgressReporter,
 ): Promise<InferOutputType<T>> {
   const { headerTemplate, footerTemplate, displayHeaderFooter } = config.pdf_options;
 
@@ -25,7 +27,7 @@ export async function convertMdToPdf<T extends Config>(
   }
 
   const html = getHtml(md, config);
-  const output = await generateOutput(html, config, browser);
+  const output = await generateOutput(html, config, browser, progress);
 
   if (!output) {
     throw new Error(`Failed to create ${config.as_html ? "HTML" : "PDF"}.`);

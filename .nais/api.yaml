@@ -15,6 +15,12 @@ spec:
       value: "{{azure_app_id}}"
     - name: GIT_SHA
       value: "{{git_sha}}"
+    - name: GENERATION_MAX_DURATION_MS
+      value: "50000"
+    - name: RENDERER_STALL_THRESHOLD_MS
+      value: "20000"
+    - name: RENDERER_RECOVERY_GRACE_MS
+      value: "20000"
   ingresses:
     - "{{api.ingress}}"
   accessPolicy:
@@ -32,18 +38,24 @@ spec:
       memory: 512Mi
     limits:
       memory: 1024Mi
-  readiness:
-    path: /health
-    failureThreshold: 3
-    initialDelay: 20
+  startup:
+    path: /health/startup
+    failureThreshold: 15
+    initialDelay: 5
     periodSeconds: 5
-    timeout: 1
-  liveness:
-    path: /health
+    timeout: 2
+  readiness:
+    path: /health/readiness
     failureThreshold: 3
-    initialDelay: 30
+    initialDelay: 0
+    periodSeconds: 5
+    timeout: 5
+  liveness:
+    path: /health/liveness
+    failureThreshold: 3
+    initialDelay: 0
     periodSeconds: 10
-    timeout: 1
+    timeout: 2
   observability:
     autoInstrumentation:
       enabled: true

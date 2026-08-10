@@ -3,6 +3,8 @@ import type { GenerateDocumentRequestOptions } from "@repo/shared-types";
 import { mdToPdf } from "./core";
 import { HtmlConfig, PdfConfig } from "./core/config";
 import { Output } from "./core/types";
+import type { RendererProgressReporter } from "./rendererHealth";
+import { DOCUMENT_GENERATION_TIMEOUT_MS } from "./core/helpers";
 
 /**
  * Merges config objects with special handling for pdf_options to do a shallow merge
@@ -28,13 +30,15 @@ function mergeConfigs(
 export async function generateDocument(
   md: string,
   options: GenerateDocumentRequestOptions,
+  progress?: RendererProgressReporter,
+  timeoutMs = DOCUMENT_GENERATION_TIMEOUT_MS,
 ): Promise<Output> {
   const template = resolveTemplate(options.dynamic.template);
   if (template) {
     const pdfConfig = mergeConfigs(template.getPdfConfig(options), options);
-    return await mdToPdf(template.getMd(md, options), pdfConfig);
+    return await mdToPdf(template.getMd(md, options), pdfConfig, progress, timeoutMs);
   }
 
   // The `custom` template is not registered: the caller supplies its full config directly.
-  return await mdToPdf(md, options);
+  return await mdToPdf(md, options, progress, timeoutMs);
 }

@@ -118,6 +118,10 @@ AZURE_APPLICATION_ID # Brevgenerator2 DEV: 079a726c-1419-4907-9aeb-e230f700e22a
 GENERATION_MAX_PENDING_JOBS=150 # maximum jobs waiting to generate a document per pod
 GENERATION_MAX_QUEUE_WAIT_MS=30000 # maximum time a job may wait before it is rejected
 GENERATION_OVERLOAD_RETRY_AFTER_SECONDS=5 # Retry-After value returned for overload
+GENERATION_MAX_DURATION_MS=50000 # complete queue/render/recycle/retry deadline, below HAProxy's 60s
+RENDERER_STALL_THRESHOLD_MS=20000 # full-capacity no-progress time before readiness fails
+RENDERER_RECOVERY_GRACE_MS=20000 # additional stalled time before liveness fails
+RENDERER_MONITOR_INTERVAL_MS=5000 # how often renderer health is re-evaluated in the background
 
 # ONLY to be used in tests/locally to not require authorization header
 # DANGEROUS_DISABLE_AUTH=true
@@ -132,6 +136,21 @@ can use to decide when to retry.
 
 If a consumer disconnects while its request is queued, the request is removed and will not be
 rendered later. Rendering already in progress is allowed to finish.
+
+The 50-second generation deadline is measured from the moment a request enters the queue, and
+covers queue wait, browser acquisition, rendering, recycle, and retry. Time spent queuing is
+therefore charged against the render budget rather than added on top of it, which keeps the total
+below Fastify's 55-second handler timeout and the ingress timeout behind it. The queue deadline
+must stay below the generation deadline, and the startup probe performs one cached lightweight
+render.
+
+Readiness fails only when every generation slot has stopped making progress beyond the 20-second
+renderer stall threshold. Liveness remains healthy for an additional 20-second recovery grace
+period so normal Chromium recycle and retry remain the primary recovery mechanism. Both thresholds
+must together stay below the generation deadline, otherwise a stalled job would be torn down before
+the renderer could ever be reported as unhealthy; the scheduler refuses to start if they do not.
+Running out of the generation budget is deliberately not treated as browser instability, so a busy
+pod does not recycle Chromium out from under the requests behind it.
 
 The scheduler emits metrics for active and pending jobs, admissions, overload rejections by reason,
 queued cancellations, and queue-wait duration. Queue-wait is recorded in seconds for every job that

@@ -79,7 +79,10 @@ export function createDocumentGenerationHandler(scheduler: GenerationScheduler) 
     const { md, mdVariables, options } = request;
 
     const parsedMd = parseDynamicMd(md, { variables: mdVariables ?? {} });
-    const result = await scheduler.schedule(() => generateDocument(parsedMd, options), signal);
+    const result = await scheduler.schedule(
+      ({ progress, timeoutMs }) => generateDocument(parsedMd, options, progress, timeoutMs),
+      signal,
+    );
     if (typeof result.content === "string") {
       return result.content;
     }

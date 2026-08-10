@@ -1,6 +1,6 @@
 import { DynamicMarkdownParseError } from "@at/dynamic-markdown";
 import { type GenerateDocumentRequest, generateDocumentRequestSchema } from "@repo/shared-types";
-import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyInstance, FastifyReply } from "fastify";
 import { type ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { GenerationCancelledError, GenerationOverloadError } from "./generationScheduler";
@@ -12,17 +12,25 @@ export type DocumentGenerationHandler = (
   signal: AbortSignal,
 ) => Promise<string>;
 
-function createRequestAbortSignal(request: FastifyRequest, reply: FastifyReply) {
+// Fastify's request.signal also aborts when the fully-read request stream closes.
+// An unfinished response closes only when the caller disconnects before receiving a reply.
+function createCallerDisconnectSignal(reply: FastifyReply) {
   const controller = new AbortController();
-  const abort = () => controller.abort();
-  request.raw.once("aborted", abort);
+  const abort = () => {
+    if (!reply.raw.writableEnded) {
+      controller.abort();
+    }
+  };
   reply.raw.once("close", abort);
+
+  if (reply.raw.destroyed) {
+    abort();
+  }
 
   return {
     signal: controller.signal,
     cleanup: () => {
-      request.raw.removeListener("aborted", abort);
-      reply.raw.removeListener("close", abort);
+      reply.raw.off("close", abort);
     },
   };
 }
@@ -67,20 +75,26 @@ export async function registerDocumentGenerationRoute(
     },
     async (request, reply) => {
       const user = request.user;
-      const requestAbort = createRequestAbortSignal(request, reply);
+      const callerDisconnect = createCallerDisconnectSignal(reply);
 
       try {
         request.log.info(
           { requestContext: buildGenerateDocumentRequestContext(request.body, user) },
           "genererbrev.request",
         );
-        const result = await generateDocument(request.body, requestAbort.signal);
+        const result = await generateDocument(request.body, callerDisconnect.signal);
         const template = request.body.options.dynamic.template ?? "default";
         const outputFormat = request.body.options.as_html ? "html" : "pdf";
         documentGenerationMetrics.generated.add(1, {
           "document.template": template,
           "document.output.format": outputFormat,
         });
+        if (reply.sent) {
+          // The handler timeout already answered the caller; sending again would only log
+          // FST_ERR_REP_ALREADY_SENT.
+          request.log.warn("Document generation finished after the reply was already sent");
+          return;
+        }
         reply.send(result);
       } catch (err) {
         if (err instanceof GenerationOverloadError) {
@@ -109,7 +123,7 @@ export async function registerDocumentGenerationRoute(
         const error = err instanceof Error ? err.message : String(err);
         reply.status(500).send({ message: "Internal error", error });
       } finally {
-        requestAbort.cleanup();
+        callerDisconnect.cleanup();
       }
     },
   );

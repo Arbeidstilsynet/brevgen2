@@ -10,11 +10,14 @@ import { fastify } from "./app";
 import { setupAuth } from "./auth";
 import { registerDocumentGenerationRoute } from "./lib/documentGenerationRoute";
 import { createGenerationSchedulerFromEnvironment } from "./lib/generationScheduler";
+import { StartupHealthCheck, registerHealthRoutes } from "./lib/healthRoutes";
 import {
   createDocumentGenerationHandler,
   formatZodFastifySchemaValidationError,
   ValidationError,
 } from "./lib/handler";
+import { mdToPdf } from "./lib/core";
+import { registerRendererHealthMetrics } from "./lib/otel";
 import { registerSwagger } from "./swagger";
 
 configDotenv();
@@ -23,8 +26,23 @@ const port = process.env.PORT ? Number(process.env.PORT) : 4000;
 const isDev = process.env.NODE_ENV === "development";
 
 export async function initializeServer() {
-  const handlerGenerateDocument = createDocumentGenerationHandler(
-    createGenerationSchedulerFromEnvironment(),
+  const generationScheduler = createGenerationSchedulerFromEnvironment();
+  const handlerGenerateDocument = createDocumentGenerationHandler(generationScheduler);
+  registerRendererHealthMetrics(generationScheduler.rendererHealth);
+  fastify.addHook("onClose", async () => {
+    generationScheduler.rendererHealth.stop();
+  });
+  const startupHealth = new StartupHealthCheck(
+    () =>
+      generationScheduler.schedule(({ progress, timeoutMs }) =>
+        mdToPdf("# Brevgenerator startup check", {}, progress, timeoutMs),
+      ),
+    (error) => {
+      fastify.log.error(
+        { event: "renderer.startup_warmup.failed", error },
+        "Renderer startup warm-up failed",
+      );
+    },
   );
   const fastifyOtelInstrumentation = new FastifyOtelInstrumentation();
   await fastify.register(fastifyOtelInstrumentation.plugin());
@@ -68,6 +86,21 @@ export async function initializeServer() {
       version: process.env.GIT_SHA?.substring(0, 7) ?? "dev",
       endpoints: {
         health: { method: "GET", path: "/health", description: "Health check" },
+        startupHealth: {
+          method: "GET",
+          path: "/health/startup",
+          description: "Renderer startup check",
+        },
+        readinessHealth: {
+          method: "GET",
+          path: "/health/readiness",
+          description: "Renderer readiness check",
+        },
+        livenessHealth: {
+          method: "GET",
+          path: "/health/liveness",
+          description: "Renderer liveness check",
+        },
         genererbrev: {
           method: "POST",
           path: "/genererbrev",
@@ -78,9 +111,7 @@ export async function initializeServer() {
     });
   });
 
-  fastify.get("/health", { logLevel: "warn", config: { otel: false } }, async (request, reply) => {
-    reply.status(200).send();
-  });
+  await registerHealthRoutes(fastify, generationScheduler.rendererHealth, startupHealth);
 
   await registerDocumentGenerationRoute(fastify, handlerGenerateDocument);
 

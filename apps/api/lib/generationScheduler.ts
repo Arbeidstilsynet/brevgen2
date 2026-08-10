@@ -1,4 +1,13 @@
+import { logger } from "../app";
+import { DOCUMENT_GENERATION_TIMEOUT_MS, HTTP_HANDLER_TIMEOUT_MS } from "./core/helpers";
 import { documentGenerationMetrics } from "./otel";
+import {
+  DEFAULT_RENDERER_MONITOR_INTERVAL_MS,
+  DEFAULT_RENDERER_RECOVERY_GRACE_MS,
+  DEFAULT_RENDERER_STALL_THRESHOLD_MS,
+  RendererHealth,
+  type RendererProgressReporter,
+} from "./rendererHealth";
 
 const MAX_CONCURRENT_JOBS = 10;
 const DEFAULT_MAX_PENDING_JOBS = 150;
@@ -36,11 +45,22 @@ export interface GenerationSchedulerOptions {
   maxPendingJobs: number;
   maxQueueWaitMs: number;
   retryAfterSeconds: number;
+  maxJobDurationMs?: number;
   now?: () => number;
+  rendererHealth?: RendererHealth;
+}
+
+export interface GenerationTaskContext {
+  progress: RendererProgressReporter;
+  /**
+   * What is left of this request's total generation budget, measured from the moment it entered
+   * the queue rather than from the moment it started rendering.
+   */
+  timeoutMs: number;
 }
 
 interface QueuedTask {
-  task: () => unknown;
+  task: (context: GenerationTaskContext) => unknown;
   resolve: (value: unknown) => void;
   reject: (reason?: unknown) => void;
   enqueuedAt: number;
@@ -66,6 +86,8 @@ export class GenerationScheduler {
   private activeJobs = 0;
   private readonly pendingJobs: QueuedTask[] = [];
   private readonly now: () => number;
+  private readonly maxJobDurationMs: number;
+  readonly rendererHealth: RendererHealth;
 
   constructor(private readonly options: GenerationSchedulerOptions) {
     if (
@@ -80,10 +102,48 @@ export class GenerationScheduler {
     ) {
       throw new TypeError("Generation scheduler limits must be positive integers");
     }
+    const maxJobDurationMs = options.maxJobDurationMs ?? DOCUMENT_GENERATION_TIMEOUT_MS;
+    if (!Number.isSafeInteger(maxJobDurationMs) || maxJobDurationMs <= 0) {
+      throw new TypeError("Generation scheduler job duration must be a positive integer");
+    }
+    if (maxJobDurationMs >= HTTP_HANDLER_TIMEOUT_MS) {
+      throw new TypeError(
+        "Generation scheduler job duration must be below the HTTP handler timeout",
+      );
+    }
+    // Queue wait is spent inside the job budget, so a queue deadline at or above the job duration
+    // would admit jobs with no budget left to render with.
+    if (options.maxQueueWaitMs >= maxJobDurationMs) {
+      throw new TypeError("Generation scheduler queue wait must be below the job duration");
+    }
     this.now = options.now ?? Date.now;
+    this.maxJobDurationMs = maxJobDurationMs;
+    this.rendererHealth =
+      options.rendererHealth ??
+      new RendererHealth({
+        maxConcurrentJobs: options.maxConcurrentJobs,
+        stallThresholdMs: DEFAULT_RENDERER_STALL_THRESHOLD_MS,
+        recoveryGraceMs: DEFAULT_RENDERER_RECOVERY_GRACE_MS,
+        // Job ages must be measured on the same clock the scheduler is driven by, otherwise an
+        // injected test clock leaves renderer health running on wall time.
+        now: options.now,
+      });
+    // A job that exhausts its budget is torn down and stops counting as active, so thresholds at
+    // or above the job duration could never be crossed and the probes would be decorative.
+    if (
+      this.rendererHealth.stallThresholdMs + this.rendererHealth.recoveryGraceMs >=
+      maxJobDurationMs
+    ) {
+      throw new TypeError(
+        "Renderer stall threshold plus recovery grace must be below the job duration",
+      );
+    }
   }
 
-  schedule<T>(task: () => Promise<T> | T, signal?: AbortSignal): Promise<T> {
+  schedule<T>(
+    task: (context: GenerationTaskContext) => Promise<T> | T,
+    signal?: AbortSignal,
+  ): Promise<T> {
     if (signal?.aborted) {
       return Promise.reject(new GenerationCancelledError());
     }
@@ -117,6 +177,7 @@ export class GenerationScheduler {
       );
       signal?.addEventListener("abort", queuedTask.abortListener, { once: true });
       this.pendingJobs.push(queuedTask);
+      this.rendererHealth.setPendingJobs(this.pendingJobs.length);
       documentGenerationMetrics.pending.add(1);
       documentGenerationMetrics.admitted.add(1);
     });
@@ -125,13 +186,24 @@ export class GenerationScheduler {
   private startTask<T>(task: QueuedTask): Promise<T> {
     // Once admitted, rendering is allowed to finish even if the caller disconnects.
     this.activeJobs += 1;
+    const rendererJob = this.rendererHealth.startJob();
     documentGenerationMetrics.active.add(1);
     this.recordQueueWait(task, "started");
 
+    // Time already spent queuing is charged against the job budget so that queue wait plus render
+    // stays below the Fastify handler timeout instead of stacking on top of it.
+    const remainingMs = this.maxJobDurationMs - (this.now() - task.enqueuedAt);
+
     return Promise.resolve()
-      .then(task.task)
+      .then(() =>
+        task.task({
+          progress: rendererJob.progress,
+          timeoutMs: Math.max(1, Math.ceil(remainingMs)),
+        }),
+      )
       .then((result) => result as T)
       .finally(() => {
+        rendererJob.complete();
         this.activeJobs -= 1;
         documentGenerationMetrics.active.add(-1);
         this.startPendingTasks();
@@ -141,6 +213,7 @@ export class GenerationScheduler {
   private startPendingTasks() {
     while (this.activeJobs < this.options.maxConcurrentJobs && this.pendingJobs.length > 0) {
       const queuedTask = this.pendingJobs.shift()!;
+      this.rendererHealth.setPendingJobs(this.pendingJobs.length);
       documentGenerationMetrics.pending.add(-1);
       this.clearQueuedTaskResources(queuedTask);
 
@@ -204,6 +277,7 @@ export class GenerationScheduler {
     }
 
     this.pendingJobs.splice(index, 1);
+    this.rendererHealth.setPendingJobs(this.pendingJobs.length);
     documentGenerationMetrics.pending.add(-1);
     this.clearQueuedTaskResources(task);
     return true;
@@ -221,8 +295,58 @@ export class GenerationScheduler {
 }
 
 export function createGenerationSchedulerFromEnvironment() {
+  const maxConcurrentJobs = MAX_CONCURRENT_JOBS;
+  const maxJobDurationMs = positiveIntegerFromEnvironment(
+    "GENERATION_MAX_DURATION_MS",
+    DOCUMENT_GENERATION_TIMEOUT_MS,
+  );
+  const rendererHealth = new RendererHealth({
+    maxConcurrentJobs,
+    stallThresholdMs: positiveIntegerFromEnvironment(
+      "RENDERER_STALL_THRESHOLD_MS",
+      DEFAULT_RENDERER_STALL_THRESHOLD_MS,
+    ),
+    recoveryGraceMs: positiveIntegerFromEnvironment(
+      "RENDERER_RECOVERY_GRACE_MS",
+      DEFAULT_RENDERER_RECOVERY_GRACE_MS,
+    ),
+    // Without this, a wedged renderer would only change state when a probe or the metrics
+    // exporter happened to look at it.
+    monitorIntervalMs: positiveIntegerFromEnvironment(
+      "RENDERER_MONITOR_INTERVAL_MS",
+      DEFAULT_RENDERER_MONITOR_INTERVAL_MS,
+    ),
+    onStateChange: ({ previousState, newState, snapshot }) => {
+      documentGenerationMetrics.rendererHealthTransitions.add(1, {
+        previous_state: previousState,
+        new_state: newState,
+      });
+      const wasReady = previousState === "healthy";
+      if (wasReady !== snapshot.ready) {
+        documentGenerationMetrics.readinessTransitions.add(1, {
+          ready: snapshot.ready,
+        });
+      }
+      const wasLive = previousState !== "unhealthy";
+      if (wasLive !== snapshot.live) {
+        documentGenerationMetrics.livenessTransitions.add(1, {
+          live: snapshot.live,
+        });
+      }
+      logger.warn(
+        {
+          event: "renderer.health.changed",
+          previousState,
+          newState,
+          ...snapshot,
+        },
+        "Renderer health state changed",
+      );
+    },
+  });
+
   return new GenerationScheduler({
-    maxConcurrentJobs: MAX_CONCURRENT_JOBS,
+    maxConcurrentJobs,
     maxPendingJobs: positiveIntegerFromEnvironment(
       "GENERATION_MAX_PENDING_JOBS",
       DEFAULT_MAX_PENDING_JOBS,
@@ -235,5 +359,7 @@ export function createGenerationSchedulerFromEnvironment() {
       "GENERATION_OVERLOAD_RETRY_AFTER_SECONDS",
       DEFAULT_RETRY_AFTER_SECONDS,
     ),
+    maxJobDurationMs,
+    rendererHealth,
   });
 }
