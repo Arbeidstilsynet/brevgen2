@@ -23,16 +23,6 @@ const monotonicNow = () => performance.now();
 // WORKAROUND for instability in testcontainers, recycle after each request there.
 const MAX_PAGES_PER_BROWSER = process.env.TESTCONTAINERS ? 1 : 50;
 
-let pageCount = 0;
-let activeUsers = 0;
-
-let browser: Browser | null = null;
-let browserInitPromise: Promise<void> | null = null;
-let browserClosePromise: Promise<void> | null = null;
-
-// Set when we have decided no more pages should be handed out from current browser.
-let recycleRequested = false;
-
 // Errors that indicate the Chromium instance / session is unstable.
 // We treat ANY error as invalidating the browser (safer), but we keep this list for logging.
 const KNOWN_UNSTABLE_PATTERNS = [
@@ -43,296 +33,267 @@ const KNOWN_UNSTABLE_PATTERNS = [
   "Protocol error",
 ];
 
-/**
- * Mark current browser instance as unhealthy so no new pages are handed out.
- * Will trigger recycle when possible.
- */
-function markBrowserUnhealthy(err: unknown): void {
-  if (recycleRequested) {
-    return;
-  }
-
-  recycleRequested = true;
-  const reason = err instanceof Error ? `${err.name}: ${err.message}` : String(err);
-  const matchedPattern = KNOWN_UNSTABLE_PATTERNS.find((p) => reason.includes(p));
-  logger.warn(
-    {
-      event: "browser.mark_unhealthy",
-      matchedPattern,
-      reason,
-      pageCount,
-      activeUsers,
-    },
-    "Marking browser as unhealthy; scheduling recycle",
-  );
-}
-
-/**
- * Called when a user is done with the browser
- */
-function releaseUser(): void {
-  if (activeUsers > 0) {
-    activeUsers--;
-  }
-
-  recycleIfIdle();
-}
-
-function recycleIfIdle(): void {
-  // If nobody is using it and we either hit the cap or a recycle was requested, recycle now.
-  if (
-    activeUsers === 0 &&
-    (pageCount >= MAX_PAGES_PER_BROWSER || recycleRequested) &&
-    !browserClosePromise
-  ) {
-    browserClosePromise = recycleBrowser();
-  }
-}
-
-/**
- * Gets a browser instance and returns both the browser and a release function.
- * Ensures a single browser instance is never used for more than MAX_PAGES_PER_BROWSER pages.
- */
-function remainingGenerationTime(deadline: number, timeoutMs: number, now: () => number): number {
-  const remainingMs = deadline - now();
-  if (remainingMs <= 0) {
-    throw new GenerationDeadlineError(timeoutMs);
-  }
-  return Math.ceil(remainingMs);
-}
-
-/**
- * Race an operation against what is left of the total generation budget.
- *
- * Timing out here means the request ran out of budget, not that Chromium misbehaved, so the
- * rejection is a `GenerationDeadlineError` rather than a plain `OperationTimeoutError`.
- */
-function withGenerationDeadline<T>(
-  operation: Promise<T>,
-  deadline: number,
-  timeoutMs: number,
-  now: () => number,
-): Promise<T> {
-  return withTimeout(
-    operation,
-    remainingGenerationTime(deadline, timeoutMs, now),
-    "Generating document",
-    () => new GenerationDeadlineError(timeoutMs),
-  );
-}
-
-async function getBrowserInstance(
-  deadline: number,
-  timeoutMs: number,
-  now: () => number,
-  progress?: RendererProgressReporter,
-): Promise<Browser> {
-  // Loop until we can safely return a valid browser below page limit.
-  // (Handles waits during recycle transparently.)
-  while (true) {
-    remainingGenerationTime(deadline, timeoutMs, now);
-
-    // If recycle in progress, wait.
-    if (browserClosePromise !== null) {
-      progress?.("recycling-browser");
-      await withGenerationDeadline(browserClosePromise, deadline, timeoutMs, now);
-    }
-
-    // Initialize browser if needed.
-    if (!browser) {
-      browserInitPromise ??= initBrowser();
-      await withGenerationDeadline(browserInitPromise, deadline, timeoutMs, now);
-    }
-
-    // If page limit reached (or already requested), trigger / wait for recycle before handing out.
-    if (pageCount >= MAX_PAGES_PER_BROWSER || recycleRequested) {
-      recycleRequested = true;
-
-      // If no active users, start recycle immediately (if not already started).
-      if (activeUsers === 0 && !browserClosePromise) {
-        browserClosePromise = recycleBrowser();
-      }
-
-      // Yield briefly to avoid tight loop.
-      if (browserClosePromise === null) {
-        await new Promise((r) => setTimeout(r, 10));
-      }
-      continue;
-    }
-
-    // Safe to use current browser.
-    remainingGenerationTime(deadline, timeoutMs, now);
-    activeUsers++;
-    pageCount++;
-    return browser!;
-  }
-}
-
-async function initBrowser(): Promise<void> {
-  try {
-    const options = getBrowserLaunchOptions();
-    const puppeteer = await loadPuppeteer();
-    browser = await withTimeout(
-      puppeteer.launch(options),
-      PUPPETEER_OPERATION_TIMEOUT_MS,
-      "Launching Chromium",
-    );
-    logger.info({ event: "browser.init.success" }, "Browser instance created");
-  } catch (error) {
-    browserInitPromise = null;
-    logger.error({ event: "browser.init.error", error }, "Failed to initialize browser");
-    throw error;
-  }
-}
-
-async function recycleBrowser(): Promise<void> {
-  try {
-    logger.info(
-      { event: "browser.recycle.start", pages: pageCount },
-      `Recycling browser after ${pageCount} pages`,
-    );
-
-    const currentBrowser = browser;
-
-    // Reset state first so new requests can start initializing next browser once recycle completes.
-    browser = null;
-    browserInitPromise = null;
-    pageCount = 0;
-
-    if (currentBrowser) {
-      try {
-        await withTimeout(
-          currentBrowser.close(),
-          BROWSER_CLOSE_TIMEOUT_MS,
-          "Closing Chromium browser",
-        );
-      } catch (error) {
-        currentBrowser.process()?.kill("SIGKILL");
-        throw error;
-      }
-      logger.info({ event: "browser.recycle.success" }, "Browser instance closed successfully");
-    }
-  } catch (error) {
-    logger.error({ event: "browser.recycle.error", error }, "Error closing browser");
-  } finally {
-    browserClosePromise = null;
-    recycleRequested = false;
-  }
-}
-
-/**
- * Execute a function with a browser instance, retrying (with fresh browser) on failure.
- *
- * - Any thrown error marks the browser as unhealthy (conservative approach).
- * - Retries a configured number of times.
- * - Each retry waits for the unhealthy browser to recycle to guarantee a new instance.
- */
-export interface BrowserRetryOptions {
-  progress?: RendererProgressReporter;
-  timeoutMs?: number;
-}
-
 interface BrowserRetryContext {
-  deadline: number;
+  budget: GenerationBudget;
   maxAttempts: number;
-  now: () => number;
   progress?: RendererProgressReporter;
-  timeoutMs: number;
 }
 
 type BrowserAttemptResult<T> =
   | { succeeded: true; value: T }
   | { succeeded: false; deadlineExceeded: boolean; error: unknown };
 
-function createBrowserRetryContext(options: BrowserRetryOptions): BrowserRetryContext {
-  const timeoutMs = options.timeoutMs ?? DOCUMENT_GENERATION_TIMEOUT_MS;
-  if (!Number.isSafeInteger(timeoutMs) || timeoutMs <= 0) {
-    throw new TypeError("Document generation timeout must be a positive integer");
+class GenerationBudget {
+  private readonly deadline: number;
+
+  constructor(
+    readonly timeoutMs: number,
+    private readonly now: () => number = monotonicNow,
+  ) {
+    if (!Number.isSafeInteger(timeoutMs) || timeoutMs <= 0) {
+      throw new TypeError("Document generation timeout must be a positive integer");
+    }
+    this.deadline = now() + timeoutMs;
   }
 
-  return {
-    deadline: monotonicNow() + timeoutMs,
-    maxAttempts: MAX_RETRIES_PER_REQUEST + 1,
-    now: monotonicNow,
-    progress: options.progress,
-    timeoutMs,
-  };
+  remainingMs(): number {
+    const remainingMs = this.deadline - this.now();
+    if (remainingMs <= 0) {
+      throw new GenerationDeadlineError(this.timeoutMs);
+    }
+    return Math.ceil(remainingMs);
+  }
+
+  race<T>(operation: Promise<T>): Promise<T> {
+    return withTimeout(
+      operation,
+      this.remainingMs(),
+      "Generating document",
+      () => new GenerationDeadlineError(this.timeoutMs),
+    );
+  }
 }
 
-async function runBrowserAttempt<T>(
-  fn: (browser: Browser) => Promise<T>,
-  attempt: number,
-  context: BrowserRetryContext,
-): Promise<BrowserAttemptResult<T>> {
-  const { deadline, maxAttempts, now, progress, timeoutMs } = context;
-  let instance: Browser | undefined;
+class BrowserPool {
+  private activeUsers = 0;
+  private browser: Browser | null = null;
+  private browserClosePromise: Promise<void> | null = null;
+  private browserInitPromise: Promise<void> | null = null;
+  private pageCount = 0;
+  private recycleRequested = false;
 
-  try {
-    progress?.("acquiring-browser");
-    instance = await withActiveSpan(
-      "browser.acquire",
-      async () => getBrowserInstance(deadline, timeoutMs, now, progress),
+  constructor(private readonly maxPagesPerBrowser: number) {}
+
+  async runAttempt<T>(
+    fn: (browser: Browser) => Promise<T>,
+    attempt: number,
+    context: BrowserRetryContext,
+  ): Promise<BrowserAttemptResult<T>> {
+    const { budget, maxAttempts, progress } = context;
+    let instance: Browser | undefined;
+
+    try {
+      progress?.("acquiring-browser");
+      instance = await withActiveSpan(
+        "browser.acquire",
+        async () => await this.acquire(budget, progress),
+        {
+          "browser.acquire.attempt": attempt,
+          "browser.acquire.max_attempts": maxAttempts,
+          "browser.active_users": this.activeUsers,
+          "browser.page_count": this.pageCount,
+          "browser.recycle_requested": this.recycleRequested,
+        },
+      );
+      // Resolve the remaining budget before calling `fn`: evaluating it as a `withTimeout`
+      // argument would leave the render promise without a handler after the deadline.
+      const acquiredBrowser = instance;
+      const remainingMs = budget.remainingMs();
+      const value = await withActiveSpan(
+        "browser.render_attempt",
+        async () =>
+          await withTimeout(
+            fn(acquiredBrowser),
+            remainingMs,
+            "Generating document",
+            () => new GenerationDeadlineError(budget.timeoutMs),
+          ),
+        {
+          "browser.render_attempt.attempt": attempt,
+          "browser.render_attempt.max_attempts": maxAttempts,
+        },
+      );
+      return { succeeded: true, value };
+    } catch (error) {
+      return {
+        succeeded: false,
+        deadlineExceeded: this.handleAttemptFailure(error, instance !== undefined, progress),
+        error,
+      };
+    } finally {
+      if (instance) {
+        this.release();
+      }
+    }
+  }
+
+  private async acquire(
+    budget: GenerationBudget,
+    progress?: RendererProgressReporter,
+  ): Promise<Browser> {
+    while (true) {
+      budget.remainingMs();
+
+      if (this.browserClosePromise !== null) {
+        progress?.("recycling-browser");
+        await budget.race(this.browserClosePromise);
+      }
+
+      if (!this.browser) {
+        this.browserInitPromise ??= this.initialize();
+        await budget.race(this.browserInitPromise);
+      }
+
+      if (this.pageCount >= this.maxPagesPerBrowser || this.recycleRequested) {
+        this.recycleRequested = true;
+        this.recycleIfIdle();
+
+        if (this.browserClosePromise === null) {
+          await new Promise((resolve) => setTimeout(resolve, 10));
+        }
+        continue;
+      }
+
+      budget.remainingMs();
+      this.activeUsers++;
+      this.pageCount++;
+      return this.browser!;
+    }
+  }
+
+  private handleAttemptFailure(
+    error: unknown,
+    browserAcquired: boolean,
+    progress?: RendererProgressReporter,
+  ): boolean {
+    const deadlineExceeded = error instanceof GenerationDeadlineError;
+    if (!deadlineExceeded) {
+      this.markUnhealthy(error);
+      progress?.("recycling-browser");
+      if (!browserAcquired) {
+        this.recycleIfIdle();
+      }
+    }
+    return deadlineExceeded;
+  }
+
+  private markUnhealthy(error: unknown): void {
+    if (this.recycleRequested) {
+      return;
+    }
+
+    this.recycleRequested = true;
+    const reason = error instanceof Error ? `${error.name}: ${error.message}` : String(error);
+    const matchedPattern = KNOWN_UNSTABLE_PATTERNS.find((pattern) => reason.includes(pattern));
+    logger.warn(
       {
-        "browser.acquire.attempt": attempt,
-        "browser.acquire.max_attempts": maxAttempts,
-        "browser.active_users": activeUsers,
-        "browser.page_count": pageCount,
-        "browser.recycle_requested": recycleRequested,
+        event: "browser.mark_unhealthy",
+        matchedPattern,
+        reason,
+        pageCount: this.pageCount,
+        activeUsers: this.activeUsers,
       },
+      "Marking browser as unhealthy; scheduling recycle",
     );
-    // Resolve the remaining budget before calling `fn`: evaluating it as a `withTimeout` argument
-    // would leave the render promise without a handler when the deadline has already passed.
-    const acquiredBrowser = instance;
-    const remainingMs = remainingGenerationTime(deadline, timeoutMs, now);
-    const value = await withActiveSpan(
-      "browser.render_attempt",
-      async () =>
-        await withTimeout(
-          fn(acquiredBrowser),
-          remainingMs,
-          "Generating document",
-          () => new GenerationDeadlineError(timeoutMs),
-        ),
-      {
-        "browser.render_attempt.attempt": attempt,
-        "browser.render_attempt.max_attempts": maxAttempts,
-      },
-    );
-    return { succeeded: true, value };
-  } catch (error) {
-    return {
-      succeeded: false,
-      deadlineExceeded: handleBrowserAttemptFailure(error, instance !== undefined, progress),
-      error,
-    };
-  } finally {
-    if (instance) {
-      releaseUser();
+  }
+
+  private release(): void {
+    if (this.activeUsers > 0) {
+      this.activeUsers--;
+    }
+    this.recycleIfIdle();
+  }
+
+  private recycleIfIdle(): void {
+    if (
+      this.activeUsers === 0 &&
+      (this.pageCount >= this.maxPagesPerBrowser || this.recycleRequested) &&
+      !this.browserClosePromise
+    ) {
+      this.browserClosePromise = this.recycle();
+    }
+  }
+
+  private async initialize(): Promise<void> {
+    try {
+      const options = getBrowserLaunchOptions();
+      const puppeteer = await loadPuppeteer();
+      this.browser = await withTimeout(
+        puppeteer.launch(options),
+        PUPPETEER_OPERATION_TIMEOUT_MS,
+        "Launching Chromium",
+      );
+      logger.info({ event: "browser.init.success" }, "Browser instance created");
+    } catch (error) {
+      this.browserInitPromise = null;
+      logger.error({ event: "browser.init.error", error }, "Failed to initialize browser");
+      throw error;
+    }
+  }
+
+  private async recycle(): Promise<void> {
+    try {
+      logger.info(
+        { event: "browser.recycle.start", pages: this.pageCount },
+        `Recycling browser after ${this.pageCount} pages`,
+      );
+
+      const currentBrowser = this.browser;
+      this.browser = null;
+      this.browserInitPromise = null;
+      this.pageCount = 0;
+
+      if (currentBrowser) {
+        try {
+          await withTimeout(
+            currentBrowser.close(),
+            BROWSER_CLOSE_TIMEOUT_MS,
+            "Closing Chromium browser",
+          );
+        } catch (error) {
+          currentBrowser.process()?.kill("SIGKILL");
+          throw error;
+        }
+        logger.info({ event: "browser.recycle.success" }, "Browser instance closed successfully");
+      }
+    } catch (error) {
+      logger.error({ event: "browser.recycle.error", error }, "Error closing browser");
+    } finally {
+      this.browserClosePromise = null;
+      this.recycleRequested = false;
     }
   }
 }
 
-function handleBrowserAttemptFailure(
-  error: unknown,
-  browserAcquired: boolean,
-  progress?: RendererProgressReporter,
-): boolean {
-  const deadlineExceeded = error instanceof GenerationDeadlineError;
-  if (!deadlineExceeded) {
-    markBrowserUnhealthy(error);
-    progress?.("recycling-browser");
-    if (!browserAcquired) {
-      recycleIfIdle();
-    }
-  }
-  return deadlineExceeded;
+const browserPool = new BrowserPool(MAX_PAGES_PER_BROWSER);
+
+export interface BrowserRetryOptions {
+  progress?: RendererProgressReporter;
+  timeoutMs?: number;
 }
 
+/**
+ * Execute a function with a browser instance, retrying with a fresh browser on failure.
+ */
 export async function useBrowserWithRetry<T>(
   fn: (browser: Browser) => Promise<T>,
   options: BrowserRetryOptions = {},
 ): Promise<T> {
-  const context = createBrowserRetryContext(options);
+  const context: BrowserRetryContext = {
+    budget: new GenerationBudget(options.timeoutMs ?? DOCUMENT_GENERATION_TIMEOUT_MS),
+    maxAttempts: MAX_RETRIES_PER_REQUEST + 1,
+    progress: options.progress,
+  };
   let lastError: unknown;
 
   for (let attempt = 1; attempt <= context.maxAttempts; attempt++) {
@@ -340,7 +301,7 @@ export async function useBrowserWithRetry<T>(
       context.progress?.("retrying");
     }
 
-    const result = await runBrowserAttempt(fn, attempt, context);
+    const result = await browserPool.runAttempt(fn, attempt, context);
     if (result.succeeded) {
       return result.value;
     }
