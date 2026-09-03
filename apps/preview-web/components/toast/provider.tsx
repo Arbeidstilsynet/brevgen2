@@ -11,7 +11,7 @@ interface ToastContextValue {
 
 const defaultValue: ToastContextValue = {
   message: "",
-  variant: "info" as ToastVariant,
+  variant: "info",
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   addToast: () => {},
   // eslint-disable-next-line @typescript-eslint/no-empty-function
