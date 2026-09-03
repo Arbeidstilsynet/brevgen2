@@ -161,6 +161,19 @@ jobs:
           name: integration-test-snapshots
           path: apps/api/integration-tests/__snapshots__/
 
+  # editor dockerfile is not covered elsewhere before deploy, unlike API that is built in testcontainer job
+  editor-docker:
+    needs: changes
+    if: needs.changes.outputs.brevgen2 == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Build editor image
+        run: docker build --file apps/preview-web/Dockerfile .
+
   nuget-client:
     needs: changes
     if: needs.changes.outputs.nuget-client == 'true'

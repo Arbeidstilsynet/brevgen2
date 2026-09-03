@@ -63,7 +63,7 @@ function filterAllowedPdfOptions(obj: unknown): PDFOptionsWithLimits | null {
     }
   }
 
-  return keyCount > 0 ? (filtered as PDFOptionsWithLimits) : null;
+  return keyCount > 0 ? filtered : null;
 }
 
 export function PdfOptionsTab({ pdfOptions, setPdfOptions }: PdfOptionsTabProps) {
@@ -193,7 +193,7 @@ export function PdfOptionsTab({ pdfOptions, setPdfOptions }: PdfOptionsTabProps)
           <label className="block text-sm font-medium mb-2">
             Paper Format
             <select
-              value={(pdfOptions.format as string) ?? ""}
+              value={pdfOptions.format ?? ""}
               onChange={(e) => {
                 const value = e.target.value;
                 updateOption(
