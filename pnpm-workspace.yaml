@@ -6,7 +6,7 @@ packages:
 allowBuilds:
   cpu-features: false
   protobufjs: false
-  puppeteer: true
+  puppeteer: false
   sharp: false
   ssh2: false
 
