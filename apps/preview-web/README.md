@@ -55,9 +55,8 @@ PDF_AUTH_MODE=bearer
 
 # Client credentials for bearer-modus (f.eks. NAIS / Entra ID)
 AZURE_TENANT_ID=da4bf886-a8a6-450d-a806-c347b8eb8d80 # default, Arbeidstilsynet
-# Se Brevgenerator2 DEV/PROD i Azure app registrations
-AZURE_APPLICATION_ID=...
-AZURE_CLIENT_SECRET=... # Ligger i Keeper
+AZURE_APPLICATION_ID=079a726c-1419-4907-9aeb-e230f700e22a # Brevgenerator2 DEV
+AZURE_CLIENT_SECRET="..."
 
 
 # For å kunne hente maler fra repo

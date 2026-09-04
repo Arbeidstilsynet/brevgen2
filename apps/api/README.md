@@ -112,7 +112,7 @@ Description: Allows users to access the Brevgenerator web platform and all integ
 ```sh
 PORT=4000 # default
 AZURE_TENANT_ID=da4bf886-a8a6-450d-a806-c347b8eb8d80 # default, Arbeidstilsynet
-AZURE_APPLICATION_ID # Brevgenerator2 DEV: 079a726c-1419-4907-9aeb-e230f700e22a
+AZURE_APPLICATION_ID=079a726c-1419-4907-9aeb-e230f700e22a # Brevgenerator2 DEV
 
 # Scheduler config
 GENERATION_MAX_PENDING_JOBS=150 # maximum jobs waiting to generate a document per pod
