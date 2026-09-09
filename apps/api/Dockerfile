@@ -1,17 +1,8 @@
-FROM node:26-trixie-slim@sha256:c0753125a3789977aefe869cbebccf70e3cfd7ea84ca48547458f02e4f1d7146 AS base
+FROM ghcr.io/pnpm/pnpm:12@sha256:4fcb6db39468ecafef34f3e866730df106f7639ba4512e42885d80f868ccb257 AS base
 
 # The build output is platform independent (bundled JS + static assets), so pin the builder to the
 # native build platform. Cross-platform builds then only emulate the much cheaper runner stage.
 FROM --platform=$BUILDPLATFORM base AS builder
-
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME/bin:$PATH"
-ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
-
-# Node no longer bundles Corepack (removed by default since Node 25), so install it explicitly.
-# renovate: datasource=npm depName=corepack
-ARG COREPACK_VERSION="0.35.0"
-RUN npm install -g corepack@${COREPACK_VERSION} && corepack enable
 
 WORKDIR /app
 
@@ -26,10 +17,10 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store PUPPETEER_SKIP_DOWNLOAD=true p
 
 COPY apps/api ./apps/api
 COPY packages ./packages
-RUN pnpm_config_verify_deps_before_run=false pnpm --filter api build
+RUN pnpm --filter api build
 
 
-FROM base AS runner
+FROM node:26-trixie-slim@sha256:c0753125a3789977aefe869cbebccf70e3cfd7ea84ca48547458f02e4f1d7146 AS runner
 # For available Chromium versions in the distro, see https://repology.org/project/chromium/versions
 # Chromium versions changes should be matched with Puppeteer version from https://pptr.dev/supported-browsers
 ARG CHROMIUM_VERSION="152.*"

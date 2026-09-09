@@ -1,19 +1,10 @@
-FROM node:26-alpine@sha256:2d984a15c9b54fd0aeb608b8e0d0d83529eb34d2966db27a1fb4f1edc3d298a3 AS base
+FROM ghcr.io/pnpm/pnpm:12@sha256:4fcb6db39468ecafef34f3e866730df106f7639ba4512e42885d80f868ccb257 AS base
 
-
-FROM base AS builder
-# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-RUN apk add --no-cache libc6-compat
+# The build output is platform independent (bundled JS + static assets), so pin the builder to the
+# native build platform. Cross-platform builds then only emulate the much cheaper runner stage.
+FROM --platform=$BUILDPLATFORM base AS builder
 
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME/bin:$PATH"
-
-# Node no longer bundles Corepack (removed by default since Node 25), so install it explicitly.
-# renovate: datasource=npm depName=corepack
-ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
-ARG COREPACK_VERSION="0.35.0"
-RUN npm install --ignore-scripts -g corepack@${COREPACK_VERSION} && corepack enable
 
 WORKDIR /app
 # # copy root workspace and lockfile
@@ -28,7 +19,7 @@ RUN pnpm --filter preview-web build
 
 
 # Production image, copy all the files and run next
-FROM base AS runner
+FROM node:26-alpine@sha256:2d984a15c9b54fd0aeb608b8e0d0d83529eb34d2966db27a1fb4f1edc3d298a3 AS runner
 
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
