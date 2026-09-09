@@ -73,7 +73,7 @@ describe("schema validation", () => {
     const args: GenerateDocumentRequest = {
       md: testdata.md,
       mdVariables: {},
-      options: { dynamic: {} } as GenerateDocumentRequestOptions,
+      options: { dynamic: {} },
     };
 
     const expectedError = new ValidationError(
