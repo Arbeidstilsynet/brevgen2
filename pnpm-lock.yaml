@@ -22,7 +22,7 @@ importers:
         specifier: 7.1.1
         version: 7.1.1(supports-color@7.2.0)
       node:
-        specifier: runtime:^26
+        specifier: runtime:^26.8.1
         version: runtime:26.8.1
       oxfmt:
         specifier: 0.66.0
