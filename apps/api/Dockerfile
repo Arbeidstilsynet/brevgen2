@@ -6,8 +6,8 @@ FROM --platform=$BUILDPLATFORM base AS builder
 
 WORKDIR /app
 
-COPY .npmrc package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 # don't copy code yet for better caching
+COPY .npmrc package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/api/package.json ./apps/api/
 COPY packages/dynamic-markdown/package.json ./packages/dynamic-markdown/
 COPY packages/document-templates/package.json ./packages/document-templates/

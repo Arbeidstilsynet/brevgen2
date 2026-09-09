@@ -7,14 +7,18 @@ FROM --platform=$BUILDPLATFORM base AS builder
 ENV NEXT_TELEMETRY_DISABLED=1
 
 WORKDIR /app
-# # copy root workspace and lockfile
-COPY .npmrc package.json pnpm-workspace.yaml pnpm-lock.yaml ./
-COPY packages/ ./packages
+
 # don't copy code for better caching
+COPY .npmrc package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY apps/preview-web/package.json ./apps/preview-web/
+COPY packages/dynamic-markdown/package.json ./packages/dynamic-markdown/
+COPY packages/document-templates/package.json ./packages/document-templates/
+COPY packages/shared-types/package.json ./packages/shared-types/
+COPY packages/config-typescript/package.json ./packages/config-typescript/
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --filter preview-web...
 
 COPY apps/preview-web ./apps/preview-web
+COPY packages/ ./packages
 RUN pnpm --filter preview-web build
 
 
