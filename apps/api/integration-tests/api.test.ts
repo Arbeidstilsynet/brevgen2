@@ -17,7 +17,7 @@ export interface TestEnvironment {
 
 // run inner describes in sequence
 // as the visual regression tests are dependent on the downloaded PDFs from api tests
-describe.sequential("Integration tests with testcontainers", () => {
+describe("Integration tests with testcontainers", { concurrent: false }, () => {
   let testEnv: TestEnvironment | null;
 
   beforeAll(async () => {
@@ -93,7 +93,7 @@ describe.sequential("Integration tests with testcontainers", () => {
     validationTests(() => testEnv!);
   });
 
-  describe.sequential("API tests - /genererbrev", () => {
+  describe("API tests - /genererbrev", { concurrent: false }, () => {
     genererBrevTests(() => testEnv!);
   });
 
