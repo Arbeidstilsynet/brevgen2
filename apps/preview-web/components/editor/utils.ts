@@ -173,7 +173,7 @@ function applyTopLevelObjectToVars(obj: unknown, foundMdVars: Set<string>, setMd
 /**
  * Generic function to read text from clipboard with fallback to prompt
  */
-export async function readTextFromClipboard(promptMessage: string): Promise<string | null> {
+async function readTextFromClipboard(promptMessage: string): Promise<string | null> {
   try {
     return await navigator.clipboard.readText();
   } catch {

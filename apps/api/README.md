@@ -187,14 +187,14 @@ Dynamic Markdown -> Markdown -> HTML (Marked) -> PDF (Puppeteer)
 const testdata = {
   md: `# Vedtak om at dere blir tilbakekalt
 
-${generateLoremIpsum(100)}
+Lorem ipsum
 
 ## Dette må dere gjøre
-${generateLoremIpsum(200)}
+Lorem ipsum
 
 {{ if kanKlage == true ::
 ## Dere kan klage innen {{ klageFrist }}
-${generateLoremIpsum(100)}
+Lorem ipsum
 }}
 `,
   variables: {

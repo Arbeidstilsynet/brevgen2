@@ -1,8 +1,8 @@
 import { existsSync, mkdirSync } from "node:fs";
 import path from "node:path";
 
-export const tempDir = path.resolve(__dirname, "temp");
-export const baselineDir = path.resolve(__dirname, "baseline");
+const tempDir = path.resolve(__dirname, "temp");
+const baselineDir = path.resolve(__dirname, "baseline");
 
 export const pdfNames = {
   defaultShort: "test-pdf-default-template-short",

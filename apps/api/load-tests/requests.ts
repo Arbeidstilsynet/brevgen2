@@ -12,7 +12,7 @@ import {
 /**
  * Create planned request offsets for a linear ramp followed by a sustained rate.
  */
-export function createArrivalSchedule(config: LoadTestConfig): number[] {
+function createArrivalSchedule(config: LoadTestConfig): number[] {
   const { rampStartRequestsPerSecond, peakRequestsPerSecond, rampDurationMs, sustainDurationMs } =
     config;
   const rampDurationSeconds = rampDurationMs / 1000;

@@ -19,7 +19,7 @@ import type { GitProvider, ProviderRegistry } from "./types";
  * GitHub adapter for the GitProvider port. Repo ids are repository names, which
  * is what the underlying GitHub API calls expect.
  */
-export const gitHubProvider: GitProvider = {
+const gitHubProvider: GitProvider = {
   async listRepos() {
     const repos = await fetchReposFromGitHub();
     return repos.map(mapGitHubRepo);
@@ -44,7 +44,7 @@ export const gitHubProvider: GitProvider = {
  * Branch names are normalised without the `refs/heads/` prefix the API returns,
  * and inbound branch arguments are normalised defensively for legacy callers.
  */
-export const azureDevOpsProvider: GitProvider = {
+const azureDevOpsProvider: GitProvider = {
   async listRepos() {
     const repos = await fetchReposFromAzure();
     return repos.map(mapAzureRepo);
