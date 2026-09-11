@@ -17,7 +17,7 @@ const appAuth =
       })
     : null;
 
-export async function getGitHubToken(): Promise<string> {
+async function getGitHubToken(): Promise<string> {
   if (process.env.GITHUB_PAT) {
     return process.env.GITHUB_PAT;
   }

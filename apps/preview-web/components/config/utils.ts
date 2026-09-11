@@ -27,9 +27,6 @@ export function isFileAllowed({
   return isRepoChooseable(repoName) && isMarkdownFile(path) && isPathAllowed(prettyName, path);
 }
 
-/** @deprecated Use isFileAllowed instead */
-export const isAzDoFileAllowed = isFileAllowed;
-
 function generatePermanentUrl(
   provider: RepoInfo["provider"],
   repoIdentifier: string,
@@ -53,9 +50,4 @@ export async function handleCopyUrl(
 ) {
   const url = generatePermanentUrl(provider, repoIdentifier, branch, key);
   await navigator.clipboard.writeText(url);
-}
-
-/** @deprecated Use handleCopyUrl instead */
-export async function handleCopyUrlGit(repoId: string, branch: string, key: string) {
-  await handleCopyUrl("azdo", repoId, branch, key);
 }

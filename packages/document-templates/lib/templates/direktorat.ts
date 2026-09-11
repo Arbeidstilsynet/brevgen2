@@ -26,7 +26,7 @@ const text = {
   },
 } satisfies Record<string, Record<TemplateLanguage, string>>;
 
-export function getMd(md: string, args: DirektoratTemplateArgs): string {
+function getMd(md: string, args: DirektoratTemplateArgs): string {
   const letterhead = getLetterhead(args.fields, args.language);
   return `${letterhead}\n\n${md}\n\n${getSignature(args.signatureVariant, args.language, args.signatureLines)}`;
 }

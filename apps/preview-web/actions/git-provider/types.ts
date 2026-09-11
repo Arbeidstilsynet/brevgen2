@@ -1,7 +1,5 @@
 import type { ProviderId } from "@/utils/types";
 
-export const PROVIDER_IDS = ["azdo", "github"] as const satisfies readonly ProviderId[];
-
 /**
  * A repository in the normalised model shared across providers.
  */
