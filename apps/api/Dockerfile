@@ -1,4 +1,4 @@
-FROM ghcr.io/pnpm/pnpm:12@sha256:30c63e3ab5420b79ef0c46e6785d2eabf678cded04b298c9968ec2cabcd1c2d1 AS base
+FROM ghcr.io/pnpm/pnpm:12@sha256:0a4219f2ae582bce0e52073876c20e6387147f0809d8546744d87243797633ed AS base
 
 # The build output is platform independent (bundled JS + static assets), so pin the builder to the
 # native build platform. Cross-platform builds then only emulate the much cheaper runner stage.
