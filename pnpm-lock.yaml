@@ -222,8 +222,8 @@ importers:
         specifier: workspace:^
         version: link:../../packages/shared-types
       dotenv:
-        specifier: 18.0.2
-        version: 18.0.2
+        specifier: 18.0.3
+        version: 18.0.3
       fastify:
         specifier: 5.12.5
         version: 5.12.5
@@ -2573,8 +2573,8 @@ packages:
     resolution: {integrity: sha512-qI4JLRKnSzqFqr7hAlS5xQDusBCjKSEG4t4+7aNrIQMHBcsC2TGEhuyABJdYkgSewL57PNLYEiibY2iPKhKpaA==}
     engines: {node: '>=20.19.0'}
 
-  dotenv@18.0.2:
-    resolution: {integrity: sha512-wl0U3CxC0iobaryqEKpFJxzyp4AxQFYAKj/WWszXZr87vVHLi2yJv2syax5Vxt+u02xqNgE277rsc3lOKg9sPg==}
+  dotenv@18.0.3:
+    resolution: {integrity: sha512-/8CJTyL817qPnfbQrJgOEcrU3fDrJkRIoXBE566wHuvIXKOCHUZhPqGPbCPi9SogjdGnreF0TlvnTgK6J/8zpA==}
     engines: {node: '>=12'}
     hasBin: true
 
@@ -6361,7 +6361,7 @@ snapshots:
       domelementtype: 3.0.0
       domhandler: 6.0.1
 
-  dotenv@18.0.2: {}
+  dotenv@18.0.3: {}
 
   dts-resolver@3.0.0: {}
 
