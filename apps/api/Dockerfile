@@ -20,7 +20,7 @@ COPY packages ./packages
 RUN pnpm --filter api build
 
 
-FROM node:26-trixie-slim@sha256:14bf3eac4bf209d906d3c41256597d3ab1f926b2e93a79e9bdfe1efd32454239 AS runner
+FROM node:26-trixie-slim@sha256:ec7758ee051e457b468b32bde57b0879010b325bb9862718e9615225ce4aaae1 AS runner
 # For available Chromium versions in the distro, see https://repology.org/project/chromium/versions
 # Chromium versions changes should be matched with Puppeteer version from https://pptr.dev/supported-browsers
 ARG CHROMIUM_VERSION="153.*"
