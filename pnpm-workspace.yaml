@@ -29,3 +29,6 @@ trustPolicy: no-downgrade
 trustPolicyExclude:
   - jose@4.15.9
   - semver@6.3.1
+minimumReleaseAgeExclude:
+  # Renovate security update: next@16.3.6
+  - next@16.3.6
