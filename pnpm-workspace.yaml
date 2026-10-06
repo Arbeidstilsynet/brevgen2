@@ -10,6 +10,8 @@ allowBuilds:
   sharp: false
   ssh2: false
 
+autoDedupe: true
+
 audit:
   level: high
   ignore:
@@ -20,15 +22,16 @@ autoInstallPeers: false
 
 minimumReleaseAge: 4320
 
+minimumReleaseAgeExcludePrune: true
+
 overrides:
   dompurify@<=3.4.11: ^3.4.12
+  seroval@<=1.6.2: ^1.6.3
   uuid@<14.0.0: '>=14.0.0'
 
 trustPolicy: no-downgrade
 
+trustPolicyExcludePrune: true
+
 trustPolicyExclude:
   - jose@4.15.9
-  - semver@6.3.1
-minimumReleaseAgeExclude:
-  # Renovate security update: next@16.3.6
-  - next@16.3.6
