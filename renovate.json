@@ -8,9 +8,21 @@
       "extends": ["config:js-app"]
     },
     {
-      "matchPackageNames": ["puppeteer", "puppeteer-core"],
+      "matchDatasources": ["repology"],
+      "minimumReleaseAgeBehaviour": "timestamp-optional",
+      "description": "Repology provides no release timestamps"
+    },
+    {
+      "matchDatasources": ["repology"],
+      "matchPackageNames": ["debian_13/chromium"],
+      "groupName": "chromium",
+      "description": "Group Chromium updates with Puppeteer for compatibility (https://pptr.dev/supported-browsers)"
+    },
+    {
       "matchManagers": ["npm"],
+      "matchPackageNames": ["puppeteer", "puppeteer-core"],
       "automerge": false,
+      "groupName": "chromium",
       "description": "Avoid automerging puppeteer patches to preserve compatibility with specific Chromium versions"
     },
     {
