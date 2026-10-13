@@ -21,15 +21,16 @@ RUN pnpm --filter api build
 
 
 FROM node:26-trixie-slim@sha256:ec7758ee051e457b468b32bde57b0879010b325bb9862718e9615225ce4aaae1 AS runner
-# For available Chromium versions in the distro, see https://repology.org/project/chromium/versions
-# Chromium versions changes should be matched with Puppeteer version from https://pptr.dev/supported-browsers
-ARG CHROMIUM_VERSION="154.*"
 
 ### Versions managed by Renovate
 ### https://docs.renovatebot.com/presets-customManagers/#custommanagersdockerfileversions
 ### https://docs.renovatebot.com/modules/datasource/repology/
-# renovate: datasource=repology depName=debian_13/fontconfig versioning=loose
-ENV FONTCONFIG_VERSION="2.15.0-2.3"
+# For available Chromium versions in the distro, see https://repology.org/project/chromium/versions
+# Chromium versions changes should be matched with Puppeteer version from https://pptr.dev/supported-browsers
+# renovate: datasource=repology depName=debian_13/chromium versioning=deb
+ARG CHROMIUM_VERSION="154.0.8037.92-1"
+# renovate: datasource=repology depName=debian_13/fontconfig versioning=deb
+ARG FONTCONFIG_VERSION="2.15.0-2.3"
 
 # Install specific Chromium version and other dependencies from the base image's (Debian trixie) default repos
 RUN apt-get update \
