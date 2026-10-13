@@ -1,6 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["local>Arbeidstilsynet/renovate-config"],
+  "extends": ["local>Arbeidstilsynet/renovate-config", "customManagers:dockerfileVersions"],
   "reviewersFromCodeOwners": true,
   "packageRules": [
     {
