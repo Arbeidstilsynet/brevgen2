@@ -16,6 +16,7 @@
       "matchDatasources": ["repology"],
       "matchPackageNames": ["debian_13/chromium"],
       "groupName": "chromium",
+      "separateMajorMinor": false,
       "description": "Group Chromium updates with Puppeteer for compatibility (https://pptr.dev/supported-browsers)"
     },
     {
@@ -23,6 +24,7 @@
       "matchPackageNames": ["puppeteer", "puppeteer-core"],
       "automerge": false,
       "groupName": "chromium",
+      "separateMajorMinor": false,
       "description": "Avoid automerging puppeteer patches to preserve compatibility with specific Chromium versions"
     },
     {
