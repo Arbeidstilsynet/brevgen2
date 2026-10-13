@@ -8,10 +8,6 @@ PR titles MUST follow [Conventional Commits](https://www.conventionalcommits.org
 - **Scope** is optional but encouraged. Use the affected package or area. Example scopes (not limited to): `api`, `web`, `document-templates`, `shared-types`, `docker`, `otel`, `nais/web`, `ci`, `scripts`. Inspect recent non-Renovate commits on `main` (`git log main`, ignoring `deps`/Renovate bumps) for more examples.
 - Keep the description in the imperative mood and lower case, e.g. `refactor(document-templates): migrate templates onto the registry`.
 
-## Running commands
-
-Use pnpm via Corepack. Set `COREPACK_ENABLE_DOWNLOAD_PROMPT=0` when invoking pnpm to avoid its interactive provisioning prompt.
-
 ## Build, lint, typecheck, and test
 
 Root-level scripts run via Turborepo across all workspaces:
