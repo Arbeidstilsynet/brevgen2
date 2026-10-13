@@ -34,4 +34,5 @@ trustPolicy: no-downgrade
 trustPolicyExcludePrune: true
 
 trustPolicyExclude:
+  - chromium-bidi
   - jose@4.15.9
