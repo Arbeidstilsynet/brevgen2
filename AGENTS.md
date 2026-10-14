@@ -74,4 +74,4 @@ Canonical triage label vocabulary (defaults, unchanged). See `docs/agents/triage
 
 ### Domain docs
 
-Single-context layout — one `CONTEXT.md` glossary at the repo root covers the whole monorepo. See `docs/agents/domain.md`.
+Single-context layout — one `GLOSSARY.md` glossary at the repo root covers the whole monorepo. See `docs/agents/domain.md`.
