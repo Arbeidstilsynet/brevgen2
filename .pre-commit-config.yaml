@@ -24,3 +24,12 @@ repos:
     rev: v0.71.0
     hooks:
       - id: oxfmt
+
+  - repo: local
+    hooks:
+      - id: fallow
+        name: fallow audit
+        entry: pnpm exec fallow audit --quiet
+        language: system
+        pass_filenames: false
+        types_or: [ts, tsx, javascript, jsx]
