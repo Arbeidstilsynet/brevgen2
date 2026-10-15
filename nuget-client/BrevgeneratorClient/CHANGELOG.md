@@ -1,5 +1,10 @@
 # Changelog
 
+## 5.2.1
+
+- Added MIT license metadata, the Arbeidstilsynet package icon, and repository metadata for NuGet
+  prefix reservation. Existing authors, description, project URL, and packaged readme are retained.
+
 ## 5.2.0
 
 - The client now retries automatically when the API responds `503 Service Unavailable` with a valid

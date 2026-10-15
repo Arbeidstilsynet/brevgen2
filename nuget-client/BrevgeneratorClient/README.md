@@ -156,3 +156,8 @@ new BrevgeneratorConfig { AuthMode = AuthMode.BearerToken, BaseUrl = null }
 3. PR og merge til main-branch
 4. Lag Git tag `nuget-client-v<x.y.z>`
 5. En ny pakke blir bygget og publisert i nuget.org, klar til bruk
+
+## Lisens
+
+Pakken er lisensiert under [MIT-lisensen](https://github.com/Arbeidstilsynet/brevgen2/blob/main/LICENSE).
+NuGet-pakken inneholder Arbeidstilsynets ikon og metadata som lenker til dette repositoriet.
