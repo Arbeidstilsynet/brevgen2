@@ -302,8 +302,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/dynamic-markdown
       '@azure/msal-node':
-        specifier: 7.0.1
-        version: 7.0.1
+        specifier: 7.1.0
+        version: 7.1.0
       '@google-cloud/storage':
         specifier: 8.4.0
         version: 8.4.0(supports-color@7.2.0)
@@ -436,8 +436,8 @@ packages:
     resolution: {integrity: sha512-HOBR0Gfo39TMrkxNG8k6cfjRkrRjXZc3JQs3ebMWQc9S4cihuknMYra3sgmzbZB752oQBqBN9+WF7c826p2vIQ==}
     engines: {node: '>=0.8.0'}
 
-  '@azure/msal-node@7.0.1':
-    resolution: {integrity: sha512-mrHLCwXird58rdk7LjvlUn5YybvVb3qXwlw3tvSWqHllmatFeQYuFhX/cJ7CoGgpdAOmNzm6Un4KDu+v/O3Tcw==}
+  '@azure/msal-node@7.1.0':
+    resolution: {integrity: sha512-s1O6hSY/C/dmqykTmmeHY6GhSkDuY8N1gxyhuLyaCwbY7N+UBvU2Wu4flas7+NxZiAPcXNPVpgt3n/HP/5yL+w==}
     engines: {node: '>=20'}
 
   '@babel/helper-string-parser@7.29.7':
@@ -4231,7 +4231,7 @@ snapshots:
 
   '@azure/msal-common@16.14.2': {}
 
-  '@azure/msal-node@7.0.1':
+  '@azure/msal-node@7.1.0':
     dependencies:
       '@azure/msal-common': 16.14.2
       jsonwebtoken: 9.0.3
