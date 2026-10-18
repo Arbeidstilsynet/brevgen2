@@ -20,7 +20,7 @@ COPY packages ./packages
 RUN pnpm --filter api build
 
 
-FROM node:26-trixie-slim@sha256:193fe51b64e77981119c98c2002c9e32a70e2f006fb4d25068ce0558998917f0 AS runner
+FROM node:26-trixie-slim@sha256:0d1e33586362bb9e608c4e751e7a9e7edb55c9ac11461ed5666af696cc461dd4 AS runner
 
 ### Versions managed by Renovate
 ### https://docs.renovatebot.com/presets-customManagers/#custommanagersdockerfileversions
