@@ -2,9 +2,9 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: brevgen2-alerts
-  namespace: "{{team}}"
+  namespace: plattform
   labels:
-    team: "{{team}}"
+    team: plattform
 spec:
   groups:
     - name: brevgen2-api-alerts
@@ -14,21 +14,21 @@ spec:
           for: 0m
           annotations:
             consequence: "Document generation requests are being rejected because the scheduler is overloaded"
-            action: "Inspect document generation scheduler metrics and application logs: `kubectl logs -l app={{api.name}} -n {{team}}`"
-            summary: "{{api.name}} rejected document generation requests because it was overloaded ({{prometheus_value_humanize }} rejections in the last 15m)"
+            action: "Inspect document generation scheduler metrics and application logs: `kubectl logs -l app=brevgen2-api -n plattform`"
+            summary: "brevgen2-api rejected document generation requests because it was overloaded ({{ $value | humanize }} rejections in the last 15m)"
           labels:
-            namespace: "{{team}}"
+            namespace: plattform
             severity: warning
         - alert: Brevgen2ApiUnexpected5xxErrors
           # The overload counter is only exported once it has been incremented, so an
           # absent series must fall back to 0 or the subtraction yields an empty vector
           # and the alert can never fire.
-          expr: sum(increase(haproxy_backend_http_responses_total{proxy="{{team}}_svc_{{api.name}}_http", code="5xx"}[15m])) - (sum(increase(brevgen_generation_overload_responses_total[15m])) or vector(0)) > 0
+          expr: sum(increase(haproxy_backend_http_responses_total{proxy="plattform_svc_brevgen2-api_http", code="5xx"}[15m])) - (sum(increase(brevgen_generation_overload_responses_total[15m])) or vector(0)) > 0
           for: 0m
           annotations:
-            consequence: "Users are receiving 5xx server errors from {{api.name}}"
-            action: "Check application logs: `kubectl logs -l app={{api.name}} -n {{team}}` and inspect recent deployments: `gh run list -R Arbeidstilsynet/brevgen2 -w deploy.yaml --limit 10`"
-            summary: "{{api.name}} has returned 5xx responses ({{prometheus_value_humanize }} errors in the last 15m)"
+            consequence: "Users are receiving 5xx server errors from brevgen2-api"
+            action: "Check application logs: `kubectl logs -l app=brevgen2-api -n plattform` and inspect recent deployments: `gh run list -R Arbeidstilsynet/brevgen2 -w deploy.yaml --limit 10`"
+            summary: "brevgen2-api has returned 5xx responses ({{ $value | humanize }} errors in the last 15m)"
           labels:
-            namespace: "{{team}}"
+            namespace: plattform
             severity: critical

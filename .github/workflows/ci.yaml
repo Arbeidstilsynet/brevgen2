@@ -72,16 +72,18 @@ jobs:
         working-directory: .nais
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - name: Install nais-cli
-        run: |
-          NAIS_GPG_KEY="/etc/apt/keyrings/nav_nais_gar.asc"
-          curl -sfSL "https://europe-north1-apt.pkg.dev/doc/repo-signing-key.gpg" | sudo dd of="$NAIS_GPG_KEY"
-          echo "deb [arch=amd64 signed-by=$NAIS_GPG_KEY] https://europe-north1-apt.pkg.dev/projects/nais-io nais-ppa main" | sudo tee /etc/apt/sources.list.d/nav_nais_gar.list
-          sudo apt update
-          sudo apt install nais
+      - uses: nais/setup@fb8692f65df9c904e2cdac5d395630ac876abdcf # v1.0.3
       - run: nais --version
-      - run: nais validate --vars-file vars-dev.yaml api.yaml web.yaml
-      - run: nais validate --vars-file vars-prod.yaml api.yaml web.yaml
+      - name: Validate environment manifests
+        run: |
+          for environment in dev prod; do
+            for application in api web; do
+              manifest="$RUNNER_TEMP/$application-$environment.yaml"
+              yq eval-all '. as $item ireduce ({}; . *+ $item)' \
+                "$application.yaml" "$application.$environment.yaml" > "$manifest"
+              nais validate "$manifest"
+            done
+          done
 
   build:
     needs: changes

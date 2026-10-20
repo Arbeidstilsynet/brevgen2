@@ -1,33 +1,25 @@
 apiVersion: nais.io/v1alpha1
 kind: Application
 metadata:
-  name: "{{web.name}}"
-  namespace: "{{team}}"
+  name: brevgen2-web
+  namespace: plattform
   labels:
-    team: "{{team}}"
+    team: plattform
 spec:
   env:
-    - name: AZURE_APPLICATION_ID
-      value: "{{azure_app_id}}"
-    - name: NEXTAUTH_URL
-      value: "{{web.ingress}}/api/auth"
     - name: PDF_API_URL
-      value: "http://{{api.name}}"
+      value: "http://brevgen2-api"
     - name: PDF_AUTH_MODE
       value: bearer
-    - name: GCP_BUCKET_NAME
-      value: "{{bucket.name}}"
   envFrom:
     - secret: azure-devops-pat-code-read # AZURE_DEVOPS_PAT
     - secret: brevgen2-azure-app-client-secret # AZURE_CLIENT_SECRET
     - secret: brevgen2-authjs-secret # AUTH_SECRET
     - secret: brevgen2-github-app-contents-read # GITHUB_APP_ID, GITHUB_APP_INSTALLATION_ID, GITHUB_APP_PRIVATE_KEY
-  ingresses:
-    - "{{web.ingress}}"
   accessPolicy:
     outbound:
       rules:
-        - application: "{{api.name}}"
+        - application: brevgen2-api
       external:
         # Azure DevOps REST API
         - host: dev.azure.com
@@ -48,6 +40,3 @@ spec:
     path: /api/health
   liveness:
     path: /api/health
-  gcp:
-    buckets:
-      - name: "{{bucket.name}}"
