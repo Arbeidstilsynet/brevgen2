@@ -1,33 +1,27 @@
 apiVersion: nais.io/v1alpha1
 kind: Application
 metadata:
-  name: "{{api.name}}"
-  namespace: "{{team}}"
+  name: brevgen2-api
+  namespace: plattform
   labels:
-    team: "{{team}}"
+    team: plattform
 spec:
   env:
     - name: PORT
       value: "4000"
     - name: AZURE_TENANT_ID
-      value: "{{azure_tenant_id}}"
-    - name: AZURE_APPLICATION_ID
-      value: "{{azure_app_id}}"
-    - name: GIT_SHA
-      value: "{{git_sha}}"
+      value: da4bf886-a8a6-450d-a806-c347b8eb8d80
     - name: GENERATION_MAX_DURATION_MS
       value: "50000"
     - name: RENDERER_STALL_THRESHOLD_MS
       value: "20000"
     - name: RENDERER_RECOVERY_GRACE_MS
       value: "20000"
-  ingresses:
-    - "{{api.ingress}}"
   accessPolicy:
     inbound:
       rules:
-        - application: "{{web.name}}"
-          namespace: "{{team}}"
+        - application: brevgen2-web
+          namespace: plattform
   port: 4000
   replicas:
     max: 2

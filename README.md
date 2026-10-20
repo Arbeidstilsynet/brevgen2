@@ -49,6 +49,15 @@ Etter du har startet `api` kan du bruke SwaggerUI på `http://localhost:4000/doc
 
 ![diagram](./docs/diagrams/overview.svg)
 
+## Deploy til Nais
+
+[Deploy-workflowen](./.github/workflows/deploy.yaml) bruker `nais/setup` og `nais apply`.
+Felles konfigurasjon ligger i [`.nais/api.yaml`](./.nais/api.yaml) og [`.nais/web.yaml`](./.nais/web.yaml).
+Miljøspesifikk konfigurasjon ligger i `api.<miljø>.yaml` og `web.<miljø>.yaml` i [`.nais`](./.nais),
+og flettes automatisk inn av Nais CLI for valgt miljø (`dev` eller `prod`).
+Ved konfigurasjonsendringer uten nytt image gjenbrukes imaget som allerede kjører.
+API-et deployes til prod først etter at lasttestene i dev har bestått.
+
 ## Pre-commit hooks
 
 This repo uses [prek](https://prek.j178.dev/) for pre-commit hooks.

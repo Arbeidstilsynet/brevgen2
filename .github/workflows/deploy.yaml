@@ -66,9 +66,8 @@ jobs:
         id: naisapi
         with:
           include: |
-            .nais/api.yaml
+            .nais/api*.yaml
             .nais/alerts.yaml
-            .nais/vars-*.yaml
             .github/workflows/deploy.yaml
 
       - name: Web changed?
@@ -89,8 +88,7 @@ jobs:
         id: naisweb
         with:
           include: |
-            .nais/web.yaml
-            .nais/vars-*.yaml
+            .nais/web*.yaml
             .github/workflows/deploy.yaml
 
   build_api:
@@ -100,7 +98,6 @@ jobs:
     timeout-minutes: 10
     outputs:
       image: ${{ steps.docker.outputs.image }}
-      telemetry: ${{ steps.docker.outputs.telemetry }}
     permissions:
       contents: read
       id-token: write
@@ -137,7 +134,6 @@ jobs:
     timeout-minutes: 10
     outputs:
       image: ${{ steps.docker.outputs.image }}
-      telemetry: ${{ steps.docker.outputs.telemetry }}
     permissions:
       contents: read
       id-token: write
@@ -154,7 +150,7 @@ jobs:
   deploy_api_dev:
     needs: [check_changes, build_api]
     # deploy using new image if built, or reuse previous deployed image if only nais config changed
-    # https://docs.atil.cloud.nais.io/workloads/explanations/workload-image/?h=workload_image#using-the-workload_image-environment-variable
+    # https://docs.nais.io/build/explanations/applying-a-manifest/
     if: |
       always() &&
       (needs.build_api.result == 'success' ||
@@ -167,19 +163,27 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - uses: nais/deploy/actions/deploy@d003bddf74ce5b96fa3056ae60bd4b9b3bbc89ef # v3
+      - uses: nais/setup@fb8692f65df9c904e2cdac5d395630ac876abdcf # v1.0.3
+        with:
+          team: plattform
+          environment: dev
+      - name: Deploy API and alerts
         env:
-          CLUSTER: dev
-          RESOURCE: .nais/api.yaml,.nais/alerts.yaml
-          WORKLOAD_IMAGE: ${{ needs.build_api.outputs.image }}
-          VAR: git_sha=${{ github.sha }}
-          VARS: .nais/vars-dev.yaml
-          TELEMETRY: ${{ needs.build_api.outputs.telemetry }}
+          IMAGE: ${{ needs.build_api.outputs.image }}
+        run: |
+          args=()
+          if [[ -n "$IMAGE" ]]; then
+            args+=(--set "spec.image=$IMAGE")
+          fi
+          nais apply .nais/api.yaml "${args[@]}" \
+            --append "spec.env={name: GIT_SHA, value: '$GITHUB_SHA'}" \
+            --wait
+          nais apply .nais/alerts.yaml
 
   deploy_web_dev:
     needs: [check_changes, build_web]
     # deploy using new image if built, or reuse previous deployed image if only nais config changed
-    # https://docs.atil.cloud.nais.io/workloads/explanations/workload-image/?h=workload_image#using-the-workload_image-environment-variable
+    # https://docs.nais.io/build/explanations/applying-a-manifest/
     if: |
       always() &&
       (needs.build_web.result == 'success' ||
@@ -192,13 +196,19 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - uses: nais/deploy/actions/deploy@d003bddf74ce5b96fa3056ae60bd4b9b3bbc89ef # v3
+      - uses: nais/setup@fb8692f65df9c904e2cdac5d395630ac876abdcf # v1.0.3
+        with:
+          team: plattform
+          environment: dev
+      - name: Deploy web
         env:
-          CLUSTER: dev
-          RESOURCE: .nais/web.yaml
-          WORKLOAD_IMAGE: ${{ needs.build_web.outputs.image }}
-          VARS: .nais/vars-dev.yaml
-          TELEMETRY: ${{ needs.build_web.outputs.telemetry }}
+          IMAGE: ${{ needs.build_web.outputs.image }}
+        run: |
+          args=()
+          if [[ -n "$IMAGE" ]]; then
+            args+=(--set "spec.image=$IMAGE")
+          fi
+          nais apply .nais/web.yaml "${args[@]}" --wait
 
   load_test_api:
     name: Load test API (dev)
@@ -216,10 +226,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          FILE=.nais/vars-dev.yaml
-          TENANT_ID=$(yq -r '.azure_tenant_id' "$FILE")
-          APP_ID=$(yq -r '.azure_app_id' "$FILE")
-          API_INGRESS=$(yq -r '.api.ingress' "$FILE")
+          FILE=.nais/api.dev.yaml
+          TENANT_ID=$(yq -r '.spec.env[] | select(.name == "AZURE_TENANT_ID") | .value' .nais/api.yaml)
+          APP_ID=$(yq -r '.spec.env[] | select(.name == "AZURE_APPLICATION_ID") | .value' "$FILE")
+          API_INGRESS=$(yq -r '.spec.ingresses[0]' "$FILE")
           if [[ -z "$TENANT_ID" || -z "$APP_ID" || -z "$API_INGRESS" || "$TENANT_ID" == null || "$APP_ID" == null || "$API_INGRESS" == null ]]; then
             echo "Failed to parse required values from $FILE" >&2
             exit 1
@@ -304,14 +314,22 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - uses: nais/deploy/actions/deploy@d003bddf74ce5b96fa3056ae60bd4b9b3bbc89ef # v3
+      - uses: nais/setup@fb8692f65df9c904e2cdac5d395630ac876abdcf # v1.0.3
+        with:
+          team: plattform
+          environment: prod
+      - name: Deploy API and alerts
         env:
-          CLUSTER: prod
-          RESOURCE: .nais/api.yaml,.nais/alerts.yaml
-          WORKLOAD_IMAGE: ${{ needs.build_api.outputs.image }}
-          VAR: git_sha=${{ github.sha }}
-          VARS: .nais/vars-prod.yaml
-          TELEMETRY: ${{ needs.build_api.outputs.telemetry }}
+          IMAGE: ${{ needs.build_api.outputs.image }}
+        run: |
+          args=()
+          if [[ -n "$IMAGE" ]]; then
+            args+=(--set "spec.image=$IMAGE")
+          fi
+          nais apply .nais/api.yaml "${args[@]}" \
+            --append "spec.env={name: GIT_SHA, value: '$GITHUB_SHA'}" \
+            --wait
+          nais apply .nais/alerts.yaml
 
   deploy_web_prod:
     needs: [build_web, deploy_web_dev]
@@ -325,10 +343,16 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - uses: nais/deploy/actions/deploy@d003bddf74ce5b96fa3056ae60bd4b9b3bbc89ef # v3
+      - uses: nais/setup@fb8692f65df9c904e2cdac5d395630ac876abdcf # v1.0.3
+        with:
+          team: plattform
+          environment: prod
+      - name: Deploy web
         env:
-          CLUSTER: prod
-          RESOURCE: .nais/web.yaml
-          WORKLOAD_IMAGE: ${{ needs.build_web.outputs.image }}
-          VARS: .nais/vars-prod.yaml
-          TELEMETRY: ${{ needs.build_web.outputs.telemetry }}
+          IMAGE: ${{ needs.build_web.outputs.image }}
+        run: |
+          args=()
+          if [[ -n "$IMAGE" ]]; then
+            args+=(--set "spec.image=$IMAGE")
+          fi
+          nais apply .nais/web.yaml "${args[@]}" --wait

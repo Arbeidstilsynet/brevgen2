@@ -1,0 +1,13 @@
+spec:
+  env:
+    - name: AZURE_APPLICATION_ID
+      value: 079a726c-1419-4907-9aeb-e230f700e22a # Entra: Brevgenerator2 DEV
+    - name: NEXTAUTH_URL
+      value: https://brevgenerator.dev.arbeidstilsynet.no/api/auth
+    - name: GCP_BUCKET_NAME
+      value: at-brevgenerator2-workspace-dev
+  ingresses:
+    - https://brevgenerator.dev.arbeidstilsynet.no
+  gcp:
+    buckets:
+      - name: at-brevgenerator2-workspace-dev

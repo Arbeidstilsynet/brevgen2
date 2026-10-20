@@ -1,0 +1,6 @@
+spec:
+  env:
+    - name: AZURE_APPLICATION_ID
+      value: 079a726c-1419-4907-9aeb-e230f700e22a # Entra: Brevgenerator2 DEV
+  ingresses:
+    - https://brevgen2-api.dev.arbeidstilsynet.no
