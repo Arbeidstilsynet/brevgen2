@@ -28,7 +28,7 @@ FROM node:26-trixie-slim@sha256:0d1e33586362bb9e608c4e751e7a9e7edb55c9ac11461ed5
 # For available Chromium versions in the distro, see https://repology.org/project/chromium/versions
 # Chromium versions changes should be matched with Puppeteer version from https://pptr.dev/supported-browsers
 # renovate: datasource=repology depName=debian_13/chromium versioning=deb
-ARG CHROMIUM_VERSION="155.0.8059.79-1~deb13u1"
+ARG CHROMIUM_VERSION="156.0.8078.47-1~deb13u1"
 # renovate: datasource=repology depName=debian_13/fontconfig versioning=deb
 ARG FONTCONFIG_VERSION="2.15.0-2.3"
 
