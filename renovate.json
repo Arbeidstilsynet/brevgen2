@@ -17,15 +17,16 @@
       "matchPackageNames": ["debian_13/chromium"],
       "groupName": "chromium",
       "separateMajorMinor": false,
+      "automerge": true,
       "description": "Group Chromium updates with Puppeteer for compatibility (https://pptr.dev/supported-browsers)"
     },
     {
       "matchManagers": ["npm"],
       "matchPackageNames": ["puppeteer", "puppeteer-core"],
-      "automerge": false,
       "groupName": "chromium",
       "separateMajorMinor": false,
-      "description": "Avoid automerging puppeteer patches to preserve compatibility with specific Chromium versions"
+      "automerge": true,
+      "description": "Group Chromium updates with Puppeteer for compatibility (https://pptr.dev/supported-browsers)"
     },
     {
       "matchDatasources": ["docker"],
