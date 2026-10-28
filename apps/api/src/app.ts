@@ -1,22 +1,10 @@
-import Fastify from "fastify";
-import { HTTP_HANDLER_TIMEOUT_MS } from "./renderer/helpers";
+import Fastify, { type RawServerDefault } from "fastify";
+import { logger } from "./observability/logger";
+import { HTTP_HANDLER_TIMEOUT_MS } from "./timeout-budget";
 
-// NODE_ENV=development is equivalent to running locally (pnpm dev), while Docker is always "production"
-const environment = process.env.NODE_ENV ?? "development";
-
-export const fastify = Fastify({
+// The explicit server type keeps the default `FastifyBaseLogger` instead of inferring pino's
+// `Logger`, so the instance stays assignable to plain `FastifyInstance` parameters.
+export const fastify = Fastify<RawServerDefault>({
   handlerTimeout: HTTP_HANDLER_TIMEOUT_MS,
-  logger:
-    environment === "development"
-      ? {
-          level: "debug",
-          transport: {
-            target: "pino-pretty",
-            options: {
-              translateTime: "HH:MM:ss Z",
-            },
-          },
-        }
-      : true,
+  loggerInstance: logger,
 });
-export const logger = fastify.log;

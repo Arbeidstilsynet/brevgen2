@@ -2,7 +2,7 @@ import type { Browser } from "puppeteer-core";
 import type { Config } from "./config";
 import { generateOutput } from "./generate-output";
 import { getHtml } from "./get-html";
-import { getMarginObject } from "./helpers";
+import { getMarginObject } from "./margin";
 import { InferOutputType } from "./types";
 import type { RendererProgressReporter } from "./health";
 

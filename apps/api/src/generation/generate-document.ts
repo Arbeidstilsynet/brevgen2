@@ -4,7 +4,7 @@ import { mdToPdf } from "../renderer";
 import { HtmlConfig, PdfConfig } from "../renderer/config";
 import { Output } from "../renderer/types";
 import type { RendererProgressReporter } from "../renderer/health";
-import { DOCUMENT_GENERATION_TIMEOUT_MS } from "../renderer/helpers";
+import { DOCUMENT_GENERATION_TIMEOUT_MS } from "../timeout-budget";
 
 /**
  * Merges config objects with special handling for pdf_options to do a shallow merge

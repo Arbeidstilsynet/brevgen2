@@ -1,11 +1,10 @@
-import { logger } from "../app";
+import { logger } from "../observability/logger";
 import { withActiveSpan } from "../observability/otel";
 import { Config, defaultConfig } from "./config";
 import { useBrowserWithRetry } from "./browser/get-browser";
 import { convertMdToPdf } from "./md-to-pdf";
 import { InferOutputType } from "./types";
 import type { RendererProgressReporter } from "./health";
-import { DOCUMENT_GENERATION_TIMEOUT_MS } from "./helpers";
 
 /**
  * Convert a markdown file to PDF.
@@ -13,8 +12,8 @@ import { DOCUMENT_GENERATION_TIMEOUT_MS } from "./helpers";
 export async function mdToPdf<T extends Partial<Config>>(
   md: string,
   config: T = {} as T,
-  progress?: RendererProgressReporter,
-  timeoutMs = DOCUMENT_GENERATION_TIMEOUT_MS,
+  progress: RendererProgressReporter | undefined,
+  timeoutMs: number,
 ): Promise<InferOutputType<T>> {
   const mergedConfig: Config = {
     ...defaultConfig,

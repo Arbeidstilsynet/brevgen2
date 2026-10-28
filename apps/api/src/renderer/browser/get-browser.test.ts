@@ -117,11 +117,14 @@ describe("useBrowserWithRetry", () => {
     const useBrowserWithRetry = await importUseBrowserWithRetry();
     const activeRender = createDeferred<void>();
     const activeRenderStarted = createDeferred<void>();
-    const firstResult = useBrowserWithRetry(async () => {
-      activeRenderStarted.resolve();
-      await activeRender.promise;
-      return "first";
-    });
+    const firstResult = useBrowserWithRetry(
+      async () => {
+        activeRenderStarted.resolve();
+        await activeRender.promise;
+        return "first";
+      },
+      { timeoutMs: 1_000 },
+    );
     await activeRenderStarted.promise;
 
     const failingRender = vi
@@ -154,12 +157,15 @@ describe("useBrowserWithRetry", () => {
     const activeRender = createDeferred<void>();
     const activeRenderStarted = createDeferred<void>();
     let firstBrowser: Browser | undefined;
-    const firstResult = useBrowserWithRetry(async (browser) => {
-      firstBrowser = browser;
-      activeRenderStarted.resolve();
-      await activeRender.promise;
-      return "first";
-    });
+    const firstResult = useBrowserWithRetry(
+      async (browser) => {
+        firstBrowser = browser;
+        activeRenderStarted.resolve();
+        await activeRender.promise;
+        return "first";
+      },
+      { timeoutMs: 1_000 },
+    );
     await activeRenderStarted.promise;
 
     let secondBrowser: Browser | undefined;

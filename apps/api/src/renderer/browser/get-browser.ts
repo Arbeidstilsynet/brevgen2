@@ -1,15 +1,14 @@
 import type { Browser } from "puppeteer-core";
-import { logger } from "../../app";
+import { logger } from "../../observability/logger";
 import { withActiveSpan } from "../../observability/otel";
 import type { RendererProgressReporter } from "../health";
 import { getBrowserLaunchOptions } from "./get-puppeteer-options";
 import {
   BROWSER_CLOSE_TIMEOUT_MS,
-  DOCUMENT_GENERATION_TIMEOUT_MS,
   GenerationDeadlineError,
   PUPPETEER_OPERATION_TIMEOUT_MS,
   withTimeout,
-} from "../helpers";
+} from "../timeouts";
 import { loadPuppeteer } from "./puppeteer-loader";
 
 // After max pages is reached, we recycle the browser.
@@ -279,7 +278,8 @@ const browserPool = new BrowserPool(MAX_PAGES_PER_BROWSER);
 
 export interface BrowserRetryOptions {
   progress?: RendererProgressReporter;
-  timeoutMs?: number;
+  /** Budget shared by browser acquisition and every render attempt, including retries. */
+  timeoutMs: number;
 }
 
 /**
@@ -287,10 +287,10 @@ export interface BrowserRetryOptions {
  */
 export async function useBrowserWithRetry<T>(
   fn: (browser: Browser) => Promise<T>,
-  options: BrowserRetryOptions = {},
+  options: BrowserRetryOptions,
 ): Promise<T> {
   const context: BrowserRetryContext = {
-    budget: new GenerationBudget(options.timeoutMs ?? DOCUMENT_GENERATION_TIMEOUT_MS),
+    budget: new GenerationBudget(options.timeoutMs),
     maxAttempts: MAX_RETRIES_PER_REQUEST + 1,
     progress: options.progress,
   };
