@@ -235,7 +235,7 @@ class BrowserPool {
       logger.info({ event: "browser.init.success" }, "Browser instance created");
     } catch (error) {
       this.browserInitPromise = null;
-      logger.error({ event: "browser.init.error", error }, "Failed to initialize browser");
+      logger.error({ event: "browser.init.error", err: error }, "Failed to initialize browser");
       throw error;
     }
   }
@@ -266,7 +266,7 @@ class BrowserPool {
         logger.info({ event: "browser.recycle.success" }, "Browser instance closed successfully");
       }
     } catch (error) {
-      logger.error({ event: "browser.recycle.error", error }, "Error closing browser");
+      logger.error({ event: "browser.recycle.error", err: error }, "Error closing browser");
     } finally {
       this.browserClosePromise = null;
       this.recycleRequested = false;
@@ -316,7 +316,7 @@ export async function useBrowserWithRetry<T>(
           attempt,
           maxAttempts: context.maxAttempts,
           deadlineExceeded: result.deadlineExceeded,
-          error: result.error,
+          err: result.error,
         },
         "Browser generation failed after retries or deadline",
       );
@@ -328,7 +328,7 @@ export async function useBrowserWithRetry<T>(
         event: "browser.use.retry",
         attempt,
         maxAttempts: context.maxAttempts,
-        error: result.error,
+        err: result.error,
       },
       "Retrying with new browser after failure",
     );
