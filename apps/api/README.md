@@ -35,9 +35,12 @@ When running locally with `DANGEROUS_DISABLE_AUTH=true`, you can test endpoints 
 
 ## Integrasjonstester
 
-Starter API med [Testcontainers](https://testcontainers.com/) og gjør spørringer mot det.
+Tester som starter API-et som en egen prosess:
 
-`pnpm test:integration`
+- `api.test.ts` starter API-et med [Testcontainers](https://testcontainers.com/) og gjør spørringer mot det. Krever Docker.
+- `dev-server.test.ts` starter `pnpm dev` og sjekker at serveren starter på nytt når kildekoden endres. Krever ikke Docker.
+
+`pnpm test:integration` kjører begge. Kjør én fil med `pnpm exec vitest run integration-tests/dev-server.test.ts`.
 
 ## Load testing
 
