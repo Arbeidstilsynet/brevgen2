@@ -27,7 +27,7 @@ Scope a command to one workspace with `--filter`, for example `pnpm test --filte
 Run a single test file or name inside its workspace:
 
 ```sh
-cd apps/api && pnpm exec vitest run src/generation/handler.test.ts
+cd apps/api && pnpm exec vitest run src/generation/render-config.test.ts
 cd apps/api && pnpm exec vitest run -t "some test name"
 ```
 

@@ -1,25 +1,12 @@
 import { resolveTemplate } from "@at/document-templates";
 import type { GenerateDocumentRequestOptions } from "@repo/shared-types";
-import { describe, expect, test, vi } from "vitest";
+import { describe, expect, test } from "vitest";
+import { resolveRenderConfig } from "./render-config";
 
-// Characterisation harness: captures the config the renderer receives today, after every merge
-// and normalisation step. Only this block may change when the resolution is refactored.
-const captured = vi.hoisted(() => ({ config: undefined as unknown }));
-vi.mock("../renderer/browser/get-browser", () => ({
-  useBrowserWithRetry: async (render: (browser: unknown) => Promise<unknown>) => render({}),
-}));
-vi.mock("../renderer/generate-output", () => ({
-  generateOutput: async (_html: string, config: unknown) => {
-    captured.config = config;
-    return { content: Buffer.from("") };
-  },
-}));
-const { generateDocument } = await import("./generate-document");
-
+// Characterisation harness: the config the renderer receives, after every merge and normalisation
+// step. Only this block may change when the resolution is refactored.
 async function effectiveRenderConfig(options: GenerateDocumentRequestOptions): Promise<unknown> {
-  captured.config = undefined;
-  await generateDocument("# Test", options, undefined, 1_000);
-  return captured.config;
+  return resolveRenderConfig(options);
 }
 // End of characterisation harness.
 

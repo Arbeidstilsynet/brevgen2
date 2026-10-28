@@ -1,32 +1,27 @@
 import { logger } from "../observability/logger";
 import { withActiveSpan } from "../observability/otel";
-import { Config, defaultConfig } from "./config";
+import type { Config } from "./config";
 import { useBrowserWithRetry } from "./browser/get-browser";
 import { convertMdToPdf } from "./md-to-pdf";
 import { InferOutputType } from "./types";
 import type { RendererProgressReporter } from "./health";
 
 /**
- * Convert a markdown file to PDF.
+ * Render markdown to PDF or HTML. `config` must be fully resolved; the renderer does not merge
+ * defaults or normalise options.
  */
-export async function mdToPdf<T extends Partial<Config>>(
+export async function mdToPdf<T extends Config>(
   md: string,
   config: T,
   progress: RendererProgressReporter | undefined,
   timeoutMs: number,
 ): Promise<InferOutputType<T>> {
-  const mergedConfig: Config = {
-    ...defaultConfig,
-    ...config,
-    pdf_options: { ...defaultConfig.pdf_options, ...config.pdf_options },
-  };
-  logger.debug({ mergedConfig, path: import.meta.url, function: "mdToPdf" });
+  logger.debug({ mergedConfig: config, path: import.meta.url, function: "mdToPdf" });
 
   return await withActiveSpan("browser.generate_output", async () => {
-    const result = await useBrowserWithRetry(
-      async (browser) => convertMdToPdf(md, mergedConfig, browser, progress),
+    return await useBrowserWithRetry(
+      async (browser) => convertMdToPdf(md, config, browser, progress),
       { progress, timeoutMs },
     );
-    return result as InferOutputType<T>;
   });
 }

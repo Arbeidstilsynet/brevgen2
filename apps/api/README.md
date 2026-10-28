@@ -178,8 +178,8 @@ All kildekode ligger i `src/`. Konfigurasjon for bygg, test og Docker ligger i r
 - `src/server.ts`: inngangspunkt som kobler sammen avhengigheter og starter serveren
 - `src/timeout-budget.ts`: tidsfrister som deles på tvers av lagene (generering < HTTP-handler < gateway)
 - `src/http/`: auth, Swagger og ruter
-- `src/generation/`: fra forespørsel til dokument (Dynamic Markdown, dokumentmal, scheduler)
-- `src/renderer/`: Markdown → HTML → PDF/HTML med Chromium, inkludert nettleserhåndtering og helse. Avhenger kun av `observability/`, ikke av Fastify
+- `src/generation/`: fra forespørsel til dokument (Dynamic Markdown, dokumentmal, scheduler). `resolveRenderConfig` slår sammen standardverdier, dokumentmal og `options` fra kallet til en ferdig konfigurasjon for rendereren
+- `src/renderer/`: Markdown → HTML → PDF/HTML med Chromium, inkludert nettleserhåndtering og helse. Tar imot ferdig konfigurasjon og slår ikke sammen noe selv. Avhenger kun av `observability/`, ikke av Fastify
 - `src/observability/`: logger, OpenTelemetry-metrikker og -spans. Avhenger ikke av resten av appen
 
 ## md-to-pdf (`src/renderer`)

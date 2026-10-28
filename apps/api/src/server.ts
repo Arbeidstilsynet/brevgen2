@@ -11,12 +11,10 @@ import { setupAuth } from "./http/auth";
 import { registerDocumentGenerationRoute } from "./http/routes/genererbrev";
 import { createGenerationSchedulerFromEnvironment } from "./generation/scheduler";
 import { StartupHealthCheck, registerHealthRoutes } from "./http/routes/health";
-import {
-  createDocumentGenerationHandler,
-  formatZodFastifySchemaValidationError,
-  ValidationError,
-} from "./generation/handler";
+import { createDocumentGenerator } from "./generation/document-generator";
+import { formatZodFastifySchemaValidationError } from "./http/errors";
 import { mdToPdf } from "./renderer";
+import { defaultConfig } from "./renderer/config";
 import { registerRendererHealthMetrics } from "./renderer/health-metrics";
 import { registerSwagger } from "./http/swagger";
 
@@ -25,7 +23,10 @@ configDotenv();
 const port = process.env.PORT ? Number(process.env.PORT) : 4000;
 
 const generationScheduler = createGenerationSchedulerFromEnvironment();
-const handlerGenerateDocument = createDocumentGenerationHandler(generationScheduler);
+const documentGenerator = createDocumentGenerator({
+  scheduler: generationScheduler,
+  render: mdToPdf,
+});
 registerRendererHealthMetrics(generationScheduler.rendererHealth);
 fastify.addHook("onClose", async () => {
   generationScheduler.rendererHealth.stop();
@@ -33,7 +34,7 @@ fastify.addHook("onClose", async () => {
 const startupHealth = new StartupHealthCheck(
   () =>
     generationScheduler.schedule(({ progress, timeoutMs }) =>
-      mdToPdf("# Brevgenerator startup check", {}, progress, timeoutMs),
+      mdToPdf("# Brevgenerator startup check", defaultConfig, progress, timeoutMs),
     ),
   (error) => {
     fastify.log.error(
@@ -63,15 +64,6 @@ fastify.setErrorHandler((error, request, reply) => {
   if (hasZodFastifySchemaValidationErrors(error)) {
     console.log({ fn: "setErrorHandler, hasZodFastifySchemaValidationErrors", error });
     return reply.status(400).send(formatZodFastifySchemaValidationError(error.validation));
-  }
-
-  // Handle custom ValidationError from handler
-  if (error instanceof ValidationError) {
-    return reply.status(400).send({
-      message: "Validation error",
-      error: error.message,
-      details: error.details,
-    });
   }
 
   // For other errors, use default handling
@@ -111,7 +103,9 @@ fastify.get("/", { logLevel: "warn" }, async (request, reply) => {
 
 await registerHealthRoutes(fastify, generationScheduler.rendererHealth, startupHealth);
 
-await registerDocumentGenerationRoute(fastify, handlerGenerateDocument);
+await registerDocumentGenerationRoute(fastify, (request, signal) =>
+  documentGenerator.generate(request, signal),
+);
 
 await fastify.listen({
   port,

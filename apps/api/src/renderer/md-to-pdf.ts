@@ -2,7 +2,6 @@ import type { Browser } from "puppeteer-core";
 import type { Config } from "./config";
 import { generateOutput } from "./generate-output";
 import { getHtml } from "./get-html";
-import { getMarginObject } from "./margin";
 import { InferOutputType } from "./types";
 import type { RendererProgressReporter } from "./health";
 
@@ -15,17 +14,6 @@ export async function convertMdToPdf<T extends Config>(
   browser: Browser,
   progress?: RendererProgressReporter,
 ): Promise<InferOutputType<T>> {
-  const { headerTemplate, footerTemplate, displayHeaderFooter } = config.pdf_options;
-
-  if ((headerTemplate || footerTemplate) && displayHeaderFooter === undefined) {
-    config.pdf_options.displayHeaderFooter = true;
-  }
-
-  // sanitize the margin in pdf_options
-  if (typeof config.pdf_options.margin === "string") {
-    config.pdf_options.margin = getMarginObject(config.pdf_options.margin);
-  }
-
   const html = getHtml(md, config);
   const output = await generateOutput(html, config, browser, progress);
 

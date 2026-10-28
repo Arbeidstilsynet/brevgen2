@@ -1,6 +1,6 @@
 import { GenerateDocumentRequest } from "@repo/shared-types";
 import { beforeAll, describe, expect, test } from "vitest";
-import { ValidationErrorResponse } from "../../src/generation/handler";
+import { ValidationErrorResponse } from "../../src/http/errors";
 import { fetcher, TestEnvironment } from "../utils";
 
 export function validationTests(getTestEnv: () => TestEnvironment) {
