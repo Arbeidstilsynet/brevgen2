@@ -25,7 +25,7 @@ const startupHealth = new StartupHealthCheck(
     ),
   (error) => {
     logger.error(
-      { event: "renderer.startup_warmup.failed", error },
+      { event: "renderer.startup_warmup.failed", err: error },
       "Renderer startup warm-up failed",
     );
   },
