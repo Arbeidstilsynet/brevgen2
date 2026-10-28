@@ -1,6 +1,6 @@
 import fastifyJwt, { TokenOrHeader } from "@fastify/jwt";
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import jwksClient from "jwks-rsa";
+import jwksClient, { SigningKeyNotFoundError } from "jwks-rsa";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -15,6 +15,17 @@ const isNonEmptyString = (s: unknown): s is string => {
   return typeof s === "string" && s.length > 0;
 };
 
+/** Matches the response @fastify/jwt gives for tokens it rejects itself. */
+class InvalidTokenError extends Error {
+  readonly statusCode = 401;
+  readonly code = "FST_JWT_AUTHORIZATION_TOKEN_INVALID";
+
+  constructor(reason: string) {
+    super(`Authorization token is invalid: ${reason}`);
+    this.name = "InvalidTokenError";
+  }
+}
+
 export async function setupAuth(fastify: FastifyInstance) {
   const DANGEROUS_DISABLE_AUTH = process.env.DANGEROUS_DISABLE_AUTH === "true";
   const AZURE_TENANT_ID = process.env.AZURE_TENANT_ID ?? "da4bf886-a8a6-450d-a806-c347b8eb8d80";
@@ -26,16 +37,23 @@ export async function setupAuth(fastify: FastifyInstance) {
     rateLimit: true,
   });
 
+  // @fastify/jwt turns errors from this callback into 500s, so token problems must carry their own 401.
   async function getKey(_req: FastifyRequest, token: TokenOrHeader): Promise<string> {
     const header = token.header as unknown;
-    if (!isRecord(header)) throw new TypeError("Missing token header");
+    if (!isRecord(header)) throw new InvalidTokenError("Missing token header");
     const kid = header.kid;
     const alg = header.alg;
-    if (!isNonEmptyString(kid)) throw new TypeError("Missing kid");
-    if (!isNonEmptyString(alg)) throw new TypeError("Missing alg");
-    if (alg && alg !== "RS256") throw new TypeError(`Unexpected alg ${alg}`);
-    const key = await jwks.getSigningKey(kid);
-    return key.getPublicKey();
+    if (!isNonEmptyString(kid)) throw new InvalidTokenError("Missing kid");
+    if (!isNonEmptyString(alg)) throw new InvalidTokenError("Missing alg");
+    if (alg !== "RS256") throw new InvalidTokenError(`Unexpected alg ${alg}`);
+    try {
+      const key = await jwks.getSigningKey(kid);
+      return key.getPublicKey();
+    } catch (error) {
+      // Other JWKS failures mean Entra ID is unreachable or misbehaving, which stays a server error.
+      if (error instanceof SigningKeyNotFoundError) throw new InvalidTokenError(error.message);
+      throw error;
+    }
   }
 
   if (DANGEROUS_DISABLE_AUTH) {
