@@ -81,7 +81,7 @@ Det krever at `docker build` kjøres fra roten av monorepo: `docker build . -t b
 Build:
 
 ```sh
-# cd to felles-brevgenerator root
+# cd to root
 docker build . -t brevgen2-web -f apps/preview-web/Dockerfile
 ```
 

@@ -1,10 +1,10 @@
-import { logger } from "../../app";
-import { withActiveSpan } from "../otel";
+import { logger } from "../app";
+import { withActiveSpan } from "../observability/otel";
 import { Config, defaultConfig } from "./config";
-import { useBrowserWithRetry } from "./get-browser";
+import { useBrowserWithRetry } from "./browser/get-browser";
 import { convertMdToPdf } from "./md-to-pdf";
 import { InferOutputType } from "./types";
-import type { RendererProgressReporter } from "../rendererHealth";
+import type { RendererProgressReporter } from "./health";
 import { DOCUMENT_GENERATION_TIMEOUT_MS } from "./helpers";
 
 /**

@@ -5,8 +5,8 @@ import {
   type ZodTypeProvider,
 } from "fastify-type-provider-zod";
 import { describe, expect, test } from "vitest";
-import { registerDocumentGenerationRoute } from "./documentGenerationRoute";
-import { GenerationCancelledError, GenerationOverloadError } from "./generationScheduler";
+import { registerDocumentGenerationRoute } from "./genererbrev";
+import { GenerationCancelledError, GenerationOverloadError } from "../../generation/scheduler";
 
 const requestPayload = {
   md: "# Test",

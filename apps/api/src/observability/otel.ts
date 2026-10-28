@@ -1,5 +1,5 @@
 import { metrics, trace, type Attributes } from "@opentelemetry/api";
-import { RENDERER_HEALTH_STATES, type RendererHealth } from "./rendererHealth";
+import { RENDERER_HEALTH_STATES, type RendererHealth } from "../renderer/health";
 
 const tracer = trace.getTracer("brevgen2.api");
 

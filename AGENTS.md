@@ -27,7 +27,7 @@ Scope a command to one workspace with `--filter`, for example `pnpm test --filte
 Run a single test file or name inside its workspace:
 
 ```sh
-cd apps/api && pnpm exec vitest run lib/handler.test.ts
+cd apps/api && pnpm exec vitest run src/generation/handler.test.ts
 cd apps/api && pnpm exec vitest run -t "some test name"
 ```
 
@@ -50,7 +50,7 @@ Dynamic Markdown (+ variables) --parseDynamicMd--> Markdown --marked--> HTML --p
 - **`packages/dynamic-markdown`** expands `{{ variable }}` interpolation, nested variables, and `{{ if cond :: ... }}` inline logic into plain Markdown.
 - **`packages/document-templates`** contains the letterhead/footer/CSS wrappers. A template implements `Template` (`lib/template.ts`) with `argsSchema`, `getMd()`, and `getPdfConfig()`. Register a new template in `lib/registry.ts` and extend `DocumentTemplateOption` in `@repo/shared-types`. The `custom` name is intentionally not registered: callers supply its complete PDF config.
 - **`packages/shared-types`** provides zod schemas and inferred types shared by the API and web; it is the API schema source of truth and generates the OpenAPI specification.
-- **`apps/api`** is the Fastify service. It validates requests, expands Dynamic Markdown, resolves the document template, merges PDF configuration, and renders via `lib/core/md-to-pdf.ts` (Marked, sanitize-html, and Puppeteer). It uses Azure Entra ID client-credentials JWT authentication, `p-limit` generation throttling, and Lambda-friendly Chromium. Set `DANGEROUS_DISABLE_AUTH=true` only for local development and tests.
+- **`apps/api`** is the Fastify service. It validates requests, expands Dynamic Markdown, resolves the document template, merges PDF configuration, and renders via `src/renderer/` (Marked, sanitize-html, and Puppeteer). Source lives under `src/` (`http/`, `generation/`, `renderer/`, `observability/`); tooling config stays at the package root. It uses Azure Entra ID client-credentials JWT authentication, a bounded `GenerationScheduler` queue for admission control, and Lambda-friendly Chromium. Set `DANGEROUS_DISABLE_AUTH=true` only for local development and tests.
 - **`apps/preview-web`** is the Next.js editor/preview application. It fetches content templates from Azure DevOps or GitHub, stores work-in-progress templates as Workspaces in GCP Cloud Storage, and calls the API for previews. It uses NextAuth/Azure AD; users need the `Brevgenerator.User` app role.
 - **`nuget-client/`** is the separately built `Arbeidstilsynet.Brevgenerator.Client` C# API client, with its own formatting and CI job.
 

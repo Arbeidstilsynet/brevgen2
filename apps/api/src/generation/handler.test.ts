@@ -1,6 +1,6 @@
 import type { GenerateDocumentRequest, GenerateDocumentRequestOptions } from "@repo/shared-types";
 import { describe, expect, test } from "vitest";
-import { GenerationScheduler } from "./generationScheduler";
+import { GenerationScheduler } from "./scheduler";
 import { createDocumentGenerationHandler, ValidationError } from "./handler";
 
 const handlerGenerateDocument = createDocumentGenerationHandler(

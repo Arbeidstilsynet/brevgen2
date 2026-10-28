@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, test, vi } from "vitest";
-import { RendererHealth, type RendererHealthTransition } from "./rendererHealth";
+import { RendererHealth, type RendererHealthTransition } from "./health";
 
 const MONITOR_INTERVAL_MS = 50;
 

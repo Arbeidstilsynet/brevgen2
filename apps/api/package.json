@@ -7,9 +7,9 @@
   ],
   "type": "module",
   "scripts": {
-    "dev": "NODE_ENV=development tsx watch --clear-screen=false server.ts",
-    "build": "tsdown server.ts",
-    "test": "vitest run --coverage lib",
+    "dev": "NODE_ENV=development tsx watch --clear-screen=false src/server.ts",
+    "build": "tsdown src/server.ts",
+    "test": "vitest run --coverage src",
     "test:integration": "vitest run integration-tests",
     "test:load": "pnpm dlx --allow-build=esbuild tsx load-tests/run.ts",
     "test:burst": "pnpm dlx --allow-build=esbuild tsx load-tests/burst.ts",

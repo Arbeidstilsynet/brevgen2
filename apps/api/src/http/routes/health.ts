@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import type { RendererHealth } from "./rendererHealth";
+import type { RendererHealth } from "../../renderer/health";
 
 export type StartupHealthStatus = "pending" | "succeeded" | "failed";
 

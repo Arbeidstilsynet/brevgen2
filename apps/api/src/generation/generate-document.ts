@@ -1,10 +1,10 @@
 import { resolveTemplate } from "@at/document-templates";
 import type { GenerateDocumentRequestOptions } from "@repo/shared-types";
-import { mdToPdf } from "./core";
-import { HtmlConfig, PdfConfig } from "./core/config";
-import { Output } from "./core/types";
-import type { RendererProgressReporter } from "./rendererHealth";
-import { DOCUMENT_GENERATION_TIMEOUT_MS } from "./core/helpers";
+import { mdToPdf } from "../renderer";
+import { HtmlConfig, PdfConfig } from "../renderer/config";
+import { Output } from "../renderer/types";
+import type { RendererProgressReporter } from "../renderer/health";
+import { DOCUMENT_GENERATION_TIMEOUT_MS } from "../renderer/helpers";
 
 /**
  * Merges config objects with special handling for pdf_options to do a shallow merge

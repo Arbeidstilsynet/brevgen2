@@ -1,7 +1,7 @@
 import Fastify from "fastify";
 import { describe, expect, test, vi } from "vitest";
-import { registerHealthRoutes, StartupHealthCheck } from "./healthRoutes";
-import { RendererHealth } from "./rendererHealth";
+import { registerHealthRoutes, StartupHealthCheck } from "./health";
+import { RendererHealth } from "../../renderer/health";
 
 function createDeferred<T>() {
   let resolve!: (value: T | PromiseLike<T>) => void;
