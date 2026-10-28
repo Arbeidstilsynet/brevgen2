@@ -96,6 +96,7 @@ describe("auth", () => {
     ],
     ["referring to an unknown key id", createToken({ header: { kid: "unknown-kid" } })],
     ["without a key id", createToken({ header: { kid: undefined } })],
+    ["without an algorithm", createToken({ header: { alg: undefined } })],
     [
       "HMAC-signed with the public key (algorithm confusion)",
       createToken({
