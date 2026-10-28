@@ -31,7 +31,7 @@ cd apps/api && pnpm exec vitest run src/generation/render-config.test.ts
 cd apps/api && pnpm exec vitest run -t "some test name"
 ```
 
-- `apps/api` unit tests: `pnpm test`; integration tests: `pnpm test:integration` at the root or from `apps/api`.
+- `apps/api` unit tests: `pnpm test`; integration tests: `pnpm test:integration` at the root or from `apps/api`. Integration tests start the API out of process: `integration-tests/api.test.ts` via Testcontainers (needs Docker) and `integration-tests/dev-server.test.ts` via `pnpm dev`.
 - Load tests: `pnpm test:load` / `pnpm test:load:analyze` in `apps/api` (not part of CI).
 - The .NET client (`nuget-client/`) is built and tested by `Arbeidstilsynet/action-dotnet-build` in CI, not through pnpm/Turborepo.
 
