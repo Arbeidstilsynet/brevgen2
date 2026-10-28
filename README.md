@@ -58,6 +58,10 @@ og flettes automatisk inn av Nais CLI for valgt miljø (`dev` eller `prod`).
 Ved konfigurasjonsendringer uten nytt image gjenbrukes imaget som allerede kjører.
 API-et deployes til prod først etter at lasttestene i dev har bestått.
 
+## Testing
+
+See [Testing strategy](./docs/testing.md) for the test layers and cross-language contract checks.
+
 ## Pre-commit hooks
 
 This repo uses [prek](https://prek.j178.dev/) for pre-commit hooks.

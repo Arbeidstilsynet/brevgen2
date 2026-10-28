@@ -111,7 +111,7 @@ tiden pluss litt tilfeldig jitter slik at flere konsumenter ikke prøver samtidi
 uten gyldig `Retry-After`, kastes videre til kalleren som før.
 
 | Innstilling          | Standard    | Beskrivelse                                                                 |
-|----------------------|-------------|-----------------------------------------------------------------------------|
+| -------------------- | ----------- | --------------------------------------------------------------------------- |
 | `MaxRetryAttempts`   | `2`         | Antall nye forsøk etter det første. `0` skrur av retry.                     |
 | `MaxRetryAfterDelay` | 30 sekunder | Største `Retry-After` klienten godtar. Lengre verdier gir 503 til kalleren. |
 
@@ -134,7 +134,7 @@ var result = await client.GenererBrev(payload, cancellationToken);
 Klienten bruker `IHostEnvironment` for å automatisk velge riktig base-URL basert på miljøet:
 
 | Miljø                        | URL                                            |
-|------------------------------|------------------------------------------------|
+| ---------------------------- | ---------------------------------------------- |
 | Development                  | `http://localhost:4000`                        |
 | Production                   | `https://brevgen2-api.arbeidstilsynet.no/`     |
 | Andre (f.eks. Test, Staging) | `https://brevgen2-api.dev.arbeidstilsynet.no/` |

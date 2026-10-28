@@ -64,6 +64,13 @@ test("empty logic content throws (with whitespace)", () => {
 
 // determining if it's a string or missing variable is hard to do while supporting nesting
 // for now it will just fail silently and not insert the logic block value
+test.each(["myVar == true", "true == myVar"])(
+  "unresolved operand compared to a boolean literal omits the block (%s)",
+  (condition) => {
+    expect(parseDynamicMd(`Before{{ if ${condition} :: Hello, world! }}After`)).toBe("BeforeAfter");
+  },
+);
+
 // oxlint-disable-next-line jest/no-disabled-tests
 test.skip("undefined variable throws (logic condition, left operand)", () => {
   const input = `{{ if myVar == true :: Hello, world! }}`;
