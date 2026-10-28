@@ -5,7 +5,7 @@ export default defineConfig({
     reporters: ["default", "junit"],
     outputFile: "junit.xml",
     coverage: {
-      exclude: [...coverageConfigDefaults.exclude, "src/server.ts"],
+      exclude: [...coverageConfigDefaults.exclude, "src/server.ts", "src/testing/**"],
     },
   },
 });

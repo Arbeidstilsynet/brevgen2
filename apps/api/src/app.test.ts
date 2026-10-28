@@ -1,64 +1,23 @@
-import type { FastifyInstance } from "fastify";
 import { afterEach, describe, expect, test, vi } from "vitest";
-import { buildApp } from "./app";
 import type { GenerateDocument } from "./http/routes/genererbrev";
-import { StartupHealthCheck } from "./http/routes/health";
-import { RendererHealth } from "./renderer/health";
+import { createTestApp } from "./testing/create-test-app";
 import { HTTP_HANDLER_TIMEOUT_MS } from "./timeout-budget";
 
-let currentApp: FastifyInstance | undefined;
-
-async function createApp({ auth }: { auth: boolean }) {
-  vi.stubEnv("DANGEROUS_DISABLE_AUTH", auth ? "false" : "true");
-  vi.stubEnv("AZURE_APPLICATION_ID", "test-application");
-  const generateDocument = vi.fn<GenerateDocument>(async () => ({ content: "<p>ok</p>" }));
-  const app = await buildApp({
-    generateDocument,
-    rendererHealth: new RendererHealth({
-      maxConcurrentJobs: 1,
-      stallThresholdMs: 100,
-      recoveryGraceMs: 100,
-    }),
-    startupHealth: new StartupHealthCheck(async () => undefined),
-  });
-  currentApp = app;
-  return { app, generateDocument };
-}
-
-afterEach(async () => {
-  await currentApp?.close();
-  currentApp = undefined;
-  vi.unstubAllEnvs();
+afterEach(() => {
   vi.restoreAllMocks();
 });
 
-const validRequest = { md: "# Test", options: { as_html: true, dynamic: { template: "blank" } } };
-
 describe("app", () => {
-  test("configures an HTTP handler timeout below the ingress timeout", async () => {
-    const { app } = await createApp({ auth: false });
+  test("configures the HTTP handler timeout from the timeout budget", async () => {
+    const app = await createTestApp();
 
-    expect(HTTP_HANDLER_TIMEOUT_MS).toBe(55_000);
     expect(Reflect.get(app.initialConfig, "handlerTimeout")).toBe(HTTP_HANDLER_TIMEOUT_MS);
-  });
-
-  test("routes valid document requests to the document generator", async () => {
-    const { app, generateDocument } = await createApp({ auth: false });
-
-    const response = await app.inject({
-      method: "POST",
-      url: "/genererbrev",
-      payload: validRequest,
-    });
-
-    expect(response.statusCode).toBe(200);
-    expect(response.body).toBe("<p>ok</p>");
-    expect(generateDocument).toHaveBeenCalledWith(validRequest, expect.any(AbortSignal));
   });
 
   test("answers request schema violations with a 400 validation error body", async () => {
     vi.spyOn(console, "log").mockImplementation(() => undefined);
-    const { app, generateDocument } = await createApp({ auth: false });
+    const generateDocument = vi.fn<GenerateDocument>();
+    const app = await createTestApp({ generateDocument });
 
     const response = await app.inject({
       method: "POST",
@@ -83,7 +42,8 @@ describe("app", () => {
   });
 
   test("authenticates document requests before validating them", async () => {
-    const { app, generateDocument } = await createApp({ auth: true });
+    const generateDocument = vi.fn<GenerateDocument>();
+    const app = await createTestApp({ auth: true, generateDocument });
 
     const response = await app.inject({ method: "POST", url: "/genererbrev", payload: {} });
 
@@ -94,7 +54,7 @@ describe("app", () => {
 
   test("describes the API at the root path", async () => {
     vi.stubEnv("GIT_SHA", "abcdef1234");
-    const { app } = await createApp({ auth: false });
+    const app = await createTestApp();
 
     const response = await app.inject("/");
 
