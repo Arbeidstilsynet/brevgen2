@@ -2,6 +2,7 @@ import type { ChildProcess } from "node:child_process";
 import type { Browser } from "puppeteer-core";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import type { RendererProgressStage } from "../health";
+import { PUPPETEER_OPERATION_TIMEOUT_MS } from "../timeouts";
 
 const browserMocks = vi.hoisted(() => ({
   close: vi.fn<() => Promise<void>>(),
@@ -280,6 +281,24 @@ describe("useBrowserWithRetry", () => {
     expect(browserMocks.launch).toHaveBeenCalledOnce();
     expect(render).not.toHaveBeenCalled();
     expect(browserMocks.close).not.toHaveBeenCalled();
+  });
+
+  test("retries with a new launch when Chromium hangs past the operation timeout", async () => {
+    vi.useFakeTimers();
+    browserMocks.launch.mockImplementationOnce(async () => await new Promise(() => undefined));
+    const useBrowserWithRetry = await importUseBrowserWithRetry();
+    const progress = vi.fn<(stage: RendererProgressStage) => void>();
+    const result = useBrowserWithRetry(async () => "rendered", {
+      progress,
+      timeoutMs: PUPPETEER_OPERATION_TIMEOUT_MS * 2,
+    });
+
+    // A hung operation signals an unhealthy browser, unlike running out of generation budget.
+    await vi.advanceTimersByTimeAsync(PUPPETEER_OPERATION_TIMEOUT_MS);
+
+    await expect(result).resolves.toBe("rendered");
+    expect(browserMocks.launch).toHaveBeenCalledTimes(2);
+    expect(progress).toHaveBeenCalledWith("recycling-browser");
   });
 
   test("honors the generation deadline while waiting for browser recycling", async () => {
