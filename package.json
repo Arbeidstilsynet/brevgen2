@@ -1,5 +1,5 @@
 {
-  "name": "felles-brevgenerator-monorepo",
+  "name": "@arbeidstilsynet/brevgen2-monorepo",
   "private": true,
   "scripts": {
     "build": "turbo build",
