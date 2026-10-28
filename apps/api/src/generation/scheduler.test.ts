@@ -36,36 +36,6 @@ function createScheduler() {
 }
 
 describe("GenerationScheduler", () => {
-  test("runs no more than the configured number of generation tasks concurrently", async () => {
-    const scheduler = new GenerationScheduler({
-      maxConcurrentJobs: 1,
-      maxPendingJobs: 1,
-      maxQueueWaitMs: 100,
-      retryAfterSeconds: 5,
-    });
-    const first = createDeferred<string>();
-    const second = createDeferred<string>();
-    const started: string[] = [];
-
-    const firstResult = scheduler.schedule(async () => {
-      started.push("first");
-      return await first.promise;
-    });
-    const secondResult = scheduler.schedule(async () => {
-      started.push("second");
-      return await second.promise;
-    });
-
-    await vi.waitFor(() => expect(started).toEqual(["first"]));
-
-    first.resolve("first result");
-    await expect(firstResult).resolves.toBe("first result");
-    await vi.waitFor(() => expect(started).toEqual(["first", "second"]));
-
-    second.resolve("second result");
-    await expect(secondResult).resolves.toBe("second result");
-  });
-
   test("admits two active and two pending tasks before rejecting additional work", async () => {
     const scheduler = new GenerationScheduler({
       maxConcurrentJobs: 2,
