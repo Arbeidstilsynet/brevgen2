@@ -175,7 +175,8 @@ A consumer that disconnects before its job starts receives `499 Client Closed Re
 
 All kildekode ligger i `src/`. Konfigurasjon for bygg, test og Docker ligger i rotmappen.
 
-- `src/server.ts`: inngangspunkt som kobler sammen avhengigheter og starter serveren
+- `src/server.ts`: inngangspunkt som leser miljøvariabler, kobler sammen avhengigheter og starter serveren
+- `src/app.ts`: `buildApp` setter opp Fastify-appen (plugins, auth, feilhåndtering og ruter) med avhengighetene den får inn, og kan testes med `app.inject` uten å lytte på en port
 - `src/timeout-budget.ts`: tidsfrister som deles på tvers av lagene (generering < HTTP-handler < gateway)
 - `src/http/`: auth, Swagger og ruter
 - `src/generation/`: fra forespørsel til dokument (Dynamic Markdown, dokumentmal, scheduler). `resolveRenderConfig` slår sammen standardverdier, dokumentmal og `options` fra kallet til en ferdig konfigurasjon for rendereren
