@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { OperationTimeoutError, withTimeout } from "./helpers";
+import { OperationTimeoutError, withTimeout } from "./timeouts";
 
 describe("withTimeout", () => {
   it("returns the operation result before its deadline", async () => {

@@ -17,7 +17,7 @@ import {
   ValidationError,
 } from "./generation/handler";
 import { mdToPdf } from "./renderer";
-import { registerRendererHealthMetrics } from "./observability/otel";
+import { registerRendererHealthMetrics } from "./renderer/health-metrics";
 import { registerSwagger } from "./http/swagger";
 
 configDotenv();

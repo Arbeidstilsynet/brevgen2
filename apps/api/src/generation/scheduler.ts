@@ -1,5 +1,5 @@
-import { logger } from "../app";
-import { DOCUMENT_GENERATION_TIMEOUT_MS, HTTP_HANDLER_TIMEOUT_MS } from "../renderer/helpers";
+import { logger } from "../observability/logger";
+import { DOCUMENT_GENERATION_TIMEOUT_MS, HTTP_HANDLER_TIMEOUT_MS } from "../timeout-budget";
 import { documentGenerationMetrics } from "../observability/otel";
 import {
   DEFAULT_RENDERER_MONITOR_INTERVAL_MS,
