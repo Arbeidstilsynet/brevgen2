@@ -1,4 +1,8 @@
-import type { ZodFastifySchemaValidationError } from "fastify-type-provider-zod";
+import type { FastifyError, FastifyReply, FastifyRequest } from "fastify";
+import {
+  hasZodFastifySchemaValidationErrors,
+  type ZodFastifySchemaValidationError,
+} from "fastify-type-provider-zod";
 
 export interface ValidationErrorDetail {
   path: string;
@@ -12,7 +16,7 @@ export interface ValidationErrorResponse {
   details: ValidationErrorDetail[];
 }
 
-export function formatZodFastifySchemaValidationError(
+function formatZodFastifySchemaValidationError(
   validation: ZodFastifySchemaValidationError[],
 ): ValidationErrorResponse {
   const details: ValidationErrorDetail[] = validation.map((error) => ({
@@ -28,4 +32,15 @@ export function formatZodFastifySchemaValidationError(
     error: `Validation failed - ${errorMessage}`,
     details,
   };
+}
+
+export function errorHandler(error: FastifyError, request: FastifyRequest, reply: FastifyReply) {
+  // Handle Fastify validation errors (from request schema validation)
+  if (hasZodFastifySchemaValidationErrors(error)) {
+    console.log({ fn: "setErrorHandler, hasZodFastifySchemaValidationErrors", error });
+    return reply.status(400).send(formatZodFastifySchemaValidationError(error.validation));
+  }
+
+  // For other errors, use default handling
+  reply.send(error);
 }
