@@ -18,6 +18,8 @@ audit:
   ignore:
     # https://github.com/vercel/next.js/issues/96064
     - GHSA-f88m-g3jw-g9cj
+    # zod v3 used by pdf-visual-diff through jimp, doesnt take external input so should be safe
+    - GHSA-mrhx-c7xc-m3w5
 
 autoInstallPeers: false
 
