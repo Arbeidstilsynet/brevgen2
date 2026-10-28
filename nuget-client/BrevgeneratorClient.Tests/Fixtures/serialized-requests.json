@@ -1,0 +1,112 @@
+{
+  "default": {
+    "md": "# Test {test}",
+    "mdVariables": {
+      "test": "test-var"
+    },
+    "options": {
+      "dynamic": {
+        "template": "default",
+        "defaultTemplateArgs": {
+          "language": "bm",
+          "fields": {
+            "dato": "2026-01-01T00:00:00.0000000",
+            "saksnummer": "2026/0001",
+            "saksbehandlerNavn": "Tester",
+            "virksomhet": {
+              "navn": "Test AS",
+              "adresse": "Gate 1",
+              "postnr": "1234",
+              "poststed": "Et Sted"
+            }
+          },
+          "signatureVariant": "elektroniskGodkjent"
+        },
+        "direktoratTemplateArgs": {
+          "language": "nn",
+          "signatureVariant": "usignert",
+          "fields": {}
+        }
+      },
+      "as_html": true,
+      "author": "Arbeidstilsynet",
+      "css": ".test { color: blue }",
+      "document_title": "test",
+      "pdf_options": {
+        "format": "a4"
+      }
+    }
+  },
+  "blank": {
+    "md": "# Blank",
+    "options": {
+      "dynamic": {
+        "template": "blank"
+      },
+      "author": "",
+      "document_title": ""
+    }
+  },
+  "direktorat": {
+    "md": "# Hei {{ name }}",
+    "mdVariables": {
+      "name": "Ola",
+      "count": 42,
+      "enabled": true,
+      "absent": null
+    },
+    "options": {
+      "dynamic": {
+        "template": "direktorat",
+        "direktoratTemplateArgs": {
+          "language": "nn",
+          "signatureVariant": "elektroniskGodkjent",
+          "signatureLines": ["Kari", "Direktor"],
+          "fields": {
+            "dato": "28.10.2026",
+            "saksnummer": "2026/123",
+            "saksbehandlerNavn": "Kari",
+            "erUnntattOffentlighet": true,
+            "unntattOffentlighetHjemmel": "offl. 14",
+            "mottaker": {
+              "navn": "Eksempel AS",
+              "adresse": "Gate 1",
+              "postnr": "0123",
+              "poststed": "Oslo"
+            }
+          }
+        }
+      },
+      "author": "Arbeidstilsynet",
+      "document_title": "Contract letter"
+    }
+  },
+  "custom": {
+    "md": "# Custom",
+    "options": {
+      "dynamic": {
+        "template": "custom"
+      },
+      "as_html": false,
+      "author": "",
+      "css": "p { color: blue; }",
+      "merge_css": true,
+      "document_title": "",
+      "page_media_type": "print",
+      "pdf_options": {
+        "scale": 0.9,
+        "displayHeaderFooter": true,
+        "headerTemplate": "\u003Cspan\u003EHeader\u003C/span\u003E",
+        "footerTemplate": "\u003Cspan class=\u0022pageNumber\u0022\u003E\u003C/span\u003E",
+        "printBackground": true,
+        "format": "a4",
+        "width": "210mm",
+        "height": 297,
+        "margin": {
+          "top": "20mm",
+          "bottom": "20mm"
+        }
+      }
+    }
+  }
+}

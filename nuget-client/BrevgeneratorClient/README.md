@@ -4,6 +4,37 @@ NuGet-pakke i C# for å konsumere Brevgenerator-API.
 
 Modeller for payload ligger i `Arbeidstilsynet.Brevgenerator.Client.Models`.
 
+## Request contract regression tests
+
+`RequestContractTests` captures actual HTTP bodies from the production client serializer
+using the existing fake HTTP handler, without making network requests. It compares these
+with [shared JSON fixtures](../BrevgeneratorClient.Tests/Fixtures/serialized-requests.json).
+The API's [contract test](../../apps/api/src/testing/nuget-contract.test.ts) validates the
+same fixtures against `generateDocumentRequestSchema`, the Zod source of the OpenAPI
+request schema. The cases cover all four templates, language/signature enums, nullable
+Markdown variables, metadata, and representative PDF options.
+
+Run both halves from the repository root:
+
+```sh
+dotnet test --project nuget-client/BrevgeneratorClient.Tests -- --filter-class '*RequestContractTests'
+pnpm --dir apps/api exec vitest run src/testing/nuget-contract.test.ts
+```
+
+After an intentional client serialization change, regenerate the fixtures through the
+real client (do not hand-edit them), review the result, then run both tests again:
+
+```sh
+UPDATE_REQUEST_CONTRACT_FIXTURE="$PWD/nuget-client/BrevgeneratorClient.Tests/Fixtures/serialized-requests.json" \
+  dotnet test --project nuget-client/BrevgeneratorClient.Tests -- --filter-class '*RequestContractTests'
+pnpm exec oxfmt nuget-client/BrevgeneratorClient.Tests/Fixtures/serialized-requests.json
+```
+
+The .NET comparison detects stale fixtures; the TypeScript check detects schema rejection.
+This is representative request compatibility, not an exhaustive cross-language contract
+or a rendering test. Existing CI runs each half in its language's job; a client-only change
+does not trigger the TypeScript job, so run both halves when updating these fixtures.
+
 Autentisering må angis eksplisitt av konsumenten. Klienten støtter to moduser:
 
 - **BearerToken** – async factory som returnerer et gyldig bearer token (f.eks. Entra ID client credentials). Eneste støttet av nåværende deployet API.
@@ -111,7 +142,7 @@ tiden pluss litt tilfeldig jitter slik at flere konsumenter ikke prøver samtidi
 uten gyldig `Retry-After`, kastes videre til kalleren som før.
 
 | Innstilling          | Standard    | Beskrivelse                                                                 |
-|----------------------|-------------|-----------------------------------------------------------------------------|
+| -------------------- | ----------- | --------------------------------------------------------------------------- |
 | `MaxRetryAttempts`   | `2`         | Antall nye forsøk etter det første. `0` skrur av retry.                     |
 | `MaxRetryAfterDelay` | 30 sekunder | Største `Retry-After` klienten godtar. Lengre verdier gir 503 til kalleren. |
 
@@ -134,7 +165,7 @@ var result = await client.GenererBrev(payload, cancellationToken);
 Klienten bruker `IHostEnvironment` for å automatisk velge riktig base-URL basert på miljøet:
 
 | Miljø                        | URL                                            |
-|------------------------------|------------------------------------------------|
+| ---------------------------- | ---------------------------------------------- |
 | Development                  | `http://localhost:4000`                        |
 | Production                   | `https://brevgen2-api.arbeidstilsynet.no/`     |
 | Andre (f.eks. Test, Staging) | `https://brevgen2-api.dev.arbeidstilsynet.no/` |

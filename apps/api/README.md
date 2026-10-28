@@ -42,6 +42,17 @@ Tester som starter API-et som en egen prosess:
 
 `pnpm test:integration` kjører begge. Kjør én fil med `pnpm exec vitest run integration-tests/dev-server.test.ts`.
 
+### Browser-free rendering tests
+
+Focused HTML and template-wrapping tests run without Docker or a browser:
+
+```sh
+pnpm exec vitest run src/renderer/get-html.test.ts src/generation/document-generator.test.ts
+```
+
+These pin existing behavior, not a security boundary. Attribute restrictions and
+title/template-field escaping remain unresolved policy decisions.
+
 ## Load testing
 
 `pnpm test:load` simulates an open workload against `/genererbrev`. By default it ramps from

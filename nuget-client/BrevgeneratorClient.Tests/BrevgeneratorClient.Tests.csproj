@@ -28,5 +28,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../BrevgeneratorClient/BrevgeneratorClient.csproj" />
+    <None Update="Fixtures/serialized-requests.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>
