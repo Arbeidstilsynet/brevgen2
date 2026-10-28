@@ -11,7 +11,7 @@ import type { RendererProgressReporter } from "./health";
  */
 export async function mdToPdf<T extends Partial<Config>>(
   md: string,
-  config: T = {} as T,
+  config: T,
   progress: RendererProgressReporter | undefined,
   timeoutMs: number,
 ): Promise<InferOutputType<T>> {
