@@ -3,7 +3,7 @@ import type { Browser } from "puppeteer-core";
 import type { Config } from "./config";
 import { BROWSER_CLOSE_TIMEOUT_MS, PUPPETEER_OPERATION_TIMEOUT_MS, withTimeout } from "./helpers";
 import { InferOutputType } from "./types";
-import type { RendererProgressReporter } from "../rendererHealth";
+import type { RendererProgressReporter } from "./health";
 
 /**
  * Generate the output (either PDF or HTML) based on config.

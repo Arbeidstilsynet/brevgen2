@@ -1,5 +1,5 @@
 import Fastify from "fastify";
-import { HTTP_HANDLER_TIMEOUT_MS } from "./lib/core/helpers";
+import { HTTP_HANDLER_TIMEOUT_MS } from "./renderer/helpers";
 
 // NODE_ENV=development is equivalent to running locally (pnpm dev), while Docker is always "production"
 const environment = process.env.NODE_ENV ?? "development";

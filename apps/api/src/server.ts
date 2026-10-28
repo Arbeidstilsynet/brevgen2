@@ -7,18 +7,18 @@ import {
   validatorCompiler,
 } from "fastify-type-provider-zod";
 import { fastify } from "./app";
-import { setupAuth } from "./auth";
-import { registerDocumentGenerationRoute } from "./lib/documentGenerationRoute";
-import { createGenerationSchedulerFromEnvironment } from "./lib/generationScheduler";
-import { StartupHealthCheck, registerHealthRoutes } from "./lib/healthRoutes";
+import { setupAuth } from "./http/auth";
+import { registerDocumentGenerationRoute } from "./http/routes/genererbrev";
+import { createGenerationSchedulerFromEnvironment } from "./generation/scheduler";
+import { StartupHealthCheck, registerHealthRoutes } from "./http/routes/health";
 import {
   createDocumentGenerationHandler,
   formatZodFastifySchemaValidationError,
   ValidationError,
-} from "./lib/handler";
-import { mdToPdf } from "./lib/core";
-import { registerRendererHealthMetrics } from "./lib/otel";
-import { registerSwagger } from "./swagger";
+} from "./generation/handler";
+import { mdToPdf } from "./renderer";
+import { registerRendererHealthMetrics } from "./observability/otel";
+import { registerSwagger } from "./http/swagger";
 
 configDotenv();
 

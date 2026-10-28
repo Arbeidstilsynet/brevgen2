@@ -2,8 +2,8 @@ import { parseDynamicMd } from "@at/dynamic-markdown";
 import { type GenerateDocumentRequest, generateDocumentRequestSchema } from "@repo/shared-types";
 import { ZodFastifySchemaValidationError } from "fastify-type-provider-zod";
 import { ZodError } from "zod";
-import { generateDocument } from "./generateDocument";
-import type { GenerationScheduler } from "./generationScheduler";
+import { generateDocument } from "./generate-document";
+import type { GenerationScheduler } from "./scheduler";
 
 export interface ValidationErrorDetail {
   path: string;

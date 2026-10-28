@@ -1,7 +1,7 @@
 import type { Browser } from "puppeteer-core";
 import { logger } from "../../app";
-import { withActiveSpan } from "../otel";
-import type { RendererProgressReporter } from "../rendererHealth";
+import { withActiveSpan } from "../../observability/otel";
+import type { RendererProgressReporter } from "../health";
 import { getBrowserLaunchOptions } from "./get-puppeteer-options";
 import {
   BROWSER_CLOSE_TIMEOUT_MS,
@@ -9,7 +9,7 @@ import {
   GenerationDeadlineError,
   PUPPETEER_OPERATION_TIMEOUT_MS,
   withTimeout,
-} from "./helpers";
+} from "../helpers";
 import { loadPuppeteer } from "./puppeteer-loader";
 
 // After max pages is reached, we recycle the browser.

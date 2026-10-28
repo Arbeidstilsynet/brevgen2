@@ -171,7 +171,17 @@ overload warning alert, while unexpected application and ingress 5xx responses r
 A consumer that disconnects before its job starts receives `499 Client Closed Request` rather than a
 `500`, so an expected disconnect does not register as an unexpected server error.
 
-## md-to-pdf (lib)
+## Mappestruktur
+
+All kildekode ligger i `src/`. Konfigurasjon for bygg, test og Docker ligger i rotmappen.
+
+- `src/server.ts`: inngangspunkt som kobler sammen avhengigheter og starter serveren
+- `src/http/`: auth, Swagger og ruter
+- `src/generation/`: fra forespørsel til dokument (Dynamic Markdown, dokumentmal, scheduler)
+- `src/renderer/`: Markdown → HTML → PDF/HTML med Chromium, inkludert nettleserhåndtering og helse
+- `src/observability/`: OpenTelemetry-metrikker og -spans
+
+## md-to-pdf (`src/renderer`)
 
 Konverterer markdown til HTML med Marked, og så HTML til PDF med Puppeteer. Ment å brukes med [dynamic-markdown](../../packages/dynamic-markdown/README.md).
 

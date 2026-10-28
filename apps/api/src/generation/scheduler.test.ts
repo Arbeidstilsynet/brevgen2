@@ -3,8 +3,8 @@ import {
   createGenerationSchedulerFromEnvironment,
   GenerationOverloadError,
   GenerationScheduler,
-} from "./generationScheduler";
-import { documentGenerationMetrics } from "./otel";
+} from "./scheduler";
+import { documentGenerationMetrics } from "../observability/otel";
 
 function createDeferred<T>() {
   let resolve!: (value: T | PromiseLike<T>) => void;

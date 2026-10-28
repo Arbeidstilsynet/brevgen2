@@ -3,7 +3,7 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, test } from "vitest";
 import { documentGenerationMetricNames } from "./otel";
 
-const alertsPath = fileURLToPath(new URL("../../../.nais/alerts.yaml", import.meta.url));
+const alertsPath = fileURLToPath(new URL("../../../../.nais/alerts.yaml", import.meta.url));
 
 function toPrometheusName(metricName: string) {
   return metricName.replaceAll(".", "_");

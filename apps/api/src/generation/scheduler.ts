@@ -1,13 +1,13 @@
 import { logger } from "../app";
-import { DOCUMENT_GENERATION_TIMEOUT_MS, HTTP_HANDLER_TIMEOUT_MS } from "./core/helpers";
-import { documentGenerationMetrics } from "./otel";
+import { DOCUMENT_GENERATION_TIMEOUT_MS, HTTP_HANDLER_TIMEOUT_MS } from "../renderer/helpers";
+import { documentGenerationMetrics } from "../observability/otel";
 import {
   DEFAULT_RENDERER_MONITOR_INTERVAL_MS,
   DEFAULT_RENDERER_RECOVERY_GRACE_MS,
   DEFAULT_RENDERER_STALL_THRESHOLD_MS,
   RendererHealth,
   type RendererProgressReporter,
-} from "./rendererHealth";
+} from "../renderer/health";
 
 const MAX_CONCURRENT_JOBS = 10;
 const DEFAULT_MAX_PENDING_JOBS = 150;

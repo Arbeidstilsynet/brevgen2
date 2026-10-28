@@ -1,7 +1,7 @@
 import type { ChildProcess } from "node:child_process";
 import type { Browser } from "puppeteer-core";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import type { RendererProgressStage } from "../rendererHealth";
+import type { RendererProgressStage } from "../health";
 
 const browserMocks = vi.hoisted(() => ({
   close: vi.fn<() => Promise<void>>(),

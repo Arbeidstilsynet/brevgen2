@@ -7,7 +7,7 @@ namespace Arbeidstilsynet.Brevgenerator.Client.Models;
 /// <summary>
 /// Parametre for å opprette brev via brevgenerator2.
 /// <br/><br/>
-/// Basert på TypeScript-typen HandlerGeneratePdfArgs i felles-brevgenerator/apps/api/lib/handler.ts
+/// Basert på TypeScript-typen GenerateDocumentRequest i brevgen2/packages/shared-types/lib/schema/api.ts
 /// </summary>
 public class GenererBrevArgs
 {
@@ -136,7 +136,7 @@ public class PdfConfig : BasicConfig
 }
 
 /// <summary>
-/// Basert på felles-brevgenerator/apps/api/lib/core/config.ts
+/// Basert på brevgen2/apps/api/src/renderer/config.ts
 /// </summary>
 public class BasicConfig
 {

@@ -4,7 +4,7 @@ import { generateOutput } from "./generate-output";
 import { getHtml } from "./get-html";
 import { getMarginObject } from "./helpers";
 import { InferOutputType } from "./types";
-import type { RendererProgressReporter } from "../rendererHealth";
+import type { RendererProgressReporter } from "./health";
 
 /**
  * Convert markdown to pdf.

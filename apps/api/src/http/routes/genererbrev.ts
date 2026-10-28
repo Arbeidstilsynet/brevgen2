@@ -3,9 +3,9 @@ import { type GenerateDocumentRequest, generateDocumentRequestSchema } from "@re
 import type { FastifyInstance, FastifyReply } from "fastify";
 import { type ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
-import { GenerationCancelledError, GenerationOverloadError } from "./generationScheduler";
-import { documentGenerationMetrics } from "./otel";
-import { buildGenerateDocumentRequestContext } from "./requestContext";
+import { GenerationCancelledError, GenerationOverloadError } from "../../generation/scheduler";
+import { documentGenerationMetrics } from "../../observability/otel";
+import { buildGenerateDocumentRequestContext } from "../request-context";
 
 export type DocumentGenerationHandler = (
   request: GenerateDocumentRequest,

@@ -1,6 +1,6 @@
 import { spawn } from "node:child_process";
 import { once } from "node:events";
-import { appendFile, copyFile, mkdtemp, rm, symlink } from "node:fs/promises";
+import { appendFile, copyFile, cp, mkdtemp, rm, symlink } from "node:fs/promises";
 import { createServer } from "node:net";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -12,10 +12,9 @@ test("restarts the development API after repeated server changes", async () => {
   const directory = await mkdtemp(join(tmpdir(), "brevgen-api-dev-"));
   const apiDirectory = fileURLToPath(new URL("../", import.meta.url));
   await Promise.all([
-    ...["server.ts", "app.ts", "auth.ts", "swagger.ts", "package.json"].map((file) =>
-      copyFile(join(apiDirectory, file), join(directory, file)),
-    ),
-    symlink(join(apiDirectory, "lib"), join(directory, "lib"), "dir"),
+    copyFile(join(apiDirectory, "package.json"), join(directory, "package.json")),
+    // Copied rather than symlinked: the test edits src/server.ts to trigger reloads.
+    cp(join(apiDirectory, "src"), join(directory, "src"), { recursive: true }),
     symlink(join(apiDirectory, "node_modules"), join(directory, "node_modules"), "dir"),
   ]);
 
@@ -79,7 +78,7 @@ test("restarts the development API after repeated server changes", async () => {
           async () => {
             if (!/restarting/i.test(output)) {
               await appendFile(
-                join(directory, "server.ts"),
+                join(directory, "src", "server.ts"),
                 "\n// Trigger a development reload.\n",
               );
             }
