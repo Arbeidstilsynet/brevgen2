@@ -7,7 +7,7 @@
   ],
   "type": "module",
   "scripts": {
-    "dev": "vite --config vite.dev.config.ts",
+    "dev": "NODE_ENV=development tsx watch --clear-screen=false server.ts",
     "build": "tsdown server.ts",
     "test": "vitest run --coverage lib",
     "test:integration": "vitest run integration-tests",
@@ -47,9 +47,8 @@
     "puppeteer": "25.16.0",
     "testcontainers": "12.2.1",
     "tsdown": "0.23.2",
+    "tsx": "4.23.15",
     "typescript": "7.0.2",
-    "vite": "8.3.5",
-    "vite-plugin-node": "8.0.0",
     "vitest": "5.0.5"
   },
   "engines": {

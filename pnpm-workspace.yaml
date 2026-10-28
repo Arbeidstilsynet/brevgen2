@@ -5,6 +5,7 @@ packages:
 
 allowBuilds:
   cpu-features: false
+  esbuild: true
   protobufjs: false
   puppeteer: false
   sharp: false
@@ -17,6 +18,8 @@ audit:
   ignore:
     # https://github.com/vercel/next.js/issues/96064
     - GHSA-f88m-g3jw-g9cj
+    # zod v3 used by pdf-visual-diff through jimp, doesnt take external input so should be safe
+    - GHSA-mrhx-c7xc-m3w5
 
 autoInstallPeers: false
 
@@ -26,6 +29,7 @@ minimumReleaseAgeExcludePrune: true
 
 overrides:
   dompurify@<=3.4.11: ^3.4.12
+  dompurify@<=3.4.16: ^3.4.17
   seroval@<=1.6.2: ^1.6.3
   uuid@<14.0.0: '>=14.0.0'
 
