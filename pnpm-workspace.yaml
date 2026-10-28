@@ -29,6 +29,7 @@ minimumReleaseAgeExcludePrune: true
 
 overrides:
   dompurify@<=3.4.11: ^3.4.12
+  dompurify@<=3.4.16: ^3.4.17
   seroval@<=1.6.2: ^1.6.3
   uuid@<14.0.0: '>=14.0.0'
 
