@@ -5,12 +5,17 @@ import { type ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { GenerationCancelledError, GenerationOverloadError } from "../../generation/scheduler";
 import { documentGenerationMetrics } from "../../observability/otel";
+import type { Output } from "../../renderer/types";
 import { buildGenerateDocumentRequestContext } from "../request-context";
 
-export type DocumentGenerationHandler = (
+export type GenerateDocument = (
   request: GenerateDocumentRequest,
   signal: AbortSignal,
-) => Promise<string>;
+) => Promise<Output>;
+
+function encodeOutput(output: Output): string {
+  return typeof output.content === "string" ? output.content : output.content.toString("base64");
+}
 
 // Fastify's request.signal also aborts when the fully-read request stream closes.
 // An unfinished response closes only when the caller disconnects before receiving a reply.
@@ -37,7 +42,7 @@ function createCallerDisconnectSignal(reply: FastifyReply) {
 
 export async function registerDocumentGenerationRoute(
   fastify: FastifyInstance,
-  generateDocument: DocumentGenerationHandler,
+  generateDocument: GenerateDocument,
 ) {
   const errorResponseSchema = z.object({
     message: z.string(),
@@ -82,7 +87,7 @@ export async function registerDocumentGenerationRoute(
           { requestContext: buildGenerateDocumentRequestContext(request.body, user) },
           "genererbrev.request",
         );
-        const result = await generateDocument(request.body, callerDisconnect.signal);
+        const result = encodeOutput(await generateDocument(request.body, callerDisconnect.signal));
         const template = request.body.options.dynamic.template ?? "default";
         const outputFormat = request.body.options.as_html ? "html" : "pdf";
         documentGenerationMetrics.generated.add(1, {

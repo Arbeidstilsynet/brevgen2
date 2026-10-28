@@ -7,6 +7,7 @@ import {
 import { describe, expect, test } from "vitest";
 import { registerDocumentGenerationRoute } from "./genererbrev";
 import { GenerationCancelledError, GenerationOverloadError } from "../../generation/scheduler";
+import type { Output } from "../../renderer/types";
 
 const requestPayload = {
   md: "# Test",
@@ -27,6 +28,31 @@ function createDeferred<T>() {
 }
 
 describe("document generation route", () => {
+  test.each<[string, Output, string]>([
+    ["HTML as-is", { content: "<p>Test</p>" }, "<p>Test</p>"],
+    ["PDF as base64", { content: Buffer.from("%PDF-1.7") }, "JVBERi0xLjc="],
+  ])("returns %s", async (_name, output, expectedBody) => {
+    const app = Fastify();
+    app.decorate("authenticate", async () => undefined);
+    app.setValidatorCompiler(validatorCompiler);
+    app.setSerializerCompiler(serializerCompiler);
+    await registerDocumentGenerationRoute(
+      app.withTypeProvider<ZodTypeProvider>(),
+      async () => output,
+    );
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/genererbrev",
+      payload: requestPayload,
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toBe(expectedBody);
+
+    await app.close();
+  });
+
   test("returns a retryable 503 response when document generation is overloaded", async () => {
     const app = Fastify();
     app.decorate("authenticate", async () => undefined);
@@ -105,8 +131,8 @@ describe("document generation route", () => {
       app.withTypeProvider<ZodTypeProvider>(),
       async (_request, signal) =>
         await Promise.race([
-          releaseGeneration.promise,
-          new Promise<string>((_resolve, reject) => {
+          releaseGeneration.promise.then((content) => ({ content })),
+          new Promise<never>((_resolve, reject) => {
             signal.addEventListener("abort", () => reject(new GenerationCancelledError()), {
               once: true,
             });
