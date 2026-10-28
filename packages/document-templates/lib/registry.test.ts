@@ -1,9 +1,4 @@
-import {
-  blankTemplate,
-  defaultTemplate,
-  direktoratTemplate,
-  resolveTemplate,
-} from "@at/document-templates";
+import { blankTemplate, defaultTemplate, direktoratTemplate, resolveTemplate } from "./index";
 import type { GenerateDocumentRequestOptions } from "@repo/shared-types";
 import { describe, expect, test } from "vitest";
 
