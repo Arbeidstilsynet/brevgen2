@@ -6,6 +6,15 @@
 $/apps/api: pnpm dev
 ```
 
+The API listens on port 4000 (or `PORT`) and runs with `NODE_ENV=development`.
+`tsx watch` restarts the entire API process when imported source files change, including
+workspace packages, so Fastify plugins and renderer state are initialized once per process.
+There is a brief interruption while the API restarts.
+
+For unauthenticated local requests, run `DANGEROUS_DISABLE_AUTH=true pnpm dev`.
+PDF rendering requires a local Chrome installation; install the version used by Puppeteer
+with `pnpm exec puppeteer browsers install chrome`.
+
 ## Local (Docker)
 
 ```sh

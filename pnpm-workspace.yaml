@@ -5,6 +5,7 @@ packages:
 
 allowBuilds:
   cpu-features: false
+  esbuild: true
   protobufjs: false
   puppeteer: false
   sharp: false
