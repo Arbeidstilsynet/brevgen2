@@ -53,8 +53,8 @@ export const defaultTemplateArgsRequiredMessage =
   "defaultTemplateArgs are required when using the default template";
 
 export function hasRequiredDefaultTemplateArgs(data: {
-  template?: DocumentTemplateOption;
+  template: DocumentTemplateOption;
   defaultTemplateArgs?: unknown;
 }): boolean {
-  return !((!data.template || data.template === "default") && !data.defaultTemplateArgs);
+  return !(data.template === "default" && !data.defaultTemplateArgs);
 }

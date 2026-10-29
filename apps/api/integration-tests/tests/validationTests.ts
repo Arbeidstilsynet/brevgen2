@@ -90,6 +90,30 @@ export function validationTests(getTestEnv: () => TestEnvironment) {
       expect(error.details).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
+            path: "options.dynamic.template",
+          }),
+        ]),
+      );
+    });
+
+    test("default template without defaultTemplateArgs returns 400", async () => {
+      const payload = {
+        md: "# Test",
+        options: {
+          dynamic: {
+            template: "default",
+          },
+        },
+      } as unknown as GenerateDocumentRequest;
+
+      const response = await fetcher(testEnv.genererBrevUrl, payload);
+      expect(response.status).toBe(400);
+
+      const error = (await response.json()) as ValidationErrorResponse;
+      expect(error.message).toBe("Validation error");
+      expect(error.details).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
             path: "options.dynamic",
             message: expect.stringContaining("defaultTemplateArgs") as string,
           }),
@@ -102,6 +126,7 @@ export function validationTests(getTestEnv: () => TestEnvironment) {
         md: "# Test",
         options: {
           dynamic: {
+            template: "default",
             defaultTemplateArgs: {
               language: "bm",
               signatureVariant: "automatiskBehandlet",
@@ -143,6 +168,7 @@ export function validationTests(getTestEnv: () => TestEnvironment) {
         md: "# Test",
         options: {
           dynamic: {
+            template: "default",
             defaultTemplateArgs: {
               language: "invalid",
               signatureVariant: "automatiskBehandlet",
@@ -182,6 +208,7 @@ export function validationTests(getTestEnv: () => TestEnvironment) {
         md: "# Test",
         options: {
           dynamic: {
+            template: "default",
             defaultTemplateArgs: {
               language: "bm",
               signatureVariant: "invalid",

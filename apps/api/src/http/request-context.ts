@@ -17,8 +17,8 @@ export function buildGenerateDocumentRequestContext(body: GenerateDocumentReques
       mdLength: body.md.length,
       mdVariableCount: Object.keys(body.mdVariables ?? {}).length,
 
+      template: body.options.dynamic.template,
       // explicit null (not allowed by schema) instead of omitted undefined, for the sake of easier log querying
-      template: body.options.dynamic.template ?? null,
       asHtml: body.options.as_html ?? null,
       documentTitle: body.options.document_title ?? null,
     },

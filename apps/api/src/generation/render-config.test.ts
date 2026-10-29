@@ -76,24 +76,6 @@ describe("effective render config", () => {
       });
     });
 
-    test("omitted template resolves to the default template", async () => {
-      const dynamic = { defaultTemplateArgs: defaultDynamic.defaultTemplateArgs };
-      const { css, footerTemplate } = templateParts({ dynamic });
-
-      expect(await effectiveRenderConfig({ dynamic })).toStrictEqual({
-        ...rendererDefaults,
-        css,
-        dynamic,
-        pdf_options: {
-          ...rendererDefaultPdfOptions,
-          displayHeaderFooter: true,
-          headerTemplate: "<div></div>",
-          footerTemplate,
-          margin: templateMargin,
-        },
-      });
-    });
-
     test("blank template adds its css and margins without header or footer", async () => {
       const dynamic = { template: "blank" as const };
 

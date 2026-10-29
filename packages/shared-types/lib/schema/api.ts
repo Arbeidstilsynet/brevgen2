@@ -16,7 +16,7 @@ import { mdVariablesSchema } from "./dynamic-markdown";
 export const dynamicMdPdfConfigSchema = z
   .object({
     /** See {@link documentTemplateOptionSchema} */
-    template: documentTemplateOptionSchema.optional(),
+    template: documentTemplateOptionSchema,
     defaultTemplateArgs: defaultTemplateArgsSchema.optional(),
     direktoratTemplateArgs: direktoratTemplateArgsSchema.optional(),
   })
