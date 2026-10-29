@@ -111,14 +111,11 @@ const templates: Template[] = [
 ];
 
 /**
- * Resolve a document template by its name. When no template is specified the
- * `default` template is used, mirroring the API's defaulting behaviour.
+ * Resolve a document template by its name.
  *
  * Returns `undefined` for the `custom` template, which is intentionally not
  * part of the registry: the caller supplies its full config directly.
  */
-export function resolveTemplate(
-  resolved: DocumentTemplateOption | undefined = "default",
-): Template | undefined {
-  return templates.find((template) => template.name === resolved);
+export function resolveTemplate(name: DocumentTemplateOption): Template | undefined {
+  return templates.find((template) => template.name === name);
 }

@@ -54,7 +54,7 @@ export const direktoratTemplateArgsRequiredMessage =
   "direktoratTemplateArgs are required when using the direktorat template";
 
 export function hasRequiredDirektoratTemplateArgs(data: {
-  template?: DocumentTemplateOption;
+  template: DocumentTemplateOption;
   direktoratTemplateArgs?: unknown;
 }): boolean {
   return !(data.template === "direktorat" && !data.direktoratTemplateArgs);

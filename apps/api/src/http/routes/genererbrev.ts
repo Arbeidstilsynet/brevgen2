@@ -88,7 +88,7 @@ export async function registerDocumentGenerationRoute(
           "genererbrev.request",
         );
         const result = encodeOutput(await generateDocument(request.body, callerDisconnect.signal));
-        const template = request.body.options.dynamic.template ?? "default";
+        const template = request.body.options.dynamic.template;
         const outputFormat = request.body.options.as_html ? "html" : "pdf";
         documentGenerationMetrics.generated.add(1, {
           "document.template": template,

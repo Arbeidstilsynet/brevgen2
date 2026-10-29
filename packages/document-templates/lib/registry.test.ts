@@ -39,10 +39,6 @@ describe("default template registry", () => {
     expect(resolveTemplate("default")?.name).toBe("default");
   });
 
-  test("resolves the default template when no template is specified", () => {
-    expect(resolveTemplate(undefined)).toBe(resolveTemplate("default"));
-  });
-
   test("does not resolve the custom template", () => {
     expect(resolveTemplate("custom")).toBeUndefined();
   });
