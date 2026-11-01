@@ -209,8 +209,8 @@ importers:
         specifier: 11.3.1
         version: 11.3.1
       '@fastify/jwt':
-        specifier: 10.2.5
-        version: 10.2.5
+        specifier: 10.2.6
+        version: 10.2.6
       '@fastify/otel':
         specifier: 0.21.4
         version: 0.21.4(@opentelemetry/api@1.10.0)(supports-color@7.2.0)
@@ -712,8 +712,8 @@ packages:
   '@fastify/forwarded@3.0.2':
     resolution: {integrity: sha512-NE8HgKLgYejV9lDpqkEFaDKMLYelJBVfHekhB0UKvX0ghagXRJqg68feg8er1NPXxG4N9i6vPxzt8E+3wHfcmA==}
 
-  '@fastify/jwt@10.2.5':
-    resolution: {integrity: sha512-pObTiMwxYNYdTZ2E/aoU3REIQAMCFXtXMBcUTP1r60nbPqxQEDbN9zh/SQUEefL7gn+KBOaXcoU/Qmza4NxANA==}
+  '@fastify/jwt@10.2.6':
+    resolution: {integrity: sha512-tnhl0U6foEHz9v/eGh8zh+tMiJlX867h+yv0sCpWAvWcXYCdjt2Ji/szfD1gDWLy/EQKwYt4OZCKCKIjvenwXw==}
 
   '@fastify/merge-json-schemas@0.2.1':
     resolution: {integrity: sha512-OA3KGBCy6KtIvLf8DINC5880o5iBlDX4SxzLQS8HorJAbqluzLRn80UXU0bxZn7UOFhFgpRJDasfwn9nG4FG4A==}
@@ -4571,7 +4571,7 @@ snapshots:
 
   '@fastify/forwarded@3.0.2': {}
 
-  '@fastify/jwt@10.2.5':
+  '@fastify/jwt@10.2.6':
     dependencies:
       '@fastify/error': 4.2.0
       '@lukeed/ms': 2.0.2
