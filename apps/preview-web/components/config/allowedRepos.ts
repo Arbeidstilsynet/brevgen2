@@ -45,6 +45,12 @@ export const allowedRepos: RepoInfo[] = (
       onlyPaths: ["forhandsmelding/backend/Infrastructure/src/Brevgen/Markdown"],
     },
     {
+      provider: "github",
+      repoName: "meldinger",
+      prettyName: "Ulykkesvarsel",
+      onlyPaths: ["ulykkesvarsel/backend/Infrastructure/src/Brevgen/Markdown"],
+    },
+    {
       provider: "azdo",
       id: "4914f041-a899-4900-b228-8ca96122fb45",
       repoName: "era",
