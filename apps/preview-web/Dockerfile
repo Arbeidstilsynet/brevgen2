@@ -23,7 +23,7 @@ RUN pnpm --filter preview-web build
 
 
 # Production image, copy all the files and run next
-FROM node:26-alpine@sha256:8996bb5821d62a8fd9bb27c1cb07462f3fdce6e47d640c6a881ead0b064ce216 AS runner
+FROM node:26-alpine@sha256:ce8c3a386c7649c1f9a38d29eb9f6b0c29e70707eb50f208643a75b3f763b60f AS runner
 
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
