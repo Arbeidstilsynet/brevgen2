@@ -29,6 +29,20 @@
       "description": "Group Chromium updates with Puppeteer for compatibility (https://pptr.dev/supported-browsers)"
     },
     {
+      "matchManagers": ["npm"],
+      "matchFileNames": ["apps/api/package.json"],
+      "matchPackageNames": ["@opentelemetry/api"],
+      "allowedVersions": "<1.10.0",
+      "description": "Must not exceed the @opentelemetry/api version in the Nais-injected Node.js auto-instrumentation (currently 0.78.0 with api 1.9.1). A newer minor rejects the injected global SDK and silently no-ops all metrics and spans."
+    },
+    {
+      "matchManagers": ["npm"],
+      "matchFileNames": ["apps/api/package.json"],
+      "matchPackageNames": ["@fastify/otel"],
+      "allowedVersions": "<1.0.0",
+      "description": "@fastify/otel v1 requires @opentelemetry/api >=1.10.0, which conflicts with the Nais auto-instrumentation hold above."
+    },
+    {
       "matchDatasources": ["docker"],
       "matchPackageNames": ["node"],
       "matchUpdateTypes": ["digest"],
