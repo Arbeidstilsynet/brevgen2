@@ -20,7 +20,7 @@
     <PackageReference Include="Scriban.Signed" Version="7.5.3" />
     <!-- Override transitive Microsoft.AspNetCore.WebUtilities 2.3.0 pulled in by WireMock.Net: fixes
          GHSA-6527-9fp8-r4x6 (moderate severity advisory). -->
-    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.3.14" />
+    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="10.0.14" />
     <PackageReference Include="xunit.v3.mtp-v2" Version="4.0.2" />
     <PackageReference Include="Xunit.Microsoft.DependencyInjection" Version="10.2.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="4.0.1">
