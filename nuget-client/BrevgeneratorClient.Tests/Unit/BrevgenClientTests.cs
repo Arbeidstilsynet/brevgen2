@@ -1,8 +1,9 @@
+using System.Net;
+using System.Text.Json.Nodes;
 using Arbeidstilsynet.Brevgenerator.Client.Models;
 using Arbeidstilsynet.Brevgenerator.Client.Ports;
 using Arbeidstilsynet.Brevgenerator.Client.Tests.Fixture;
 using Shouldly;
-using WireMock.Matchers;
 using Xunit;
 using Xunit.Microsoft.DependencyInjection.Abstracts;
 
@@ -54,68 +55,70 @@ public class BrevgenClientTests : TestBed<BrevgenAppFixture>
         },
     };
 
+    internal const string ExpectedRequestJson = """
+        {
+            "md": "# Test {test}",
+            "mdVariables": {
+                "test": "test-var"
+            },
+            "options": {
+                "dynamic": {
+                    "template": "default",
+                    "defaultTemplateArgs": {
+                        "language": "bm",
+                        "fields": {
+                            "dato": "2026-01-01T00:00:00.0000000",
+                            "saksnummer": "2026/0001",
+                            "saksbehandlerNavn": "Tester",
+                            "virksomhet": {
+                                "navn": "Test AS",
+                                "adresse": "Gate 1",
+                                "postnr": "1234",
+                                "poststed": "Et Sted"
+                            }
+                        },
+                        "signatureVariant": "elektroniskGodkjent"
+                    },
+                    "direktoratTemplateArgs": {
+                        "language": "nn",
+                        "signatureVariant": "usignert",
+                        "fields": {}
+                    }
+                },
+                "as_html": true,
+                "author": "Arbeidstilsynet",
+                "css": ".test { color: blue }",
+                "document_title": "test",
+                "pdf_options": {
+                    "format": "a4"
+                }
+            }
+        }
+        """;
+
+    internal static void ShouldBeSampleRequest(ReceivedRequest? request)
+    {
+        request.ShouldNotBeNull();
+        request.Method.ShouldBe("POST");
+        request.Path.ShouldBe("/genererbrev");
+        request.Authorization.ShouldBe($"Bearer {DummyBearerTokenProvider.DummyToken}");
+        request.ContentType.ShouldBe("application/json; charset=utf-8");
+        JsonNode
+            .DeepEquals(JsonNode.Parse(request.Body), JsonNode.Parse(ExpectedRequestJson))
+            .ShouldBeTrue(request.Body);
+    }
+
     [Fact]
     public async Task GenererBrev_WhenCalledWithBearerTokenProvider_ReturnsOk()
     {
         //arrange
-
-        _fixture
-            .Server.WhenRequest(r =>
-                r.UsingPost()
-                    .WithPath("/genererbrev")
-                    .WithHeader("Authorization", $"Bearer {DummyBearerTokenProvider.DummyToken}")
-                    .WithHeader("Content-Type", "application/json; charset=utf-8")
-                    .WithBody(
-                        new JsonMatcher(
-                            """
-                            {
-                                "md": "# Test {test}",
-                                "mdVariables": {
-                                    "test": "test-var"
-                                },
-                                "options": {
-                                    "dynamic": {
-                                    "template": "default",
-                                    "defaultTemplateArgs": {
-                                        "language": "bm",
-                                        "fields": {
-                                        "dato": "2026-01-01T00:00:00.0000000",
-                                        "saksnummer": "2026/0001",
-                                        "saksbehandlerNavn": "Tester",
-                                        "virksomhet": {
-                                            "navn": "Test AS",
-                                            "adresse": "Gate 1",
-                                            "postnr": "1234",
-                                            "poststed": "Et Sted"
-                                        }
-                                        },
-                                        "signatureVariant": "elektroniskGodkjent"
-                                    },
-                                    "direktoratTemplateArgs": {
-                                        "language": "nn",
-                                        "signatureVariant": "usignert",
-                                        "fields": {}
-                                    }
-                                    },
-                                    "as_html": true,
-                                    "author": "Arbeidstilsynet",
-                                    "css": ".test { color: blue }",
-                                    "document_title": "test",
-                                    "pdf_options": {
-                                    "format": "a4"
-                                    }
-                                }
-                                }
-                            """
-                        )
-                    )
-            )
-            .ThenRespondWith(r => r.WithStatusCode(System.Net.HttpStatusCode.OK).WithBody("generertBrevString"));
+        _fixture.Server.RespondWith(HttpStatusCode.OK, "generertBrevString");
 
         //act
         var result = await _sut.GenererBrev(SampleRequest, TestContext.Current.CancellationToken);
 
         //assert
-        result.ShouldBeEquivalentTo("generertBrevString");
+        result.ShouldBe("generertBrevString");
+        ShouldBeSampleRequest(_fixture.Server.LastRequest);
     }
 }
