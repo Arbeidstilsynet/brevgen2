@@ -1,41 +1,40 @@
-using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
 namespace Arbeidstilsynet.Brevgenerator.Client.Models;
 
 public enum PaperFormat
 {
-    [EnumMember(Value = "letter")]
+    [JsonStringEnumMemberName("letter")]
     Letter,
 
-    [EnumMember(Value = "legal")]
+    [JsonStringEnumMemberName("legal")]
     Legal,
 
-    [EnumMember(Value = "tabloid")]
+    [JsonStringEnumMemberName("tabloid")]
     Tabloid,
 
-    [EnumMember(Value = "ledger")]
+    [JsonStringEnumMemberName("ledger")]
     Ledger,
 
-    [EnumMember(Value = "a0")]
+    [JsonStringEnumMemberName("a0")]
     A0,
 
-    [EnumMember(Value = "a1")]
+    [JsonStringEnumMemberName("a1")]
     A1,
 
-    [EnumMember(Value = "a2")]
+    [JsonStringEnumMemberName("a2")]
     A2,
 
-    [EnumMember(Value = "a3")]
+    [JsonStringEnumMemberName("a3")]
     A3,
 
-    [EnumMember(Value = "a4")]
+    [JsonStringEnumMemberName("a4")]
     A4,
 
-    [EnumMember(Value = "a5")]
+    [JsonStringEnumMemberName("a5")]
     A5,
 
-    [EnumMember(Value = "a6")]
+    [JsonStringEnumMemberName("a6")]
     A6,
 }
 

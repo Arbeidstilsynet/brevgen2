@@ -1,4 +1,4 @@
-using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Arbeidstilsynet.Brevgenerator.Client.Models;
 
@@ -7,9 +7,9 @@ namespace Arbeidstilsynet.Brevgenerator.Client.Models;
 /// </summary>
 public enum Language
 {
-    [EnumMember(Value = "bm")]
+    [JsonStringEnumMemberName("bm")]
     Bokmål,
 
-    [EnumMember(Value = "nn")]
+    [JsonStringEnumMemberName("nn")]
     Nynorsk,
 }

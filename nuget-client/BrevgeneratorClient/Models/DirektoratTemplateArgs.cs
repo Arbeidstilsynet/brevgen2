@@ -1,4 +1,3 @@
-using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
 namespace Arbeidstilsynet.Brevgenerator.Client.Models;
@@ -43,10 +42,10 @@ public class DirektoratTemplateArgs
 /// </summary>
 public enum DirektoratTemplateSignatureVariant
 {
-    [EnumMember(Value = "usignert")]
+    [JsonStringEnumMemberName("usignert")]
     Usignert,
 
-    [EnumMember(Value = "elektroniskGodkjent")]
+    [JsonStringEnumMemberName("elektroniskGodkjent")]
     ElektroniskGodkjent,
 }
 
