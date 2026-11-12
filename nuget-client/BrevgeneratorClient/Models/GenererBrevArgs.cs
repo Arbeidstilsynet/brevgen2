@@ -1,5 +1,4 @@
 using System.Reflection;
-using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
 namespace Arbeidstilsynet.Brevgenerator.Client.Models;
@@ -107,16 +106,16 @@ public class DynamicMdPdfConfig
 
 public enum TemplateType
 {
-    [EnumMember(Value = "default")]
+    [JsonStringEnumMemberName("default")]
     Default,
 
-    [EnumMember(Value = "custom")]
+    [JsonStringEnumMemberName("custom")]
     Custom,
 
-    [EnumMember(Value = "blank")]
+    [JsonStringEnumMemberName("blank")]
     Blank,
 
-    [EnumMember(Value = "direktorat")]
+    [JsonStringEnumMemberName("direktorat")]
     Direktorat,
 }
 

@@ -1,5 +1,13 @@
 # Changelog
 
+## 6.0.0
+
+- **Breaking:** The package now targets only `net10.0`. Support for .NET 8, which is out of support,
+  has been removed.
+- Enum values are serialized with the built-in `JsonStringEnumConverter` and
+  `[JsonStringEnumMemberName]` instead of a custom converter and `[EnumMember]`. The JSON sent to
+  the API is unchanged.
+
 ## 5.2.1
 
 - Added MIT license metadata, the Arbeidstilsynet package icon, and repository metadata for NuGet
