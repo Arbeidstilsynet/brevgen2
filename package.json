@@ -26,7 +26,7 @@
     "@repo/typescript-config": "workspace:*",
     "fallow": "3.41.0",
     "oxfmt": "0.77.0",
-    "oxlint": "1.92.0",
+    "oxlint": "1.93.0",
     "oxlint-tsgolint": "7.0.2006",
     "turbo": "2.11.10",
     "typescript": "7.0.2"
