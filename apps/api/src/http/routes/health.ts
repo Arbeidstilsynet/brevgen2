@@ -34,26 +34,26 @@ const healthRouteOptions = {
   config: { otel: false },
 };
 
-export async function registerHealthRoutes(
+export function registerHealthRoutes(
   fastify: FastifyInstance,
   rendererHealth: RendererHealth,
   startupHealth: StartupHealthCheck,
-): Promise<void> {
-  fastify.get("/health", healthRouteOptions, async (_request, reply) => {
+): void {
+  fastify.get("/health", healthRouteOptions, (_request, reply) => {
     reply.status(200).send();
   });
 
-  fastify.get("/health/startup", healthRouteOptions, async (_request, reply) => {
+  fastify.get("/health/startup", healthRouteOptions, (_request, reply) => {
     const status = startupHealth.getStatus();
     reply.status(status === "succeeded" ? 200 : 503).send({ status });
   });
 
-  fastify.get("/health/readiness", healthRouteOptions, async (_request, reply) => {
+  fastify.get("/health/readiness", healthRouteOptions, (_request, reply) => {
     const snapshot = rendererHealth.getSnapshot();
     reply.status(snapshot.ready ? 200 : 503).send({ status: snapshot.state });
   });
 
-  fastify.get("/health/liveness", healthRouteOptions, async (_request, reply) => {
+  fastify.get("/health/liveness", healthRouteOptions, (_request, reply) => {
     const snapshot = rendererHealth.getSnapshot();
     reply.status(snapshot.live ? 200 : 503).send({ status: snapshot.state });
   });

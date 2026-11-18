@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { setTimeout as sleep } from "node:timers/promises";
 import { readPdfText } from "pdf-text-reader";
 import { createPayload, profileForRequest } from "./profiles";
 import {
@@ -67,7 +68,7 @@ export async function runLoadTest(config: LoadTestConfig): Promise<LoadTestResul
     for (const [requestNumber, scheduledAtMs] of schedule.entries()) {
       const delayMs = startTime + scheduledAtMs - Date.now();
       if (delayMs > 0) {
-        await new Promise((resolve) => setTimeout(resolve, delayMs));
+        await sleep(delayMs); // NOSONAR: pace request starts with one timer; in-flight requests overlap.
       }
 
       const requestId = `request-${requestNumber + 1}`;

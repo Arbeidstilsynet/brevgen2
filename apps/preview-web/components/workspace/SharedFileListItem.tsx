@@ -121,6 +121,7 @@ export function SharedFileListItem({
             >
               {/* Clipboard icon */}
               <svg
+                aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-4 w-4"
                 fill="none"
@@ -148,6 +149,7 @@ export function SharedFileListItem({
               >
                 {/* Three dots icon */}
                 <svg
+                  aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-5 w-5"
                   fill="none"

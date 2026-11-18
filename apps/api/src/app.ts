@@ -49,9 +49,9 @@ export async function buildApp({
   fastify.setSerializerCompiler(serializerCompiler);
   fastify.setErrorHandler(errorHandler);
 
-  await registerRootRoute(fastify);
-  await registerHealthRoutes(fastify, rendererHealth, startupHealth);
-  await registerDocumentGenerationRoute(fastify, generateDocument);
+  registerRootRoute(fastify);
+  registerHealthRoutes(fastify, rendererHealth, startupHealth);
+  registerDocumentGenerationRoute(fastify, generateDocument);
 
   return fastify;
 }

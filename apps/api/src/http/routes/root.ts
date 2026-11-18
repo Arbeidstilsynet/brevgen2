@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 
-export async function registerRootRoute(fastify: FastifyInstance): Promise<void> {
-  fastify.get("/", { logLevel: "warn" }, async (request, reply) => {
+export function registerRootRoute(fastify: FastifyInstance): void {
+  fastify.get("/", { logLevel: "warn" }, (_request, reply) => {
     reply.status(200).send({
       name: "Brevgenerator2 API",
       version: process.env.GIT_SHA?.substring(0, 7) ?? "dev",

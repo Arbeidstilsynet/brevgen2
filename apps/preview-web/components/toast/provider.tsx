@@ -1,4 +1,4 @@
-import { createContext, use, useRef, useState } from "react";
+import { createContext, use, useCallback, useMemo, useRef, useState } from "react";
 
 type ToastVariant = "info" | "success" | "warning" | "error";
 
@@ -26,15 +26,15 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const clearToast = () => {
+  const clearToast = useCallback(() => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
     }
     setToastMessage(null);
-  };
+  }, []);
 
-  const addToast = (variant: ToastVariant, message: string, timeout?: number) => {
+  const addToast = useCallback((variant: ToastVariant, message: string, timeout?: number) => {
     timeout ??= variant === "error" ? 10_000 : 3000;
 
     if (timeoutRef.current) {
@@ -49,11 +49,11 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       setToastMessage(null);
       timeoutRef.current = null;
     }, timeout);
-  };
+  }, []);
 
-  return (
-    <ToastContext value={{ message: toastMessage, variant: toastVariant, clearToast, addToast }}>
-      {children}
-    </ToastContext>
+  const value = useMemo(
+    () => ({ message: toastMessage, variant: toastVariant, clearToast, addToast }),
+    [toastMessage, toastVariant, clearToast, addToast],
   );
+  return <ToastContext value={value}>{children}</ToastContext>;
 }

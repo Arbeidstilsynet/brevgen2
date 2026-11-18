@@ -36,8 +36,9 @@ const app = await buildApp({
   rendererHealth: generationScheduler.rendererHealth,
   startupHealth,
 });
-app.addHook("onClose", async () => {
+app.addHook("onClose", (_instance, done) => {
   generationScheduler.rendererHealth.stop();
+  done();
 });
 
 await app.listen({

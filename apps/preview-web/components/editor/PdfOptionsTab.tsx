@@ -191,7 +191,7 @@ export function PdfOptionsTab({ pdfOptions, setPdfOptions }: PdfOptionsTabProps)
         {/* Paper Format */}
         <div className="bg-white p-3 rounded border">
           <label className="block text-sm font-medium mb-2">
-            Paper Format
+            <span>Paper Format</span>
             <select
               value={pdfOptions.format ?? ""}
               onChange={(e) => {
@@ -216,7 +216,7 @@ export function PdfOptionsTab({ pdfOptions, setPdfOptions }: PdfOptionsTabProps)
         {/* Width and Height */}
         <div className="bg-white p-3 rounded border">
           <label className="block text-sm font-medium mb-2">
-            Width
+            <span>Width</span>
             <input
               type="text"
               value={pdfOptions.width ?? ""}
@@ -230,7 +230,7 @@ export function PdfOptionsTab({ pdfOptions, setPdfOptions }: PdfOptionsTabProps)
 
         <div className="bg-white p-3 rounded border">
           <label className="block text-sm font-medium mb-2">
-            Height
+            <span>Height</span>
             <input
               type="text"
               value={pdfOptions.height ?? ""}
@@ -245,7 +245,7 @@ export function PdfOptionsTab({ pdfOptions, setPdfOptions }: PdfOptionsTabProps)
         {/* Page Ranges */}
         <div className="bg-white p-3 rounded border">
           <label className="block text-sm font-medium mb-2">
-            Page Ranges
+            <span>Page Ranges</span>
             <input
               type="text"
               value={pdfOptions.pageRanges ?? ""}
@@ -295,7 +295,7 @@ export function PdfOptionsTab({ pdfOptions, setPdfOptions }: PdfOptionsTabProps)
         {/* Header Template */}
         <div className="bg-white p-3 rounded border">
           <label className="block text-sm font-medium mb-2">
-            Header Template
+            <span>Header Template</span>
             <textarea
               value={pdfOptions.headerTemplate ?? ""}
               onChange={(e) => updateOption("headerTemplate", e.target.value)}
@@ -312,7 +312,7 @@ export function PdfOptionsTab({ pdfOptions, setPdfOptions }: PdfOptionsTabProps)
         {/* Footer Template */}
         <div className="bg-white p-3 rounded border">
           <label className="block text-sm font-medium mb-2">
-            Footer Template
+            <span>Footer Template</span>
             <textarea
               value={pdfOptions.footerTemplate ?? ""}
               onChange={(e) => updateOption("footerTemplate", e.target.value)}
@@ -329,7 +329,7 @@ export function PdfOptionsTab({ pdfOptions, setPdfOptions }: PdfOptionsTabProps)
         {/* JSON Input */}
         <div className="bg-white p-3 rounded border">
           <label className="block text-sm font-medium mb-2">
-            Paste JSON Configuration
+            <span>Paste JSON Configuration</span>
             <textarea
               value={jsonInput}
               onChange={(e) => setJsonInput(e.target.value)}

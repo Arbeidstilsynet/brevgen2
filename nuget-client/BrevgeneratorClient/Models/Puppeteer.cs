@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
 namespace Arbeidstilsynet.Brevgenerator.Client.Models;
@@ -38,6 +39,7 @@ public enum PaperFormat
     A6,
 }
 
+[SuppressMessage("Naming", "S101", Justification = "Renaming this published NuGet type would break existing clients.")]
 public class PDFMargin
 {
     [JsonPropertyName("top")]
@@ -53,6 +55,7 @@ public class PDFMargin
     public string? Right { get; set; }
 }
 
+[SuppressMessage("Naming", "S101", Justification = "Renaming this published NuGet type would break existing clients.")]
 public class PuppeteerPDFOptions
 {
     /// <summary>

@@ -49,23 +49,13 @@ describe("findVariables", () => {
     expect(variables).toEqual(new Set(["userName", "userAge"]));
   });
 
-  test("should find variables in a logic condition", () => {
-    const input = "{{ if isParsingFun == true :: Hello, {{ userName }}! }}";
-    const variables = findMdVariables(input);
-    expect(variables).toEqual(new Set(["isParsingFun", "userName"]));
-  });
-
-  test("should find truthy variable in a logic condition", () => {
-    const input = "{{ if isParsingFun :: Hello, {{ userName }}! }}";
-    const variables = findMdVariables(input);
-    expect(variables).toEqual(new Set(["isParsingFun", "userName"]));
-  });
-
-  test("should find negated truthy variable in a logic condition", () => {
-    const input = "{{ if !isParsingFun :: Hello, {{ userName }}! }}";
-    const variables = findMdVariables(input);
-    expect(variables).toEqual(new Set(["isParsingFun", "userName"]));
-  });
+  test.each(["isParsingFun == true", "isParsingFun", "!isParsingFun"])(
+    "should find variables in the condition '%s' and its body",
+    (condition) => {
+      const variables = findMdVariables(`{{ if ${condition} :: Hello, {{ userName }}! }}`);
+      expect(variables).toEqual(new Set(["isParsingFun", "userName"]));
+    },
+  );
 
   test("should find variables in nested logic conditions", () => {
     const input =

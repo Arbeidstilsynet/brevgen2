@@ -37,9 +37,9 @@ internal class BrevgeneratorClient(
     public async Task<string> GenererBrev(GenererBrevArgs payload, CancellationToken cancellationToken)
     {
         var jsonPayload = JsonSerializer.Serialize(payload, _jsonOptions);
-        var maxAttempts = config.MaxRetryAttempts + 1;
+        var retriesRemaining = config.MaxRetryAttempts;
 
-        for (var attempt = 1; ; attempt++)
+        while (true)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -52,7 +52,7 @@ internal class BrevgeneratorClient(
 
             using var response = await _httpClient.SendAsync(request, cancellationToken);
 
-            if (attempt < maxAttempts)
+            if (retriesRemaining > 0)
             {
                 var retryAfter = ServiceOverloadRetryPolicy.TryGetRetryDelay(
                     response,
@@ -62,6 +62,7 @@ internal class BrevgeneratorClient(
 
                 if (retryAfter is { } delay)
                 {
+                    retriesRemaining--;
                     await retryTimer.Delay(delay + retryTimer.NextJitter(), cancellationToken);
                     continue;
                 }

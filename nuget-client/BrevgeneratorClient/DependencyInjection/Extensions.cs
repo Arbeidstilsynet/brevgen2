@@ -33,7 +33,7 @@ public static class Extensions
         return services;
     }
 
-    private static IServiceCollection AddInternalServices(
+    private static void AddInternalServices(
         this IServiceCollection services,
         IHostEnvironment hostEnvironment,
         BrevgeneratorConfig? brevgeneratorConfig = null
@@ -50,7 +50,6 @@ public static class Extensions
                     : brevgeneratorConfig.BaseUrl
             )
         );
-        return services;
     }
 
     public static OwnedBrevgeneratorClient CreateBrevgeneratorClient(
