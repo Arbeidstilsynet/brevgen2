@@ -39,6 +39,8 @@ jobs:
         with:
           working-directory: ${{ env.working-directory }}
           nuget-username: ${{ vars.NUGET_BOT_USERNAME }}
+          # must satisfy the SDK pinned in global.json
+          dotnet-version: 11.0.x
 
       - name: Extract changelog section for current version
         id: changelog

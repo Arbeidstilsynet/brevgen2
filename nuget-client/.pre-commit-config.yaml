@@ -16,6 +16,6 @@ repos:
         name: format with CSharpier
         entry: dotnet csharpier format
         language: system
-        types:
+        types_or:
           - c#
           - csproj

@@ -33,7 +33,7 @@ cd apps/api && pnpm exec vitest run -t "some test name"
 
 - `apps/api` unit tests: `pnpm test`; integration tests: `pnpm test:integration` at the root or from `apps/api`. Integration tests start the API out of process: `integration-tests/api.test.ts` via Testcontainers (needs Docker) and `integration-tests/dev-server.test.ts` via `pnpm dev`.
 - Load tests: `pnpm test:load` / `pnpm test:load:analyze` in `apps/api` (not part of CI).
-- The .NET client (`nuget-client/`) is built and tested by `Arbeidstilsynet/action-dotnet-build` in CI, not through pnpm/Turborepo.
+- The .NET client (`nuget-client/`) is built and tested with plain `dotnet` commands in the `nuget-client` CI job, not through pnpm/Turborepo. The SDK is pinned in the root `global.json`; the library targets `net10.0` (LTS) and the test projects run on both `net10.0` and `net11.0`. Code style and recommended analyzers are enforced at build time via `nuget-client/Directory.Build.props`.
 
 Run pre-commit hooks with `prek install` and `prek run --all-files` (or `pnpm prek`).
 

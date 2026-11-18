@@ -1,0 +1,3 @@
+[BrevgeneratorClient.Tests*/**.cs]
+# Test names use underscores, e.g. Method_Scenario_Expectation
+dotnet_diagnostic.CA1707.severity = none
