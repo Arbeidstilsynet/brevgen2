@@ -40,7 +40,7 @@ function createCallerDisconnectSignal(reply: FastifyReply) {
   };
 }
 
-export async function registerDocumentGenerationRoute(
+export function registerDocumentGenerationRoute(
   fastify: FastifyInstance,
   generateDocument: GenerateDocument,
 ) {

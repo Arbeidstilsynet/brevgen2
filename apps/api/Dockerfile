@@ -13,7 +13,8 @@ COPY packages/dynamic-markdown/package.json ./packages/dynamic-markdown/
 COPY packages/document-templates/package.json ./packages/document-templates/
 COPY packages/shared-types/package.json ./packages/shared-types/
 COPY packages/config-typescript/package.json ./packages/config-typescript/
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store PUPPETEER_SKIP_DOWNLOAD=true pnpm install --frozen-lockfile --filter api...
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    PUPPETEER_SKIP_DOWNLOAD=true pnpm install --frozen-lockfile --filter api...
 
 COPY apps/api ./apps/api
 COPY packages ./packages
@@ -48,8 +49,10 @@ COPY apps/api/fonts/*.ttf /usr/share/fonts/truetype/custom/
 # License: SIL Open Font License 1.1 — see /usr/share/fonts/truetype/custom/LICENSE-NotoEmoji
 # renovate: datasource=github-tags depName=googlefonts/noto-emoji
 ARG NOTO_EMOJI_VERSION="v2.051"
-ADD "https://github.com/googlefonts/noto-emoji/raw/${NOTO_EMOJI_VERSION}/fonts/Noto-COLRv1.ttf" /usr/share/fonts/truetype/custom/Noto-COLRv1.ttf
-ADD "https://github.com/googlefonts/noto-emoji/raw/${NOTO_EMOJI_VERSION}/fonts/LICENSE" /usr/share/fonts/truetype/custom/LICENSE-NotoEmoji
+ADD --chmod=644 "https://github.com/googlefonts/noto-emoji/raw/${NOTO_EMOJI_VERSION}/fonts/Noto-COLRv1.ttf" \
+    /usr/share/fonts/truetype/custom/Noto-COLRv1.ttf
+ADD --chmod=644 "https://github.com/googlefonts/noto-emoji/raw/${NOTO_EMOJI_VERSION}/fonts/LICENSE" \
+    /usr/share/fonts/truetype/custom/LICENSE-NotoEmoji
 
 RUN fc-cache -fv
 
@@ -70,6 +73,8 @@ COPY --from=builder /app/pnpm-lock.yaml ./
 COPY --from=builder /app/apps/api/node_modules/@fastify/swagger-ui/static ./static
 COPY --from=builder /app/apps/api/node_modules/@fastify/swagger-ui/static/logo.svg ./dist/static/logo.svg
 
+# Match the UID and GID enforced by Nais when running this image elsewhere.
+USER 1069:1069
 
 EXPOSE 4000
 

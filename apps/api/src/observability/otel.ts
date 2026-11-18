@@ -2,7 +2,7 @@ import { metrics, trace, type Attributes } from "@opentelemetry/api";
 
 const tracer = trace.getTracer("brevgen2.api");
 
-export async function withActiveSpan<T>(
+export function withActiveSpan<T>(
   name: string,
   fn: () => Promise<T>,
   attributes?: Attributes,

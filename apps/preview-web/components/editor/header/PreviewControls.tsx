@@ -22,38 +22,31 @@ export function PreviewControls({
   const { status } = useSession();
 
   return (
-    <>
-      <span
-        className={`flex max-w-min ${getIndicatedElementClass("previewTabs", indicatedElement)}`}
+    <span className={`flex max-w-min ${getIndicatedElementClass("previewTabs", indicatedElement)}`}>
+      <TabButton isActive={activePreviewTab === "md"} onClick={() => setActivePreviewTab("md")}>
+        Markdown
+      </TabButton>
+      <TabButton isActive={activePreviewTab === "html"} onClick={() => setActivePreviewTab("html")}>
+        HTML
+      </TabButton>
+      <TabButton
+        disabled={status !== "authenticated"}
+        isActive={activePreviewTab === "pdf"}
+        onClick={() => setActivePreviewTab("pdf")}
       >
-        <TabButton isActive={activePreviewTab === "md"} onClick={() => setActivePreviewTab("md")}>
-          Markdown
-        </TabButton>
-        <TabButton
-          isActive={activePreviewTab === "html"}
-          onClick={() => setActivePreviewTab("html")}
-        >
-          HTML
-        </TabButton>
+        PDF
+      </TabButton>
+
+      {settings.advancedFeatures.htmlRemoteTab && (
         <TabButton
           disabled={status !== "authenticated"}
-          isActive={activePreviewTab === "pdf"}
-          onClick={() => setActivePreviewTab("pdf")}
+          isActive={activePreviewTab === "html-remote"}
+          onClick={() => setActivePreviewTab("html-remote")}
+          className="whitespace-nowrap"
         >
-          PDF
+          HTML (remote)
         </TabButton>
-
-        {settings.advancedFeatures.htmlRemoteTab && (
-          <TabButton
-            disabled={status !== "authenticated"}
-            isActive={activePreviewTab === "html-remote"}
-            onClick={() => setActivePreviewTab("html-remote")}
-            className="whitespace-nowrap"
-          >
-            HTML (remote)
-          </TabButton>
-        )}
-      </span>
-    </>
+      )}
+    </span>
   );
 }

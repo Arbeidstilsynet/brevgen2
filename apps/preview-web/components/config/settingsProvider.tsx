@@ -1,4 +1,4 @@
-import { createContext, use, useEffect, useState } from "react";
+import { createContext, use, useEffect, useMemo, useState } from "react";
 
 export interface AppSettings {
   advancedFeatures: {
@@ -82,28 +82,20 @@ export function SettingsProvider({ children }: Readonly<{ children: React.ReactN
     setSettings(getSettings());
   }, []);
 
-  const setAdvancedFeature = (feature: keyof AppSettings["advancedFeatures"], enabled: boolean) => {
-    const newSettings = {
-      ...settings,
-      advancedFeatures: {
-        ...settings.advancedFeatures,
-        [feature]: enabled,
+  const value = useMemo<AppSettingsContext>(
+    () => ({
+      settings,
+      setAdvancedFeature(feature, enabled) {
+        const newSettings = {
+          ...settings,
+          advancedFeatures: { ...settings.advancedFeatures, [feature]: enabled },
+        };
+        updateSettings(newSettings);
+        setSettings(newSettings);
       },
-    };
-
-    updateSettings(newSettings);
-    setSettings(newSettings);
-  };
-
-  return (
-    <SettingsContext
-      value={{
-        settings,
-        setAdvancedFeature,
-        resetSettings,
-      }}
-    >
-      {children}
-    </SettingsContext>
+      resetSettings,
+    }),
+    [settings],
   );
+  return <SettingsContext value={value}>{children}</SettingsContext>;
 }

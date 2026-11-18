@@ -2,7 +2,7 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 import { Readable } from "stream";
 import { DockerComposeEnvironment, StartedDockerComposeEnvironment } from "testcontainers";
-import { afterAll, beforeAll, describe } from "vitest";
+import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { genererBrevTests } from "./tests/genererbrevTests";
 import { validationTests } from "./tests/validationTests";
 import { visualTests } from "./tests/visualTests";
@@ -88,6 +88,17 @@ describe("Integration tests with testcontainers", { concurrent: false }, () => {
       await environment.down();
     }
   }, 60_000);
+
+  test("the API container defaults to the Nais runtime UID and GID", async () => {
+    const container = testEnv!.environment.getContainer("api-1");
+    const { stdout, exitCode } = await container.exec([
+      "node",
+      "-p",
+      "[process.getuid(), process.getgid()].join(':')",
+    ]);
+    expect(exitCode).toBe(0);
+    expect(stdout.trim()).toBe("1069:1069");
+  });
 
   describe("Schema validation tests", () => {
     validationTests(() => testEnv!);

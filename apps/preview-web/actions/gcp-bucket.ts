@@ -28,29 +28,16 @@ function getBucket() {
   return storageSingleton;
 }
 
-export async function listFiles() {
+export async function listFiles(): Promise<BucketFile[]> {
   await requireSession();
 
   const bucket = getBucket();
-  const files: BucketFile[] = [];
-
-  let pageToken: string | undefined = undefined;
-  do {
-    const [pageFiles, , response] = await bucket.getFiles({ pageToken });
-
-    files.push(
-      ...pageFiles.map((f) => ({
-        Key: f.name,
-        Size: String(f.metadata.size ?? ""),
-        LastModified: f.metadata.updated ? new Date(f.metadata.updated) : undefined,
-      })),
-    );
-
-    const typedResponse = response as { nextPageToken?: string } | undefined;
-    pageToken = typedResponse?.nextPageToken;
-  } while (pageToken);
-
-  return files;
+  const [files] = await bucket.getFiles({ autoPaginate: true });
+  return files.map((file) => ({
+    Key: file.name,
+    Size: String(file.metadata.size ?? ""),
+    LastModified: file.metadata.updated ? new Date(file.metadata.updated) : undefined,
+  }));
 }
 
 export async function getFile(key: string) {

@@ -56,7 +56,7 @@ describe("health routes", () => {
     });
     const warmup = createDeferred<void>();
     const startup = new StartupHealthCheck(async () => await warmup.promise);
-    await registerHealthRoutes(app, health, startup);
+    registerHealthRoutes(app, health, startup);
 
     expect((await app.inject("/health")).statusCode).toBe(200);
     expect((await app.inject("/health/startup")).statusCode).toBe(503);
@@ -77,9 +77,9 @@ describe("health routes", () => {
       recoveryGraceMs: 200,
       now: () => now,
     });
-    const startup = new StartupHealthCheck(async () => undefined);
+    const startup = new StartupHealthCheck(() => Promise.resolve());
     await startup.result;
-    await registerHealthRoutes(app, health, startup);
+    registerHealthRoutes(app, health, startup);
     const job = health.startJob();
 
     now = 101;

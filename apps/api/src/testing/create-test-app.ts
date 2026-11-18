@@ -7,7 +7,7 @@ import { RendererHealth } from "../renderer/health";
 /** Builds the real app around a fake document generator and closes it when the test finishes. */
 export async function createTestApp({
   auth = false,
-  generateDocument = vi.fn<GenerateDocument>(async () => ({ content: "<p>ok</p>" })),
+  generateDocument = vi.fn<GenerateDocument>().mockResolvedValue({ content: "<p>ok</p>" }),
 }: { auth?: boolean; generateDocument?: GenerateDocument } = {}) {
   // Auth reads its configuration when the app is built.
   vi.stubEnv("DANGEROUS_DISABLE_AUTH", auth ? "false" : "true");
@@ -19,7 +19,7 @@ export async function createTestApp({
       stallThresholdMs: 100,
       recoveryGraceMs: 100,
     }),
-    startupHealth: new StartupHealthCheck(async () => undefined),
+    startupHealth: new StartupHealthCheck(() => Promise.resolve()),
   });
   onTestFinished(async () => {
     await app.close();

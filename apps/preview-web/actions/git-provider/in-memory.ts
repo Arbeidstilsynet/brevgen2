@@ -1,4 +1,4 @@
-import type { FileContent, GitProvider, Repo, RepoFile } from "./types";
+import type { GitProvider, Repo, RepoFile } from "./types";
 
 export interface InMemoryRepoSeed extends Repo {
   branches: string[];
@@ -50,12 +50,13 @@ export function createInMemoryGitProvider(seed: InMemorySeed): GitProvider {
       return Promise.resolve(getRepo(repoId).files[branch] ?? []);
     },
     readFileContent,
-    async readManyFileContents(repoId, branch, filePaths) {
-      const results: FileContent[] = [];
-      for (const filePath of filePaths) {
-        results.push({ filePath, content: await readFileContent(repoId, branch, filePath) });
-      }
-      return results;
+    readManyFileContents(repoId, branch, filePaths) {
+      return Promise.all(
+        filePaths.map(async (filePath) => ({
+          filePath,
+          content: await readFileContent(repoId, branch, filePath),
+        })),
+      );
     },
   };
 }
