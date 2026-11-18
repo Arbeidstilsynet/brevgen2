@@ -43,14 +43,12 @@ public static class Extensions
         services.AddSingleton(brevgeneratorConfig);
         services.TryAddSingleton<IRetryTimer, SystemRetryTimer>();
         services.AddSingleton<IBrevgeneratorClient, Implementation.BrevgeneratorClient>();
-        services.AddHttpClient(
-            BrevgeneratorHttpClientKey,
-            configureClient =>
-                configureClient.BaseAddress = new Uri(
-                    string.IsNullOrEmpty(brevgeneratorConfig.BaseUrl)
-                        ? hostEnvironment.GetBrevgenBaseUri()
-                        : brevgeneratorConfig.BaseUrl
-                )
+        services.AddHttpClient(BrevgeneratorHttpClientKey, configureClient =>
+            configureClient.BaseAddress = new Uri(
+                string.IsNullOrEmpty(brevgeneratorConfig.BaseUrl)
+                    ? hostEnvironment.GetBrevgenBaseUri()
+                    : brevgeneratorConfig.BaseUrl
+            )
         );
         return services;
     }

@@ -60,6 +60,7 @@ jobs:
             github.event.before }}
           include: |
             .github/workflows/ci.yaml
+            global.json
             nuget-client/
 
   validate-nais:
@@ -185,9 +186,11 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - name: Build and Test .NET solution
-        uses: Arbeidstilsynet/action-dotnet-build@9e65f3cee7d86b8b60a99a9cfbf46187044a2e23 # v4
+      - uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6
         with:
-          working-directory: "."
-          skip-csharpier: true
-          skip-style-analyzers: true
+          global-json-file: global.json
+          # runtime for the net10.0 test target; the SDK comes from global.json
+          dotnet-version: 10.0.x
+      - run: dotnet restore
+      - run: dotnet build --no-restore
+      - run: dotnet test --no-build

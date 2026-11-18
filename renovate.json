@@ -34,6 +34,13 @@
       "matchUpdateTypes": ["digest"],
       "groupName": "node.js digests",
       "description": "group different node image tags"
+    },
+    {
+      "matchManagers": ["nuget"],
+      "matchFileNames": ["nuget-client/**"],
+      "matchPackageNames": ["Microsoft.Extensions.*"],
+      "allowedVersions": "<11",
+      "description": "The client targets net10.0 (LTS); keep the lowest supported Microsoft.Extensions major so consumers are not forced onto a newer one"
     }
   ]
 }

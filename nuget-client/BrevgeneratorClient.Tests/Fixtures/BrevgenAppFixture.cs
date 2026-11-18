@@ -27,9 +27,9 @@ public class BrevgenAppFixture : TestBedFixture
 
     protected override IEnumerable<TestAppSettings> GetTestAppSettings() => [];
 
-    protected override ValueTask DisposeAsyncCore()
+    protected override async ValueTask DisposeAsyncCore()
     {
         _server.Dispose();
-        return ValueTask.CompletedTask;
+        await base.DisposeAsyncCore();
     }
 }

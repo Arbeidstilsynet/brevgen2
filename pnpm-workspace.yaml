@@ -20,6 +20,9 @@ audit:
     - GHSA-f88m-g3jw-g9cj
     # zod v3 used by pdf-visual-diff through jimp, doesnt take external input so should be safe
     - GHSA-mrhx-c7xc-m3w5
+    # picomatch ReDoS, no patched version yet. Only reached via dev/build tooling (vite, vitest, tsdown)
+    # matching our own glob patterns, never untrusted input at runtime
+    - GHSA-fc5q-39xc-vjpf
 
 autoInstallPeers: false
 
