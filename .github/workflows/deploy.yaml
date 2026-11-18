@@ -152,7 +152,7 @@ jobs:
     # deploy using new image if built, or reuse previous deployed image if only nais config changed
     # https://docs.nais.io/build/explanations/applying-a-manifest/
     if: |
-      always() &&
+      !cancelled() &&
       (needs.build_api.result == 'success' ||
         (needs.build_api.result == 'skipped' && needs.check_changes.outputs.naisapi == 'true')
       )
@@ -185,7 +185,7 @@ jobs:
     # deploy using new image if built, or reuse previous deployed image if only nais config changed
     # https://docs.nais.io/build/explanations/applying-a-manifest/
     if: |
-      always() &&
+      !cancelled() &&
       (needs.build_web.result == 'success' ||
         (needs.build_web.result == 'skipped' && needs.check_changes.outputs.naisweb == 'true')
       )
@@ -304,7 +304,7 @@ jobs:
   deploy_api_prod:
     needs: [build_api, load_test_api, deploy_api_dev]
     if: |
-      always() &&
+      !cancelled() &&
       needs.load_test_api.result == 'success' &&
       needs.deploy_api_dev.result == 'success'
     runs-on: ubuntu-latest
@@ -334,7 +334,7 @@ jobs:
   deploy_web_prod:
     needs: [build_web, deploy_web_dev]
     if: |
-      always() &&
+      !cancelled() &&
       needs.deploy_web_dev.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 10
