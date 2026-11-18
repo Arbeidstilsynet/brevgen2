@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
-    "fallow": "3.43.0",
+    "fallow": "3.43.1",
     "oxfmt": "0.78.0",
     "oxlint": "1.93.0",
     "oxlint-tsgolint": "7.0.2007",
