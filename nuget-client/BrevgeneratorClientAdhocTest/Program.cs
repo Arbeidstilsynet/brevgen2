@@ -46,7 +46,7 @@ static class Program
         var baseUrlClient2 = args.Length > 0 ? args[0] : null;
         using var client2 = Extensions.CreateBrevgeneratorClient(
             hostEnvironment,
-            tokenFunc: async () => "my-token",
+            tokenFunc: () => Task.FromResult("my-token"),
             new BrevgeneratorConfig { AuthMode = AuthMode.BearerToken, BaseUrl = baseUrlClient2 }
         );
 
