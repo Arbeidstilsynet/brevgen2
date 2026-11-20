@@ -260,8 +260,8 @@ importers:
         specifier: 13.2.0
         version: 13.2.0
       puppeteer-core:
-        specifier: 25.17.0
-        version: 25.17.0
+        specifier: 25.18.1
+        version: 25.18.1
       sanitize-html:
         specifier: 2.18.2
         version: 2.18.2
@@ -285,8 +285,8 @@ importers:
         specifier: 0.16.0
         version: 0.16.0
       puppeteer:
-        specifier: 25.17.0
-        version: 25.17.0
+        specifier: 25.18.1
+        version: 25.18.1
       testcontainers:
         specifier: 12.2.1
         version: 12.2.1(bare-buffer@3.7.1)
@@ -448,8 +448,8 @@ importers:
         version: 4.6.7
     devDependencies:
       puppeteer-core:
-        specifier: 25.17.0
-        version: 25.17.0
+        specifier: 25.18.1
+        version: 25.18.1
       typescript:
         specifier: 7.0.2
         version: 7.0.2
@@ -3725,12 +3725,12 @@ packages:
   pump@3.0.4:
     resolution: {integrity: sha512-VS7sjc6KR7e1ukRFhQSY5LM2uBWAUPiOPa/A3mkKmiMwSmRFUITt0xuj+/lesgnCv+dPIEYlkzrcyXgquIHMcA==}
 
-  puppeteer-core@25.17.0:
-    resolution: {integrity: sha512-YAgBitkd+K9gxRt+wzBAFTTkGjkC8aC2o4OxofsU8JUy2nnK/RflTCJ9bRCvCMNbq9TPhqFk4Phz98otN9FrGg==}
+  puppeteer-core@25.18.1:
+    resolution: {integrity: sha512-C0wHOJHDfAggGBtN5uUfsJGpeSKtPL5jzhgQYDuz4XKeOG1FUkxeZI2M5yK7AUyrdHO+RgDuiCfjmOpcw3PYTA==}
     engines: {node: '>=22.12.0'}
 
-  puppeteer@25.17.0:
-    resolution: {integrity: sha512-J+OQNlI7I6ZjHhF6Q8M+LgiUGldF7meer5EqMJBZMHgnFN3zcehOhpz/x0bYDEEvbEiXzKzmqSRP3QT+5accjQ==}
+  puppeteer@25.18.1:
+    resolution: {integrity: sha512-fCsfwERKluvC84jsVyhDoBZMNuI8t5FFnWXcTdH1vn3NhMk6clZcrF0Da2se6/Hj6CBJ+2PRPpqeV0qPIETeJA==}
     engines: {node: '>=22.12.0'}
     hasBin: true
 
@@ -7277,7 +7277,7 @@ snapshots:
       end-of-stream: 1.4.5
       once: 1.4.0
 
-  puppeteer-core@25.17.0:
+  puppeteer-core@25.18.1:
     dependencies:
       '@puppeteer/browsers': 3.2.7
       chromium-bidi: 157.0.8090-0(devtools-protocol@0.0.1717327)
@@ -7291,13 +7291,13 @@ snapshots:
       - utf-8-validate
       - yauzl
 
-  puppeteer@25.17.0:
+  puppeteer@25.18.1:
     dependencies:
       '@puppeteer/browsers': 3.2.7
       chromium-bidi: 157.0.8090-0(devtools-protocol@0.0.1717327)
       devtools-protocol: 0.0.1717327
       lilconfig: 3.1.4
-      puppeteer-core: 25.17.0
+      puppeteer-core: 25.18.1
       typed-query-selector: 2.12.3
     transitivePeerDependencies:
       - bufferutil
