@@ -2,7 +2,7 @@ FROM ghcr.io/pnpm/pnpm:12@sha256:81346f048d668195928d441b80efc0df300474ed8bf8178
 
 # The build output is platform independent (bundled JS + static assets), so pin the builder to the
 # native build platform. Cross-platform builds then only emulate the much cheaper runner stage.
-FROM --platform=$BUILDPLATFORM base AS builder
+FROM --platform=$BUILDPLATFORM base AS deps
 
 WORKDIR /app
 
@@ -15,6 +15,9 @@ COPY packages/shared-types/package.json ./packages/shared-types/
 COPY packages/config-typescript/package.json ./packages/config-typescript/
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     PUPPETEER_SKIP_DOWNLOAD=true pnpm install --frozen-lockfile --filter api...
+
+
+FROM deps AS builder
 
 COPY apps/api ./apps/api
 COPY packages ./packages
@@ -30,8 +33,9 @@ FROM node:26-trixie-slim@sha256:e6bedef217677b276c591795e169840edd9096dbf13f29df
 ARG FONTCONFIG_VERSION="2.15.0-2.3"
 
 # Install the Chrome for Testing headless shell pinned by Puppeteer in the lockfile, plus its system
-# dependencies from the base image's (Debian trixie) default repos
-RUN --mount=type=bind,from=builder,source=/app,target=/build \
+# dependencies from the base image's (Debian trixie) default repos. Mount deps rather than builder so
+# source-only changes don't invalidate this layer.
+RUN --mount=type=bind,from=deps,source=/app,target=/build \
     apt-get update \
     && apt-get install -y --no-install-recommends unzip fontconfig=${FONTCONFIG_VERSION} \
     && chrome=$(PUPPETEER_CACHE_DIR=/tmp/puppeteer /build/apps/api/node_modules/.bin/puppeteer \
