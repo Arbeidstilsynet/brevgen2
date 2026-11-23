@@ -138,7 +138,12 @@ jobs:
   testcontainer:
     needs: changes
     if: needs.changes.outputs.brevgen2 == 'true'
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # arm64 keeps the image working for developers on Apple Silicon
+        runner: [ubuntu-latest, ubuntu-26.04-arm]
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 10
     permissions:
       contents: read
@@ -158,12 +163,12 @@ jobs:
         if: ${{ !cancelled() && (steps.test.outcome == 'success' || steps.test.outcome == 'failure') }}
         with:
           files: "**/junit.xml"
-          check_name: "Integration Test Results"
+          check_name: "Integration Test Results (${{ matrix.runner }})"
 
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         if: ${{ !cancelled() && steps.test.outcome == 'failure' }}
         with:
-          name: integration-test-snapshots
+          name: integration-test-snapshots-${{ matrix.runner }}
           path: apps/api/integration-tests/__snapshots__/
 
   # editor dockerfile is not covered elsewhere before deploy, unlike API that is built in testcontainer job
