@@ -26,19 +26,19 @@ FROM node:26-trixie-slim@sha256:e6bedef217677b276c591795e169840edd9096dbf13f29df
 ### Versions managed by Renovate
 ### https://docs.renovatebot.com/presets-customManagers/#custommanagersdockerfileversions
 ### https://docs.renovatebot.com/modules/datasource/repology/
-# For available Chromium versions in the distro, see https://repology.org/project/chromium/versions
-# Chromium versions changes should be matched with Puppeteer version from https://pptr.dev/supported-browsers
-# renovate: datasource=repology depName=debian_13/chromium versioning=deb
-ARG CHROMIUM_VERSION="156.0.8078.79-1~deb13u1"
 # renovate: datasource=repology depName=debian_13/fontconfig versioning=deb
 ARG FONTCONFIG_VERSION="2.15.0-2.3"
 
-# Install specific Chromium version and other dependencies from the base image's (Debian trixie) default repos
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-    chromium-common=${CHROMIUM_VERSION} \
-    chromium=${CHROMIUM_VERSION} \
-    fontconfig=${FONTCONFIG_VERSION} \
+# Install the Chrome for Testing headless shell pinned by Puppeteer in the lockfile, plus its system
+# dependencies from the base image's (Debian trixie) default repos
+RUN --mount=type=bind,from=builder,source=/app,target=/build \
+    apt-get update \
+    && apt-get install -y --no-install-recommends unzip fontconfig=${FONTCONFIG_VERSION} \
+    && chrome=$(PUPPETEER_CACHE_DIR=/tmp/puppeteer /build/apps/api/node_modules/.bin/puppeteer \
+    browsers install chrome-headless-shell --install-deps --format "{{path}}") \
+    && mv "$(dirname "${chrome}")" /opt/chrome-headless-shell \
+    && rm -rf /tmp/puppeteer \
+    && apt-get purge -y unzip \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -57,8 +57,7 @@ ADD --chmod=644 "https://github.com/googlefonts/noto-emoji/raw/${NOTO_EMOJI_VERS
 RUN fc-cache -fv
 
 ENV NODE_ENV=production
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+ENV PUPPETEER_EXECUTABLE_PATH=/opt/chrome-headless-shell/chrome-headless-shell
 ENV XDG_CONFIG_HOME=/tmp/.chromium
 ENV XDG_CACHE_HOME=/tmp/.chromium
 
