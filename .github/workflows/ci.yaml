@@ -135,7 +135,8 @@ jobs:
       - uses: pnpm/setup@731dfb6463bbd11c11fd0ee11fe00ed0e36d48a1 # v3.2.0
       - uses: j178/prek-action@7b101f8338a08d2bd6fdb3625e4e7692428763a3 # v3.1.1
 
-  testcontainer:
+  testcontainer-matrix:
+    name: testcontainer (${{ matrix.runner }})
     needs: changes
     if: needs.changes.outputs.brevgen2 == 'true'
     strategy:
@@ -170,6 +171,22 @@ jobs:
         with:
           name: integration-test-snapshots-${{ matrix.runner }}
           path: apps/api/integration-tests/__snapshots__/
+
+  # single stable check for the branch ruleset, since matrix jobs report one check per entry
+  testcontainer:
+    needs: [changes, testcontainer-matrix]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check matrix result
+        env:
+          CHANGES: ${{ needs.changes.result }}
+          RESULT: ${{ needs.testcontainer-matrix.result }}
+        run: |
+          echo "changes: $CHANGES, testcontainer-matrix: $RESULT"
+          [[ "$CHANGES" == "success" ]]
+          [[ "$RESULT" == "success" || "$RESULT" == "skipped" ]]
 
   # editor dockerfile is not covered elsewhere before deploy, unlike API that is built in testcontainer job
   editor-docker:
