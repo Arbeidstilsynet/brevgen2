@@ -17,6 +17,13 @@ concurrency:
   #  | build_api |           | build_web |
   #  +-----+-----+           +-----+-----+
   #        |                       |
+  #        +----------------+      |
+  #        |                |      |
+  #        |       +--------+----+ |
+  #        |       |publish_ghcr | |
+  #        |       |   _api      | |
+  #        |       +-------------+ |
+  #        |                       |
   #  +-----------+           +-----------+
   #  |deploy_api |           |deploy_web |
   #  |   _dev    |           |   _dev    |
@@ -101,7 +108,6 @@ jobs:
     permissions:
       contents: read
       id-token: write
-      packages: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: nais/docker-build-push@6394144a53cad0332745f24a8302f5efaf81719a # v1
@@ -111,21 +117,57 @@ jobs:
           image_suffix: api
           docker_context: "."
           dockerfile: "./apps/api/Dockerfile"
-          platforms: linux/amd64,linux/arm64
+          # Nais runs amd64 only; arm64 is built natively in publish_ghcr_api.
+          platforms: linux/amd64
+
+  # Publishes a multi-arch image to GHCR so developers on Apple Silicon can run it.
+  # The arm64 image is built on a native runner and has no Nais attestation.
+  publish_ghcr_api:
+    needs: build_api
+    runs-on: ubuntu-26.04-arm
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Set GHCR repository
+        id: ghcr
+        run: echo "repo=ghcr.io/${GITHUB_REPOSITORY,,}-api" >> "$GITHUB_OUTPUT" # Lowercase owner/repo for GHCR
+      # Needed to read the amd64 image from the Nais registry.
+      - uses: nais/login@40b72a35a18ddf2ad74b632461139ab838cc2a2f # v0
+        with:
+          team: plattform
       - name: Login to GitHub Container Registry
         uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Push image to ghcr.io
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - name: Build and push arm64 image by digest
+        id: build
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: "."
+          file: "./apps/api/Dockerfile"
+          platforms: linux/arm64
+          outputs: type=image,name=${{ steps.ghcr.outputs.repo }},push-by-digest=true,name-canonical=true,push=true
+          cache-from: type=gha,scope=api-arm64
+          cache-to: type=gha,mode=max,scope=api-arm64
+      - name: Create multi-arch manifest on ghcr.io
+        env:
+          TARGET_REPO: ${{ steps.ghcr.outputs.repo }}
+          AMD64_IMAGE: ${{ needs.build_api.outputs.image }}
+          ARM64_DIGEST: ${{ steps.build.outputs.digest }}
         run: |
-          TARGET_REPO="ghcr.io/${GITHUB_REPOSITORY,,}-api" # Lowercase owner/repo for GHCR
           SHORT_SHA="${GITHUB_SHA::7}"
           docker buildx imagetools create \
             -t "${TARGET_REPO}:latest" \
             -t "${TARGET_REPO}:${SHORT_SHA}" \
-            "${{ steps.docker.outputs.image }}"
+            "${AMD64_IMAGE}" \
+            "${TARGET_REPO}@${ARM64_DIGEST}"
 
   build_web:
     needs: check_changes
