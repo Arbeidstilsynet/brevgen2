@@ -13,14 +13,6 @@
       "description": "Repology provides no release timestamps"
     },
     {
-      "matchManagers": ["npm"],
-      "matchPackageNames": ["puppeteer", "puppeteer-core"],
-      "groupName": "puppeteer",
-      "separateMajorMinor": false,
-      "automerge": true,
-      "description": "Keep puppeteer and puppeteer-core in sync; the Puppeteer version pins the Chrome for Testing build used in the API image"
-    },
-    {
       "matchDatasources": ["docker"],
       "matchPackageNames": ["node"],
       "matchUpdateTypes": ["digest"],
