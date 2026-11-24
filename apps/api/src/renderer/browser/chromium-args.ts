@@ -81,8 +81,6 @@ export function getChromiumArgs(): string[] {
     "--no-zygote", // https://source.chromium.org/search?q=lang:cpp+symbol:kNoZygote&ss=chromium
   ];
 
-  const headlessFlags = ["--headless='shell'"];
-
   return [
     ...puppeteerFlags,
     ...chromiumFlags,
@@ -90,6 +88,5 @@ export function getChromiumArgs(): string[] {
     `--enable-features=${[...puppeteerEnableFeatures, ...chromiumEnableFeatures].join(",")}`,
     ...graphicsFlags,
     ...insecureFlags,
-    ...headlessFlags,
   ];
 }
