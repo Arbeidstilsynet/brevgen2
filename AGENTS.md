@@ -61,6 +61,7 @@ Workspace imports use `workspace:*` / `workspace:^` and source-level TypeScript 
 - Adding a document template requires its implementation under `packages/document-templates/lib/templates/<name>/`, an args schema in `@repo/shared-types`, registry registration, and a `DocumentTemplateOption` extension.
 - Linting uses oxlint, formatting uses oxfmt, and C# formatting under `nuget-client/` uses csharpier.
 - CI runs the TypeScript build/test/typecheck job only when `apps/`, `packages/`, or root package/lockfiles change. It runs the .NET job only when `nuget-client/` changes.
+- When updating an API visual snapshot (`apps/api/integration-tests/__snapshots__/*.png`), also update its baseline PDF in `apps/api/integration-tests/baseline/` from the matching file in `integration-tests/temp/` that the Testcontainers run generates.
 
 ## Agent skills
 
