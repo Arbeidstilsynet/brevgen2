@@ -77,17 +77,29 @@ jobs:
       - run: nais --version
       - name: Validate Application manifests
         run: nais validate api.yaml web.yaml
-      - name: Dry-run Application manifests with mixins
+      - name: Validate Application manifests with mixins
         run: |
+          set -o pipefail
+          render_dir="$RUNNER_TEMP/rendered"
+          mkdir -p "$render_dir"
+
+          # Dry-run does not schema-validate, so validate the rendered output
+          render() {
+            nais apply "$1.yaml" \
+              --mixin "$1.$2.yaml" \
+              --environment "$3" \
+              --team plattform \
+              --dry-run |
+              sed -n '/^---$/,/^dry-run complete/{//!p}' >"$render_dir/$1.$2.yaml"
+          }
+
           for environment in dev prod; do
             for application in api web; do
-              nais apply "$application.yaml" \
-                --mixin "$application.$environment.yaml" \
-                --environment "$environment" \
-                --team plattform \
-                --dry-run
+              render "$application" "$environment" "$environment"
             done
           done
+
+          nais validate "$render_dir"/*.yaml
 
   build:
     needs: changes
