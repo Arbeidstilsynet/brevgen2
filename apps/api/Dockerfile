@@ -23,7 +23,7 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     PUPPETEER_SKIP_DOWNLOAD=true pnpm --filter api deploy --prod /prod
 
 
-FROM node:26-alpine@sha256:6bd9ab43c0ec0190ca7b2d193906cb8b7edf6e7f4afa43ddeccd6452710bffb5 AS runner
+FROM node:26-alpine3.24@sha256:6bd9ab43c0ec0190ca7b2d193906cb8b7edf6e7f4afa43ddeccd6452710bffb5 AS runner
 
 ### Versions managed by Renovate
 ### https://docs.renovatebot.com/presets-customManagers/#custommanagersdockerfileversions
