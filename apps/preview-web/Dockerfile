@@ -28,28 +28,30 @@ FROM node:26-alpine@sha256:6bd9ab43c0ec0190ca7b2d193906cb8b7edf6e7f4afa43ddeccd6
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
-RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
+# Upgrade base packages to pick up security fixes and remove bundled npm/npx (unused at runtime).
+RUN apk upgrade --no-cache \
+    && rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx
 
 WORKDIR /app
 
 # Set the correct permission for prerender cache
-RUN mkdir .next && chown nextjs:nodejs .next
+RUN mkdir .next && chown 1069:1069 .next
 
 # https://nextjs.org/docs/app/api-reference/config/next-config-js/output
-COPY --from=builder --chown=nextjs:nodejs /app/apps/preview-web/.next/standalone /app
+COPY --from=builder --chown=1069:1069 /app/apps/preview-web/.next/standalone /app
 
 # workaround for rar mappestruktur
-COPY --from=builder --chown=nextjs:nodejs /app/apps/preview-web/.next/static ./apps/preview-web/.next/static
-COPY --from=builder --chown=nextjs:nodejs /app/apps/preview-web/public ./apps/preview-web/public
+COPY --from=builder --chown=1069:1069 /app/apps/preview-web/.next/static ./apps/preview-web/.next/static
+COPY --from=builder --chown=1069:1069 /app/apps/preview-web/public ./apps/preview-web/public
 WORKDIR /app/apps/preview-web
 
-RUN apk add --no-cache curl
-
-USER nextjs
+# Match the UID and GID enforced by Nais when running this image elsewhere.
+USER 1069:1069
 
 EXPOSE 3000
 ENV PORT=3000
-HEALTHCHECK CMD curl --fail http://localhost:3000/api/health || exit 1
+# Use Node's built-in fetch so the image needs no curl/wget (avoids extra package maintenance and CVEs)
+HEALTHCHECK CMD ["node", "-e", "fetch('http://localhost:3000/api/health').then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
 
 # server.js is created by next build from the standalone output
 # https://nextjs.org/docs/pages/api-reference/next-config-js/output
