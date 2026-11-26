@@ -22,6 +22,8 @@ FROM deps AS builder
 COPY apps/api ./apps/api
 COPY packages ./packages
 RUN pnpm --filter api build
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    PUPPETEER_SKIP_DOWNLOAD=true pnpm --filter api deploy --prod /prod
 
 
 FROM node:26-trixie-slim@sha256:abe7e5a82b61a8ef67b315b85497c9e65173387ccf2f4a029248184b8e020be5 AS runner
@@ -58,7 +60,8 @@ ADD --chmod=644 "https://github.com/googlefonts/noto-emoji/raw/${NOTO_EMOJI_VERS
 ADD --chmod=644 "https://github.com/googlefonts/noto-emoji/raw/${NOTO_EMOJI_VERSION}/fonts/LICENSE" \
     /usr/share/fonts/truetype/custom/LICENSE-NotoEmoji
 
-RUN fc-cache -fv
+RUN fc-cache -fv \
+    && rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx
 
 ENV NODE_ENV=production
 ENV PUPPETEER_EXECUTABLE_PATH=/opt/chrome-headless-shell/chrome-headless-shell
@@ -67,14 +70,7 @@ ENV XDG_CACHE_HOME=/tmp/.chromium
 
 WORKDIR /app
 
-COPY --from=builder /app/apps/api/dist ./dist
-# for trivy scanning purposes (dependency-track)
-COPY --from=builder /app/apps/api/package.json ./
-COPY --from=builder /app/pnpm-lock.yaml ./
-
-# Copy static assets for @fastify/swagger-ui (which is external)
-COPY --from=builder /app/apps/api/node_modules/@fastify/swagger-ui/static ./static
-COPY --from=builder /app/apps/api/node_modules/@fastify/swagger-ui/static/logo.svg ./dist/static/logo.svg
+COPY --from=builder /prod ./
 
 # Match the UID and GID enforced by Nais when running this image elsewhere.
 USER 1069:1069
