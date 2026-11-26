@@ -210,7 +210,7 @@ Tilpasninger:
   - [HTML to PDF using Typescript & AWS Lambda (medium.com)](https://medium.com/@philblenk6/html-to-pdf-using-aws-lambda-a61abcdd50d4)
 - Fjernet mye irellevant kode/funksjonalitet, som kjøring via CLI
 
-Docker-imaget laster ned [Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing) sin `chrome-headless-shell` i versjonen som Puppeteer-versjonen i lockfilen er låst til, se [støttede nettlesere](https://pptr.dev/supported-browsers#supported-browser-version-list). Oppdater Puppeteer for å oppdatere Chrome. `puppeteer` og `puppeteer-core` må ha samme versjon.
+Docker-imaget bruker Alpine sin `chromium-headless-shell`-pakke. `puppeteer` og `puppeteer-core` må ha samme versjon.
 
 ## Generering av brev
 
