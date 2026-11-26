@@ -2,7 +2,7 @@ FROM ghcr.io/pnpm/pnpm:12@sha256:349c846c6c9dab76b2f6fbf4b2df14d5a8c9b2a0fce92fc
 
 # The build output is platform independent (bundled JS + static assets), so pin the builder to the
 # native build platform. Cross-platform builds then only emulate the much cheaper runner stage.
-FROM --platform=$BUILDPLATFORM base AS deps
+FROM --platform=$BUILDPLATFORM base AS builder
 
 WORKDIR /app
 
@@ -16,9 +16,6 @@ COPY packages/config-typescript/package.json ./packages/config-typescript/
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     PUPPETEER_SKIP_DOWNLOAD=true pnpm install --frozen-lockfile --filter api...
 
-
-FROM deps AS builder
-
 COPY apps/api ./apps/api
 COPY packages ./packages
 RUN pnpm --filter api build
@@ -26,27 +23,24 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     PUPPETEER_SKIP_DOWNLOAD=true pnpm --filter api deploy --prod /prod
 
 
-FROM node:26-trixie-slim@sha256:abe7e5a82b61a8ef67b315b85497c9e65173387ccf2f4a029248184b8e020be5 AS runner
+FROM node:26-alpine3.24@sha256:6bd9ab43c0ec0190ca7b2d193906cb8b7edf6e7f4afa43ddeccd6452710bffb5 AS runner
 
 ### Versions managed by Renovate
 ### https://docs.renovatebot.com/presets-customManagers/#custommanagersdockerfileversions
 ### https://docs.renovatebot.com/modules/datasource/repology/
-# renovate: datasource=repology depName=debian_13/fontconfig versioning=deb
-ARG FONTCONFIG_VERSION="2.15.0-2.3"
+# For available Chromium versions in the distro, see https://repology.org/project/chromium/versions
+# Chromium versions changes should be matched with Puppeteer version from https://pptr.dev/supported-browsers
+# renovate: datasource=repology depName=alpine_3_24/chromium versioning=loose
+ARG CHROMIUM_VERSION="158.0.8127.36-r0"
+# renovate: datasource=repology depName=alpine_3_24/fontconfig versioning=loose
+ARG FONTCONFIG_VERSION="2.17.1-r1"
 
-# Install the Chrome for Testing headless shell pinned by Puppeteer in the lockfile, plus its system
-# dependencies from the base image's (Debian trixie) default repos. Mount deps rather than builder so
-# source-only changes don't invalidate this layer.
-RUN --mount=type=bind,from=deps,source=/app,target=/build \
-    apt-get update \
-    && apt-get install -y --no-install-recommends unzip fontconfig=${FONTCONFIG_VERSION} \
-    && chrome=$(PUPPETEER_CACHE_DIR=/tmp/puppeteer /build/apps/api/node_modules/.bin/puppeteer \
-    browsers install chrome-headless-shell --install-deps --format "{{path}}") \
-    && mv "$(dirname "${chrome}")" /opt/chrome-headless-shell \
-    && rm -rf /tmp/puppeteer \
-    && apt-get purge -y unzip \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+# Install specific Chromium headless shell version and fontconfig from Alpine's repos,
+# upgrading base packages to pick up security fixes.
+RUN apk upgrade --no-cache \
+    && apk add --no-cache \
+    chromium-headless-shell="${CHROMIUM_VERSION}" \
+    fontconfig="${FONTCONFIG_VERSION}"
 
 # Copy custom fonts
 COPY apps/api/fonts/*.ttf /usr/share/fonts/truetype/custom/
@@ -64,7 +58,8 @@ RUN fc-cache -fv \
     && rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx
 
 ENV NODE_ENV=production
-ENV PUPPETEER_EXECUTABLE_PATH=/opt/chrome-headless-shell/chrome-headless-shell
+# Point at the real binary rather than the /usr/bin symlink; launching via symlink breaks Puppeteer.
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/lib/chromium/chromium-headless-shell
 ENV XDG_CONFIG_HOME=/tmp/.chromium
 ENV XDG_CACHE_HOME=/tmp/.chromium
 

@@ -15,7 +15,7 @@ const viewport: Viewport = {
  * Get browser launch options based on environment
  */
 export function getBrowserLaunchOptions(): LaunchOptions {
-  // Configure for Docker with Chrome for Testing headless shell
+  // Configure for Docker with Chromium headless shell
   // https://cri.dev/posts/2020-04-04-Full-list-of-Chromium-Puppeteer-flags/
   if (process.env.PUPPETEER_EXECUTABLE_PATH) {
     return {
