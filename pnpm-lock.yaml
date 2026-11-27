@@ -332,7 +332,7 @@ importers:
         version: 9.0.0
       '@monaco-editor/react':
         specifier: 4.7.0
-        version: 4.7.0(monaco-editor@0.57.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+        version: 4.7.0(monaco-editor@0.58.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@octokit/auth-app':
         specifier: 8.3.1
         version: 8.3.1
@@ -352,8 +352,8 @@ importers:
         specifier: 18.3.0
         version: 18.3.0
       monaco-editor:
-        specifier: 0.57.0
-        version: 0.57.0
+        specifier: 0.58.0
+        version: 0.58.0
       next:
         specifier: 16.4.6
         version: 16.4.6(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -2362,6 +2362,9 @@ packages:
   '@vitest/spy@5.1.1':
     resolution: {integrity: sha512-6K8C6alQG1/Yc8/ZI22iJS7JEsxPdVzqtqDq+/xM4Z0mGVykemMVjLhqMy/q6/IHYG3kKD8hKSwRen/ZdyI9vQ==}
 
+  '@vscode/diff@0.0.2-145':
+    resolution: {integrity: sha512-atPcmNrAU4B8OsbrmqYlHbZREt//m8z52o400YA8uuvq3Be5wnmIhLoLqhMum7Jv7kRC0FE+m3WAUbaZF681wg==}
+
   '@yuku-toolchain/darwin-arm64@0.28.1':
     resolution: {integrity: sha512-xMtZUwiGvJH90ogLjRrnG5+YEhinKti8qMPF18bd5z0ahSoaHWyBoe16evT7cSUxid0JEaZvh6H3daDPwDw4+g==}
     cpu: [arm64]
@@ -2746,8 +2749,8 @@ packages:
     resolution: {integrity: sha512-gYzvtM72ZtxQO0T048kd6HWSbbGCNOUwcnfQ01cqIJ4X2IYKFFHZ5mKvrQETcFXxsRObZulDaKmy//R7TPtsBg==}
     engines: {node: '>=20.19.0'}
 
-  dompurify@3.4.18:
-    resolution: {integrity: sha512-ofe3wI/uNm68HInABYFJYqQxRw1EaKAjNdrFVKqjUY+UZurvNd2L/HuQe097s/4RivWiZyP6tT7aoT8atjfhwg==}
+  dompurify@3.4.17:
+    resolution: {integrity: sha512-B/pSlYVHQ58kqISD/yDjuJ1yfzI34m1gF4lAod2bwSRhiN4K5Cl3H8Af7hqB2PmTL911tdEudnnXn5FnhRoz0w==}
 
   domutils@4.0.2:
     resolution: {integrity: sha512-qI4JLRKnSzqFqr7hAlS5xQDusBCjKSEG4t4+7aNrIQMHBcsC2TGEhuyABJdYkgSewL57PNLYEiibY2iPKhKpaA==}
@@ -3327,8 +3330,8 @@ packages:
   module-details-from-path@1.0.4:
     resolution: {integrity: sha512-EGWKgxALGMgzvxYF1UyGTy0HXX/2vHLkw6+NvDKW2jypWbHpjQuj4UMcqQWXHERJhVGKikolT06G3bcKe4fi7w==}
 
-  monaco-editor@0.57.0:
-    resolution: {integrity: sha512-5BkI9KGoqrNvBGUe15/QlZq3OooZ8WLg1AxTpaqHRCP3HNpzPPZKE2EDz8M7c+VRmCeUw1Brp4cx/PWm3kI/5A==}
+  monaco-editor@0.58.0:
+    resolution: {integrity: sha512-Lj5hlfT4zdM5GSG9VxTHslWnwibGBvO6d9Mq/+9zmb1CkTZnib4+uAZUKl1zg+tMHRgY2OGax6hHKZNBtldR1g==}
 
   ms@2.1.3:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
@@ -5103,10 +5106,10 @@ snapshots:
     dependencies:
       state-local: 1.0.7
 
-  '@monaco-editor/react@4.7.0(monaco-editor@0.57.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
+  '@monaco-editor/react@4.7.0(monaco-editor@0.58.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
     dependencies:
       '@monaco-editor/loader': 1.7.0
-      monaco-editor: 0.57.0
+      monaco-editor: 0.58.0
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
 
@@ -5968,6 +5971,8 @@ snapshots:
 
   '@vitest/spy@5.1.1': {}
 
+  '@vscode/diff@0.0.2-145': {}
+
   '@yuku-toolchain/darwin-arm64@0.28.1':
     optional: true
 
@@ -6310,7 +6315,7 @@ snapshots:
     dependencies:
       domelementtype: 3.0.0
 
-  dompurify@3.4.18:
+  dompurify@3.4.17:
     optionalDependencies:
       '@types/trusted-types': 2.0.7
 
@@ -6945,9 +6950,10 @@ snapshots:
 
   module-details-from-path@1.0.4: {}
 
-  monaco-editor@0.57.0:
+  monaco-editor@0.58.0:
     dependencies:
-      dompurify: 3.4.18
+      '@vscode/diff': 0.0.2-145
+      dompurify: 3.4.17
       marked: 14.0.0
 
   ms@2.1.3: {}
